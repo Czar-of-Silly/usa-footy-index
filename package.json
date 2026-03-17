@@ -1,0 +1,15 @@
+{
+  "name": "usa-footy-index",
+  "version": "1.0.0",
+  "description": "USA Footy Index — MLS Player Analytics Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "fetch": "node fetch-data.js",
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
