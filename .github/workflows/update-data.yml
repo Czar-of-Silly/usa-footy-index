@@ -2,9 +2,8 @@ name: Update MLS Data
 
 on:
   schedule:
-    # 2:30am EST = 7:30am UTC
     - cron: '30 7 * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,13 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout repo
+      - name: Checkout latest
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
-
-      - name: Pull latest
-        run: git pull
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -42,21 +39,15 @@ jobs:
           cp data/mls-cache.json public/data/mls-cache.json
           cp data/mls-cache.json public/data/mls-cache-2026.json
 
-      - name: Check if data changed
-        id: check
-        run: |
-          if git diff --quiet public/data/; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and push
-        if: steps.check.outputs.changed == 'true'
+      - name: Commit and push if changed
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main
           git add public/data/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
           git commit -m "Auto-update MLS data $(date +'%Y-%m-%d')"
+          git pull --rebase origin main
           git push origin main
