@@ -98,9 +98,16 @@ async function fetchSeason(year) {
   const asaNames = {};
   const asaTeamMap = {};
   try {
-    const [players, teams] = await Promise.all([get(`${ASA}/players`), get(`${ASA}/teams`)]);
-    for (const p of players) asaNames[p.player_id] = p.player_name;
-    try { const p2 = await get(`${ASA}/players?offset=1000`); for (const p of p2) asaNames[p.player_id] = p.player_name; } catch {}
+    const teams = await get(`${ASA}/teams`);
+    // Paginate ALL players (API returns max 1000 per page)
+    for (let offset = 0; offset < 5000; offset += 1000) {
+      try {
+        const page = await get(`${ASA}/players?offset=${offset}`);
+        if (!page.length) break;
+        for (const p of page) asaNames[p.player_id] = p.player_name;
+        if (page.length < 1000) break;
+      } catch { break; }
+    }
     for (const t of teams) asaTeamMap[t.team_id] = norm(t.team_abbreviation);
     console.log(`          ✅ ${Object.keys(asaNames).length} players, ${Object.keys(asaTeamMap).length} teams`);
   } catch (e) { console.error("          ❌", e.message); }
@@ -183,6 +190,8 @@ async function fetchSeason(year) {
   console.log("  [Sofa] Market values + images (takes a few minutes)...");
   const sofaValues = {};
   const sofaBirthDates = {};
+  const sofaHeights = {};
+  const sofaWeights = {};
   const sofaImages = {};
   let mvCount = 0;
   for (let i = 0; i < sofaPlayerIds.length; i++) {
@@ -192,6 +201,10 @@ async function fetchSeason(year) {
       if (mv > 0) { sofaValues[sofaPlayerIds[i].name] = mv; mvCount++; }
       const bts = pd.player?.dateOfBirthTimestamp;
       if (bts) sofaBirthDates[sofaPlayerIds[i].name] = bts;
+      const ht = pd.player?.height;
+      const wt = pd.player?.weight;
+      if (ht) sofaHeights[sofaPlayerIds[i].name] = ht;
+      if (wt) sofaWeights[sofaPlayerIds[i].name] = wt;
       sofaImages[sofaPlayerIds[i].name] = `https://api.sofascore.com/api/v1/player/${sofaPlayerIds[i].id}/image`;
     } catch {}
     if (i % 50 === 0 && i > 0) process.stdout.write(`          ${i}/${sofaPlayerIds.length} (${mvCount} values)\r`);
@@ -247,8 +260,8 @@ async function fetchSeason(year) {
         const age = (mid - birth) / (365.25 * 24 * 60 * 60 * 1000);
         return +age.toFixed(1);
       })(),
-      ht: roster?.ht || null,
-      wt: roster?.wt || null,
+      ht: roster?.ht || (find(name, sofaHeights)) || null,
+      wt: roster?.wt || (find(name, sofaWeights)) || null,
       m: mins,
       g: xg.g || 0,
       as: Math.round(xg.xa || 0),
