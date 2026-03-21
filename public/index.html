@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>USA Footy Index — MLS Player Analytics</title>
-  <meta name="description" content="Advanced player analytics and composite grading for Major League Soccer. PFF-style grades for every MLS player.">
+  <meta name="description" content="Advanced player analytics and composite grading for Major League Soccer. grades for every MLS player.">
   <meta property="og:title" content="USA Footy Index">
   <meta property="og:description" content="Advanced MLS player analytics with composite grading">
   <meta property="og:type" content="website">
@@ -26,7 +26,7 @@ const { BarChart, ResponsiveContainer, Cell } = _RC;
 const RBar = _RC.Bar;
 
 
-const DATA_URL = "./data/mls-cache.json";
+const DATA_URL_BASE = "./data/mls-cache";
 const CY = new Date().getFullYear();
 
 const MLS_TEAMS = [
@@ -64,7 +64,7 @@ const MLS_TEAMS = [
 const tcm={};MLS_TEAMS.forEach(t=>{tcm[t.abbr]=t;});
 
 // ─── NEWSPAPER THEME ─────────────────────────────────────────────────────────
-const FONTS = {serif:"'Libre Baskerville','Source Serif 4',Georgia,serif",sans:"'Inter',system-ui,sans-serif",mono:"'JetBrains Mono','Courier New',monospace",display:"'Playfair Display','Libre Baskerville',Georgia,serif"};
+const FONTS = {serif:"'Source Serif 4','Libre Baskerville',Georgia,serif",sans:"'Inter',system-ui,sans-serif",mono:"'JetBrains Mono','Courier New',monospace",display:"'Playfair Display','Source Serif 4',Georgia,serif"};
 const LIGHT = {bg:"#F4F1EA",surface:"#FFFFFF",card:"#FAFAF6",border:"#D6D0C4",borderLt:"#E8E4DB",text:"#1A1A1A",textDim:"#6B6560",textMute:"#A09A90",ink:"#0D0D0D",accent:"#C1272D",green:"#2D6A4F",red:"#9B2226",blue:"#264653",gold:"#B68D40",hoverRow:"#F0EDE5",...FONTS};
 const DARK = {bg:"#0b0e14",surface:"#111620",card:"#161c28",border:"rgba(255,255,255,.10)",borderLt:"rgba(255,255,255,.06)",text:"#f0ece4",textDim:"#b0a89c",textMute:"#6a6358",ink:"#f5f0e8",accent:"#d4574e",green:"#45b882",red:"#d4574e",blue:"#5b8fd9",gold:"#d4a054",hoverRow:"rgba(255,255,255,.06)",...FONTS};
 const T = {...LIGHT};
@@ -157,17 +157,9 @@ function ColHead({label,sortKey:sk,currentSort,currentDir,onSort,center}){
 }
 
 function Logo({size=36,dark:isDark}){
-  const bg=isDark?"transparent":"#0D0D0D";
-  const fg=isDark?"#e8e0d4":"#F4F1EA";
-  const sub=isDark?"#7a7165":"#A09A90";
-  const stroke=isDark?"#e8e0d440":"#0D0D0D";
-  return <svg width={size} height={size} viewBox="0 0 100 100" style={{flexShrink:0,cursor:"pointer"}}>
-    <rect x="2" y="2" width="96" height="96" rx="12" fill={bg} stroke={stroke} strokeWidth="2"/>
-    <text x="50" y="38" textAnchor="middle" fontFamily="Playfair Display,Georgia,serif" fontWeight="900" fontSize="28" fill={fg} letterSpacing="-1">USA</text>
-    <line x1="18" y1="46" x2="82" y2="46" stroke="#C1272D" strokeWidth="2.5"/>
-    <text x="50" y="66" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="700" fontSize="14" fill={fg} letterSpacing="3">FOOTY</text>
-    <text x="50" y="83" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="600" fontSize="10" fill={sub} letterSpacing="4.5">INDEX</text>
-  </svg>;
+  return isDark
+    ?<img src="./logo-dark.png" alt="US Footy Index" style={{width:350,height:"auto",maxWidth:"100%",objectFit:"contain",cursor:"pointer",display:"block",margin:"0 auto"}}/>
+    :<img src="./logo.png" alt="US Footy Index" style={{width:350,height:"auto",maxWidth:"100%",objectFit:"contain",cursor:"pointer",display:"block",margin:"0 auto"}}/>;
 }
 
 function RadarChart({grades,size=170}){
@@ -202,9 +194,9 @@ function TopCards({players,metric,metricLabel,onSelect}){
       }} onMouseEnter={e=>e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,.1)"} onMouseLeave={e=>e.currentTarget.style.boxShadow=i===0?"0 2px 8px rgba(0,0,0,.08)":"none"}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
           <span style={{fontFamily:T.serif,fontWeight:700,fontSize:18,color:i===0?T.accent:T.textMute}}>{i+1}</span>
-          <TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/>
+          <TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontFamily:T.serif,fontWeight:700,fontSize:14,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+            <div style={{fontFamily:T.serif,fontWeight:700,fontSize:17,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
             <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
           </div>
         </div>
@@ -237,12 +229,12 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks}){
       {/* Close */}
       <button onClick={onClose} style={{position:"absolute",top:12,right:12,background:T.bg,border:`1px solid ${T.border}`,borderRadius:4,color:T.ink,width:26,height:26,cursor:"pointer",fontSize:18,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",zIndex:10,lineHeight:1,fontFamily:T.sans}}>×</button>
       {/* Header */}
-      <div style={{padding:"28px 48px 24px 32px",borderBottom:`2px solid ${T.ink}`}}>
+      <div style={{padding:"28px 48px 24px 32px",borderBottom:`1px solid ${T.border}`}}>
         <div style={{display:"flex",alignItems:"center",gap:16}}>
           {p.headshot?<img src={p.headshot} alt={p.name} style={{width:76,height:76,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.border}`,flexShrink:0}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={p.team} size={52} logo={p.teamLogo}/>}
           <div style={{flex:1}}>
             <div style={{fontFamily:T.display,fontWeight:700,fontSize:34,color:T.ink,letterSpacing:-.5,lineHeight:1}}>{p.name}</div>
-            <div style={{display:"flex",gap:12,marginTop:8,fontSize:13,color:T.textDim,fontFamily:T.sans,flexWrap:"wrap"}}>
+            <div style={{display:"flex",gap:12,marginTop:2,fontSize:13,color:T.textDim,fontFamily:T.sans,flexWrap:"wrap"}}>
               <span style={{fontWeight:600}}>{p.position}</span>
               <span style={{color:T.border}}>|</span><span>{p.teamName}</span>
               <span style={{color:T.border}}>|</span><span>{p.age?`${p.age} yrs`:"—"}</span>
@@ -359,10 +351,10 @@ function PlayerSearch({players,onSelect}){
   useEffect(()=>{const h=e=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false);};document.addEventListener("mousedown",h);return()=>document.removeEventListener("mousedown",h);},[]);
   const res=useMemo(()=>q.length<2?[]:players.filter(p=>p.name?.toLowerCase().includes(q.toLowerCase())||p.team?.toLowerCase().includes(q.toLowerCase())).slice(0,8),[q,players]);
   return <div ref={ref} style={{position:"relative",width:"100%",maxWidth:240}}>
-    <input value={q} onChange={e=>{setQ(e.target.value);setOpen(true);}} placeholder="Search players or teams..." onFocus={()=>setOpen(true)} style={{width:"100%",padding:"8px 12px",background:T.surface,border:`1px solid ${T.border}`,borderRadius:4,color:T.text,fontSize:13,fontFamily:T.sans,outline:"none"}}/>
+    <input value={q} onChange={e=>{setQ(e.target.value);setOpen(true);}} placeholder="Search players..." onFocus={()=>setOpen(true)} style={{width:"100%",padding:"8px 12px",background:T.surface,border:`1px solid ${T.border}`,borderRadius:4,color:T.text,fontSize:13,fontFamily:T.sans,outline:"none"}}/>
     {open&&res.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,background:T.surface,border:`1px solid ${T.border}`,borderTop:"none",borderBottomLeftRadius:6,borderBottomRightRadius:6,zIndex:500,maxHeight:320,overflowY:"auto",boxShadow:"0 12px 32px rgba(0,0,0,.12)"}}>
       {res.map((p,i)=><div key={p.id} onClick={()=>{onSelect(p);setQ("");setOpen(false);}} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderTop:i?`1px solid ${T.borderLt}`:"none",cursor:"pointer",transition:"background .1s"}} onMouseEnter={e=>e.currentTarget.style.background=T.card} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-        <TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/><div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",color:T.ink}}>{p.name}</div><div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.teamName}</div></div><Badge grade={p.overall} size="sm"/>
+        <TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",color:T.ink}}>{p.name}</div><div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.teamName}</div></div><Badge grade={p.overall} size="sm"/>
       </div>)}
     </div>}
   </div>;
@@ -377,7 +369,7 @@ function MLSAnalytics(){
   const[loadMsg,setLoadMsg]=useState("Initializing...");
   const[loadProgress,setLoadProgress]=useState(0);
   const[errMsg,setErrMsg]=useState(null);
-  const[season]=useState(CY); // only current year until backend
+  const[season,setSeason]=useState(CY); // only current year until backend
   const[posFilter,setPosFilter]=useState("All");
   const[teamFilter,setTeamFilter]=useState("All");
   const[sortKey,setSortKey]=useState("overall");
@@ -408,7 +400,7 @@ function MLSAnalytics(){
     setLoadMsg("Fetching player data...");setLoadProgress(10);
     let allRaw=[];
     try{
-      const res=await fetch(DATA_URL);
+      const res=await fetch(season===2026?`${DATA_URL_BASE}.json`:`${DATA_URL_BASE}-${season}.json`);
       if(!res.ok)throw new Error(`Server returned ${res.status}`);
       setLoadProgress(50);
       const cache=await res.json();
@@ -440,7 +432,7 @@ function MLSAnalytics(){
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}
-    setLoading(false);}load();},[]);
+    setLoading(false);}load();},[season]);
 
   // Derived
   const enrichedTeams=useMemo(()=>MLS_TEAMS.map(t=>{
@@ -517,17 +509,17 @@ function MLSAnalytics(){
   },[enrichedTeams]);
 
   const TABS=[{id:"players",l:"Player Grades"},{id:"defense",l:"Defense"},{id:"passing",l:"Passing"},{id:"teams",l:"Teams"},{id:"rankings",l:"Table"},{id:"leaders",l:"Leaders"},{id:"valuations",l:"Values"},{id:"positions",l:"Positional"},{id:"compare",l:"Compare"+(comparePlayers.length?` (${comparePlayers.length})`:"")}];
-  const tbl="28px 1fr 48px 54px 46px 46px 56px 60px 52px 60px 48px 60px";
+  const tbl="34px 1fr 48px 54px 46px 46px 56px 60px 52px 60px 48px 60px";
 
   return (
     <div style={{minHeight:"100vh",background:T.bg,fontFamily:T.sans,color:T.text}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Playfair+Display:wght@400;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Playfair+Display:wght@400;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         @keyframes modalIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
         @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
         @keyframes spin{to{transform:rotate(360deg)}}
-        .rh{transition:background .12s}.rh:hover{background:${T.hoverRow}!important}
+        .rh{transition:background .12s}.rh:hover{background:${T.hoverRow}!important;outline:1px solid ${T.border}}
         ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:${T.border};border-radius:4px}
         ::selection{background:${T.gold}30}
         @media(max-width:768px){
@@ -548,15 +540,10 @@ function MLSAnalytics(){
 
       {/* ═══ MASTHEAD ══════════════════════════════════════════════════════ */}
       <header style={{background:T.surface,padding:"0 24px",borderBottom:`1px solid ${T.border}`}}>
-        <div style={{maxWidth:1200,margin:"0 auto",textAlign:"center",padding:"16px 0 12px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",textAlign:"center",padding:"10px 0 6px"}}>
           <div onClick={()=>setTab("players")} style={{display:"inline-block"}}><Logo size={68} dark={dark}/></div>
-          <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:8}}>
-            <div style={{fontSize:12,color:T.textDim,fontFamily:T.sans,fontStyle:"italic"}}>
-              {loading?"Generating player data...": `${players.length} players across ${MLS_TEAMS.length} clubs`}
-            </div>
-            <div style={{padding:"2px 10px",background:T.card,border:`1px solid ${T.border}`,borderRadius:4,fontSize:10,fontFamily:T.mono,fontWeight:700,color:T.ink}}>{season}</div>
-          </div>
-          <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:10,marginTop:8}}>
+          <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:10,marginTop:6}}>
+            <select value={season} onChange={e=>{setSeason(Number(e.target.value));}} style={{padding:"4px 14px",background:T.card,border:`1px solid ${T.border}`,borderRadius:4,fontSize:14,fontFamily:T.mono,fontWeight:700,color:T.ink,cursor:"pointer",appearance:"none",WebkitAppearance:"none",paddingRight:24,backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A09A90'/%3E%3C/svg%3E")`,backgroundRepeat:"no-repeat",backgroundPosition:"right 8px center"}}><option value={2026}>2026</option><option value={2025}>2025</option><option value={2024}>2024</option></select>
             {!loading&&<PlayerSearch players={players} onSelect={p=>setSel(p)}/>}
             <button onClick={()=>setShowGrading(true)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:4,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.accent,letterSpacing:.5,transition:"border-color .2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=T.border}>How We Grade</button>
             <button onClick={()=>setShowAbout(true)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:4,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.textDim,letterSpacing:.5}}>About</button>
@@ -632,7 +619,7 @@ function MLSAnalytics(){
           </div>
           <div style={{padding:"24px 32px"}}>
             <div style={{fontSize:12,color:T.text,fontFamily:T.sans,lineHeight:1.8,marginBottom:20}}>
-              USA Footy Index is an independent analytics platform that brings PFF-style composite grading to MLS. We believe every fan deserves access to the kind of advanced player evaluation that has been standard in the NFL, NBA, and European football for years — but has been largely missing from the American soccer landscape.
+              USA Footy Index is an independent analytics platform that brings composite grading to MLS. We believe every fan deserves access to the kind of advanced player evaluation that has been standard in the NFL, NBA, and European football for years — but has been largely missing from the American soccer landscape.
             </div>
 
             <div style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:10}}>WHAT MAKES US DIFFERENT</div>
@@ -674,7 +661,7 @@ function MLSAnalytics(){
             <div style={{padding:"14px 18px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
               <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:6}}>CREATED BY</div>
               <div style={{fontSize:12,color:T.text,fontFamily:T.sans,lineHeight:1.7}}>
-                Brandon — soccer analytics enthusiast, builder. USA Footy Index is an independent project not affiliated with Major League Soccer, its clubs, or any data provider.
+                Just a silly little guy who is a soccer analytics enthusiast. USA Footy Index is an independent project not affiliated with Major League Soccer, its clubs, or any data provider.
               </div>
             </div>
           </div>
@@ -688,7 +675,7 @@ function MLSAnalytics(){
       {/* ═══ STICKY NAV ══════════════════════════════════════════════════ */}
       <nav style={{position:"sticky",top:0,zIndex:100,background:T.surface,borderBottom:`2px solid ${T.ink}`,padding:"0 24px",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
         <div style={{maxWidth:1200,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"center",overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
-          {TABS.map(t=><button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="defense"){setSortKey("defense");setSortDir("desc");}else if(t.id==="passing"){setSortKey("passing");setSortDir("desc");}else if(t.id==="valuations"){setSortKey("marketValue");setSortDir("desc");}else if(t.id==="players"){setSortKey("overall");setSortDir("desc");}}} style={{flexShrink:0,background:"none",border:"none",color:tab===t.id?T.ink:T.textDim,padding:"10px 10px",cursor:"pointer",fontFamily:T.serif,fontWeight:tab===t.id?700:400,fontSize:13.5,letterSpacing:-.2,transition:"color .15s",borderBottom:tab===t.id?`2px solid ${T.accent}`:"2px solid transparent",whiteSpace:"nowrap"}}>{t.l}</button>)}
+          {TABS.map(t=><button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="teams"){setSortKey("overall");setSortDir("desc");}else if(t.id==="rankings"){setSortKey("pts");setSortDir("desc");}else if(t.id==="defense"){setSortKey("defense");setSortDir("desc");}else if(t.id==="passing"){setSortKey("passing");setSortDir("desc");}else if(t.id==="valuations"){setSortKey("marketValue");setSortDir("desc");setTeamFilter("All");}else if(t.id==="players"){setSortKey("overall");setSortDir("desc");}}} style={{flexShrink:0,background:tab===t.id?T.ink:"transparent",border:"none",color:tab===t.id?T.bg:T.textDim,padding:"8px 16px",margin:"6px 2px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.8,textTransform:"uppercase",transition:"all .15s",borderRadius:4,whiteSpace:"nowrap"}}>{t.l}</button>)}
         </div>
       </nav>
 
@@ -751,9 +738,9 @@ function MLSAnalytics(){
               <ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
               <ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
             </div>
-            {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,padding:"14px 14px",borderBottom:`1px solid ${T.borderLt}`,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
+            {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,padding:"14px 14px",borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
-              <div style={{display:"flex",alignItems:"center",gap:8}}><TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.ink}}>{p.name}</div><div style={{fontSize:12,color:T.textDim}}>{p.position} · {p.team}</div></div></div>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginLeft:6}}><TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:T.ink}}>{p.name}</div><div style={{fontSize:14,color:T.textDim}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><Badge grade={p.overall} size="md"/></div>
               <div style={{fontSize:13,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono,fontWeight:500}}>{p.age||"—"}</div>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,background:hm(p.goals,20),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.goals}</div>
@@ -779,9 +766,9 @@ function MLSAnalytics(){
           <TopCards players={defData} metric={p=>p.tackles} metricLabel="TACKLES" onSelect={setSel}/>
           <TableWrap><div>
             <div style={{display:"grid",gridTemplateColumns:"24px 1fr 48px 58px 58px 50px 50px 60px 56px",padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Def" sortKey="defense" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Tkl" sortKey="tackles" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Prs" sortKey="pressures" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Int" sortKey="interceptions" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><div style={{textAlign:"center"}}>YC/RC</div><ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>
-            {defData.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 48px 58px 58px 50px 50px 60px 56px",padding:"14px 14px",borderBottom:`1px solid ${T.borderLt}`,alignItems:"center",cursor:"pointer"}}>
+            {defData.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 48px 58px 58px 50px 50px 60px 56px",padding:"14px 14px",borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer"}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
-              <div style={{display:"flex",alignItems:"center",gap:8}}><TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.ink}}>{p.name}</div><div style={{fontSize:12,color:T.textDim}}>{p.position} · {p.team}</div></div></div>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginLeft:6}}><TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:T.ink}}>{p.name}</div><div style={{fontSize:14,color:T.textDim}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><Badge grade={p.defense} size="md"/></div>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,background:hm(p.tackles,40),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.tackles)}</div>
               <div style={{fontSize:15,color:T.ink,fontWeight:600,background:hm(p.pressures,300),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.pressures)}</div>
@@ -804,9 +791,9 @@ function MLSAnalytics(){
           <TopCards players={passData} metric={p=>p.passComp+"%"} metricLabel="COMPLETION" onSelect={setSel}/>
           <TableWrap><div>
             <div style={{display:"grid",gridTemplateColumns:"24px 1fr 48px 68px 68px 68px 56px 56px 56px",padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Pass" sortKey="passing" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Comp%" sortKey="passComp" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><div style={{textAlign:"center"}}>xComp%</div><div style={{textAlign:"center"}}>vs Exp</div><ColHead label="PrgP" sortKey="prgPasses" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="F3rd" sortKey="ftPasses" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>
-            {passData.map((p,i)=>{const ae=Number(p.passAboveExp);return <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 48px 68px 68px 68px 56px 56px 56px",padding:"14px 14px",borderBottom:`1px solid ${T.borderLt}`,alignItems:"center",cursor:"pointer"}}>
+            {passData.map((p,i)=>{const ae=Number(p.passAboveExp);return <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 48px 68px 68px 68px 56px 56px 56px",padding:"14px 14px",borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer"}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
-              <div style={{display:"flex",alignItems:"center",gap:8}}><TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.ink}}>{p.name}</div><div style={{fontSize:12,color:T.textDim}}>{p.position} · {p.team}</div></div></div>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginLeft:6}}><TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:T.ink}}>{p.name}</div><div style={{fontSize:14,color:T.textDim}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><Badge grade={p.passing} size="md"/></div>
               <div style={{fontSize:14,color:T.ink,fontFamily:T.mono,fontWeight:600,background:hm(+p.passComp,100),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.passComp}%</div>
               <div style={{fontSize:12,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.xPassComp}%</div>
@@ -820,10 +807,11 @@ function MLSAnalytics(){
 
         {/* ═══ TEAMS ═════════════════════════════════════════════════════════ */}
         {!loading&&tab==="teams"&&<div style={{animation:"fadeUp .4s ease"}}>
-          <div style={{marginBottom:16}}><Select label="Conference" value={confFilter} onChange={setConfFilter} width={150} options={["All","Eastern","Western"]}/></div>
+          <div style={{marginBottom:16}}><Select label="Conference" value={confFilter} onChange={setConfFilter} width={150} options={["All","Eastern","Western"]}/>
+            </div>
           <TableWrap><div>
-            <div style={{display:"grid",gridTemplateColumns:"36px 1fr 50px 52px 80px 36px",padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}><div>Rk</div><div>Team</div><div style={{textAlign:"center"}}>Grade</div><div style={{textAlign:"center"}}>Plrs</div><div style={{textAlign:"center"}}>Squad Val</div><div></div></div>
-            {enrichedTeams.filter(t=>confFilter==="All"||t.conf===confFilter).map((t,i)=>{
+            <div style={{display:"grid",gridTemplateColumns:"36px 1fr 50px 52px 80px 36px",padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}><div>Rk</div><div>Team</div><ColHead label="Grade" sortKey="overall" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Plrs" sortKey="count" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Squad Val" sortKey="squadValue" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><div></div></div>
+            {enrichedTeams.filter(t=>confFilter==="All"||t.conf===confFilter).sort((a,b)=>{const dir=sortDir==="asc"?1:-1;const av=Number(a[sortKey])||0,bv=Number(b[sortKey])||0;return dir*(av-bv);}).map((t,i)=>{
               const isOpen=expandTeam===t.abbr;
               const level=isOpen?teamLevel:0;
               const rosterTbl="1fr 40px 44px 36px 36px 48px 48px 42px 42px 50px";
@@ -963,8 +951,8 @@ function MLSAnalytics(){
           </div>
           {ranked.map((t,i)=>{const isTop3=i<3;return <div key={t.abbr} style={{display:"grid",gridTemplateColumns:"40px 44px 220px 70px 100px 80px 44px 44px 44px 44px 1fr",padding:isTop3?"14px 16px":"11px 16px",alignItems:"center",background:isTop3?T.surface:"transparent",borderBottom:`1px solid ${T.borderLt}`,borderLeft:isTop3?`3px solid ${T.gold}`:"3px solid transparent"}}>
             <div style={{fontFamily:T.display,fontWeight:900,fontSize:isTop3?24:18,color:isTop3?T.ink:T.textDim,textAlign:"center"}}>{t.rank}</div>
-            <TeamBadge abbr={t.abbr} size={isTop3?36:28} logo={teamLogos[t.abbr]}/>
-            <div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isTop3?16:14,color:T.ink}}>{t.name}</div><div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>{t.conf}</div></div>
+            <TeamBadge abbr={t.abbr} size={isTop3?40:34} logo={teamLogos[t.abbr]}/>
+            <div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isTop3?20:18,color:T.ink}}>{t.name}</div><div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>{t.conf}</div></div>
             <div style={{textAlign:"center",fontFamily:T.mono,fontSize:12,color:T.textDim,fontWeight:600}}>{t.w}-{t.dr}-{t.l}</div>
             <div style={{textAlign:"center"}}><span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.ink}}>{t.pts}</span><span style={{fontSize:11,color:t.gd>0?T.green:t.gd<0?T.red:T.textMute,fontFamily:T.mono,fontWeight:600,marginLeft:8}}>{t.gd>0?"+":""}{t.gd}</span></div>
             <div style={{textAlign:"center",fontSize:11,color:T.textDim,fontFamily:T.mono}}>{t.gf} / {t.ga}</div>
@@ -987,14 +975,14 @@ function MLSAnalytics(){
                 <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:10}}>
                   <span style={{fontSize:20}}>{cat.icon}</span>
                   <div style={{flex:1}}>
-                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>{cat.l}</div>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>{cat.l}</div>
                     <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>{cat.desc}</div>
                   </div>
                 </div>
                 {cat.top.map((p,i)=>(
                   <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"9px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
                     <div style={{fontFamily:T.serif,fontWeight:700,fontSize:14,color:i===0?T.accent:T.textMute,width:18}}>{i+1}</div>
-                    <TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/>
+                    <TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontFamily:T.serif,fontWeight:600,fontSize:14,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
                       <div style={{fontSize:8,color:T.textMute}}>{p.position} · {p.team}</div>
@@ -1017,9 +1005,9 @@ function MLSAnalytics(){
           <TopCards players={filtered} metric={p=>fv(p.marketValue)} metricLabel="VALUE" onSelect={setSel}/>
           <TableWrap><div>
             <div style={{display:"grid",gridTemplateColumns:"24px 1fr 130px 48px 44px 44px 52px",padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Value" sortKey="marketValue" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort}/><ColHead label="Grade" sortKey="overall" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="G" sortKey="goals" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="A" sortKey="assists" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Min" sortKey="mins" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>
-            {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 130px 48px 44px 44px 52px",padding:"14px 14px",borderBottom:`1px solid ${T.borderLt}`,alignItems:"center",cursor:"pointer"}}>
+            {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 130px 48px 44px 44px 52px",padding:"14px 14px",borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer"}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
-              <div style={{display:"flex",alignItems:"center",gap:8}}><TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.ink}}>{p.name}</div><div style={{fontSize:12,color:T.textDim}}>{p.position} · {p.team}</div></div></div>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginLeft:6}}><TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:T.ink}}>{p.name}</div><div style={{fontSize:14,color:T.textDim}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:vc(p.marketValue)}}>{fv(p.marketValue)}</span></div>
               <div style={{textAlign:"center"}}><Badge grade={p.overall} size="md"/></div>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,textAlign:"center"}}>{p.goals}</div>
@@ -1072,7 +1060,7 @@ function MLSAnalytics(){
               <input value={pq} onChange={e=>setPq(e.target.value)} placeholder="Search to add player..." style={{width:"100%",padding:"14px 14px",background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,color:T.text,fontSize:12,fontFamily:T.sans,outline:"none"}}/>
               {pRes.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,background:T.surface,border:`1px solid ${T.border}`,borderTop:"none",borderBottomLeftRadius:6,borderBottomRightRadius:6,zIndex:50,boxShadow:"0 8px 24px rgba(0,0,0,.1)",maxHeight:240,overflowY:"auto"}}>
                 {pRes.map((p,i)=><div key={p.id} onClick={()=>{addCompare(p);setPq("");}} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderTop:i?`1px solid ${T.borderLt}`:"none",cursor:"pointer",transition:"background .1s"}} onMouseEnter={e=>e.currentTarget.style.background=T.card} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                  <TeamBadge abbr={p.team} size={18} logo={p.teamLogo}/><div style={{flex:1}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink}}>{p.name}</div><div style={{fontSize:12,color:T.textDim}}>{p.position} · {p.team}</div></div><Badge grade={p.overall} size="sm"/>
+                  <TeamBadge abbr={p.team} size={18} logo={p.teamLogo}/><div style={{flex:1}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink}}>{p.name}</div><div style={{fontSize:14,color:T.textDim}}>{p.position} · {p.team}</div></div><Badge grade={p.overall} size="sm"/>
                 </div>)}
               </div>}
             </div>;
@@ -1091,7 +1079,7 @@ function MLSAnalytics(){
                     <div style={{width:8,height:8,borderRadius:"50%",background:compColors[i]}}/>
                     {p.headshot?<img src={p.headshot} alt={p.name} style={{width:48,height:48,borderRadius:"50%",objectFit:"cover",border:`2px solid ${compColors[i]}40`,flexShrink:0}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>}
                   </div>
-                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink,lineHeight:1,marginBottom:4}}>{p.name}</div>
+                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink,lineHeight:1,marginBottom:4}}>{p.name}</div>
                   <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:10}}>{p.position} · {p.teamName}</div>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5}}>
                     {[{l:"Overall",v:p.overall,c:gc(p.overall)},{l:"Attack",v:p.attack,c:gc(p.attack)},{l:"Passing",v:p.passing,c:gc(p.passing)},{l:"Defense",v:p.defense,c:gc(p.defense)},{l:"Creative",v:p.creativity,c:gc(p.creativity)},{l:"Carry",v:p.carrying,c:gc(p.carrying)}].map(g=>(
