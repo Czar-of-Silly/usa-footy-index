@@ -1,0 +1,44 @@
+name: Update MLS Data
+
+on:
+  schedule:
+    # Runs at 8am EST (1pm UTC) every day
+    - cron: '0 13 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Fetch fresh 2026 data
+        run: node fetch-data.js
+        timeout-minutes: 20
+
+      - name: Copy data to public folder
+        run: cp data/mls-cache.json public/data/mls-cache.json && cp data/mls-cache.json public/data/mls-cache-2026.json
+
+      - name: Check if data changed
+        id: check
+        run: |
+          git diff --quiet public/data/ && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add public/data/
+          git commit -m "Auto-update MLS data $(date +'%Y-%m-%d')"
+          git push
