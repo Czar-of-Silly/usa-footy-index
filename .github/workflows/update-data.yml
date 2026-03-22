@@ -18,9 +18,6 @@ jobs:
     steps:
       - name: Checkout latest
         uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -39,15 +36,9 @@ jobs:
           cp data/mls-cache.json public/data/mls-cache.json
           cp data/mls-cache.json public/data/mls-cache-2026.json
 
-      - name: Commit and push if changed
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
-          git commit -m "Auto-update MLS data $(date +'%Y-%m-%d')"
-          git pull --rebase origin main
-          git push origin main
+      - name: Auto commit and push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update MLS data"
+          file_pattern: "public/data/*.json"
+          push_options: "--force-with-lease"
