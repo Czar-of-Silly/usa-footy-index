@@ -344,6 +344,15 @@ async function main() {
       _src: sources.join("+"),
       // Per-game match log (real ESPN boxscore data)
       matchLog: matchLogs[rp.name] || [],
+      // Mid-season transfer detection
+      prevTeam: (()=>{
+        const logs = matchLogs[rp.name] || [];
+        if (!logs.length) return null;
+        const teams = [...new Set(logs.map(m => m.team).filter(Boolean))];
+        // If they played for multiple teams, the one that isn't their current team is previous
+        const prev = teams.filter(t => t !== rp.team);
+        return prev.length > 0 ? prev[0] : null;
+      })(),
     });
   }
 
