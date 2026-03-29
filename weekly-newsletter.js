@@ -12,8 +12,10 @@ const fs = require("fs");
 const path = require("path");
 
 // ── CONFIG ──────────────────────────────────────────────────────────────
-const CACHE_PATH = path.join(__dirname, "data", "mls-cache.json");
-const OUTPUT_PATH = path.join(__dirname, "data", "newsletter-latest.html");
+const CACHE_PATH_1 = path.join(__dirname, "public", "data", "mls-cache.json");
+const CACHE_PATH_2 = path.join(__dirname, "data", "mls-cache.json");
+const CACHE_PATH = fs.existsSync(CACHE_PATH_1) ? CACHE_PATH_1 : CACHE_PATH_2;
+const OUTPUT_PATH = path.join(__dirname, "public", "data", "newsletter-latest.html");
 const CLAUDE_MODEL = "claude-sonnet-4-20250514";
 const API_KEY = process.env.ANTHROPIC_API_KEY || "";
 

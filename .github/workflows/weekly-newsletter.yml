@@ -18,22 +18,17 @@ jobs:
 
       - run: npm install
 
-      # First run the data fetch to make sure cache is fresh
-      - name: Fetch latest data
-        run: node fetch-data.js
-        timeout-minutes: 20
-
-      # Generate the newsletter
+      # Generate the newsletter from existing cache data
       - name: Generate newsletter
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node weekly-newsletter.js
 
-      # Commit the generated newsletter + updated cache
+      # Commit the generated newsletter
       - name: Commit newsletter
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || git commit -m "📰 Weekly newsletter MW$(date +%V) + data update"
+          git diff --cached --quiet || git commit -m "📰 Weekly newsletter $(date +%Y-%m-%d)"
           git push
