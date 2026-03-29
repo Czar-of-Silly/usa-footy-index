@@ -1572,6 +1572,75 @@ function MLSAnalytics(){
               ))}
             </div>
 
+            {/* What Changed — Biggest Movers */}
+            {(()=>{
+              const movers=filtered.filter(p=>{
+                const pl=players.find(x=>x.id===p.id);
+                return pl&&pl.matchLog&&pl.matchLog.length>=3;
+              }).map(p=>{
+                const pl=players.find(x=>x.id===p.id);
+                const logs=pl.matchLog;
+                const rateGame=(m)=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));};
+                const allRatings=logs.map(rateGame);
+                const recent=allRatings.slice(-2);
+                const prior=allRatings.slice(0,-2);
+                if(prior.length<1)return null;
+                const recentAvg=Math.round(recent.reduce((s,v)=>s+v,0)/recent.length);
+                const priorAvg=Math.round(prior.reduce((s,v)=>s+v,0)/prior.length);
+                const delta=recentAvg-priorAvg;
+                // What context? Goals/assists in recent games
+                const recentLogs=logs.slice(-2);
+                const recentG=recentLogs.reduce((s,m)=>s+(m.g||0),0);
+                const recentA=recentLogs.reduce((s,m)=>s+(m.a||0),0);
+                let context="";
+                if(recentG>0)context+=`${recentG}G `;
+                if(recentA>0)context+=`${recentA}A `;
+                if(!context&&delta>0)context="Strong all-around ";
+                if(!context&&delta<0)context="Quiet stretch ";
+                return{...p,...pl,delta,recentAvg,priorAvg,context:context.trim()};
+              }).filter(Boolean);
+              if(movers.length<6)return null;
+              const risers=[...movers].filter(m=>m.delta>0).sort((a,b)=>b.delta-a.delta).slice(0,3);
+              const fallers=[...movers].filter(m=>m.delta<0).sort((a,b)=>a.delta-b.delta).slice(0,3);
+              if(!risers.length&&!fallers.length)return null;
+              return <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"16px 20px",marginBottom:20}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink}}>What Changed</div>
+                    <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Biggest recent movers — last 2 games vs prior form</div>
+                  </div>
+                </div>
+                <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+                  {risers.length>0&&<div>
+                    <div style={{fontSize:8,color:T.green,fontWeight:700,letterSpacing:1.5,fontFamily:T.sans,marginBottom:8}}>↑ RISING</div>
+                    {risers.map((p,i)=>(
+                      <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:4,cursor:"pointer",marginBottom:4}}>
+                        <TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink}}>{p.name}</div>
+                          <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{p.context}</div>
+                        </div>
+                        <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.green}}>+{p.delta}</div>
+                      </div>
+                    ))}
+                  </div>}
+                  {fallers.length>0&&<div>
+                    <div style={{fontSize:8,color:T.red,fontWeight:700,letterSpacing:1.5,fontFamily:T.sans,marginBottom:8}}>↓ FALLING</div>
+                    {fallers.map((p,i)=>(
+                      <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:4,cursor:"pointer",marginBottom:4}}>
+                        <TeamBadge abbr={p.team} size={24} logo={p.teamLogo}/>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink}}>{p.name}</div>
+                          <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{p.context}</div>
+                        </div>
+                        <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.red}}>{p.delta}</div>
+                      </div>
+                    ))}
+                  </div>}
+                </div>
+              </div>;
+            })()}
+
             {/* Top 3 Season Rated */}
             {srView==="table"&&top3.length>=3&&<div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
               {top3.map((p,i)=>(
@@ -2085,6 +2154,61 @@ function MLSAnalytics(){
               </div>
             </div>;
           })()}
+          {/* Power Rankings — composite algorithm */}
+          {enrichedTeams.length>0&&(()=>{
+            const stMap={};standingsData.forEach(s=>{stMap[s.team]=s;});
+            // Power score: 50% normalized points + 30% team OVR + 20% recent form
+            const maxPts=Math.max(...ranked.map(t=>t.pts),1);
+            const powerRanked=ranked.map(t=>{
+              const normPts=(t.pts/maxPts)*100;
+              const normGrade=t.overall||50;
+              // Recent form from matchesData
+              const teamMatches=[...matchesData].filter(m=>m.completed&&(m.home===t.abbr||m.away===t.abbr)).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,5);
+              let formPts=0;
+              teamMatches.forEach(m=>{
+                const hs=+(m.homeScore||0),as=+(m.awayScore||0);
+                const isHome=m.home===t.abbr;
+                const won=isHome?(hs>as):(as>hs);
+                const drew=hs===as;
+                formPts+=won?3:drew?1:0;
+              });
+              const formScore=teamMatches.length>0?(formPts/(teamMatches.length*3))*100:50;
+              const power=Math.round(normPts*.50+normGrade*.30+formScore*.20);
+              // Movement arrow: compare power rank to pure points rank
+              return{...t,power,formScore:Math.round(formScore),recentRecord:teamMatches.length};
+            }).sort((a,b)=>b.power-a.power).map((t,i)=>({...t,powerRank:i+1}));
+            // Compute movement vs points rank
+            powerRanked.forEach(t=>{
+              const ptsRank=ranked.findIndex(r=>r.abbr===t.abbr)+1;
+              t.movement=ptsRank-t.powerRank; // positive = ranked higher than standings
+            });
+            return <div style={{marginBottom:20,background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+              <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div>
+                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>Power Rankings</div>
+                  <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Composite score: 50% points + 30% team grade + 20% recent form</div>
+                </div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:0}}>
+                {powerRanked.slice(0,12).map((t,i)=>(
+                  <div key={t.abbr} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 16px",borderBottom:`1px solid ${T.borderLt}`,borderRight:`1px solid ${T.borderLt}`,background:i<3?T.card:"transparent"}}>
+                    <span style={{fontFamily:T.display,fontWeight:900,fontSize:i<3?22:16,color:i<3?T.gold:i<6?T.green:T.textDim,width:24,textAlign:"center"}}>{t.powerRank}</span>
+                    <span style={{fontSize:12,width:24,textAlign:"center",fontFamily:T.mono,fontWeight:700,color:t.movement>0?T.green:t.movement<0?T.red:T.textMute}}>{t.movement>0?`↑${t.movement}`:t.movement<0?`↓${Math.abs(t.movement)}`:"—"}</span>
+                    <TeamBadge abbr={t.abbr} size={26} logo={teamLogos[t.abbr]}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontFamily:T.serif,fontWeight:700,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</div>
+                      <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{t.w}-{t.dr}-{t.l} · {t.pts} pts</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:gc(t.power)}}>{t.power}</div>
+                      <div style={{fontSize:7,color:T.textMute,fontFamily:T.sans}}>PWR</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>;
+          })()}
+
           <div style={{display:"grid",gridTemplateColumns:"40px 44px 220px 70px 100px 80px 44px 44px 44px 44px 1fr",padding:"8px 16px",fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:.8,fontFamily:T.sans,textTransform:"uppercase",borderBottom:`1px solid ${T.border}`}}>
             <div style={{textAlign:"center"}}>#</div><div></div><div>Team</div><div style={{textAlign:"center"}}>Record</div><div style={{textAlign:"center"}}>Pts / GD</div><div style={{textAlign:"center"}}>GF / GA</div><div style={{textAlign:"center"}}>OVR</div><div style={{textAlign:"center"}}>ATT</div><div style={{textAlign:"center"}}>PAS</div><div style={{textAlign:"center"}}>DEF</div><div style={{textAlign:"right"}}>Best Player</div>
           </div>
@@ -2279,6 +2403,72 @@ function MLSAnalytics(){
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>;
+          })()}
+
+          {/* ── BREAKOUT PLAYERS: Heating Up / Cooling Down ── */}
+          {(()=>{
+            // Compare last-5 form to season average
+            const withForm=players.filter(p=>p.matchLog&&p.matchLog.length>=5).map(p=>{
+              const logs=p.matchLog;
+              const rateGame=(m)=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));};
+              const allRatings=logs.map(rateGame);
+              const last5=allRatings.slice(-5);
+              const seasonAvg=Math.round(allRatings.reduce((s,v)=>s+v,0)/allRatings.length);
+              const formAvg=Math.round(last5.reduce((s,v)=>s+v,0)/last5.length);
+              const delta=formAvg-seasonAvg;
+              return{...p,formAvg,seasonAvg,delta};
+            });
+            if(withForm.length<10)return null;
+            const heating=[...withForm].sort((a,b)=>b.delta-a.delta).slice(0,5);
+            const cooling=[...withForm].sort((a,b)=>a.delta-b.delta).slice(0,5);
+            return <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:24}}>
+              {/* Heating Up */}
+              <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+                <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:18}}>🔥</span>
+                  <div>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink}}>Heating Up</div>
+                    <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Last 5 matches well above season average</div>
+                  </div>
+                </div>
+                {heating.map((p,i)=>(
+                  <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
+                    <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+                      <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.green}}>↑{p.delta}</div>
+                      <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>{p.formAvg} form · {p.seasonAvg} szn</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Cooling Down */}
+              <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+                <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:18}}>❄️</span>
+                  <div>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink}}>Cooling Down</div>
+                    <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Last 5 matches well below season average</div>
+                  </div>
+                </div>
+                {cooling.map((p,i)=>(
+                  <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
+                    <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+                      <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.red}}>↓{Math.abs(p.delta)}</div>
+                      <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>{p.formAvg} form · {p.seasonAvg} szn</div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>;
           })()}
