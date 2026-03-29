@@ -865,6 +865,7 @@ function MLSAnalytics(){
   const[h2hHome,setH2hHome]=useState("");
   const[h2hAway,setH2hAway]=useState("");
   const[totwWeek,setTotwWeek]=useState(0); // 0 = latest
+  const[leadersView,setLeadersView]=useState("overview"); // overview, bestxi, totw, movers
   const addCompare=(p)=>{if(comparePlayers.length<3&&!comparePlayers.find(c=>c.id===p.id))setComparePlayers(prev=>[...prev,p]);};
   const removeCompare=(id)=>setComparePlayers(prev=>prev.filter(p=>p.id!==id));
 
@@ -2242,239 +2243,22 @@ function MLSAnalytics(){
           const xiAvg=xi.length?Math.round(xi.reduce((s,x)=>s+x.p.overall,0)/xi.length):0;
 
           return <div style={{animation:"fadeUp .4s ease"}}>
-          <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5,marginBottom:4}}>Season Leaders</div>
-          <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginBottom:20}}>Top 5 players across key statistical categories. Golden Boot, assists, tackles, dribbles, and more — the best at each discipline.</div>
-
-          {/* Best XI */}
-          {xi.length>=11&&<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden",marginBottom:24}}>
-            <div style={{padding:"16px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div>
-                <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>Best XI</div>
-                <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>Top-graded player at each position · 4-3-3 formation</div>
-              </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontFamily:T.display,fontWeight:700,fontSize:24,color:gc(xiAvg)}}>{xiAvg}</div>
-                <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:.8}}>AVG GRADE</div>
-              </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:16,flexWrap:"wrap",gap:10}}>
+            <div>
+              <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Season Leaders</div>
+              <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Top performers, formations, and weekly highlights across the MLS season.</div>
             </div>
-            <div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden",borderRadius:"0 0 8px 8px"}}>
-              {/* Pitch lines */}
-              <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:4}}/>
-              <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
-              <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
-              <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
-              {/* Penalty boxes */}
-              <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
-              <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
-              {/* Player dots */}
-              {xi.map(s=>(
-                <div key={s.slot} className="pitch-dot" onClick={()=>setSel(s.p)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
-                  <div style={{width:52,height:52,borderRadius:"50%",background:`rgba(0,0,0,.55)`,border:`3px solid ${gc(s.p.overall)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:`0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)`}}>
-                    <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.p.overall}</span>
-                  </div>
-                  <div style={{marginTop:4,padding:"2px 8px",background:"rgba(0,0,0,.5)",borderRadius:3,display:"inline-block",backdropFilter:"blur(4px)"}}>
-                    <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:"#fff",whiteSpace:"nowrap",letterSpacing:.3}}>{s.p.name.split(" ").slice(-1)[0]}</div>
-                  </div>
-                  <div style={{fontSize:9,color:"rgba(255,255,255,.8)",fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.p.team}</div>
-                </div>
-              ))}
-            </div>
-          </div>}
+          </div>
 
-          {/* ── TEAM OF THE WEEK ── */}
-          {(()=>{
-            // Group all player match logs by date to create matchweeks
-            const allLogs=[];
-            players.forEach(pl=>{
-              (pl.matchLog||[]).forEach(m=>{
-                if(!m.date)return;
-                const dateKey=m.date.slice(0,10);
-                // Compute per-game rating
-                let rating=55;
-                rating+=(m.g||0)*12;rating+=(m.a||0)*8;rating+=(m.sot||0)*2;
-                rating+=(m.sh||0)*0.5;rating-=(m.fl||0)*1;rating-=(m.yc||0)*3;
-                rating-=(m.rc||0)*10;rating+=(m.mins||0)>=80?3:(m.mins||0)>=45?2:1;
-                rating=Math.max(42,Math.min(99,Math.round(rating)));
-                allLogs.push({player:pl,dateKey,rating,...m});
-              });
-            });
-            if(allLogs.length<11)return null;
-            // Group by date into matchweeks
-            const byDate={};allLogs.forEach(l=>{if(!byDate[l.dateKey])byDate[l.dateKey]=[];byDate[l.dateKey].push(l);});
-            // Merge adjacent dates (within 2 days) into matchweeks
-            const dateKeys=Object.keys(byDate).sort();
-            const weeks=[];let current=[];
-            dateKeys.forEach((dk,i)=>{
-              current.push(dk);
-              const next=dateKeys[i+1];
-              if(!next||new Date(next)-new Date(dk)>3*86400000){
-                weeks.push({dates:[...current],logs:current.flatMap(d=>byDate[d])});
-                current=[];
-              }
-            });
-            if(!weeks.length)return null;
-            // Selected week
-            const weekIdx=totwWeek===0?weeks.length-1:Math.min(totwWeek-1,weeks.length-1);
-            const week=weeks[weekIdx];
-            if(!week||week.logs.length<6)return null;
-            // Best player per position from this week's logs
-            const bestAt=(positions)=>{
-              const eligible=week.logs.filter(l=>positions.includes(l.player.position));
-              if(!eligible.length)return null;
-              eligible.sort((a,b)=>b.rating-a.rating);
-              // Deduplicate by player
-              const seen=new Set();
-              return eligible.filter(l=>{if(seen.has(l.player.id))return false;seen.add(l.player.id);return true;});
-            };
-            const fwLogs=bestAt(["Forward","FW"])||[];
-            const mfLogs=bestAt(["Midfielder","MF"])||[];
-            const dfLogs=bestAt(["Defender","DF","DEF"])||[];
-            const gkLogs=bestAt(["GK","Goalkeeper"])||[];
-            const totwXi=[
-              {slot:"LW",l:fwLogs[0],x:15,y:18},{slot:"ST",l:fwLogs[1]||fwLogs[0],x:50,y:10},{slot:"RW",l:fwLogs[2]||fwLogs[0],x:85,y:18},
-              {slot:"LCM",l:mfLogs[0],x:25,y:42},{slot:"CM",l:mfLogs[1]||mfLogs[0],x:50,y:36},{slot:"RCM",l:mfLogs[2]||mfLogs[0],x:75,y:42},
-              {slot:"LB",l:dfLogs[0],x:12,y:65},{slot:"LCB",l:dfLogs[1]||dfLogs[0],x:35,y:68},{slot:"RCB",l:dfLogs[2]||dfLogs[0],x:65,y:68},{slot:"RB",l:dfLogs[3]||dfLogs[0],x:88,y:65},
-              {slot:"GK",l:gkLogs[0],x:50,y:90},
-            ].filter(s=>s.l);
-            const totwAvg=totwXi.length?Math.round(totwXi.reduce((s,t)=>s+t.l.rating,0)/totwXi.length):0;
-            const weekLabel=(()=>{
-              const d1=new Date(week.dates[0]+"T12:00:00Z");
-              const d2=week.dates.length>1?new Date(week.dates[week.dates.length-1]+"T12:00:00Z"):d1;
-              const fmt=(d)=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
-              return week.dates.length>1?`${fmt(d1)} – ${fmt(d2)}`:fmt(d1);
-            })();
-            // Top performers list (top 5 ratings across all positions)
-            const topPerf=[...week.logs].sort((a,b)=>b.rating-a.rating);
-            const seenIds=new Set();const topUnique=topPerf.filter(l=>{if(seenIds.has(l.player.id))return false;seenIds.add(l.player.id);return true;}).slice(0,5);
+          {/* Sub-view pills */}
+          <div style={{display:"flex",gap:6,marginBottom:20,flexWrap:"wrap"}}>
+            {[{id:"overview",l:"Stat Leaders"},{id:"bestxi",l:"Best XI"},{id:"totw",l:"Team of the Week"},{id:"movers",l:"Movers"}].map(v=>(
+              <button key={v.id} onClick={()=>setLeadersView(v.id)} style={{background:leadersView===v.id?T.ink:"transparent",color:leadersView===v.id?T.bg:T.textDim,border:`1px solid ${leadersView===v.id?T.ink:T.border}`,padding:"7px 18px",borderRadius:4,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.5,transition:"all .15s"}}>{v.l}</button>
+            ))}
+          </div>
 
-            return <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden",marginBottom:24}}>
-              <div style={{padding:"16px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
-                <div>
-                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>Team of the Week</div>
-                  <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>Best per-match ratings · Matchweek {weekIdx+1} · {weekLabel}</div>
-                </div>
-                <div style={{display:"flex",alignItems:"center",gap:6}}>
-                  <button onClick={()=>setTotwWeek(Math.max(1,weekIdx))} disabled={weekIdx<=0} style={{background:"none",border:`1px solid ${weekIdx<=0?T.borderLt:T.border}`,borderRadius:4,color:weekIdx<=0?T.textMute:T.ink,width:28,height:28,cursor:weekIdx<=0?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>‹</button>
-                  <span style={{fontFamily:T.mono,fontSize:12,fontWeight:600,color:T.textDim,minWidth:50,textAlign:"center"}}>MW {weekIdx+1}</span>
-                  <button onClick={()=>setTotwWeek(Math.min(weeks.length,weekIdx+2))} disabled={weekIdx>=weeks.length-1} style={{background:"none",border:`1px solid ${weekIdx>=weeks.length-1?T.borderLt:T.border}`,borderRadius:4,color:weekIdx>=weeks.length-1?T.textMute:T.ink,width:28,height:28,cursor:weekIdx>=weeks.length-1?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>›</button>
-                </div>
-              </div>
-
-              {/* Formation pitch */}
-              {totwXi.length>=8&&<div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden"}}>
-                <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:4}}/>
-                <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
-                <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
-                <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
-                <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
-                <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
-                {/* Matchweek badge */}
-                <div style={{position:"absolute",top:12,left:"50%",transform:"translateX(-50%)",padding:"4px 14px",background:"rgba(0,0,0,.5)",borderRadius:20,zIndex:3,backdropFilter:"blur(4px)"}}>
-                  <span style={{fontFamily:T.sans,fontWeight:700,fontSize:10,color:"#fff"}}>MW{weekIdx+1} · AVG {totwAvg}</span>
-                </div>
-                {totwXi.map(s=>(
-                  <div key={s.slot} className="pitch-dot" onClick={()=>setSel(s.l.player)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
-                    <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,.55)",border:`3px solid ${gc(s.l.rating)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
-                      <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.l.rating}</span>
-                    </div>
-                    <div style={{marginTop:4,padding:"2px 8px",background:"rgba(0,0,0,.5)",borderRadius:3,display:"inline-block",backdropFilter:"blur(4px)"}}>
-                      <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:"#fff",whiteSpace:"nowrap"}}>{s.l.player.name.split(" ").slice(-1)[0]}</div>
-                    </div>
-                    <div style={{fontSize:9,color:"rgba(255,255,255,.8)",fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.l.player.team}{s.l.g>0?` · ${s.l.g}G`:""}{s.l.a>0?` · ${s.l.a}A`:""}</div>
-                  </div>
-                ))}
-              </div>}
-
-              {/* Top performers list */}
-              <div style={{padding:"14px 22px",borderTop:`1px solid ${T.borderLt}`}}>
-                <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans,marginBottom:8}}>TOP PERFORMERS · MW{weekIdx+1}</div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:6}}>
-                  {topUnique.map((l,i)=>(
-                    <div key={l.player.id} onClick={()=>setSel(l.player)} className="rh" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:4,cursor:"pointer",border:`1px solid ${T.borderLt}`}}>
-                      <span style={{fontFamily:T.display,fontWeight:900,fontSize:14,color:i===0?T.gold:i<3?T.green:T.textMute,width:16}}>{i+1}</span>
-                      <TeamBadge abbr={l.player.team} size={22} logo={l.player.teamLogo}/>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{l.player.name}</div>
-                        <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{l.player.position} · {l.opp} ({l.ha}) · {l.g>0?`${l.g}G `:""}{ l.a>0?`${l.a}A `:""}{l.mins}'</div>
-                      </div>
-                      <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center",background:gb(l.rating),border:`1.5px solid ${gc(l.rating)}30`,borderRadius:5,padding:"2px 8px",minWidth:34}}>
-                        <span style={{color:gc(l.rating),fontWeight:700,fontSize:15,fontFamily:T.serif,lineHeight:1}}>{l.rating}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>;
-          })()}
-
-          {/* ── BREAKOUT PLAYERS: Heating Up / Cooling Down ── */}
-          {(()=>{
-            // Compare last-5 form to season average
-            const withForm=players.filter(p=>p.matchLog&&p.matchLog.length>=5).map(p=>{
-              const logs=p.matchLog;
-              const rateGame=(m)=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));};
-              const allRatings=logs.map(rateGame);
-              const last5=allRatings.slice(-5);
-              const seasonAvg=Math.round(allRatings.reduce((s,v)=>s+v,0)/allRatings.length);
-              const formAvg=Math.round(last5.reduce((s,v)=>s+v,0)/last5.length);
-              const delta=formAvg-seasonAvg;
-              return{...p,formAvg,seasonAvg,delta};
-            });
-            if(withForm.length<10)return null;
-            const heating=[...withForm].filter(p=>p.delta>=3).sort((a,b)=>b.delta-a.delta).slice(0,5);
-            const cooling=[...withForm].filter(p=>p.delta<=-3).sort((a,b)=>a.delta-b.delta).slice(0,5);
-            if(!heating.length&&!cooling.length)return null;
-            return <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:24}}>
-              {/* Heating Up */}
-              <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
-                <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:8}}>
-                  <span style={{fontSize:18}}>🔥</span>
-                  <div>
-                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink}}>Heating Up</div>
-                    <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Last 5 matches well above season average</div>
-                  </div>
-                </div>
-                {heating.map((p,i)=>(
-                  <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
-                    <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
-                      <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
-                    </div>
-                    <div style={{textAlign:"right"}}>
-                      <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.green}}>↑{p.delta}</div>
-                      <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>{p.formAvg} form · {p.seasonAvg} szn</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {/* Cooling Down */}
-              <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
-                <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:8}}>
-                  <span style={{fontSize:18}}>❄️</span>
-                  <div>
-                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink}}>Cooling Down</div>
-                    <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Last 5 matches well below season average</div>
-                  </div>
-                </div>
-                {cooling.map((p,i)=>(
-                  <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
-                    <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
-                      <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
-                    </div>
-                    <div style={{textAlign:"right"}}>
-                      <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.red}}>↓{Math.abs(p.delta)}</div>
-                      <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>{p.formAvg} form · {p.seasonAvg} szn</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>;
-          })()}
-
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:14}}>
+          {/* ═══ OVERVIEW: Stat Leader Categories ═══ */}
+          {leadersView==="overview"&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:14}}>
             {leaders.map(cat=>(
               <div key={cat.k} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
                 <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:10}}>
@@ -2498,7 +2282,218 @@ function MLSAnalytics(){
                 ))}
               </div>
             ))}
-          </div>
+          </div>}
+
+          {/* ═══ BEST XI ═══ */}
+          {leadersView==="bestxi"&&xi.length>=11&&<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+            <div style={{padding:"16px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>Best XI</div>
+                <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>Top-graded player at each position · 4-3-3 formation</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:24,color:gc(xiAvg)}}>{xiAvg}</div>
+                <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:.8}}>AVG GRADE</div>
+              </div>
+            </div>
+            <div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden",borderRadius:"0 0 8px 8px"}}>
+              <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:4}}/>
+              <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
+              <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
+              <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
+              <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
+              <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
+              {xi.map(s=>(
+                <div key={s.slot} className="pitch-dot" onClick={()=>setSel(s.p)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
+                  <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,.55)",border:`3px solid ${gc(s.p.overall)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
+                    <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.p.overall}</span>
+                  </div>
+                  <div style={{marginTop:4,padding:"2px 8px",background:"rgba(0,0,0,.5)",borderRadius:3,display:"inline-block",backdropFilter:"blur(4px)"}}>
+                    <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:"#fff",whiteSpace:"nowrap",letterSpacing:.3}}>{s.p.name.split(" ").slice(-1)[0]}</div>
+                  </div>
+                  <div style={{fontSize:9,color:"rgba(255,255,255,.8)",fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.p.team}</div>
+                </div>
+              ))}
+            </div>
+          </div>}
+
+          {/* ═══ TEAM OF THE WEEK ═══ */}
+          {leadersView==="totw"&&(()=>{
+            const allLogs=[];
+            players.forEach(pl=>{
+              (pl.matchLog||[]).forEach(m=>{
+                if(!m.date)return;
+                const dateKey=m.date.slice(0,10);
+                let rating=55;
+                rating+=(m.g||0)*12;rating+=(m.a||0)*8;rating+=(m.sot||0)*2;
+                rating+=(m.sh||0)*0.5;rating-=(m.fl||0)*1;rating-=(m.yc||0)*3;
+                rating-=(m.rc||0)*10;rating+=(m.mins||0)>=80?3:(m.mins||0)>=45?2:1;
+                rating=Math.max(42,Math.min(99,Math.round(rating)));
+                allLogs.push({player:pl,dateKey,rating,...m});
+              });
+            });
+            if(allLogs.length<11)return <div style={{padding:40,textAlign:"center",color:T.textMute,fontFamily:T.sans}}>Match log data needed — run <code>npm run fetch</code> with v5 script to populate.</div>;
+            const byDate={};allLogs.forEach(l=>{if(!byDate[l.dateKey])byDate[l.dateKey]=[];byDate[l.dateKey].push(l);});
+            const dateKeys=Object.keys(byDate).sort();
+            const weeks=[];let current=[];
+            dateKeys.forEach((dk,i)=>{
+              current.push(dk);
+              const next=dateKeys[i+1];
+              if(!next||new Date(next)-new Date(dk)>3*86400000){
+                weeks.push({dates:[...current],logs:current.flatMap(d=>byDate[d])});
+                current=[];
+              }
+            });
+            if(!weeks.length)return null;
+            const weekIdx=totwWeek===0?weeks.length-1:Math.min(totwWeek-1,weeks.length-1);
+            const week=weeks[weekIdx];
+            if(!week||week.logs.length<6)return null;
+            const bestAt=(positions)=>{
+              const eligible=week.logs.filter(l=>positions.includes(l.player.position));
+              if(!eligible.length)return null;
+              eligible.sort((a,b)=>b.rating-a.rating);
+              const seen=new Set();
+              return eligible.filter(l=>{if(seen.has(l.player.id))return false;seen.add(l.player.id);return true;});
+            };
+            const fwLogs=bestAt(["Forward","FW"])||[];
+            const mfLogs=bestAt(["Midfielder","MF"])||[];
+            const dfLogs=bestAt(["Defender","DF","DEF"])||[];
+            const gkLogs=bestAt(["GK","Goalkeeper"])||[];
+            const totwXi=[
+              {slot:"LW",l:fwLogs[0],x:15,y:18},{slot:"ST",l:fwLogs[1]||fwLogs[0],x:50,y:10},{slot:"RW",l:fwLogs[2]||fwLogs[0],x:85,y:18},
+              {slot:"LCM",l:mfLogs[0],x:25,y:42},{slot:"CM",l:mfLogs[1]||mfLogs[0],x:50,y:36},{slot:"RCM",l:mfLogs[2]||mfLogs[0],x:75,y:42},
+              {slot:"LB",l:dfLogs[0],x:12,y:65},{slot:"LCB",l:dfLogs[1]||dfLogs[0],x:35,y:68},{slot:"RCB",l:dfLogs[2]||dfLogs[0],x:65,y:68},{slot:"RB",l:dfLogs[3]||dfLogs[0],x:88,y:65},
+              {slot:"GK",l:gkLogs[0],x:50,y:90},
+            ].filter(s=>s.l);
+            const totwAvg=totwXi.length?Math.round(totwXi.reduce((s,t)=>s+t.l.rating,0)/totwXi.length):0;
+            const weekLabel=(()=>{
+              const d1=new Date(week.dates[0]+"T12:00:00Z");
+              const d2=week.dates.length>1?new Date(week.dates[week.dates.length-1]+"T12:00:00Z"):d1;
+              const fmt=(d)=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+              return week.dates.length>1?`${fmt(d1)} – ${fmt(d2)}`:fmt(d1);
+            })();
+            const topPerf=[...week.logs].sort((a,b)=>b.rating-a.rating);
+            const seenIds=new Set();const topUnique=topPerf.filter(l=>{if(seenIds.has(l.player.id))return false;seenIds.add(l.player.id);return true;}).slice(0,5);
+            return <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+              <div style={{padding:"16px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+                <div>
+                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>Team of the Week</div>
+                  <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>Best per-match ratings · Matchweek {weekIdx+1} · {weekLabel}</div>
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <button onClick={()=>setTotwWeek(Math.max(1,weekIdx))} disabled={weekIdx<=0} style={{background:"none",border:`1px solid ${weekIdx<=0?T.borderLt:T.border}`,borderRadius:4,color:weekIdx<=0?T.textMute:T.ink,width:28,height:28,cursor:weekIdx<=0?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>‹</button>
+                  <span style={{fontFamily:T.mono,fontSize:12,fontWeight:600,color:T.textDim,minWidth:50,textAlign:"center"}}>MW {weekIdx+1}</span>
+                  <button onClick={()=>setTotwWeek(Math.min(weeks.length,weekIdx+2))} disabled={weekIdx>=weeks.length-1} style={{background:"none",border:`1px solid ${weekIdx>=weeks.length-1?T.borderLt:T.border}`,borderRadius:4,color:weekIdx>=weeks.length-1?T.textMute:T.ink,width:28,height:28,cursor:weekIdx>=weeks.length-1?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>›</button>
+                </div>
+              </div>
+              {totwXi.length>=8&&<div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden"}}>
+                <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:4}}/>
+                <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
+                <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
+                <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
+                <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
+                <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
+                <div style={{position:"absolute",top:12,left:"50%",transform:"translateX(-50%)",padding:"4px 14px",background:"rgba(0,0,0,.5)",borderRadius:20,zIndex:3,backdropFilter:"blur(4px)"}}>
+                  <span style={{fontFamily:T.sans,fontWeight:700,fontSize:10,color:"#fff"}}>MW{weekIdx+1} · AVG {totwAvg}</span>
+                </div>
+                {totwXi.map(s=>(
+                  <div key={s.slot} className="pitch-dot" onClick={()=>setSel(s.l.player)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
+                    <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,.55)",border:`3px solid ${gc(s.l.rating)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
+                      <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.l.rating}</span>
+                    </div>
+                    <div style={{marginTop:4,padding:"2px 8px",background:"rgba(0,0,0,.5)",borderRadius:3,display:"inline-block",backdropFilter:"blur(4px)"}}>
+                      <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:"#fff",whiteSpace:"nowrap"}}>{s.l.player.name.split(" ").slice(-1)[0]}</div>
+                    </div>
+                    <div style={{fontSize:9,color:"rgba(255,255,255,.8)",fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.l.player.team}{s.l.g>0?` · ${s.l.g}G`:""}{s.l.a>0?` · ${s.l.a}A`:""}</div>
+                  </div>
+                ))}
+              </div>}
+              <div style={{padding:"14px 22px",borderTop:`1px solid ${T.borderLt}`}}>
+                <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans,marginBottom:8}}>TOP PERFORMERS · MW{weekIdx+1}</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:6}}>
+                  {topUnique.map((l,i)=>(
+                    <div key={l.player.id} onClick={()=>setSel(l.player)} className="rh" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:4,cursor:"pointer",border:`1px solid ${T.borderLt}`}}>
+                      <span style={{fontFamily:T.display,fontWeight:900,fontSize:14,color:i===0?T.gold:i<3?T.green:T.textMute,width:16}}>{i+1}</span>
+                      <TeamBadge abbr={l.player.team} size={22} logo={l.player.teamLogo}/>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{l.player.name}</div>
+                        <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{l.player.position} · {l.opp} ({l.ha}) · {l.g>0?`${l.g}G `:""}{ l.a>0?`${l.a}A `:""}{l.mins}'</div>
+                      </div>
+                      <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center",background:gb(l.rating),border:`1.5px solid ${gc(l.rating)}30`,borderRadius:5,padding:"2px 8px",minWidth:34}}>
+                        <span style={{color:gc(l.rating),fontWeight:700,fontSize:15,fontFamily:T.serif,lineHeight:1}}>{l.rating}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>;
+          })()}
+
+          {/* ═══ MOVERS: Heating Up / Cooling Down ═══ */}
+          {leadersView==="movers"&&(()=>{
+            const withForm=players.filter(p=>p.matchLog&&p.matchLog.length>=5).map(p=>{
+              const logs=p.matchLog;
+              const rateGame=(m)=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));};
+              const allRatings=logs.map(rateGame);
+              const last5=allRatings.slice(-5);
+              const seasonAvg=Math.round(allRatings.reduce((s,v)=>s+v,0)/allRatings.length);
+              const formAvg=Math.round(last5.reduce((s,v)=>s+v,0)/last5.length);
+              const delta=formAvg-seasonAvg;
+              return{...p,formAvg,seasonAvg,delta};
+            });
+            if(withForm.length<5)return <div style={{padding:40,textAlign:"center",color:T.textMute,fontFamily:T.sans}}>Not enough match data yet — movers will appear once players have 5+ games.</div>;
+            const heating=[...withForm].filter(p=>p.delta>=3).sort((a,b)=>b.delta-a.delta).slice(0,8);
+            const cooling=[...withForm].filter(p=>p.delta<=-3).sort((a,b)=>a.delta-b.delta).slice(0,8);
+            if(!heating.length&&!cooling.length)return <div style={{padding:40,textAlign:"center",color:T.textMute,fontFamily:T.sans}}>No significant movers yet — check back after more matchweeks.</div>;
+            return <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+                <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:18}}>🔥</span>
+                  <div>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink}}>Heating Up</div>
+                    <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Last 5 matches well above season average</div>
+                  </div>
+                </div>
+                {heating.map((p,i)=>(
+                  <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
+                    <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+                      <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.green}}>↑{p.delta}</div>
+                      <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>{p.formAvg} form · {p.seasonAvg} szn</div>
+                    </div>
+                  </div>
+                ))}
+                {!heating.length&&<div style={{padding:16,textAlign:"center",color:T.textMute,fontSize:11,fontFamily:T.sans}}>No players heating up right now</div>}
+              </div>
+              <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+                <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:18}}>❄️</span>
+                  <div>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink}}>Cooling Down</div>
+                    <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Last 5 matches well below season average</div>
+                  </div>
+                </div>
+                {cooling.map((p,i)=>(
+                  <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
+                    <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+                      <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.red}}>↓{Math.abs(p.delta)}</div>
+                      <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>{p.formAvg} form · {p.seasonAvg} szn</div>
+                    </div>
+                  </div>
+                ))}
+                {!cooling.length&&<div style={{padding:16,textAlign:"center",color:T.textMute,fontSize:11,fontFamily:T.sans}}>No players cooling down right now</div>}
+              </div>
+            </div>;
+          })()}
         </div>;})()}
 
         {/* ═══ VALUES ════════════════════════════════════════════════════════ */}
