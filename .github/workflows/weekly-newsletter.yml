@@ -2,9 +2,8 @@ name: Weekly Newsletter
 
 on:
   schedule:
-    # Every Tuesday at 10:00 AM EST (15:00 UTC)
     - cron: '0 15 * * 2'
-  workflow_dispatch: # Manual trigger
+  workflow_dispatch:
 
 jobs:
   generate:
@@ -18,17 +17,16 @@ jobs:
 
       - run: npm install
 
-      # Generate the newsletter from existing cache data
       - name: Generate newsletter
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node weekly-newsletter.js
 
-      # Commit the generated newsletter
       - name: Commit newsletter
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git diff --cached --quiet || git commit -m "📰 Weekly newsletter $(date +%Y-%m-%d)"
+          git pull origin main --no-rebase || true
           git push
