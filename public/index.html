@@ -1159,6 +1159,7 @@ function MLSAnalytics(){
       {k:"dribbles",l:"Dribbler",icon:"💨",unit:"",desc:"Most successful dribbles"},
       {k:"pressures",l:"Presser",icon:"⚡",unit:"",desc:"Most pressures applied"},
       {k:"sca",l:"Creator",icon:"✨",unit:"",desc:"Most shot-creating actions"},
+      {k:"saves",l:"Shot Stopper",icon:"🧤",unit:"",desc:"Most saves · Goalkeepers only"},
     ];
     return cats.map(c=>{const sorted=[...players].filter(p=>parseFloat(p[c.k])>0).sort((a,b)=>(parseFloat(b[c.k])||0)-(parseFloat(a[c.k])||0));return{...c,top:sorted.slice(0,5)};}).filter(c=>c.top.length>0);
   },[players]);
