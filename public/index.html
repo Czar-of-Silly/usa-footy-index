@@ -1232,6 +1232,8 @@ function MLSAnalytics(){
           .resp-pad{padding:16px!important}
           .resp-modal{max-width:100%!important;margin:8px!important;border-radius:8px!important}
           .resp-modal-stats{grid-template-columns:1fr 1fr!important}
+          .resp-pitch{padding-bottom:95%!important}
+          .resp-pitch .pitch-dot{transform:translate(-50%,-50%) scale(.85)!important}
           .resp-footer-cols{flex-direction:column!important;gap:16px!important}
         }
         @media(max-width:480px){
@@ -1239,6 +1241,8 @@ function MLSAnalytics(){
           .resp-grid4{grid-template-columns:1fr!important}
           .resp-h2h{grid-template-columns:1fr!important}
           .resp-season-strip>div{width:calc(50% - 4px)!important}
+          .resp-pitch{padding-bottom:110%!important}
+          .resp-pitch .pitch-dot{transform:translate(-50%,-50%) scale(.75)!important}
           .top-cards{flex-direction:column!important}
           .top-cards>div{min-width:100%!important}
           nav button{padding:6px 12px!important;font-size:9px!important;letter-spacing:0.3px!important}
@@ -2129,7 +2133,7 @@ function MLSAnalytics(){
                 <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:.8}}>AVG GRADE</div>
               </div>
             </div>
-            <div style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden",borderRadius:"0 0 8px 8px"}}>
+            <div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden",borderRadius:"0 0 8px 8px"}}>
               {/* Pitch lines */}
               <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:4}}/>
               <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
@@ -2140,7 +2144,7 @@ function MLSAnalytics(){
               <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
               {/* Player dots */}
               {xi.map(s=>(
-                <div key={s.slot} onClick={()=>setSel(s.p)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
+                <div key={s.slot} className="pitch-dot" onClick={()=>setSel(s.p)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
                   <div style={{width:52,height:52,borderRadius:"50%",background:`rgba(0,0,0,.55)`,border:`3px solid ${gc(s.p.overall)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:`0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)`}}>
                     <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.p.overall}</span>
                   </div>
@@ -2233,7 +2237,7 @@ function MLSAnalytics(){
               </div>
 
               {/* Formation pitch */}
-              {totwXi.length>=8&&<div style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden"}}>
+              {totwXi.length>=8&&<div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden"}}>
                 <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:4}}/>
                 <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
                 <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
@@ -2245,7 +2249,7 @@ function MLSAnalytics(){
                   <span style={{fontFamily:T.sans,fontWeight:700,fontSize:10,color:"#fff"}}>MW{weekIdx+1} · AVG {totwAvg}</span>
                 </div>
                 {totwXi.map(s=>(
-                  <div key={s.slot} onClick={()=>setSel(s.l.player)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
+                  <div key={s.slot} className="pitch-dot" onClick={()=>setSel(s.l.player)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
                     <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,.55)",border:`3px solid ${gc(s.l.rating)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
                       <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.l.rating}</span>
                     </div>
