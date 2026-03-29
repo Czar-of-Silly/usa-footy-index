@@ -29,7 +29,7 @@
   <script type="text/babel" data-type="module">
 const { useState, useEffect, useMemo, useRef } = React;
 const _RC = window.Recharts || window.recharts || {};
-const { BarChart, ResponsiveContainer, Cell } = _RC;
+const { BarChart, ResponsiveContainer, Cell, LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip: RTooltip } = _RC;
 const RBar = _RC.Bar;
 
 
@@ -86,21 +86,63 @@ function computeGrades(ps){
   const kp=v("kp90"),sca=v("sca90"),ftp=v("ftp90");
   const prs=v("prs90"),intc=v("intc90"),arl=v("arl90");
   const drb=v("drb90"),prgc=v("prgc90");
+
+  // GK-specific pools (only GKs compared to GKs)
+  const gks=ps.filter(p=>p.isGK);
+  const gkSv=gks.map(p=>p.sv90||0);
+  const gkCs=gks.map(p=>p.csRate||0);
+  const gkGa=gks.map(p=>p.gaCon90||0);
+  const gkPc=gks.map(p=>p.pc||0);
+  const gkPrs=gks.map(p=>p.prs90||0);
+  const gkArl=gks.map(p=>p.arl90||0);
+  const gkPrgp=gks.map(p=>p.prgp90||0);
+
   const o={};
   ps.forEach(p=>{
-    // Attack: xG/90 35%, xA/90 15%, Key Passes/90 25%, Shots on target (via sca90 proxy) 25%
-    const att=pct(xg,p.xg90)*.35+pct(xa,p.xa90)*.15+pct(kp,p.kp90)*.25+pct(sca,p.sca90)*.25;
-    // Passing: completion 30%, pass G+ 15%, final third passes/90 30%, key passes/90 25%
-    const pas=pct(pc,p.pc)*.30+pct(pg,p.pga)*.15+pct(ftp,p.ftp90)*.30+pct(kp,p.kp90)*.25;
-    // Defense: def G+ 25%, ball recovery/90 25%, interceptions/90 25%, aerials/90 25%
-    const def=pct(df,p.dga)*.25+pct(prs,p.prs90)*.25+pct(intc,p.intc90)*.25+pct(arl,p.arl90)*.25;
-    // Creativity: key passes/90 35%, big chances created/90 35%, xA/90 30%
-    const cre=pct(kp,p.kp90)*.35+pct(sca,p.sca90)*.35+pct(xa,p.xa90)*.30;
-    // Carrying: dribbles/90 50%, final third passes/90 30%, progressive carries/90 20%
-    const car=pct(drb,p.drb90)*.50+pct(ftp,p.ftp90)*.30+pct(prgc,p.prgc90)*.20;
-    // Overall: total G+ 30%, attack 20%, passing 15%, defense 15%, creativity 10%, carrying 10%
-    const ov=pct(ga,p.tga)*.3+att*.2+pas*.15+def*.15+cre*.1+car*.1;
-    o[p.id]={overall:toG(ov),attack:toG(att),passing:toG(pas),defense:toG(def),creativity:toG(cre),carrying:toG(car)};
+    if(p.isGK&&gks.length>=3){
+      // ── GK GRADING ──
+      // Shot-Stopping (mapped to "attack"): saves/90 60%, clean sheet rate 40%
+      const shotStop=pct(gkSv,p.sv90)*.60+pct(gkCs,p.csRate)*.40;
+      // Distribution (mapped to "passing"): pass completion 50%, progressive passes/90 50%
+      const dist=pct(gkPc,p.pc)*.50+pct(gkPrgp,p.prgp90)*.50;
+      // Command (mapped to "defense"): ball recovery/90 40%, aerials/90 40%, goals conceded/90 inverted 20%
+      const gcInv=gkGa.length>1?1-pct(gkGa,p.gaCon90):0.5; // lower GA = better
+      const command=pct(gkPrs,p.prs90)*.40+pct(gkArl,p.arl90)*.40+gcInv*.20;
+      // Sweeping (mapped to "creativity"): aerials/90 50%, interceptions/90 50%
+      const sweep=pct(gkArl,p.arl90)*.50+pct(v("intc90"),p.intc90)*.50;
+      // Handling (mapped to "carrying"): clean sheet rate 50%, saves/90 50%
+      const handling=pct(gkCs,p.csRate)*.50+pct(gkSv,p.sv90)*.50;
+      // GK Overall: shot-stopping 35%, command 25%, distribution 20%, sweeping 10%, handling 10%
+      const gkOv=shotStop*.35+command*.25+dist*.20+sweep*.10+handling*.10;
+      o[p.id]={overall:toG(gkOv),attack:toG(shotStop),passing:toG(dist),defense:toG(command),creativity:toG(sweep),carrying:toG(handling),isGK:true};
+    } else {
+      // ── OUTFIELD GRADING ──
+      // Sub-grades: universal, same formula for all positions
+      const att=pct(xg,p.xg90)*.35+pct(xa,p.xa90)*.15+pct(kp,p.kp90)*.25+pct(sca,p.sca90)*.25;
+      const pas=pct(pc,p.pc)*.30+pct(pg,p.pga)*.15+pct(ftp,p.ftp90)*.30+pct(kp,p.kp90)*.25;
+      const def=pct(df,p.dga)*.25+pct(prs,p.prs90)*.25+pct(intc,p.intc90)*.25+pct(arl,p.arl90)*.25;
+      const cre=pct(kp,p.kp90)*.35+pct(sca,p.sca90)*.35+pct(xa,p.xa90)*.30;
+      const car=pct(drb,p.drb90)*.50+pct(ftp,p.ftp90)*.30+pct(prgc,p.prgc90)*.20;
+      const gaP=pct(ga,p.tga);
+
+      // Position-weighted Overall: what matters for each role
+      // FW: Attack 30%, Creativity 20%, G+ 25%, Carrying 10%, Passing 10%, Defense 5%
+      // MF: G+ 20%, Passing 20%, Creativity 20%, Attack 15%, Defense 15%, Carrying 10%
+      // DF: Defense 30%, G+ 25%, Passing 20%, Carrying 10%, Creativity 10%, Attack 5%
+      const pos=p.pos||"Midfielder";
+      const isFW=pos==="Forward"||pos==="FW";
+      const isDF=pos==="Defender"||pos==="DF"||pos==="DEF";
+      let ov;
+      if(isFW){
+        ov=att*.30+cre*.20+gaP*.25+car*.10+pas*.10+def*.05;
+      }else if(isDF){
+        ov=def*.30+gaP*.25+pas*.20+car*.10+cre*.10+att*.05;
+      }else{
+        // Midfielder (default): balanced
+        ov=gaP*.20+pas*.20+cre*.20+att*.15+def*.15+car*.10;
+      }
+      o[p.id]={overall:toG(ov),attack:toG(att),passing:toG(pas),defense:toG(def),creativity:toG(cre),carrying:toG(car)};
+    }
   });
   return o;
 }
@@ -190,6 +232,54 @@ function PctBadge({value}){
   return <span style={{fontSize:10,fontFamily:T.mono,fontWeight:700,color:c,background:`${c}12`,padding:"2px 6px",borderRadius:3,marginLeft:4}}>{value}th</span>;
 }
 
+// Form sparkline — within-season form curve
+function FormSparkline({data,width=200,height=50}){
+  if(!data||data.length<2)return null;
+  const grades=data.map(d=>d.grade);
+  const latest=grades[grades.length-1];
+  return <div style={{position:"relative"}}>
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart data={data} margin={{top:4,right:4,bottom:0,left:4}}>
+        <defs>
+          <linearGradient id="formGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={gc(latest)} stopOpacity={0.25}/>
+            <stop offset="100%" stopColor={gc(latest)} stopOpacity={0.02}/>
+          </linearGradient>
+        </defs>
+        <Area type="monotone" dataKey="grade" stroke={gc(latest)} strokeWidth={2} fill="url(#formGrad)" dot={false} isAnimationActive={false}/>
+      </AreaChart>
+    </ResponsiveContainer>
+  </div>;
+}
+
+// Season-over-season sparkline — shows grade dots connected by a line
+function SeasonSparkline({seasons,width=180,height=60}){
+  if(!seasons||seasons.length<1)return <span style={{fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic"}}>No history</span>;
+  return <div>
+    <ResponsiveContainer width="100%" height={height}>
+      <LineChart data={seasons} margin={{top:8,right:12,bottom:4,left:12}}>
+        <XAxis dataKey="year" tick={{fontSize:9,fill:T.textMute,fontFamily:"Inter,sans-serif"}} axisLine={false} tickLine={false}/>
+        <Line type="monotone" dataKey="overall" stroke={T.ink} strokeWidth={2.5} dot={{r:4,fill:T.ink,stroke:T.bg,strokeWidth:2}} isAnimationActive={false}/>
+      </LineChart>
+    </ResponsiveContainer>
+    <div style={{display:"flex",justifyContent:"center",gap:12,marginTop:2}}>
+      {seasons.map(s=><span key={s.year} style={{fontFamily:T.mono,fontSize:10,fontWeight:700,color:gc(s.overall)}}>{s.overall}</span>)}
+    </div>
+  </div>;
+}
+
+// Tiny inline SVG sparkline for table rows (no Recharts overhead)
+function MiniSpark({data,width=60,height=20,color}){
+  if(!data||data.length<2)return null;
+  const vals=data.map(d=>d.grade);
+  const mn=Math.min(...vals)-3,mx=Math.max(...vals)+3,range=mx-mn||1;
+  const pts=vals.map((v,i)=>`${(i/(vals.length-1))*width},${height-((v-mn)/range)*height}`).join(" ");
+  return <svg width={width} height={height} style={{display:"block"}}>
+    <polyline points={pts} fill="none" stroke={color||T.ink} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".7"/>
+    <circle cx={width} cy={height-((vals[vals.length-1]-mn)/range)*height} r="2" fill={color||T.ink}/>
+  </svg>;
+}
+
 // Top 3 podium
 function TopCards({players,metric,metricLabel,onSelect}){
   const top3=players.slice(0,3);if(!top3.length)return null;
@@ -217,7 +307,7 @@ function TopCards({players,metric,metricLabel,onSelect}){
 }
 
 // ─── PLAYER MODAL ────────────────────────────────────────────────────────────
-function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks}){
+function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
   if(!p)return null;
   const ae=Number(p.passAboveExp);
   const pct=pctRanks||{};
@@ -256,7 +346,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks}){
 
       {/* Grade strip */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",borderBottom:`1px solid ${T.border}`}}>
-        {[{l:"OVERALL",g:p.overall},{l:"ATTACK",g:p.attack},{l:"PASSING",g:p.passing},{l:"DEFENSE",g:p.defense},{l:"CREATIVITY",g:p.creativity},{l:"CARRYING",g:p.carrying}].map(r=>(
+        {(p.position==="GK"||p.position==="Goalkeeper"?[{l:"OVERALL",g:p.overall},{l:"SHOT-STOP",g:p.attack},{l:"DISTRIBUTION",g:p.passing},{l:"COMMAND",g:p.defense},{l:"SWEEPING",g:p.creativity},{l:"HANDLING",g:p.carrying}]:[{l:"OVERALL",g:p.overall},{l:"ATTACK",g:p.attack},{l:"PASSING",g:p.passing},{l:"DEFENSE",g:p.defense},{l:"CREATIVITY",g:p.creativity},{l:"CARRYING",g:p.carrying}]).map(r=>(
           <div key={r.l} style={{padding:"18px 12px",textAlign:"center",borderRight:`1px solid ${T.borderLt}`}}>
             <div style={{fontFamily:T.display,fontWeight:700,fontSize:24,color:gc(r.g),lineHeight:1}}>{r.g}</div>
             <div style={{fontSize:9,color:gc(r.g),fontWeight:600,letterSpacing:1.5,marginTop:4,textTransform:"uppercase"}}>{gl(r.g)}</div>
@@ -264,6 +354,30 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks}){
           </div>
         ))}
       </div>
+
+      {/* Season Rating strip */}
+      {seasonInfo&&<div className="resp-season-strip" style={{display:"flex",alignItems:"center",gap:0,borderBottom:`1px solid ${T.border}`,background:T.card}}>
+        <div style={{flex:1,padding:"12px 16px",textAlign:"center",borderRight:`1px solid ${T.borderLt}`}}>
+          <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:gc(seasonInfo.seasonGrade),lineHeight:1}}>{seasonInfo.seasonGrade}</div>
+          <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,marginTop:3,fontFamily:T.sans}}>SEASON GRADE</div>
+        </div>
+        <div style={{flex:1,padding:"12px 16px",textAlign:"center",borderRight:`1px solid ${T.borderLt}`}}>
+          <div style={{fontFamily:T.mono,fontWeight:700,fontSize:16,color:seasonInfo.posRank<=3?T.gold:seasonInfo.posRank<=10?T.green:T.ink,lineHeight:1}}>#{seasonInfo.posRank} <span style={{fontSize:11,color:T.textMute,fontWeight:500}}>/ {seasonInfo.posTotal}</span></div>
+          <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,marginTop:3,fontFamily:T.sans}}>{seasonInfo.posGroup} RANK</div>
+        </div>
+        <div style={{flex:1,padding:"12px 16px",textAlign:"center",borderRight:`1px solid ${T.borderLt}`}}>
+          <div style={{fontFamily:T.sans,fontWeight:700,fontSize:14,color:seasonInfo.profile==="Offensive"?T.accent:seasonInfo.profile==="Defensive"?T.blue:T.textDim,lineHeight:1}}>{seasonInfo.profile}</div>
+          <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,marginTop:3,fontFamily:T.sans}}>PROFILE</div>
+        </div>
+        <div style={{flex:1,padding:"12px 16px",textAlign:"center",borderRight:`1px solid ${T.borderLt}`}}>
+          <div style={{fontFamily:T.mono,fontWeight:700,fontSize:16,color:seasonInfo.consistency>=80?T.green:seasonInfo.consistency>=60?T.blue:T.red,lineHeight:1}}>{seasonInfo.consistency}%</div>
+          <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,marginTop:3,fontFamily:T.sans}}>CONSISTENCY</div>
+        </div>
+        <div style={{flex:1,padding:"12px 16px",textAlign:"center"}}>
+          <div style={{fontFamily:T.mono,fontWeight:700,fontSize:16,color:T.ink,lineHeight:1}}>{seasonInfo.impactPer90}</div>
+          <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,marginTop:3,fontFamily:T.sans}}>IMPACT/90</div>
+        </div>
+      </div>}
 
       {/* Stats — 3x2 grid */}
       <div className="resp-col resp-pad" style={{padding:"24px 38px",display:"flex",gap:28,borderBottom:`1px solid ${T.borderLt}`,alignItems:"center"}}>
@@ -285,7 +399,105 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks}){
         </div>
       </div>
 
+      {/* ── FORM & HISTORY SPARKLINES ── */}
+      {(formCurve||history)&&<div className="resp-col" style={{padding:"16px 32px",display:"flex",gap:20,borderBottom:`1px solid ${T.borderLt}`,alignItems:"stretch"}}>
+        {formCurve&&formCurve.length>1&&<div style={{flex:2,minWidth:0}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+            <div>
+              <div style={{fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase"}}>
+                {formCurve[0]?.opp?"Match-by-Match Form":"Season Form Curve"}
+              </div>
+              <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans,marginTop:2}}>
+                {formCurve[0]?.opp?`${formCurve.length} appearances · Real ESPN boxscore data`:`Estimated across ${formCurve.length} match windows`}
+              </div>
+            </div>
+            {formCurve[0]?.opp&&<div style={{fontSize:9,fontFamily:T.mono,fontWeight:700,color:gc(formCurve[formCurve.length-1]?.grade||55)}}>
+              Latest: {formCurve[formCurve.length-1]?.grade}
+            </div>}
+          </div>
+          <FormSparkline data={formCurve} height={56}/>
+          {/* Match detail row when real data */}
+          {formCurve[0]?.opp&&<div style={{display:"flex",gap:2,marginTop:6,overflowX:"auto",paddingBottom:4}}>
+            {formCurve.map((m,i)=>(
+              <div key={i} style={{minWidth:38,textAlign:"center",padding:"4px 3px",background:i===formCurve.length-1?`${gc(m.grade)}10`:T.card,borderRadius:3,border:i===formCurve.length-1?`1px solid ${gc(m.grade)}30`:`1px solid ${T.borderLt}`,flexShrink:0,cursor:"default"}} title={`${m.ha} vs ${m.opp} · ${m.mins}min · ${m.g}G ${m.a}A`}>
+                <div style={{fontFamily:T.mono,fontSize:10,fontWeight:700,color:gc(m.grade),lineHeight:1}}>{m.grade}</div>
+                <div style={{fontSize:7,color:T.textMute,marginTop:2,fontFamily:T.sans}}>{m.opp}</div>
+                <div style={{fontSize:7,color:m.g>0?T.green:T.textMute,fontFamily:T.mono}}>{m.g>0?`${m.g}G`:m.a>0?`${m.a}A`:"·"}</div>
+              </div>
+            ))}
+          </div>}
+          {!formCurve[0]?.opp&&<div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+            <span style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>Start</span>
+            <span style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>Current</span>
+          </div>}
+        </div>}
+        {history&&history.length>0&&<div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:8}}>Season History</div>
+          <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans,marginBottom:6}}>{history.length} season{history.length>1?"s":""} tracked</div>
+          <SeasonSparkline seasons={history} height={56}/>
+        </div>}
+        {history&&history.length>1&&<div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:8}}>Grade Breakdown by Season</div>
+          <div style={{display:"grid",gridTemplateColumns:`repeat(${history.length},1fr)`,gap:8,marginTop:4}}>
+            {history.map(s=>(
+              <div key={s.year} style={{textAlign:"center"}}>
+                <div style={{fontFamily:T.mono,fontSize:11,fontWeight:700,color:T.textMute,marginBottom:6}}>{s.year}</div>
+                {[{l:"OVR",v:s.overall},{l:"ATT",v:s.attack},{l:"PAS",v:s.passing},{l:"DEF",v:s.defense},{l:"CRE",v:s.creativity},{l:"CAR",v:s.carrying}].map(g=>(
+                  <div key={g.l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"2px 6px",marginBottom:2,borderRadius:3,background:g.l==="OVR"?`${gc(g.v)}08`:"transparent"}}>
+                    <span style={{fontSize:8,color:T.textMute,fontFamily:T.sans,fontWeight:600}}>{g.l}</span>
+                    <span style={{fontSize:10,fontFamily:T.mono,fontWeight:700,color:gc(g.v)}}>{g.v}</span>
+                  </div>
+                ))}
+                <div style={{marginTop:4,borderTop:`1px solid ${T.borderLt}`,paddingTop:4}}>
+                  <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>{s.goals}G {s.assists}A</div>
+                  <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans}}>{s.mins} min</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>}
+      </div>}
+
       {/* Detailed Stats — 3x2 grid */}
+      {(p.position==="GK"||p.position==="Goalkeeper")?
+      <div className="resp-modal-stats" style={{padding:"24px 32px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:20}}>
+        <div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
+            <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>SHOT-STOPPING</span>
+            <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.attack)}}>{p.attack} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.attack)}</span></span>
+          </div>
+          {bar("Saves",p.saves||0,40,true)}{bar("Clean Sheets",p.cleanSheets||0,10,true)}{bar("Goals Against",p.goalsConceded||0,20,false)}
+          {p.saves>0&&p.goalsConceded>=0&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:5,marginTop:6}}><span style={{fontSize:12,color:T.textDim}}>Save %</span><span style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.green}}>{p.saves>0?Math.round((p.saves/(p.saves+p.goalsConceded))*100):0}%</span></div>}
+        </div>
+        <div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
+            <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>DISTRIBUTION</span>
+            <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.passing)}}>{p.passing} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.passing)}</span></span>
+          </div>
+          {bar("Comp %",p.passComp,100,true)}{bar("Prg Passes",p.prgPasses||0,30,true)}{bar("Final 3rd",p.ftPasses||0,15,false)}
+          {p.passAboveExp!=null&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><span style={{fontSize:12,color:T.textDim}}>vs Expected</span><span style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:ae>=0?T.green:T.red}}>{ae>=0?"+":""}{p.passAboveExp}%</span></div>}
+        </div>
+        <div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
+            <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>COMMAND</span>
+            <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.defense)}}>{p.defense} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.defense)}</span></span>
+          </div>
+          {bar("Ball Recovery",p.pressures||0,80,true)}{bar("Aerials Won",p.aerials||0,20,true)}{bar("Interceptions",p.interceptions||0,10,false)}
+        </div>
+        <div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
+            <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>OVERVIEW</span>
+            <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.overall)}}>{p.overall} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.overall)}</span></span>
+          </div>
+          {[["Saves",p.saves||0],["Clean Sheets",p.cleanSheets||0],["Goals Against",p.goalsConceded||0],["Games",Math.round((p.mins||0)/90)],["Minutes",p.mins?.toLocaleString()],["Value",<span style={{color:vc(p.marketValue),fontWeight:600}}>{fv(p.marketValue)}</span>],["Salary",<span style={{fontWeight:600}}>{p.salary?`$${(p.salary/1000).toFixed(0)}K`:"—"}</span>]].map(([l,v])=>(
+            <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+              <span style={{fontSize:12,color:T.textDim,fontFamily:T.sans}}>{l}</span>
+              <span style={{fontFamily:T.serif,fontWeight:600,fontSize:14,color:T.text}}>{v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      :
       <div className="resp-modal-stats" style={{padding:"24px 32px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:20}}>
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
@@ -332,18 +544,218 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks}){
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>OVERVIEW</span>
             <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.overall)}}>{p.overall} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.overall)}</span></span>
           </div>
-          {[["Goals Added",<span style={{color:+p.totalGA>=0?T.green:T.red,fontWeight:700}}>{+p.totalGA>=0?"+":""}{p.totalGA}</span>],["xG/90",p.xg90],["xA/90",p.xa90],["Height",p.heightCm?`${Math.floor(p.heightCm/2.54/12)}'${Math.round(p.heightCm/2.54%12)}" (${p.heightCm}cm)`:"—"],["Weight",p.weightKg?`${Math.round(p.weightKg*2.205)} lbs (${p.weightKg}kg)`:"—"],["Value",<span style={{color:vc(p.marketValue),fontWeight:600}}>{fv(p.marketValue)}</span>],["Minutes",p.mins?.toLocaleString()]].map(([l,v])=>(
+          {[["Goals Added",<span style={{color:+p.totalGA>=0?T.green:T.red,fontWeight:700}}>{+p.totalGA>=0?"+":""}{p.totalGA}</span>],["xG/90",p.xg90],["xA/90",p.xa90],["Height",p.heightCm?`${Math.floor(p.heightCm/2.54/12)}'${Math.round(p.heightCm/2.54%12)}" (${p.heightCm}cm)`:"—"],["Weight",p.weightKg?`${Math.round(p.weightKg*2.205)} lbs (${p.weightKg}kg)`:"—"],["Value",<span style={{color:vc(p.marketValue),fontWeight:600}}>{fv(p.marketValue)}</span>],["Salary",<span style={{fontWeight:600}}>{p.salary?`$${(p.salary/1000).toFixed(0)}K`:"—"}</span>],["Minutes",p.mins?.toLocaleString()]].map(([l,v])=>(
             <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
               <span style={{fontSize:12,color:T.textDim,fontFamily:T.sans}}>{l}</span>
               <span style={{fontFamily:T.serif,fontWeight:600,fontSize:14,color:T.text}}>{v}</span>
             </div>
           ))}
         </div>
-      </div>
+      </div>}
+
+      {/* ── MATCH LOG TABLE ── */}
+      {p.matchLog&&p.matchLog.length>0&&<div style={{padding:"16px 28px",borderTop:`1px solid ${T.borderLt}`}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase"}}>Match Log</div>
+          {p.matchLog.length>=5&&<div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>
+            Last 5 avg: <span style={{fontFamily:T.mono,fontWeight:700,color:T.ink}}>
+              {(()=>{const last5=p.matchLog.slice(-5);const ratings=last5.map(m=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*0.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));});return Math.round(ratings.reduce((s,v)=>s+v,0)/ratings.length);})()}
+            </span>
+            {" "}| Season avg: <span style={{fontFamily:T.mono,fontWeight:700,color:T.ink}}>
+              {(()=>{const ratings=p.matchLog.map(m=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*0.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));});return Math.round(ratings.reduce((s,v)=>s+v,0)/ratings.length);})()}
+            </span>
+          </div>}
+        </div>
+        <div style={{maxHeight:200,overflowY:"auto",overflowX:"auto",borderRadius:4,border:`1px solid ${T.borderLt}`,WebkitOverflowScrolling:"touch"}}>
+          <div style={{display:"grid",gridTemplateColumns:"64px 40px 36px 36px 30px 30px 36px 1fr",fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:.5,fontFamily:T.sans,textTransform:"uppercase",padding:"6px 10px",background:T.card,borderBottom:`1px solid ${T.border}`,position:"sticky",top:0}}>
+            <div>Date</div><div>Opp</div><div style={{textAlign:"center"}}>H/A</div><div style={{textAlign:"center"}}>Min</div><div style={{textAlign:"center"}}>G</div><div style={{textAlign:"center"}}>A</div><div style={{textAlign:"center"}}>Rtg</div><div style={{textAlign:"center"}}>Result</div>
+          </div>
+          {[...p.matchLog].reverse().map((m,i)=>{
+            const dt=m.date?new Date(m.date):null;
+            const dateStr=dt?`${dt.getMonth()+1}/${dt.getDate()}`:"—";
+            let rating=55;rating+=(m.g||0)*12;rating+=(m.a||0)*8;rating+=(m.sot||0)*2;rating+=(m.sh||0)*0.5;rating-=(m.fl||0)*1;rating-=(m.yc||0)*3;rating-=(m.rc||0)*10;rating+=(m.mins||0)>=80?3:1;rating=Math.max(42,Math.min(99,Math.round(rating)));
+            const isWin=m.ha==="H"?(m.hs||0)>(m.as||0):(m.as||0)>(m.hs||0);
+            const isDraw=(m.hs||0)===(m.as||0);
+            const resultColor=isWin?T.green:isDraw?T.textDim:T.red;
+            const resultText=m.ha==="H"?`${m.hs}-${m.as}`:`${m.as}-${m.hs}`;
+            return <div key={i} style={{display:"grid",gridTemplateColumns:"64px 40px 36px 36px 30px 30px 36px 1fr",padding:"6px 10px",fontSize:11,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.card}}>
+              <div style={{fontFamily:T.mono,color:T.textDim,fontSize:10}}>{dateStr}</div>
+              <div style={{fontFamily:T.sans,fontWeight:600,color:T.ink,fontSize:10}}>{m.opp}</div>
+              <div style={{textAlign:"center",fontSize:9,color:T.textMute}}>{m.ha}</div>
+              <div style={{textAlign:"center",fontFamily:T.mono,color:T.textDim}}>{m.mins}'</div>
+              <div style={{textAlign:"center",fontFamily:T.serif,fontWeight:700,color:m.g>0?T.green:T.textMute}}>{m.g||0}</div>
+              <div style={{textAlign:"center",fontFamily:T.serif,fontWeight:700,color:m.a>0?T.blue:T.textMute}}>{m.a||0}</div>
+              <div style={{textAlign:"center",fontFamily:T.mono,fontWeight:700,color:gc(rating),fontSize:11}}>{rating}</div>
+              <div style={{textAlign:"center",fontFamily:T.mono,fontWeight:600,fontSize:10,color:resultColor}}>{resultText} {isWin?"W":isDraw?"D":"L"}</div>
+            </div>;
+          })}
+        </div>
+      </div>}
+
+      {/* ── SIMILAR PLAYERS ── */}
+      {similarPlayers&&similarPlayers.length>0&&<div style={{padding:"16px 28px",borderTop:`1px solid ${T.borderLt}`}}>
+        <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:4}}>Similar Players</div>
+        <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans,marginBottom:10}}>Most statistically similar {p.position}s based on percentile profile distance</div>
+        <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4}}>
+          {similarPlayers.map((sp,i)=>(
+            <div key={sp.id} onClick={()=>onSelectPlayer&&onSelectPlayer(sp)} style={{minWidth:110,padding:"12px 10px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`,textAlign:"center",cursor:"pointer",flexShrink:0,transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=T.borderLt}>
+              {sp.headshot?<img src={sp.headshot} alt={sp.name} style={{width:36,height:36,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.borderLt}`,margin:"0 auto 6px",display:"block"}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={sp.team} size={28} logo={sp.teamLogo}/>}
+              <div style={{fontFamily:T.serif,fontWeight:600,fontSize:11,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{sp.name.split(" ").slice(-1)[0]}</div>
+              <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans,marginTop:2}}>{sp.team}</div>
+              <Badge grade={sp.overall} size="sm"/>
+              <div style={{fontSize:8,color:T.green,fontFamily:T.mono,fontWeight:700,marginTop:4}}>{sp.similarity}% match</div>
+            </div>
+          ))}
+        </div>
+      </div>}
 
       <div style={{padding:"12px 28px",borderTop:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic"}}>Stats AI-estimated via Claude · USA Footy Index</div>
+        <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic"}}>Stats via ESPN, ASA, Sofascore · USA Footy Index</div>
         <div style={{display:"flex",gap:8}}>
+          <button onClick={async()=>{
+            // ── GENERATE SHAREABLE PLAYER CARD (Theme-Aware + Images) ──
+            const isDark=isDarkMode;
+            const W=640,H=820;
+            // Load images first
+            const loadImg=(src)=>new Promise(r=>{if(!src)return r(null);const img=new Image();img.crossOrigin="anonymous";img.onload=()=>r(img);img.onerror=()=>r(null);img.src=src;setTimeout(()=>r(null),3000);});
+            const[headImg,logoImg]=await Promise.all([loadImg(p.headshot),loadImg(p.teamLogo)]);
+            const c=document.createElement("canvas");c.width=W;c.height=H;
+            const x=c.getContext("2d");
+            // Theme
+            const BG=isDark?"#0b0e14":"#F4F1EA";
+            const CARD=isDark?"#161c28":"#FFFFFF";
+            const INK=isDark?"#f0ece4":"#1A1A1A";
+            const DIM=isDark?"#b0a89c":"#6B6560";
+            const MUTE=isDark?"#6a6358":"#A09A90";
+            const BORDER=isDark?"rgba(255,255,255,.10)":"#D6D0C4";
+            const GOLD="#B68D40",GREEN=isDark?"#45b882":"#2D6A4F",BLUE=isDark?"#5b8fd9":"#264653",RED=isDark?"#d4574e":"#9B2226";
+            const gcC=g=>g>=85?GOLD:g>=75?GREEN:g>=65?BLUE:g>=55?DIM:RED;
+            const glC=g=>g>=85?"ELITE":g>=75?"GREAT":g>=65?"ABOVE AVG":g>=55?"AVG":"POOR";
+            // ── Background
+            x.fillStyle=BG;x.fillRect(0,0,W,H);
+            // ── Top thick rule
+            x.fillStyle=INK;x.fillRect(28,22,W-56,3);
+            // ── Branding bar
+            x.fillStyle=MUTE;x.font="bold 9px Inter,sans-serif";
+            x.fillText("USA FOOTY INDEX",32,42);
+            x.fillStyle=MUTE;x.font="10px Inter,sans-serif";
+            x.textAlign="right";x.fillText("usfootyindex.com",W-32,42);x.textAlign="left";
+            // Thin rule
+            x.fillStyle=BORDER;x.fillRect(28,50,W-56,1);
+            // ── Player header section
+            const headerY=68;
+            // Headshot circle
+            const hsSize=72;const hsX=36,hsY=headerY+4;
+            if(headImg){
+              x.save();x.beginPath();x.arc(hsX+hsSize/2,hsY+hsSize/2,hsSize/2,0,Math.PI*2);x.clip();
+              x.drawImage(headImg,hsX,hsY,hsSize,hsSize);x.restore();
+              x.beginPath();x.arc(hsX+hsSize/2,hsY+hsSize/2,hsSize/2,0,Math.PI*2);
+              x.strokeStyle=BORDER;x.lineWidth=2;x.stroke();
+            } else {
+              x.beginPath();x.arc(hsX+hsSize/2,hsY+hsSize/2,hsSize/2,0,Math.PI*2);
+              x.fillStyle=isDark?"rgba(255,255,255,.06)":"rgba(0,0,0,.04)";x.fill();
+              x.strokeStyle=BORDER;x.lineWidth=1.5;x.stroke();
+              x.fillStyle=DIM;x.font="bold 24px 'Source Serif 4',Georgia,serif";x.textAlign="center";
+              x.fillText(p.name.charAt(0),hsX+hsSize/2,hsY+hsSize/2+8);x.textAlign="left";
+            }
+            // Name + details to right of headshot
+            const nameX=hsX+hsSize+16;
+            x.fillStyle=INK;x.font="bold 32px 'Playfair Display','Source Serif 4',Georgia,serif";
+            x.fillText(p.name,nameX,headerY+30);
+            // Team line with logo
+            const teamY=headerY+52;
+            if(logoImg){x.drawImage(logoImg,nameX,teamY-12,16,16);}
+            x.fillStyle=DIM;x.font="500 13px Inter,sans-serif";
+            x.fillText(`${p.teamName} · ${p.position}`,nameX+(logoImg?22:0),teamY);
+            x.fillStyle=MUTE;x.font="12px Inter,sans-serif";
+            x.fillText(`${p.age?p.age+" yrs · ":""}${p.mins?p.mins.toLocaleString()+" min":""}`,nameX+(logoImg?22:0),teamY+18);
+            // Overall grade circle — right side
+            const ovX=W-72,ovY=headerY+38;
+            x.beginPath();x.arc(ovX,ovY,38,0,Math.PI*2);
+            x.fillStyle=isDark?"rgba(255,255,255,.04)":"rgba(0,0,0,.03)";x.fill();
+            x.strokeStyle=gcC(p.overall);x.lineWidth=3;x.stroke();
+            x.fillStyle=INK;x.font="bold 32px 'Source Serif 4',Georgia,serif";x.textAlign="center";
+            x.fillText(String(p.overall),ovX,ovY+11);
+            x.fillStyle=gcC(p.overall);x.font="bold 8px Inter,sans-serif";
+            x.fillText(glC(p.overall),ovX,ovY+26);
+            x.textAlign="left";
+            // ── Thick rule
+            x.fillStyle=INK;x.fillRect(28,160,W-56,2);
+            // ── 6 grade columns
+            const isGK=p.position==="GK"||p.position==="Goalkeeper";
+            const cats=isGK?["SHOT-STOP","DISTRIB","COMMAND","SWEEP","HANDLE","OVERALL"]:["ATTACK","PASSING","DEFENSE","CREATIVE","CARRY","OVERALL"];
+            const vals=[p.attack,p.passing,p.defense,p.creativity,p.carrying,p.overall];
+            const gw=(W-56)/6;
+            cats.forEach((cat,i)=>{
+              const gx=28+i*gw+gw/2;
+              // Grade bar background
+              x.fillStyle=isDark?"rgba(255,255,255,.03)":"rgba(0,0,0,.02)";
+              x.fillRect(28+i*gw,170,gw-1,50);
+              // Number
+              x.fillStyle=gcC(vals[i]);x.font="bold 24px 'Source Serif 4',Georgia,serif";x.textAlign="center";
+              x.fillText(String(vals[i]),gx,198);
+              // Label
+              x.fillStyle=MUTE;x.font="bold 7px Inter,sans-serif";
+              x.fillText(cat,gx,214);
+            });
+            x.textAlign="left";
+            // ── Thin rule
+            x.fillStyle=BORDER;x.fillRect(28,226,W-56,1);
+            // ── Stats — 2 columns
+            const stats=isGK?[
+              ["Saves",String(p.saves||0)],["Clean Sheets",String(p.cleanSheets||0)],
+              ["Goals Against",String(p.goalsConceded||0)],["Games",String(Math.round((p.mins||0)/90))],
+              ["Pass Comp",p.passComp+"%"],["Value",fv(p.marketValue)],
+            ]:[
+              ["Goals",String(p.goals)],["Assists",String(p.assists)],
+              ["xG",p.xGoals],["xA",p.xAssists],
+              ["Goals Added",(+p.totalGA>=0?"+":"")+p.totalGA],["Tackles",String(p.tackles||0)],
+              ["Key Passes",String(p.keyPasses||0)],["Pass Comp",p.passComp+"%"],
+              ["Dribbles",String(p.dribbles||0)],["Pressures",String(p.pressures||0)],
+              ["Value",fv(p.marketValue)],["Salary",p.salary?`$${(p.salary/1000).toFixed(0)}K`:"—"],
+            ];
+            const colW=(W-80)/2;
+            stats.forEach((s,i)=>{
+              const col=i%2,row=Math.floor(i/2);
+              const sx=36+col*(colW+20),sy=254+row*30;
+              x.fillStyle=DIM;x.font="500 12px Inter,sans-serif";
+              x.fillText(s[0],sx,sy);
+              x.fillStyle=INK;x.font="bold 14px 'Source Serif 4',Georgia,serif";
+              x.textAlign="right";x.fillText(s[1],sx+colW-4,sy);x.textAlign="left";
+              x.fillStyle=BORDER;x.fillRect(sx,sy+7,colW-4,0.5);
+            });
+            // ── Radar chart
+            const radarTop=stats.length<=6?410:440;
+            const rCx=W/2,rCy=radarTop+120,rR=90;
+            const rCats=[p.attack,p.passing,p.defense,p.creativity,p.carrying];
+            const rPts=rCats.map((v,i)=>{const a=(Math.PI*2/5)*i-Math.PI/2;const r2=rR*(Math.max(42,v)-42)/57;return[rCx+r2*Math.cos(a),rCy+r2*Math.sin(a)];});
+            // Rings
+            [.33,.66,1].forEach(rv=>{x.beginPath();for(let i=0;i<5;i++){const a=(Math.PI*2/5)*i-Math.PI/2;const pt=[rCx+rR*rv*Math.cos(a),rCy+rR*rv*Math.sin(a)];i===0?x.moveTo(pt[0],pt[1]):x.lineTo(pt[0],pt[1]);}x.closePath();x.strokeStyle=BORDER;x.lineWidth=.8;x.stroke();});
+            // Spokes
+            for(let i=0;i<5;i++){const a=(Math.PI*2/5)*i-Math.PI/2;x.beginPath();x.moveTo(rCx,rCy);x.lineTo(rCx+rR*Math.cos(a),rCy+rR*Math.sin(a));x.strokeStyle=BORDER;x.lineWidth=.5;x.stroke();}
+            // Fill
+            x.beginPath();rPts.forEach((pt,i)=>i===0?x.moveTo(pt[0],pt[1]):x.lineTo(pt[0],pt[1]));x.closePath();
+            x.fillStyle=isDark?`${gcC(p.overall)}18`:`${gcC(p.overall)}12`;x.fill();
+            x.strokeStyle=gcC(p.overall);x.lineWidth=2;x.stroke();
+            // Dots + labels
+            const rLabels=isGK?["STP","DIS","CMD","SWP","HDL"]:["ATT","PAS","DEF","CRE","CAR"];
+            rPts.forEach((pt,i)=>{x.beginPath();x.arc(pt[0],pt[1],4,0,Math.PI*2);x.fillStyle=gcC(rCats[i]);x.fill();x.strokeStyle=BG;x.lineWidth=1.5;x.stroke();});
+            rCats.forEach((v,i)=>{const a=(Math.PI*2/5)*i-Math.PI/2;const lx=rCx+(rR+22)*Math.cos(a),ly=rCy+(rR+22)*Math.sin(a);
+              x.fillStyle=gcC(v);x.font="bold 10px Inter,sans-serif";x.textAlign="center";x.fillText(`${rLabels[i]} ${v}`,lx,ly+4);});
+            x.textAlign="left";
+            // ── Bottom thick rule
+            x.fillStyle=INK;x.fillRect(28,H-44,W-56,2);
+            // ── Footer
+            x.fillStyle=MUTE;x.font="bold 8px Inter,sans-serif";
+            x.fillText("USA FOOTY INDEX",32,H-20);
+            x.fillStyle=MUTE;x.font="8px Inter,sans-serif";x.textAlign="right";
+            x.fillText(`ESPN · ASA · Sofascore · ${new Date().getFullYear()} MLS`,W-32,H-20);
+            x.textAlign="left";
+            // ── Download
+            const link=document.createElement("a");
+            link.download=`${p.name.replace(/\s+/g,"-").toLowerCase()}-ufi-card.png`;
+            link.href=c.toDataURL("image/png");link.click();
+          }} style={{background:"none",border:`1px solid ${T.border}`,color:T.textDim,padding:"7px 16px",borderRadius:4,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.3,transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gold} onMouseLeave={e=>e.currentTarget.style.borderColor=T.border}>↓ Share Card</button>
           {onCompare&&<button onClick={()=>{onCompare(p);onClose();}} disabled={isInCompare} style={{background:isInCompare?"transparent":T.bg,border:`1px solid ${isInCompare?T.borderLt:T.accent}`,color:isInCompare?T.textMute:T.accent,padding:"7px 16px",borderRadius:4,cursor:isInCompare?"default":"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,opacity:isInCompare?.5:1}}>{isInCompare?"In Compare":"+ Compare"}</button>}
           <button onClick={onClose} style={{background:T.ink,border:"none",color:T.bg,padding:"7px 20px",borderRadius:4,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.5}}>Close</button>
         </div>
@@ -389,9 +801,20 @@ function MLSAnalytics(){
   const[comparePlayers,setComparePlayers]=useState([]);
   const[dark,setDark]=useState(false);
   const[standingsData,setStandingsData]=useState([]);
+  const[matchesData,setMatchesData]=useState([]);
   const[showGrading,setShowGrading]=useState(false);
   const[showAbout,setShowAbout]=useState(false);
   const[minMins,setMinMins]=useState(0);
+  const[srPosFilter,setSrPosFilter]=useState("All");
+  const[srTeamFilter,setSrTeamFilter]=useState("All");
+  const[srSort,setSrSort]=useState("seasonGrade");
+  const[srDir,setSrDir]=useState("desc");
+  const[srView,setSrView]=useState("table");
+  const[srMinMins,setSrMinMins]=useState(0);
+  const[histData,setHistData]=useState({}); // {2024:{name->grades}, 2025:{...}, 2026:{...}}
+  const[h2hHome,setH2hHome]=useState("");
+  const[h2hAway,setH2hAway]=useState("");
+  const[totwWeek,setTotwWeek]=useState(0); // 0 = latest
   const addCompare=(p)=>{if(comparePlayers.length<3&&!comparePlayers.find(c=>c.id===p.id))setComparePlayers(prev=>[...prev,p]);};
   const removeCompare=(id)=>setComparePlayers(prev=>prev.filter(p=>p.id!==id));
 
@@ -419,6 +842,7 @@ function MLSAnalytics(){
       const cache=await res.json();
       (cache.standings||[]).forEach(s=>{if(s.logo)_logos[s.team]=s.logo;});
       setStandingsData(cache.standings||[]);
+      setMatchesData(cache.matches||[]);
       allRaw=cache.players||[];
       if(!allRaw.length)throw new Error("No players in cache. Run: npm run fetch");
     }catch(e){
@@ -435,17 +859,106 @@ function MLSAnalytics(){
         pp:safe(r.pp,30,99,75),xpp:safe(r.xpp,30,99,75),gs:safe(r.gs,-3,5,0),gp:safe(r.gp,-3,5,0),gdr:safe(r.gdr,-3,5,0),gdf:safe(r.gdf,-3,5,0),gi:safe(r.gi,-3,5,0),
         mv:safe(r.mv,0,50e6,500000),tk:safe(r.tk,0,80,0),sh:safe(r.sh,0,120,0),so:safe(r.so,0,60,0),fl:safe(r.fl,0,50,0),yc:safe(r.yc,0,15,0),rc:safe(r.rc,0,3,0),
         kp:safe(r.kp,0,80,0),sca:safe(r.sca,0,120,0),prgp:safe(r.prgp,0,200,0),ftp:safe(r.ftp,0,100,0),prs:safe(r.prs,0,500,0),intc:safe(r.intc,0,60,0),arl:safe(r.arl,0,80,0),drb:safe(r.drb,0,80,0),prgc:safe(r.prgc,0,100,0),headshot:r.headshot||null,
+        matchLog:Array.isArray(r.matchLog)?r.matchLog:[],
+        sal:safe(r.salary,0,20e6,0),
+        sv:safe(r.sv,0,200,0),cs:safe(r.cs,0,40,0),gaCon:safe(r.ga_conceded,0,100,0),
       }));
       setLoadProgress(85);
-      const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,raw:r};});
+      const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,
+        // GK-specific
+        isGK:r.p==="GK",pos:r.p,sv90:(r.sv||0)/p90,csRate:games>0?(r.cs||0)/games:0,gaCon90:games>0?(r.gaCon||0)/p90:0,
+        raw:r};});
       const grades=computeGrades(inter);
       setLoadProgress(95);
       const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null};});
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0};});
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}
     setLoading(false);}load();},[season]);
+
+  // ── BACKGROUND: Load all seasons for historical sparklines ─────────────
+  useEffect(()=>{
+    async function loadHistory(){
+      const years=[2024,2025,2026];
+      const safe=(v,min,max,def)=>{const n=Number(v);return isNaN(n)?def:Math.max(min,Math.min(max,n));};
+      const results={};
+      for(const yr of years){
+        try{
+          const url=yr===2026?`${DATA_URL_BASE}.json`:`${DATA_URL_BASE}-${yr}.json`;
+          const res=await fetch(url);
+          if(!res.ok)continue;
+          const cache=await res.json();
+          const raw=cache.players||[];
+          if(!raw.length)continue;
+          // Process grades for this season
+          const validated=raw.filter(r=>r&&r.n&&r.t).map(r=>({
+            n:String(r.n).slice(0,40),t:String(r.t).slice(0,5),p:String(r.p||"MF"),
+            m:safe(r.m,0,3000,600),g:safe(r.g,0,40,0),as:safe(r.as,0,30,0),
+            xg:safe(r.xg,0,20,0),xa:safe(r.xa,0,15,0),
+            pp:safe(r.pp,30,99,75),xpp:safe(r.xpp,30,99,75),
+            gs:safe(r.gs,-3,5,0),gp:safe(r.gp,-3,5,0),gdr:safe(r.gdr,-3,5,0),gdf:safe(r.gdf,-3,5,0),gi:safe(r.gi,-3,5,0),
+            mv:safe(r.mv,0,50e6,0),tk:safe(r.tk,0,80,0),kp:safe(r.kp,0,80,0),
+            sca:safe(r.sca,0,120,0),prgp:safe(r.prgp,0,200,0),ftp:safe(r.ftp,0,100,0),
+            prs:safe(r.prs,0,500,0),intc:safe(r.intc,0,60,0),arl:safe(r.arl,0,80,0),
+            drb:safe(r.drb,0,80,0),prgc:safe(r.prgc,0,100,0),
+          }));
+          const inter=validated.map((r,i)=>{const m=r.m||600,p90=m/90;return{id:"h"+i,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,raw:r};});
+          const grades=computeGrades(inter);
+          const byName={};
+          inter.forEach(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};
+            byName[r.n]={overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,goals:r.g,assists:r.as,mins:r.m,team:r.t,marketValue:r.mv};
+          });
+          results[yr]=byName;
+        }catch(e){/* skip failed season */}
+      }
+      setHistData(results);
+    }
+    loadHistory();
+  },[]);
+
+  // ── Form curve: use real matchLog data when available, fall back to simulation
+  function genFormCurve(p,points=10){
+    const log=p.matchLog||[];
+    // REAL DATA PATH: if player has match-level data, compute per-game ratings
+    if(log.length>=2){
+      return log.map((m,i)=>{
+        // Per-game rating: base 55 + contributions from goals, assists, shots, clean behavior
+        let rating=55;
+        rating+=(m.g||0)*12; // goals are huge
+        rating+=(m.a||0)*8;  // assists
+        rating+=(m.sot||0)*2; // shots on target
+        rating+=(m.sh||0)*0.5; // shots
+        rating-=(m.fl||0)*1; // fouls hurt
+        rating-=(m.yc||0)*3; // yellow cards
+        rating-=(m.rc||0)*10; // red cards
+        // Minutes bonus: full 90 = +3, sub appearance = +1
+        rating+=(m.mins||0)>=80?3:(m.mins||0)>=45?2:1;
+        // Clamp
+        rating=Math.round(Math.max(42,Math.min(99,rating)));
+        const dt=m.date?new Date(m.date):null;
+        const label=dt?`${dt.getMonth()+1}/${dt.getDate()}`:`GW${i+1}`;
+        return{match:i+1,grade:rating,label,date:m.date,opp:m.opp||"?",ha:m.ha||"",g:m.g||0,a:m.a||0,mins:m.mins||0};
+      });
+    }
+    // SIMULATED PATH: deterministic curve from season totals (legacy fallback)
+    const seed=(p.name||"X").split("").reduce((s,c)=>((s*31)+c.charCodeAt(0))|0,0);
+    const rng=(i)=>{let x=Math.abs((seed*13+i*997)%10000)/10000;return x;};
+    const base=p.overall||55;
+    const ga=parseFloat(p.totalGA)||0;
+    const consistency=p.consistency||70;
+    const variance=Math.max(3,(100-consistency)*0.25);
+    const trendSlope=ga>2?0.8:ga>0?0.3:ga<-1?-0.6:ga<0?-0.2:0;
+    const curve=[];
+    for(let i=0;i<points;i++){
+      const t=i/(points-1);
+      const trendOffset=trendSlope*(t-0.5)*8;
+      const noise=(rng(i)-0.5)*variance*2;
+      const v=Math.round(Math.max(42,Math.min(99,base+trendOffset+noise)));
+      curve.push({match:i+1,grade:v,label:`MW${i+1}`});
+    }
+    return curve;
+  }
 
   // Derived
   const enrichedTeams=useMemo(()=>MLS_TEAMS.map(t=>{
@@ -471,6 +984,117 @@ function MLSAnalytics(){
     const rank=(arr,v)=>Math.round((arr.filter(x=>x<v).length/Math.max(arr.length-1,1))*100);
     const out={};players.forEach(p=>{const r={};keys.forEach(k=>{r[k]=rank(sorted[k],parseFloat(p[k])||0);});out[p.id]=r;});
     return out;
+  },[players]);
+
+  // ── SIMILAR PLAYERS: find statistically closest matches ─────────────────
+  const findSimilar=useMemo(()=>{
+    if(!players.length||!Object.keys(pctRanks).length)return()=>[];
+    const keys=["overall","attack","passing","defense","creativity","carrying","goals","assists","tackles","keyPasses","dribbles","pressures"];
+    return(pid)=>{
+      const src=pctRanks[pid];if(!src)return[];
+      const srcPlayer=players.find(p=>p.id===pid);if(!srcPlayer)return[];
+      return players.filter(p=>p.id!==pid&&p.position===srcPlayer.position).map(p=>{
+        const pr=pctRanks[p.id];if(!pr)return null;
+        const dist=Math.sqrt(keys.reduce((s,k)=>s+((src[k]||0)-(pr[k]||0))**2,0));
+        return{...p,similarity:Math.round(Math.max(0,100-dist/keys.length*1.5))};
+      }).filter(Boolean).sort((a,b)=>b.similarity-a.similarity).slice(0,5);
+    };
+  },[players,pctRanks]);
+
+  // ── PLAYER HISTORY: cross-season grade lookup ───────────────────────────
+  const playerHistory=useMemo(()=>{
+    if(!players.length||!Object.keys(histData).length)return{};
+    const out={};
+    players.forEach(p=>{
+      const seasons=[];
+      [2024,2025,2026].forEach(yr=>{
+        const yrData=histData[yr];
+        if(!yrData)return;
+        const match=yrData[p.name];
+        if(match)seasons.push({year:yr,...match});
+      });
+      if(seasons.length>0)out[p.id]=seasons;
+    });
+    return out;
+  },[players,histData]);
+
+  // ── SEASON RATINGS ─────────────────────────────────────────────────────────
+  const seasonRatings=useMemo(()=>{
+    if(!players.length)return{ratings:[],byPos:{},tiers:[]};
+    const eligible=players.filter(p=>(p.mins||0)>=1); // include everyone with any minutes
+
+    // Compute season rating per player
+    const allRatings=eligible.map(p=>{
+      const mins=p.mins||600;
+      const minsFactor=Math.min(1,mins/1800);
+      const gamesPlayed=Math.round(mins/90);
+
+      // Weighted composite: Overall 30%, Attack 15%, Passing 15%, Defense 15%, Creativity 12.5%, Carrying 12.5%
+      const rawComposite=(p.overall*.30)+(p.attack*.15)+(p.passing*.15)+(p.defense*.15)+(p.creativity*.125)+(p.carrying*.125);
+
+      // Goals Added bonus/penalty (capped ±5)
+      const gaBonus=Math.max(-5,Math.min(5,(parseFloat(p.totalGA)||0)*2));
+
+      // Minutes-adjusted boost (up to +3)
+      const minsBonus=minsFactor*3;
+
+      // G/A contribution bonus (up to +4)
+      const gaContrib=Math.min(4,((p.goals||0)+(p.assists||0))*0.25);
+
+      let seasonRaw=rawComposite+gaBonus+minsBonus+gaContrib;
+      const seasonGrade=Math.round(Math.max(42,Math.min(99,seasonRaw)));
+
+      // Consistency: how uniform are sub-grades (lower stddev = more consistent)
+      const subGrades=[p.attack,p.passing,p.defense,p.creativity,p.carrying];
+      const subMean=subGrades.reduce((a,b)=>a+b,0)/subGrades.length;
+      const stddev=Math.sqrt(subGrades.reduce((s,g)=>s+(g-subMean)**2,0)/subGrades.length);
+      const consistency=Math.round(Math.max(0,Math.min(100,100-(stddev*1.5))));
+
+      // Impact per 90
+      const impactPer90=gamesPlayed>0?((p.goals||0)+(p.assists||0)+(p.tackles||0)+(p.keyPasses||0)+(p.interceptions||0))/gamesPlayed:0;
+
+      // Value efficiency: season grade per $1M market value
+      const valueEff=p.marketValue>0?(seasonGrade/(p.marketValue/1e6)).toFixed(1):null;
+
+      // Player profile
+      const offProfile=((p.attack||55)+(p.creativity||55))/2;
+      const defProfile=((p.defense||55)+(p.carrying||55))/2;
+      const profile=offProfile>defProfile+8?"Offensive":defProfile>offProfile+8?"Defensive":"Balanced";
+
+      // Form trend
+      const ga=parseFloat(p.totalGA)||0;
+      const formTrend=ga>1?"up":ga<-0.5?"down":"steady";
+
+      // Position group
+      const posGroup=p.position==="Forward"||p.position==="FW"?"FW":p.position==="Midfielder"||p.position==="MF"?"MF":p.position==="Defender"||p.position==="DF"||p.position==="DEF"?"DF":p.position==="GK"?"GK":"MF";
+
+      return{
+        ...p,seasonGrade,consistency,impactPer90:impactPer90.toFixed(1),
+        valueEff,profile,formTrend,gamesPlayed,posGroup,
+        gaBonus:gaBonus.toFixed(1),minsBonus:minsBonus.toFixed(1),
+        gaContrib:gaContrib.toFixed(1),rawComposite:rawComposite.toFixed(1),
+      };
+    }).sort((a,b)=>b.seasonGrade-a.seasonGrade);
+
+    // Position rankings
+    const byPos={};allRatings.forEach(p=>{if(!byPos[p.posGroup])byPos[p.posGroup]=[];byPos[p.posGroup].push(p);});
+    Object.values(byPos).forEach(arr=>arr.sort((a,b)=>b.seasonGrade-a.seasonGrade));
+    allRatings.forEach(p=>{
+      const posArr=byPos[p.posGroup]||[];
+      p.posRank=posArr.findIndex(x=>x.id===p.id)+1;
+      p.posTotal=posArr.length;
+    });
+
+    // Tier distribution
+    const tiers=[
+      {label:"ELITE",min:85,color:T.gold,count:allRatings.filter(p=>p.seasonGrade>=85).length},
+      {label:"GREAT",min:75,color:T.green,count:allRatings.filter(p=>p.seasonGrade>=75&&p.seasonGrade<85).length},
+      {label:"ABOVE AVG",min:65,color:T.blue,count:allRatings.filter(p=>p.seasonGrade>=65&&p.seasonGrade<75).length},
+      {label:"AVERAGE",min:55,color:T.textDim,count:allRatings.filter(p=>p.seasonGrade>=55&&p.seasonGrade<65).length},
+      {label:"POOR",min:0,color:T.red,count:allRatings.filter(p=>p.seasonGrade<55).length},
+    ];
+
+    return{ratings:allRatings,byPos,tiers};
   },[players]);
 
   // Season leaders
@@ -521,7 +1145,7 @@ function MLSAnalytics(){
     });
   },[enrichedTeams]);
 
-  const TABS=[{id:"players",l:"Player Grades"},{id:"defense",l:"Defense"},{id:"passing",l:"Passing"},{id:"teams",l:"Teams"},{id:"rankings",l:"Table"},{id:"leaders",l:"Leaders"},{id:"valuations",l:"Values"},{id:"positions",l:"Positional"},{id:"compare",l:"Compare"+(comparePlayers.length?` (${comparePlayers.length})`:"")}];
+  const TABS=[{id:"players",l:"Player Grades"},{id:"season",l:"Season Rating"},{id:"defense",l:"Defense"},{id:"passing",l:"Passing"},{id:"teams",l:"Teams"},{id:"rankings",l:"Table"},{id:"leaders",l:"Leaders"},{id:"valuations",l:"Values"},{id:"positions",l:"Positional"},{id:"compare",l:"Compare"+(comparePlayers.length?` (${comparePlayers.length})`:"")}];
   const tbl=isMobile?"28px 1fr 40px 42px 34px 34px 50px":"34px 1fr 48px 54px 46px 46px 56px 60px 52px 60px 48px 60px";
 
   return (
@@ -541,9 +1165,15 @@ function MLSAnalytics(){
           .resp-col{flex-direction:column!important}
           .resp-grid2{grid-template-columns:1fr!important}
           .resp-grid3{grid-template-columns:1fr 1fr!important}
+          .resp-grid4{grid-template-columns:1fr 1fr!important}
+          .resp-h2h{grid-template-columns:1fr!important;gap:8px!important}
+          .resp-pos-cards{grid-template-columns:1fr!important}
+          .resp-season-strip{flex-wrap:wrap!important}
+          .resp-season-strip>div{flex:none!important;width:calc(33.3% - 4px)!important}
           header .logo-wrap{padding:6px 0!important}
-          nav{padding:0 8px!important}
-          nav button{padding:6px 10px!important;font-size:10px!important}
+          nav{padding:0 12px!important}
+          nav>div{justify-content:flex-start!important;gap:6px!important;padding:8px 0!important}
+          nav button{padding:7px 14px!important;font-size:10px!important;letter-spacing:0.5px!important}
           main{padding:16px 12px!important}
           .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
           .table-inner{min-width:auto!important}
@@ -556,11 +1186,16 @@ function MLSAnalytics(){
         }
         @media(max-width:480px){
           .resp-grid3{grid-template-columns:1fr!important}
+          .resp-grid4{grid-template-columns:1fr!important}
+          .resp-h2h{grid-template-columns:1fr!important}
+          .resp-season-strip>div{width:calc(50% - 4px)!important}
           .top-cards{flex-direction:column!important}
           .top-cards>div{min-width:100%!important}
-          nav button{padding:5px 8px!important;font-size:9px!important;letter-spacing:0.3px!important}
+          nav button{padding:6px 12px!important;font-size:9px!important;letter-spacing:0.3px!important}
           .resp-modal-stats{grid-template-columns:1fr!important}
         }
+        nav>div::-webkit-scrollbar{display:none}
+        .results-strip::-webkit-scrollbar{display:none}
       `}</style>
 
       {/* ═══ MASTHEAD ══════════════════════════════════════════════════════ */}
@@ -602,7 +1237,7 @@ function MLSAnalytics(){
 
             <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:12}}>SIX GRADE CATEGORIES</div>
             {[
-              {name:"Overall",weight:"30% Goals Added + 20% Attack + 15% Passing + 15% Defense + 10% Creativity + 10% Carrying",desc:"The composite score. Heavily weights total on-field value contribution (Goals Added) while balancing all other dimensions of play."},
+              {name:"Overall",weight:"Position-weighted composite — FW: 30% ATT, 25% G+, 20% CRE | MF: 20% G+, 20% PAS, 20% CRE | DF: 30% DEF, 25% G+, 20% PAS",desc:"The composite score is role-aware. A defender's Overall rewards defensive excellence; a forward's rewards attacking output. Sub-grades are universal (everyone is ranked the same way on Attack, Passing, etc.) but the Overall reflects what matters for each position."},
               {name:"Attack",weight:"35% xG/90 + 25% Key Passes/90 + 25% Big Chances/90 + 15% xA/90",desc:"Measures goal threat and chance involvement. Uses expected metrics to capture quality of chances created and taken, not just raw output."},
               {name:"Passing",weight:"30% Completion % + 30% Final Third Passes/90 + 25% Key Passes/90 + 15% Pass G+",desc:"Goes beyond completion rate. Progressive passes reward players who advance the ball into dangerous areas, not just sideways recyclers."},
               {name:"Defense",weight:"25% Defensive G+ + 25% Ball Recovery/90 + 25% Interceptions/90 + 25% Aerials/90",desc:"Captures both active defending (pressures, interceptions) and overall defensive value added. Aerial dominance matters for set pieces and crosses."},
@@ -617,6 +1252,47 @@ function MLSAnalytics(){
                 <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,lineHeight:1.6}}>{cat.desc}</div>
               </div>
             ))}
+
+            <div style={{marginTop:20,padding:"14px 18px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
+              <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:10}}>POSITION-WEIGHTED OVERALL</div>
+              <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,lineHeight:1.7,marginBottom:12}}>
+                The six sub-grades are computed the same way for every outfield player. But the Overall grade uses different weights depending on position — so a defender isn't penalized for low Attack, and a forward isn't penalized for low Defense.
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"80px repeat(6,1fr)",gap:0,fontSize:9,fontFamily:T.mono}}>
+                <div style={{padding:"6px 8px",fontWeight:700,color:T.textMute,borderBottom:`1px solid ${T.border}`}}></div>
+                {["ATT","PAS","DEF","CRE","CAR","G+"].map(h=><div key={h} style={{padding:"6px 4px",fontWeight:700,color:T.textMute,textAlign:"center",borderBottom:`1px solid ${T.border}`,fontSize:8,letterSpacing:.5}}>{h}</div>)}
+                {[
+                  {pos:"Forward",w:[30,10,5,20,10,25],c:T.accent},
+                  {pos:"Midfielder",w:[15,20,15,20,10,20],c:T.blue},
+                  {pos:"Defender",w:[5,20,30,10,10,25],c:T.green},
+                ].map(r=><React.Fragment key={r.pos}>
+                  <div style={{padding:"6px 8px",fontWeight:700,color:r.c,borderBottom:`1px solid ${T.borderLt}`}}>{r.pos}</div>
+                  {r.w.map((w,i)=><div key={i} style={{padding:"6px 4px",textAlign:"center",color:w>=20?T.ink:T.textDim,fontWeight:w>=25?700:500,borderBottom:`1px solid ${T.borderLt}`,background:w>=25?`${r.c}08`:"transparent"}}>{w}%</div>)}
+                </React.Fragment>)}
+              </div>
+            </div>
+
+            <div style={{marginTop:20,padding:"14px 18px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
+              <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:8}}>GOALKEEPER GRADING</div>
+              <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,lineHeight:1.7,marginBottom:10}}>
+                Goalkeepers are graded on a completely separate system, compared only to other GKs. The six categories are remapped to GK-specific skills:
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {[
+                  {name:"Shot-Stopping",desc:"Saves/90 (60%) + Clean Sheet Rate (40%)"},
+                  {name:"Distribution",desc:"Pass Completion (50%) + Progressive Passes/90 (50%)"},
+                  {name:"Command",desc:"Ball Recovery/90 (40%) + Aerials/90 (40%) + GA/90 inverted (20%)"},
+                  {name:"Sweeping",desc:"Aerials/90 (50%) + Interceptions/90 (50%)"},
+                  {name:"Handling",desc:"Clean Sheet Rate (50%) + Saves/90 (50%)"},
+                  {name:"GK Overall",desc:"Shot-Stop 35% + Command 25% + Distribution 20% + Sweep 10% + Handling 10%"},
+                ].map(cat=>(
+                  <div key={cat.name} style={{padding:"8px 12px",background:T.bg,borderRadius:4,border:`1px solid ${T.borderLt}`}}>
+                    <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink}}>{cat.name}</div>
+                    <div style={{fontSize:9,color:T.accent,fontFamily:T.mono,fontWeight:600,marginTop:2}}>{cat.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <div style={{marginTop:20,padding:"14px 18px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
               <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:8}}>DATA SOURCES</div>
@@ -674,7 +1350,7 @@ function MLSAnalytics(){
               {[
                 {v:"6",l:"Grade Categories"},
                 {v:"30",l:"MLS Clubs"},
-                {v:"9",l:"Stat Fields per Player"},
+                {v:"10",l:"Analytics Views"},
               ].map(s=>(
                 <div key={s.l} style={{textAlign:"center",padding:"12px 8px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
                   <div style={{fontFamily:T.display,fontWeight:700,fontSize:24,color:T.ink,lineHeight:1}}>{s.v}</div>
@@ -699,8 +1375,8 @@ function MLSAnalytics(){
 
       {/* ═══ STICKY NAV ══════════════════════════════════════════════════ */}
       <nav style={{position:"sticky",top:0,zIndex:100,background:T.surface,borderBottom:`2px solid ${T.ink}`,padding:"0 24px",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"center",overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
-          {TABS.map(t=><button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="teams"){setSortKey("overall");setSortDir("desc");}else if(t.id==="rankings"){setSortKey("pts");setSortDir("desc");}else if(t.id==="defense"){setSortKey("defense");setSortDir("desc");}else if(t.id==="passing"){setSortKey("passing");setSortDir("desc");}else if(t.id==="valuations"){setSortKey("marketValue");setSortDir("desc");setTeamFilter("All");}else if(t.id==="players"){setSortKey("overall");setSortDir("desc");}}} style={{flexShrink:0,background:tab===t.id?T.ink:"transparent",border:"none",color:tab===t.id?T.bg:T.textDim,padding:"8px 16px",margin:"6px 2px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.8,textTransform:"uppercase",transition:"all .15s",borderRadius:4,whiteSpace:"nowrap"}}>{t.l}</button>)}
+        <div style={{maxWidth:1200,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"center",gap:4,overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",msOverflowStyle:"none",padding:"6px 0"}}>
+          {TABS.map(t=><button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="teams"){setSortKey("overall");setSortDir("desc");}else if(t.id==="rankings"){setSortKey("pts");setSortDir("desc");}else if(t.id==="defense"){setSortKey("defense");setSortDir("desc");}else if(t.id==="passing"){setSortKey("passing");setSortDir("desc");}else if(t.id==="valuations"){setSortKey("marketValue");setSortDir("desc");setTeamFilter("All");}else if(t.id==="players"||t.id==="season"){setSortKey("overall");setSortDir("desc");}}} style={{flexShrink:0,background:tab===t.id?T.ink:"transparent",border:"none",color:tab===t.id?T.bg:T.textDim,padding:"8px 18px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.8,textTransform:"uppercase",transition:"all .15s",borderRadius:4,whiteSpace:"nowrap"}}>{t.l}</button>)}
         </div>
       </nav>
 
@@ -726,6 +1402,10 @@ function MLSAnalytics(){
 
         {/* ═══ PLAYERS ═══════════════════════════════════════════════════════ */}
         {!loading&&tab==="players"&&<div style={{animation:"fadeUp .4s ease"}}>
+          <div style={{marginBottom:16}}>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Player Grades</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Percentile-based grades ranking every player's per-90 production against the entire league. The Overall grade is position-weighted — forwards are judged on attacking output, defenders on defensive impact.</div>
+          </div>
           <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
             <Select label="Position" value={posFilter} onChange={setPosFilter} width={130} options={["All","Forward","Midfielder","Defender","GK"]}/>
             <Select label="Sort" value={sortKey} onChange={v=>{setSortKey(v);setSortDir(v==="age"?"asc":"desc");}} width={130} options={[["overall","Overall"],["goals","Goals"],["assists","Assists"],["xg90","xG/90"],["totalGA","G+ Added"],["tackles","Tackles"],["passComp","Pass %"],["age","Age"],["team","Team"]]}/>
@@ -780,9 +1460,273 @@ function MLSAnalytics(){
           </div></TableWrap>
         </div>}
 
+        {/* ═══ SEASON RATING ═══════════════════════════════════════════════ */}
+        {!loading&&tab==="season"&&(()=>{
+          const toggleSrSort=(k)=>{if(srSort===k)setSrDir(d=>d==="desc"?"asc":"desc");else{setSrSort(k);setSrDir(k==="age"||k==="valueEff"?"asc":"desc");}};
+
+          const{ratings,byPos,tiers}=seasonRatings;
+          const srFiltered=ratings.filter(p=>{
+            if(srPosFilter!=="All"){const map={Forward:["FW"],Midfielder:["MF"],Defender:["DF"],GK:["GK"]};if(!map[srPosFilter]?.includes(p.posGroup))return false;}
+            if(srTeamFilter!=="All"&&p.team!==srTeamFilter)return false;
+            if((p.mins||0)<srMinMins)return false;
+            return true;
+          }).sort((a,b)=>{
+            const dir=srDir==="asc"?1:-1;
+            if(srSort==="age")return dir*(parseFloat(a.age||99)-parseFloat(b.age||99));
+            if(srSort==="name")return dir*(a.name||"").localeCompare(b.name||"");
+            return dir*((parseFloat(a[srSort])||0)-(parseFloat(b[srSort])||0));
+          });
+
+          const formIcon=(t)=>t==="up"?"▲":t==="down"?"▼":"—";
+          const formColor=(t)=>t==="up"?T.green:t==="down"?T.red:T.textMute;
+          const profileColor=(p)=>p==="Offensive"?T.accent:p==="Defensive"?T.blue:T.textDim;
+          const profileIcon=(p)=>p==="Offensive"?"⚔":"Defensive"?"🛡":"⚖";
+
+          // Top 3 season rated
+          const top3=srFiltered.slice(0,3);
+
+          // Stats summary (based on filtered)
+          const avgSR=srFiltered.length?Math.round(srFiltered.reduce((s,p)=>s+p.seasonGrade,0)/srFiltered.length):0;
+          const eliteCount=srFiltered.filter(p=>p.seasonGrade>=85).length;
+          const avgConsistency=srFiltered.length?Math.round(srFiltered.reduce((s,p)=>s+p.consistency,0)/srFiltered.length):0;
+
+          return <div style={{animation:"fadeUp .4s ease"}}>
+            {/* Header */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:20,flexWrap:"wrap",gap:12}}>
+              <div>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Season Rating</div>
+                <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Cumulative season performance — unlike Player Grades (a per-90 snapshot), this rewards durability, goal involvement, and Goals Added over a full season. · {srFiltered.length} players shown</div>
+              </div>
+              <div style={{display:"flex",gap:6}}>
+                {["table","position","tiers"].map(v=><button key={v} onClick={()=>setSrView(v)} style={{background:srView===v?T.ink:"transparent",color:srView===v?T.bg:T.textDim,border:`1px solid ${srView===v?T.ink:T.border}`,borderRadius:4,padding:"5px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:10,letterSpacing:.5,textTransform:"uppercase"}}>{v==="table"?"Table":v==="position"?"By Position":"Tiers"}</button>)}
+              </div>
+            </div>
+
+            {/* Summary cards */}
+            <div className="resp-grid4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+              {[
+                {v:srFiltered.length,l:"Players",sub:srMinMins>0?`${srMinMins}+ min`:"All minutes"},
+                {v:avgSR,l:"Avg Rating",sub:gl(avgSR),c:gc(avgSR)},
+                {v:eliteCount,l:"Elite Rated",sub:"85+ grade",c:T.gold},
+                {v:`${avgConsistency}%`,l:"Avg Consistency",sub:"Cross-category",c:avgConsistency>=70?T.green:T.textDim},
+              ].map(s=>(
+                <div key={s.l} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,padding:"16px 14px",textAlign:"center"}}>
+                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:28,color:s.c||T.ink,lineHeight:1}}>{s.v}</div>
+                  <div style={{fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:.8,marginTop:4,fontFamily:T.sans,textTransform:"uppercase"}}>{s.l}</div>
+                  <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans,marginTop:2}}>{s.sub}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Top 3 Season Rated */}
+            {srView==="table"&&top3.length>=3&&<div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
+              {top3.map((p,i)=>(
+                <div key={p.id} onClick={()=>setSel(p)} style={{
+                  background:T.surface,border:`1px solid ${i===0?T.gold+"40":T.border}`,borderRadius:8,padding:"18px 16px",
+                  cursor:"pointer",transition:"box-shadow .2s",boxShadow:i===0?"0 2px 12px rgba(182,141,64,.15)":"none",
+                  borderTop:i===0?`3px solid ${T.gold}`:i===1?`3px solid ${T.green}`:i===2?`3px solid ${T.blue}`:"none",
+                }} onMouseEnter={e=>e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,.1)"} onMouseLeave={e=>e.currentTarget.style.boxShadow=i===0?"0 2px 12px rgba(182,141,64,.15)":"none"}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+                    <span style={{fontFamily:T.display,fontWeight:900,fontSize:22,color:i===0?T.gold:i===1?T.green:T.blue}}>{i+1}</span>
+                    <TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",color:T.ink}}>{p.name}</div>
+                      <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
+                    </div>
+                    <span style={{fontFamily:T.display,fontWeight:700,fontSize:30,color:gc(p.seasonGrade),lineHeight:1}}>{p.seasonGrade}</span>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:6}}>
+                    <div style={{textAlign:"center",padding:"6px 4px",background:T.card,borderRadius:4}}>
+                      <div style={{fontFamily:T.mono,fontSize:12,fontWeight:700,color:formColor(p.formTrend)}}>{formIcon(p.formTrend)}</div>
+                      <div style={{fontSize:7,color:T.textMute,letterSpacing:.5,marginTop:2}}>FORM</div>
+                    </div>
+                    <div style={{textAlign:"center",padding:"6px 4px",background:T.card,borderRadius:4}}>
+                      <div style={{fontFamily:T.mono,fontSize:12,fontWeight:700,color:T.ink}}>{p.consistency}%</div>
+                      <div style={{fontSize:7,color:T.textMute,letterSpacing:.5,marginTop:2}}>CONSIST</div>
+                    </div>
+                    <div style={{textAlign:"center",padding:"6px 4px",background:T.card,borderRadius:4}}>
+                      <div style={{fontFamily:T.mono,fontSize:12,fontWeight:700,color:T.ink}}>{p.impactPer90}</div>
+                      <div style={{fontSize:7,color:T.textMute,letterSpacing:.5,marginTop:2}}>IMP/90</div>
+                    </div>
+                    <div style={{textAlign:"center",padding:"6px 4px",background:T.card,borderRadius:4}}>
+                      <div style={{fontFamily:T.serif,fontSize:11,fontWeight:700,color:profileColor(p.profile)}}>{p.profile.slice(0,3).toUpperCase()}</div>
+                      <div style={{fontSize:7,color:T.textMute,letterSpacing:.5,marginTop:2}}>TYPE</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>}
+
+            {/* Filters */}
+            <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
+              <Select label="Position" value={srPosFilter} onChange={setSrPosFilter} width={130} options={["All","Forward","Midfielder","Defender","GK"]}/>
+              <Select label="Team" value={srTeamFilter} onChange={setSrTeamFilter} width={200} options={teamOpts}/>
+              <Select label="Min. Mins" value={String(srMinMins)} onChange={v=>setSrMinMins(Number(v))} width={110} options={[["0","All"],["200","200+"],["400","400+"],["600","600+"],["900","900+"],["1200","1200+"]]}/>
+              <Select label="Sort" value={srSort} onChange={v=>{setSrSort(v);setSrDir(v==="age"?"asc":"desc");}} width={150} options={[["seasonGrade","Season Grade"],["consistency","Consistency"],["impactPer90","Impact/90"],["goals","Goals"],["assists","Assists"],["overall","Match Grade"],["age","Age"]]}/>
+            </div>
+
+            {/* ── TABLE VIEW ── */}
+            {srView==="table"&&<TableWrap><div>
+              {(()=>{const srTbl=isMobile?"28px 1fr 42px 32px 38px 38px 42px":"30px 1fr 56px 80px 50px 50px 60px 60px 64px";return <>
+              <div style={{display:"grid",gridTemplateColumns:srTbl,padding:isMobile?"8px 10px":"10px 14px",background:T.card,fontSize:isMobile?8:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}>
+                <div style={{textAlign:"center"}}>#</div><div>Player</div>
+                <ColHead label="SZN" sortKey="seasonGrade" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>
+                <div style={{textAlign:"center"}}>{isMobile?"Form":"Form Curve"}</div>
+                <ColHead label="G" sortKey="goals" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>
+                <ColHead label="A" sortKey="assists" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>
+                <ColHead label={isMobile?"Con":"Consist"} sortKey="consistency" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>
+                {!isMobile&&<ColHead label="Imp/90" sortKey="impactPer90" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>}
+                {!isMobile&&<ColHead label="G+" sortKey="totalGA" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>}
+              </div>
+              {srFiltered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:srTbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
+                <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.gold:i<10?T.green:T.textMute,textAlign:"center"}}>{i+1}</div>
+                <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}>
+                  <TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/>
+                  <div style={{minWidth:0}}>
+                    <div style={{display:"flex",alignItems:"center",gap:5}}>
+                      <span style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</span>
+                      {!isMobile&&(p.mins||0)<450&&<span style={{fontSize:7,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 5px",borderRadius:3,letterSpacing:.5,flexShrink:0}}>PROV</span>}
+                    </div>
+                    <div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team} · {p.mins} min</div>
+                  </div>
+                </div>
+                <div style={{textAlign:"center"}}>
+                  <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center",background:gb(p.seasonGrade),border:`1.5px solid ${gc(p.seasonGrade)}30`,borderRadius:5,padding:isMobile?"2px 7px":"4px 10px",minWidth:isMobile?34:40}}>
+                    <span style={{color:gc(p.seasonGrade),fontWeight:700,fontSize:isMobile?14:17,fontFamily:T.serif,letterSpacing:-.5,lineHeight:1}}>{p.seasonGrade}</span>
+                  </div>
+                </div>
+                <div style={{textAlign:"center",fontFamily:T.mono,fontWeight:700,fontSize:isMobile?12:14,color:formColor(p.formTrend),display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {isMobile?formIcon(p.formTrend):<MiniSpark data={genFormCurve(p)} width={68} height={22} color={gc(p.seasonGrade)}/>}
+                </div>
+                <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.goals,20),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.goals}</div>
+                <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.assists,15),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.assists}</div>
+                <div style={{textAlign:"center"}}>
+                  <span style={{fontFamily:T.mono,fontWeight:600,fontSize:isMobile?11:12,color:p.consistency>=80?T.green:p.consistency>=60?T.blue:T.red,background:`${p.consistency>=80?T.green:p.consistency>=60?T.blue:T.red}10`,padding:"2px 6px",borderRadius:3}}>{p.consistency}%</span>
+                </div>
+                {!isMobile&&<div style={{fontSize:13,color:T.ink,fontWeight:600,fontFamily:T.mono,textAlign:"center"}}>{p.impactPer90}</div>}
+                {!isMobile&&<div style={{fontSize:14,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,textAlign:"center"}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>}
+              </div>)}
+              </>})()}
+            </div></TableWrap>}
+
+            {/* ── POSITION VIEW ── */}
+            {srView==="position"&&(()=>{
+              // Build position groups from filtered data
+              const filteredByPos={};srFiltered.forEach(p=>{if(!filteredByPos[p.posGroup])filteredByPos[p.posGroup]=[];filteredByPos[p.posGroup].push(p);});
+              Object.values(filteredByPos).forEach(arr=>arr.sort((a,b)=>b.seasonGrade-a.seasonGrade));
+              return <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:16}}>
+              {Object.entries(filteredByPos).sort(([a],[b])=>({FW:0,MF:1,DF:2,GK:3}[a]||4)-({FW:0,MF:1,DF:2,GK:3}[b]||4)).map(([pos,posPlayers])=>{
+                const posLabel={FW:"Forwards",MF:"Midfielders",DF:"Defenders",GK:"Goalkeepers"}[pos]||pos;
+                const posAvg=Math.round(posPlayers.reduce((s,p)=>s+p.seasonGrade,0)/posPlayers.length);
+                return <div key={pos} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+                  <div style={{padding:"16px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div>
+                      <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>{posLabel}</div>
+                      <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>{posPlayers.length} players · Avg {posAvg}</div>
+                    </div>
+                    <Badge grade={posAvg} size="md"/>
+                  </div>
+                  {posPlayers.map((p,i)=>(
+                    <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
+                      <div style={{fontFamily:T.display,fontWeight:900,fontSize:16,color:i<3?T.gold:i<10?T.green:T.textMute,width:22,textAlign:"center"}}>{i+1}</div>
+                      <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:"flex",alignItems:"center",gap:6}}>
+                          <span style={{fontFamily:T.serif,fontWeight:600,fontSize:14,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</span>
+                          {(p.mins||0)<450&&<span style={{fontSize:7,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 5px",borderRadius:3,letterSpacing:.5,flexShrink:0}}>PROV</span>}
+                        </div>
+                        <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.team} · {p.gamesPlayed} apps · {p.mins} min</div>
+                      </div>
+                      <div style={{display:"flex",alignItems:"center",gap:8}}>
+                        <span style={{fontFamily:T.mono,fontWeight:700,fontSize:11,color:formColor(p.formTrend)}}>{formIcon(p.formTrend)}</span>
+                        <span style={{fontFamily:T.mono,fontSize:10,color:p.consistency>=70?T.green:T.textDim}}>{p.consistency}%</span>
+                        <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center",background:gb(p.seasonGrade),border:`1.5px solid ${gc(p.seasonGrade)}30`,borderRadius:5,padding:"2px 8px",minWidth:36}}>
+                          <span style={{color:gc(p.seasonGrade),fontWeight:700,fontSize:15,fontFamily:T.serif,lineHeight:1}}>{p.seasonGrade}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>;
+              })}
+            </div>;})()}
+
+            {/* ── TIERS VIEW ── */}
+            {srView==="tiers"&&(()=>{
+              const filteredTiers=[
+                {label:"ELITE",min:85,color:T.gold,players:srFiltered.filter(p=>p.seasonGrade>=85)},
+                {label:"GREAT",min:75,color:T.green,players:srFiltered.filter(p=>p.seasonGrade>=75&&p.seasonGrade<85)},
+                {label:"ABOVE AVG",min:65,color:T.blue,players:srFiltered.filter(p=>p.seasonGrade>=65&&p.seasonGrade<75)},
+                {label:"AVERAGE",min:55,color:T.textDim,players:srFiltered.filter(p=>p.seasonGrade>=55&&p.seasonGrade<65)},
+                {label:"POOR",min:0,color:T.red,players:srFiltered.filter(p=>p.seasonGrade<55)},
+              ];
+              return <div>
+              {/* Tier distribution bar */}
+              <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"20px 24px",marginBottom:20}}>
+                <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:14}}>Grade Distribution · {srFiltered.length} Players</div>
+                <div style={{display:"flex",height:32,borderRadius:6,overflow:"hidden",marginBottom:12}}>
+                  {filteredTiers.filter(t=>t.players.length>0).map(t=>(
+                    <div key={t.label} style={{flex:t.players.length,background:t.color,opacity:.7,display:"flex",alignItems:"center",justifyContent:"center",minWidth:24,transition:"flex .4s ease"}}>
+                      <span style={{fontSize:10,fontWeight:700,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.3)",fontFamily:T.sans}}>{t.players.length}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap"}}>
+                  {filteredTiers.map(t=>(
+                    <div key={t.label} style={{display:"flex",alignItems:"center",gap:5}}>
+                      <div style={{width:10,height:10,borderRadius:2,background:t.color,opacity:.7}}/>
+                      <span style={{fontSize:10,fontFamily:T.sans,fontWeight:600,color:T.textDim}}>{t.label} ({t.players.length})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tier groups */}
+              {filteredTiers.filter(t=>t.players.length>0).map(tier=>(
+                <div key={tier.label} style={{marginBottom:20}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                    <div style={{width:4,height:24,borderRadius:2,background:tier.color}}/>
+                    <span style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:tier.color}}>{tier.label}</span>
+                    <span style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>{tier.players.length} player{tier.players.length!==1?"s":""}</span>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:8}}>
+                    {tier.players.map(p=>(
+                      <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,cursor:"pointer"}}>
+                        <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{display:"flex",alignItems:"center",gap:5}}>
+                            <span style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</span>
+                            {(p.mins||0)<450&&<span style={{fontSize:7,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 5px",borderRadius:3,letterSpacing:.5,flexShrink:0}}>PROV</span>}
+                          </div>
+                          <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team} · #{p.posRank} {p.posGroup} · {p.mins} min</div>
+                        </div>
+                        <div style={{display:"flex",alignItems:"center",gap:6}}>
+                          <span style={{fontFamily:T.mono,fontWeight:700,fontSize:11,color:formColor(p.formTrend)}}>{formIcon(p.formTrend)}</span>
+                          <span style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:gc(p.seasonGrade)}}>{p.seasonGrade}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>;})()}
+
+            {/* How Season Rating Works */}
+            <div style={{marginTop:28,padding:"18px 22px",background:T.card,border:`1px solid ${T.borderLt}`,borderRadius:6}}>
+              <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:8}}>HOW SEASON RATING WORKS</div>
+              <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,lineHeight:1.7}}>
+                The Season Rating is a cumulative performance index built from real match-level data. When per-game boxscore data is available (via ESPN), each player gets a per-match rating based on goals (+12), assists (+8), shots on target (+2), shots (+0.5), minutes played, fouls (-1), cards (-3/-10). The form sparkline shows this real game-by-game trajectory. The cumulative grade combines the weighted composite of all six grade categories (30% Overall, 15% Attack, 15% Passing, 15% Defense, 12.5% Creativity, 12.5% Carrying), plus bonuses for Goals Added contribution, minutes durability, and goal involvement. Players with fewer than 450 minutes are tagged as provisional (PROV). Use the Min. Mins filter to focus on established starters or see the full roster.
+              </div>
+            </div>
+          </div>;
+        })()}
+
         {/* ═══ DEFENSE ═══════════════════════════════════════════════════════ */}
         {!loading&&tab==="defense"&&(()=>{const c=POS[posFilter];const defData=[...players].filter(p=>(!c||c.includes(p.position))&&(teamFilter==="All"||p.team===teamFilter)&&(p.mins||0)>=minMins).sort((a,b)=>{const dir=sortDir==="asc"?1:-1;if(sortKey==="age")return dir*(parseFloat(a.age||99)-parseFloat(b.age||99));const av=Number(a[sortKey])||0,bv=Number(b[sortKey])||0;return dir*(av-bv);}).slice(0,100);
           return <div style={{animation:"fadeUp .4s ease"}}>
+          <div style={{marginBottom:14}}>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Defensive Leaders</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Tackles, pressures, interceptions, and aerial duels. Ranked by defensive output across all positions.</div>
+          </div>
           <div style={{display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
             <Select label="Position" value={posFilter} onChange={setPosFilter} width={130} options={["All","Forward","Midfielder","Defender","GK"]}/>
             <Select label="Team" value={teamFilter} onChange={setTeamFilter} width={200} options={teamOpts}/>
@@ -810,6 +1754,10 @@ function MLSAnalytics(){
         {/* ═══ PASSING ═══════════════════════════════════════════════════════ */}
         {!loading&&tab==="passing"&&(()=>{const c=POS[posFilter];const passData=[...players].filter(p=>+p.passComp>0&&(!c||c.includes(p.position))&&(teamFilter==="All"||p.team===teamFilter)&&(p.mins||0)>=Math.max(minMins,200)).sort((a,b)=>{const dir=sortDir==="asc"?1:-1;if(sortKey==="age")return dir*(parseFloat(a.age||99)-parseFloat(b.age||99));const av=Number(a[sortKey])||0,bv=Number(b[sortKey])||0;return dir*(av-bv);}).slice(0,100);
           return <div style={{animation:"fadeUp .4s ease"}}>
+          <div style={{marginBottom:14}}>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Passing Analytics</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Completion rate, expected completion, progressive passes, and passing Goals Added. Compares actual vs expected to find passers who beat the model.</div>
+          </div>
           <div style={{display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
             <Select label="Position" value={posFilter} onChange={setPosFilter} width={130} options={["All","Forward","Midfielder","Defender","GK"]}/>
             <Select label="Team" value={teamFilter} onChange={setTeamFilter} width={200} options={teamOpts}/>
@@ -836,6 +1784,10 @@ function MLSAnalytics(){
 
         {/* ═══ TEAMS ═════════════════════════════════════════════════════════ */}
         {!loading&&tab==="teams"&&<div style={{animation:"fadeUp .4s ease"}}>
+          <div style={{marginBottom:16}}>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Team Analytics</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Composite team grades averaged across each roster. Click to expand team stats and full roster breakdowns.</div>
+          </div>
           <div style={{marginBottom:16}}><Select label="Conference" value={confFilter} onChange={setConfFilter} width={150} options={["All","Eastern","Western"]}/>
             </div>
           <TableWrap><div>
@@ -951,6 +1903,82 @@ function MLSAnalytics(){
               </div>;
             })}
           </div></TableWrap>
+
+          {/* Head-to-Head Preview */}
+          <div style={{marginTop:24,background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"20px 24px"}}>
+            <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:4}}>Head-to-Head Preview</div>
+            <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,marginBottom:16}}>Pick two teams to compare grade matchups, key player battles, and predicted advantages.</div>
+            <div style={{display:"flex",gap:12,marginBottom:20,flexWrap:"wrap",alignItems:"center"}}>
+              <Select label="Home" value={h2hHome} onChange={setH2hHome} width={200} options={[["","Select team"],...MLS_TEAMS.map(t=>[t.abbr,t.name])]}/>
+              <span style={{fontFamily:T.display,fontWeight:900,fontSize:18,color:T.textMute}}>vs</span>
+              <Select label="Away" value={h2hAway} onChange={setH2hAway} width={200} options={[["","Select team"],...MLS_TEAMS.map(t=>[t.abbr,t.name])]}/>
+            </div>
+            {h2hHome&&h2hAway&&h2hHome!==h2hAway&&(()=>{
+              const tH=enrichedTeams.find(t=>t.abbr===h2hHome);
+              const tA=enrichedTeams.find(t=>t.abbr===h2hAway);
+              if(!tH||!tA)return null;
+              const cats=[{l:"Overall",k:"overall"},{l:"Attack",k:"attack"},{l:"Passing",k:"passing"},{l:"Defense",k:"defense"},{l:"Creativity",k:"creativity"},{l:"Carrying",k:"carrying"}];
+              const hWins=cats.filter(c=>tH[c.k]>tA[c.k]).length;
+              const aWins=cats.filter(c=>tA[c.k]>tH[c.k]).length;
+              const hRoster=players.filter(p=>p.team===h2hHome).sort((a,b)=>b.overall-a.overall);
+              const aRoster=players.filter(p=>p.team===h2hAway).sort((a,b)=>b.overall-a.overall);
+              const hBestFW=hRoster.find(p=>p.position==="Forward"||p.position==="FW");
+              const aBestDF=aRoster.find(p=>p.position==="Defender"||p.position==="DF"||p.position==="DEF");
+              const aBestFW=aRoster.find(p=>p.position==="Forward"||p.position==="FW");
+              const hBestDF=hRoster.find(p=>p.position==="Defender"||p.position==="DF"||p.position==="DEF");
+              const hBestMF=hRoster.find(p=>p.position==="Midfielder"||p.position==="MF");
+              const aBestMF=aRoster.find(p=>p.position==="Midfielder"||p.position==="MF");
+              const matchup=(pA,pB)=>{
+                if(!pA||!pB)return null;
+                const aWin=pA.overall>pB.overall;
+                return <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
+                  <div style={{flex:1,textAlign:"right"}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:aWin?T.ink:T.textDim}}>{pA.name.split(" ").slice(-1)[0]}</div><div style={{fontSize:8,color:T.textMute}}>{pA.position}</div></div>
+                  <div style={{display:"flex",alignItems:"center",gap:4}}><span style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:gc(pA.overall)}}>{pA.overall}</span><span style={{fontSize:9,color:T.textMute}}>vs</span><span style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:gc(pB.overall)}}>{pB.overall}</span></div>
+                  <div style={{flex:1}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:!aWin?T.ink:T.textDim}}>{pB.name.split(" ").slice(-1)[0]}</div><div style={{fontSize:8,color:T.textMute}}>{pB.position}</div></div>
+                </div>;
+              };
+              return <div>
+                <div className="resp-h2h" style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:16,marginBottom:20,alignItems:"center"}}>
+                  <div style={{textAlign:"center",padding:"16px",background:T.card,borderRadius:8,border:`1px solid ${T.borderLt}`}}>
+                    <TeamBadge abbr={tH.abbr} size={48} logo={teamLogos[tH.abbr]}/>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink,marginTop:8}}>{tH.name}</div>
+                    <Badge grade={tH.overall} size="md"/>
+                  </div>
+                  <div style={{textAlign:"center"}}>
+                    <div style={{fontFamily:T.display,fontWeight:900,fontSize:28,color:T.textMute}}>VS</div>
+                    <div style={{fontSize:9,color:hWins>aWins?T.green:hWins<aWins?T.red:T.textDim,fontFamily:T.sans,fontWeight:700,marginTop:4}}>{hWins>aWins?`${tH.abbr} favored (${hWins}-${aWins})`:hWins<aWins?`${tA.abbr} favored (${aWins}-${hWins})`:`Even (${hWins}-${aWins})`}</div>
+                  </div>
+                  <div style={{textAlign:"center",padding:"16px",background:T.card,borderRadius:8,border:`1px solid ${T.borderLt}`}}>
+                    <TeamBadge abbr={tA.abbr} size={48} logo={teamLogos[tA.abbr]}/>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink,marginTop:8}}>{tA.name}</div>
+                    <Badge grade={tA.overall} size="md"/>
+                  </div>
+                </div>
+                <div style={{marginBottom:20}}>{cats.map(c=>{const hv=tH[c.k],av=tA[c.k];return <div key={c.k} style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                  <span style={{fontFamily:T.mono,fontWeight:700,fontSize:13,color:gc(hv),width:28,textAlign:"right"}}>{hv}</span>
+                  <div style={{flex:1,display:"flex",height:10,borderRadius:4,overflow:"hidden",background:T.borderLt}}>
+                    <div style={{width:`${(hv/(hv+av))*100}%`,background:hv>=av?T.green:T.red,opacity:.6,borderRadius:"4px 0 0 4px"}}/>
+                    <div style={{width:`${(av/(hv+av))*100}%`,background:av>hv?T.green:T.red,opacity:.6,borderRadius:"0 4px 4px 0"}}/>
+                  </div>
+                  <span style={{fontFamily:T.mono,fontWeight:700,fontSize:13,color:gc(av),width:28}}>{av}</span>
+                  <span style={{fontSize:9,color:T.textMute,fontFamily:T.sans,width:56}}>{c.l}</span>
+                </div>;})}</div>
+                <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans,marginBottom:10}}>KEY PLAYER BATTLES</div>
+                <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>{matchup(hBestFW,aBestDF)}{matchup(hBestMF,aBestMF)}{matchup(hBestDF,aBestFW)}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:16}}>
+                  {[{l:"Total Goals",h:tH.totalGoals,a:tA.totalGoals},{l:"Total Assists",h:tH.totalAssists,a:tA.totalAssists},{l:"Squad Value",h:fv(tH.squadValue),a:fv(tA.squadValue)},{l:"Avg Age",h:tH.avgAge||"—",a:tA.avgAge||"—"}].map(s=>(
+                    <div key={s.l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 12px",background:T.card,borderRadius:4}}>
+                      <span style={{fontFamily:T.mono,fontWeight:700,fontSize:13,color:T.ink}}>{s.h}</span>
+                      <span style={{fontSize:9,color:T.textMute,fontFamily:T.sans,fontWeight:600}}>{s.l}</span>
+                      <span style={{fontFamily:T.mono,fontWeight:700,fontSize:13,color:T.ink}}>{s.a}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>;
+            })()}
+            {h2hHome&&h2hAway&&h2hHome===h2hAway&&<div style={{padding:20,textAlign:"center",color:T.textDim,fontFamily:T.serif,fontStyle:"italic"}}>Pick two different teams</div>}
+            {(!h2hHome||!h2hAway)&&<div style={{padding:20,textAlign:"center",color:T.textDim,fontFamily:T.serif,fontStyle:"italic"}}>Select both teams above to see the matchup breakdown</div>}
+          </div>
         </div>}
 
         {/* ═══ POWER RANKINGS ═══════════════════════════════════════════════ */}
@@ -965,16 +1993,44 @@ function MLSAnalytics(){
             if(b.pts!==a.pts)return b.pts-a.pts;if(b.gd!==a.gd)return b.gd-a.gd;return b.gf-a.gf;
           }).map((t,i)=>({...t,rank:i+1}));
           return <div style={{animation:"fadeUp .4s ease"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:20,flexWrap:"wrap",gap:10}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:16,flexWrap:"wrap",gap:10}}>
             <div>
               <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>MLS Table</div>
-              <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Standings with composite team grades</div>
+              <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Official MLS standings with composite team grades. Points-based ranking with goal difference and grade overlays.</div>
             </div>
             <div style={{display:"flex",gap:8}}>
               <Select label="Conference" value={confFilter} onChange={setConfFilter} width={130} options={["All","Eastern","Western"]}/>
               <Select label="Sort" value={sortKey} onChange={v=>{setSortKey(v);setSortDir("desc");}} width={140} options={[["pts","By Points"],["overall","By OVR"],["attack","By ATT"],["passing","By PAS"],["defense","By DEF"],["totalGoals","By Goals"],["totalAssists","By Assists"]]}/>
             </div>
           </div>
+
+          {/* Recent Results */}
+          {matchesData.length>0&&(()=>{
+            const completed=[...matchesData].filter(m=>m.completed).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+            if(!completed.length)return null;
+            return <div style={{marginBottom:20,background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"16px 20px"}}>
+              <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:12}}>Recent Results</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:8}}>
+                {completed.slice(0,12).map((m,i)=>{
+                  const hs=+(m.homeScore||0),as=+(m.awayScore||0);
+                  const dt=m.date?new Date(m.date):null;
+                  const dateStr=dt?dt.toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
+                  return <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
+                    <div style={{flex:1,textAlign:"right",display:"flex",alignItems:"center",justifyContent:"flex-end",gap:6}}>
+                      <span style={{fontFamily:T.sans,fontWeight:hs>as?700:500,fontSize:11,color:hs>as?T.ink:T.textDim}}>{m.home}</span>
+                      <TeamBadge abbr={m.home} size={20} logo={teamLogos[m.home]}/>
+                    </div>
+                    <div style={{fontFamily:T.mono,fontWeight:700,fontSize:14,color:T.ink,minWidth:36,textAlign:"center"}}>{hs}–{as}</div>
+                    <div style={{flex:1,display:"flex",alignItems:"center",gap:6}}>
+                      <TeamBadge abbr={m.away} size={20} logo={teamLogos[m.away]}/>
+                      <span style={{fontFamily:T.sans,fontWeight:as>hs?700:500,fontSize:11,color:as>hs?T.ink:T.textDim}}>{m.away}</span>
+                    </div>
+                    <span style={{fontSize:8,color:T.textMute,fontFamily:T.sans,minWidth:40,textAlign:"right"}}>{dateStr}</span>
+                  </div>;
+                })}
+              </div>
+            </div>;
+          })()}
           <div style={{display:"grid",gridTemplateColumns:"40px 44px 220px 70px 100px 80px 44px 44px 44px 44px 1fr",padding:"8px 16px",fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:.8,fontFamily:T.sans,textTransform:"uppercase",borderBottom:`1px solid ${T.border}`}}>
             <div style={{textAlign:"center"}}>#</div><div></div><div>Team</div><div style={{textAlign:"center"}}>Record</div><div style={{textAlign:"center"}}>Pts / GD</div><div style={{textAlign:"center"}}>GF / GA</div><div style={{textAlign:"center"}}>OVR</div><div style={{textAlign:"center"}}>ATT</div><div style={{textAlign:"center"}}>PAS</div><div style={{textAlign:"center"}}>DEF</div><div style={{textAlign:"right"}}>Best Player</div>
           </div>
@@ -995,9 +2051,184 @@ function MLSAnalytics(){
         </div>})()}
 
         {/* ═══ LEADERS TAB ═══════════════════════════════════════════════════ */}
-        {!loading&&tab==="leaders"&&<div style={{animation:"fadeUp .4s ease"}}>
-          <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink,letterSpacing:-.5,marginBottom:4}}>Season Leaders</div>
-          <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans,marginBottom:20}}>Top performers across key statistical categories</div>
+        {!loading&&tab==="leaders"&&(()=>{
+          // Best XI: top rated at each position slot (4-3-3)
+          const byPos=(pos)=>[...players].filter(p=>pos.includes(p.position)).sort((a,b)=>b.overall-a.overall);
+          const fws=byPos(["Forward","FW"]);const mfs=byPos(["Midfielder","MF"]);const dfs=byPos(["Defender","DF","DEF"]);const gks=byPos(["GK","Goalkeeper"]);
+          const xi=[
+            {slot:"LW",p:fws[0],x:15,y:18},{slot:"ST",p:fws[1]||fws[0],x:50,y:10},{slot:"RW",p:fws[2]||fws[0],x:85,y:18},
+            {slot:"LCM",p:mfs[0],x:25,y:42},{slot:"CM",p:mfs[1]||mfs[0],x:50,y:36},{slot:"RCM",p:mfs[2]||mfs[0],x:75,y:42},
+            {slot:"LB",p:dfs[0],x:12,y:65},{slot:"LCB",p:dfs[1]||dfs[0],x:35,y:68},{slot:"RCB",p:dfs[2]||dfs[0],x:65,y:68},{slot:"RB",p:dfs[3]||dfs[0],x:88,y:65},
+            {slot:"GK",p:gks[0],x:50,y:90},
+          ].filter(s=>s.p);
+          const xiAvg=xi.length?Math.round(xi.reduce((s,x)=>s+x.p.overall,0)/xi.length):0;
+
+          return <div style={{animation:"fadeUp .4s ease"}}>
+          <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5,marginBottom:4}}>Season Leaders</div>
+          <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginBottom:20}}>Top 5 players across key statistical categories. Golden Boot, assists, tackles, dribbles, and more — the best at each discipline.</div>
+
+          {/* Best XI */}
+          {xi.length>=11&&<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden",marginBottom:24}}>
+            <div style={{padding:"16px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>Best XI</div>
+                <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>Top-graded player at each position · 4-3-3 formation</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:24,color:gc(xiAvg)}}>{xiAvg}</div>
+                <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:.8}}>AVG GRADE</div>
+              </div>
+            </div>
+            <div style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden",borderRadius:"0 0 8px 8px"}}>
+              {/* Pitch lines */}
+              <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:4}}/>
+              <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
+              <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
+              <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
+              {/* Penalty boxes */}
+              <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
+              <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
+              {/* Player dots */}
+              {xi.map(s=>(
+                <div key={s.slot} onClick={()=>setSel(s.p)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
+                  <div style={{width:52,height:52,borderRadius:"50%",background:`rgba(0,0,0,.55)`,border:`3px solid ${gc(s.p.overall)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:`0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)`}}>
+                    <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.p.overall}</span>
+                  </div>
+                  <div style={{marginTop:4,padding:"2px 8px",background:"rgba(0,0,0,.5)",borderRadius:3,display:"inline-block",backdropFilter:"blur(4px)"}}>
+                    <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:"#fff",whiteSpace:"nowrap",letterSpacing:.3}}>{s.p.name.split(" ").slice(-1)[0]}</div>
+                  </div>
+                  <div style={{fontSize:9,color:"rgba(255,255,255,.8)",fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.p.team}</div>
+                </div>
+              ))}
+            </div>
+          </div>}
+
+          {/* ── TEAM OF THE WEEK ── */}
+          {(()=>{
+            // Group all player match logs by date to create matchweeks
+            const allLogs=[];
+            players.forEach(pl=>{
+              (pl.matchLog||[]).forEach(m=>{
+                if(!m.date)return;
+                const dateKey=m.date.slice(0,10);
+                // Compute per-game rating
+                let rating=55;
+                rating+=(m.g||0)*12;rating+=(m.a||0)*8;rating+=(m.sot||0)*2;
+                rating+=(m.sh||0)*0.5;rating-=(m.fl||0)*1;rating-=(m.yc||0)*3;
+                rating-=(m.rc||0)*10;rating+=(m.mins||0)>=80?3:(m.mins||0)>=45?2:1;
+                rating=Math.max(42,Math.min(99,Math.round(rating)));
+                allLogs.push({player:pl,dateKey,rating,...m});
+              });
+            });
+            if(allLogs.length<11)return null;
+            // Group by date into matchweeks
+            const byDate={};allLogs.forEach(l=>{if(!byDate[l.dateKey])byDate[l.dateKey]=[];byDate[l.dateKey].push(l);});
+            // Merge adjacent dates (within 2 days) into matchweeks
+            const dateKeys=Object.keys(byDate).sort();
+            const weeks=[];let current=[];
+            dateKeys.forEach((dk,i)=>{
+              current.push(dk);
+              const next=dateKeys[i+1];
+              if(!next||new Date(next)-new Date(dk)>3*86400000){
+                weeks.push({dates:[...current],logs:current.flatMap(d=>byDate[d])});
+                current=[];
+              }
+            });
+            if(!weeks.length)return null;
+            // Selected week
+            const weekIdx=totwWeek===0?weeks.length-1:Math.min(totwWeek-1,weeks.length-1);
+            const week=weeks[weekIdx];
+            if(!week||week.logs.length<6)return null;
+            // Best player per position from this week's logs
+            const bestAt=(positions)=>{
+              const eligible=week.logs.filter(l=>positions.includes(l.player.position));
+              if(!eligible.length)return null;
+              eligible.sort((a,b)=>b.rating-a.rating);
+              // Deduplicate by player
+              const seen=new Set();
+              return eligible.filter(l=>{if(seen.has(l.player.id))return false;seen.add(l.player.id);return true;});
+            };
+            const fwLogs=bestAt(["Forward","FW"])||[];
+            const mfLogs=bestAt(["Midfielder","MF"])||[];
+            const dfLogs=bestAt(["Defender","DF","DEF"])||[];
+            const gkLogs=bestAt(["GK","Goalkeeper"])||[];
+            const totwXi=[
+              {slot:"LW",l:fwLogs[0],x:15,y:18},{slot:"ST",l:fwLogs[1]||fwLogs[0],x:50,y:10},{slot:"RW",l:fwLogs[2]||fwLogs[0],x:85,y:18},
+              {slot:"LCM",l:mfLogs[0],x:25,y:42},{slot:"CM",l:mfLogs[1]||mfLogs[0],x:50,y:36},{slot:"RCM",l:mfLogs[2]||mfLogs[0],x:75,y:42},
+              {slot:"LB",l:dfLogs[0],x:12,y:65},{slot:"LCB",l:dfLogs[1]||dfLogs[0],x:35,y:68},{slot:"RCB",l:dfLogs[2]||dfLogs[0],x:65,y:68},{slot:"RB",l:dfLogs[3]||dfLogs[0],x:88,y:65},
+              {slot:"GK",l:gkLogs[0],x:50,y:90},
+            ].filter(s=>s.l);
+            const totwAvg=totwXi.length?Math.round(totwXi.reduce((s,t)=>s+t.l.rating,0)/totwXi.length):0;
+            const weekLabel=(()=>{
+              const d1=new Date(week.dates[0]+"T12:00:00Z");
+              const d2=week.dates.length>1?new Date(week.dates[week.dates.length-1]+"T12:00:00Z"):d1;
+              const fmt=(d)=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+              return week.dates.length>1?`${fmt(d1)} – ${fmt(d2)}`:fmt(d1);
+            })();
+            // Top performers list (top 5 ratings across all positions)
+            const topPerf=[...week.logs].sort((a,b)=>b.rating-a.rating);
+            const seenIds=new Set();const topUnique=topPerf.filter(l=>{if(seenIds.has(l.player.id))return false;seenIds.add(l.player.id);return true;}).slice(0,5);
+
+            return <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden",marginBottom:24}}>
+              <div style={{padding:"16px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+                <div>
+                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>Team of the Week</div>
+                  <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>Best per-match ratings · Matchweek {weekIdx+1} · {weekLabel}</div>
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <button onClick={()=>setTotwWeek(Math.max(1,weekIdx))} disabled={weekIdx<=0} style={{background:"none",border:`1px solid ${weekIdx<=0?T.borderLt:T.border}`,borderRadius:4,color:weekIdx<=0?T.textMute:T.ink,width:28,height:28,cursor:weekIdx<=0?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>‹</button>
+                  <span style={{fontFamily:T.mono,fontSize:12,fontWeight:600,color:T.textDim,minWidth:50,textAlign:"center"}}>MW {weekIdx+1}</span>
+                  <button onClick={()=>setTotwWeek(Math.min(weeks.length,weekIdx+2))} disabled={weekIdx>=weeks.length-1} style={{background:"none",border:`1px solid ${weekIdx>=weeks.length-1?T.borderLt:T.border}`,borderRadius:4,color:weekIdx>=weeks.length-1?T.textMute:T.ink,width:28,height:28,cursor:weekIdx>=weeks.length-1?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>›</button>
+                </div>
+              </div>
+
+              {/* Formation pitch */}
+              {totwXi.length>=8&&<div style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden"}}>
+                <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:4}}/>
+                <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
+                <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
+                <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
+                <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
+                <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
+                {/* Matchweek badge */}
+                <div style={{position:"absolute",top:12,left:"50%",transform:"translateX(-50%)",padding:"4px 14px",background:"rgba(0,0,0,.5)",borderRadius:20,zIndex:3,backdropFilter:"blur(4px)"}}>
+                  <span style={{fontFamily:T.sans,fontWeight:700,fontSize:10,color:"#fff"}}>MW{weekIdx+1} · AVG {totwAvg}</span>
+                </div>
+                {totwXi.map(s=>(
+                  <div key={s.slot} onClick={()=>setSel(s.l.player)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
+                    <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,.55)",border:`3px solid ${gc(s.l.rating)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
+                      <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.l.rating}</span>
+                    </div>
+                    <div style={{marginTop:4,padding:"2px 8px",background:"rgba(0,0,0,.5)",borderRadius:3,display:"inline-block",backdropFilter:"blur(4px)"}}>
+                      <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:"#fff",whiteSpace:"nowrap"}}>{s.l.player.name.split(" ").slice(-1)[0]}</div>
+                    </div>
+                    <div style={{fontSize:9,color:"rgba(255,255,255,.8)",fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.l.player.team}{s.l.g>0?` · ${s.l.g}G`:""}{s.l.a>0?` · ${s.l.a}A`:""}</div>
+                  </div>
+                ))}
+              </div>}
+
+              {/* Top performers list */}
+              <div style={{padding:"14px 22px",borderTop:`1px solid ${T.borderLt}`}}>
+                <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans,marginBottom:8}}>TOP PERFORMERS · MW{weekIdx+1}</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:6}}>
+                  {topUnique.map((l,i)=>(
+                    <div key={l.player.id} onClick={()=>setSel(l.player)} className="rh" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:4,cursor:"pointer",border:`1px solid ${T.borderLt}`}}>
+                      <span style={{fontFamily:T.display,fontWeight:900,fontSize:14,color:i===0?T.gold:i<3?T.green:T.textMute,width:16}}>{i+1}</span>
+                      <TeamBadge abbr={l.player.team} size={22} logo={l.player.teamLogo}/>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{l.player.name}</div>
+                        <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{l.player.position} · {l.opp} ({l.ha}) · {l.g>0?`${l.g}G `:""}{ l.a>0?`${l.a}A `:""}{l.mins}'</div>
+                      </div>
+                      <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center",background:gb(l.rating),border:`1.5px solid ${gc(l.rating)}30`,borderRadius:5,padding:"2px 8px",minWidth:34}}>
+                        <span style={{color:gc(l.rating),fontWeight:700,fontSize:15,fontFamily:T.serif,lineHeight:1}}>{l.rating}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>;
+          })()}
+
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:14}}>
             {leaders.map(cat=>(
               <div key={cat.k} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
@@ -1023,10 +2254,14 @@ function MLSAnalytics(){
               </div>
             ))}
           </div>
-        </div>}
+        </div>;})()}
 
         {/* ═══ VALUES ════════════════════════════════════════════════════════ */}
         {!loading&&tab==="valuations"&&<div style={{animation:"fadeUp .4s ease"}}>
+          <div style={{marginBottom:14}}>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Market Valuations</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Estimated transfer values via Sofascore. Compare market price against on-field grade to find overperformers and undervalued talent.</div>
+          </div>
           <div style={{display:"flex",gap:14,marginBottom:20,flexWrap:"wrap"}}>
             <Select label="Position" value={posFilter} onChange={setPosFilter} width={130} options={["All","Forward","Midfielder","Defender","GK"]}/>
             <Select label="Sort" value={sortKey==="marketValue"?`mv_${sortDir}`:sortKey} onChange={v=>{if(v==="mv_desc"){setSortKey("marketValue");setSortDir("desc");}else if(v==="mv_asc"){setSortKey("marketValue");setSortDir("asc");}else{setSortKey(v);setSortDir("desc");}}} width={150} options={[["mv_desc","Highest Value"],["mv_asc","Lowest Value"],["overall","By Grade"]]}/>
@@ -1044,24 +2279,288 @@ function MLSAnalytics(){
               <div style={{fontSize:13,color:T.textDim,fontFamily:T.mono,fontWeight:600,textAlign:"center"}}>{p.mins?.toLocaleString()}</div>
             </div>)}
           </div></TableWrap>
+
+          {/* Value Efficiency */}
+          {(()=>{
+            const withMV=players.filter(p=>p.marketValue>100000&&p.overall>0);
+            const eff=withMV.map(p=>({...p,efficiency:Math.round((p.overall/(p.marketValue/1e6))*10)/10})).sort((a,b)=>b.efficiency-a.efficiency);
+            const bargains=eff.slice(0,6);
+            const overpaid=[...eff].sort((a,b)=>a.efficiency-b.efficiency).slice(0,6);
+            if(!bargains.length)return null;
+            const effCard=(p,i,isBargain)=>(
+              <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
+                <div style={{fontFamily:T.display,fontWeight:900,fontSize:14,color:i<3?(isBargain?T.green:T.red):T.textMute,width:18,textAlign:"center"}}>{i+1}</div>
+                <TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+                  <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.team}</div>
+                </div>
+                <div style={{textAlign:"right",minWidth:70}}>
+                  <div style={{fontFamily:T.mono,fontWeight:700,fontSize:13,color:isBargain?T.green:T.red}}>{p.efficiency} pts/$M</div>
+                  <div style={{fontSize:8,color:T.textMute}}>{fv(p.marketValue)} · {p.overall} grd</div>
+                </div>
+              </div>
+            );
+            return <div style={{marginTop:24}}>
+              <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:14}}>Grade-Per-Dollar Efficiency</div>
+              <div className="resp-grid2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+                <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+                  <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{width:4,height:20,borderRadius:2,background:T.green}}/>
+                    <div><div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.green}}>Best Bargains</div><div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Highest grade per $1M market value</div></div>
+                  </div>
+                  {bargains.map((p,i)=>effCard(p,i,true))}
+                </div>
+                <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+                  <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{width:4,height:20,borderRadius:2,background:T.red}}/>
+                    <div><div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.red}}>Most Overpaid</div><div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Lowest grade per $1M market value</div></div>
+                  </div>
+                  {overpaid.map((p,i)=>effCard(p,i,false))}
+                </div>
+              </div>
+            </div>;
+          })()}
         </div>}
 
         {/* ═══ POSITIONAL ════════════════════════════════════════════════════ */}
-        {!loading&&tab==="positions"&&<div style={{animation:"fadeUp .4s ease"}}>
-          {posBuckets.length===0?<div style={{padding:48,textAlign:"center",color:T.textDim,fontFamily:T.serif,fontStyle:"italic"}}>No data available</div>
-          :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14}}>
-            {posBuckets.map(b=><div key={b.pos} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,padding:"20px 22px"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
-                <div><div style={{fontFamily:T.display,fontWeight:700,fontSize:30,color:T.ink}}>{b.pos}</div><div style={{fontSize:10,color:T.textDim,marginTop:2,fontFamily:T.sans}}>{b.count} players</div></div>
-                <div style={{textAlign:"right"}}><div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1.5,marginBottom:3,fontFamily:T.sans}}>BEST</div><Badge grade={b.top} size="md"/></div>
+        {!loading&&tab==="positions"&&(()=>{
+          // Build rich position data
+          const posData={};
+          players.forEach(p=>{
+            const pg=p.position==="Forward"||p.position==="FW"?"Forward":p.position==="Midfielder"||p.position==="MF"?"Midfielder":p.position==="Defender"||p.position==="DF"||p.position==="DEF"?"Defender":p.position==="GK"?"Goalkeeper":"Midfielder";
+            if(!posData[pg])posData[pg]={players:[],grades:[],goals:0,assists:0,tackles:0,totalMins:0,totalMV:0,ages:[]};
+            posData[pg].players.push(p);
+            posData[pg].grades.push(p.overall);
+            posData[pg].goals+=(p.goals||0);
+            posData[pg].assists+=(p.assists||0);
+            posData[pg].tackles+=(p.tackles||0);
+            posData[pg].totalMins+=(p.mins||0);
+            posData[pg].totalMV+=(p.marketValue||0);
+            if(p.age)posData[pg].ages.push(parseFloat(p.age));
+          });
+          const posOrder=["Forward","Midfielder","Defender","Goalkeeper"];
+          const posEntries=posOrder.filter(p=>posData[p]).map(pos=>{
+            const d=posData[pos];
+            const n=d.players.length||1;
+            const avg=Math.round(d.grades.reduce((a,b)=>a+b,0)/n);
+            const top=Math.max(...d.grades);
+            const bot=Math.min(...d.grades);
+            const avgAge=d.ages.length?Math.round(d.ages.reduce((a,b)=>a+b,0)/d.ages.length*10)/10:null;
+            const avgMV=Math.round(d.totalMV/n);
+            const top5=[...d.players].sort((a,b)=>b.overall-a.overall).slice(0,5);
+            const topScorers=[...d.players].sort((a,b)=>(b.goals||0)-(a.goals||0)).slice(0,3);
+            const elite=d.grades.filter(g=>g>=85).length;
+            const great=d.grades.filter(g=>g>=75&&g<85).length;
+            const above=d.grades.filter(g=>g>=65&&g<75).length;
+            const average=d.grades.filter(g=>g>=55&&g<65).length;
+            const poor=d.grades.filter(g=>g<55).length;
+            // Avg sub-grades
+            const avgAtt=Math.round(d.players.reduce((s,p)=>s+p.attack,0)/n);
+            const avgPas=Math.round(d.players.reduce((s,p)=>s+p.passing,0)/n);
+            const avgDef=Math.round(d.players.reduce((s,p)=>s+p.defense,0)/n);
+            const avgCre=Math.round(d.players.reduce((s,p)=>s+p.creativity,0)/n);
+            const avgCar=Math.round(d.players.reduce((s,p)=>s+p.carrying,0)/n);
+            return{pos,count:d.players.length,avg,top,bot,avgAge,avgMV,top5,topScorers,goals:d.goals,assists:d.assists,tackles:d.tackles,elite,great,above,average,poor,grades:d.grades,avgAtt,avgPas,avgDef,avgCre,avgCar};
+          });
+          const posIcons={Forward:"⚽",Midfielder:"🎯",Defender:"🛡",Goalkeeper:"🧤"};
+          const totalPlayers=players.length;
+
+          return <div style={{animation:"fadeUp .4s ease"}}>
+          <div style={{marginBottom:16}}>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Positional Breakdown</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Grade distribution, top players, and key stat profiles by position group across the league.</div>
+          </div>
+
+          {/* Position overview cards */}
+          <div className="resp-grid4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+            {posEntries.map(pe=>(
+              <div key={pe.pos} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,padding:"16px 14px",textAlign:"center"}}>
+                <div style={{fontSize:20,marginBottom:4}}>{posIcons[pe.pos]}</div>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>{pe.pos}s</div>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:28,color:gc(pe.avg),lineHeight:1,marginTop:6}}>{pe.avg}</div>
+                <div style={{fontSize:8,color:gc(pe.avg),fontWeight:600,letterSpacing:.8,marginTop:2}}>{gl(pe.avg)} AVG</div>
+                <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans,marginTop:6}}>{pe.count} players</div>
               </div>
-              <div style={{marginBottom:12}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:10,color:T.textDim,fontWeight:600}}>Avg Grade</span><span style={{fontSize:10,color:gc(b.avg),fontWeight:700}}>{gl(b.avg)}</span></div>
-                <div style={{display:"flex",alignItems:"center",gap:8}}><div style={{flex:1,height:4,background:T.borderLt,borderRadius:2,overflow:"hidden"}}><div style={{width:`${b.avg}%`,height:"100%",background:T.ink,opacity:.2,borderRadius:2}}/></div><span style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:gc(b.avg)}}>{b.avg}</span></div>
+            ))}
+          </div>
+
+          {/* Detailed position cards */}
+          <div className="resp-pos-cards" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(480px,1fr))",gap:16}}>
+            {posEntries.map(pe=>(
+              <div key={pe.pos} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,overflow:"hidden"}}>
+                {/* Card header */}
+                <div style={{padding:"18px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:12}}>
+                    <span style={{fontSize:24}}>{posIcons[pe.pos]}</span>
+                    <div>
+                      <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink}}>{pe.pos}s</div>
+                      <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{pe.count} players · {pe.goals} goals · {pe.assists} assists · {pe.tackles} tackles</div>
+                    </div>
+                  </div>
+                  <Badge grade={pe.avg} size="lg"/>
+                </div>
+
+                <div style={{padding:"16px 22px"}}>
+                  {/* Sub-grade averages */}
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8,marginBottom:16}}>
+                    {[{l:"ATT",v:pe.avgAtt},{l:"PAS",v:pe.avgPas},{l:"DEF",v:pe.avgDef},{l:"CRE",v:pe.avgCre},{l:"CAR",v:pe.avgCar}].map(g=>(
+                      <div key={g.l} style={{textAlign:"center",padding:"8px 4px",background:T.card,borderRadius:4}}>
+                        <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:gc(g.v),lineHeight:1}}>{g.v}</div>
+                        <div style={{fontSize:7,color:T.textMute,fontWeight:600,letterSpacing:.8,marginTop:3}}>{g.l}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Key stats row */}
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8,marginBottom:16}}>
+                    <div style={{padding:"8px",background:T.card,borderRadius:4,textAlign:"center"}}>
+                      <div style={{fontFamily:T.mono,fontSize:14,fontWeight:700,color:T.ink}}>{pe.avgAge||"—"}</div>
+                      <div style={{fontSize:7,color:T.textMute,fontWeight:600,letterSpacing:.5}}>AVG AGE</div>
+                    </div>
+                    <div style={{padding:"8px",background:T.card,borderRadius:4,textAlign:"center"}}>
+                      <div style={{fontFamily:T.mono,fontSize:14,fontWeight:700,color:vc(pe.avgMV)}}>{fv(pe.avgMV)}</div>
+                      <div style={{fontSize:7,color:T.textMute,fontWeight:600,letterSpacing:.5}}>AVG VALUE</div>
+                    </div>
+                    <div style={{padding:"8px",background:T.card,borderRadius:4,textAlign:"center"}}>
+                      <div style={{fontFamily:T.mono,fontSize:14,fontWeight:700,color:T.ink}}>{pe.top}</div>
+                      <div style={{fontSize:7,color:T.textMute,fontWeight:600,letterSpacing:.5}}>BEST GRADE</div>
+                    </div>
+                    <div style={{padding:"8px",background:T.card,borderRadius:4,textAlign:"center"}}>
+                      <div style={{fontFamily:T.mono,fontSize:14,fontWeight:700,color:T.red}}>{pe.bot}</div>
+                      <div style={{fontSize:7,color:T.textMute,fontWeight:600,letterSpacing:.5}}>WORST GRADE</div>
+                    </div>
+                  </div>
+
+                  {/* Tier distribution bar */}
+                  <div style={{marginBottom:16}}>
+                    <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans,marginBottom:6}}>GRADE DISTRIBUTION</div>
+                    <div style={{display:"flex",height:18,borderRadius:4,overflow:"hidden",marginBottom:6}}>
+                      {[{c:T.gold,n:pe.elite},{c:T.green,n:pe.great},{c:T.blue,n:pe.above},{c:T.textDim,n:pe.average},{c:T.red,n:pe.poor}].filter(t=>t.n>0).map((t,i)=>(
+                        <div key={i} style={{flex:t.n,background:t.c,opacity:.65,display:"flex",alignItems:"center",justifyContent:"center",minWidth:t.n>0?14:0}}>
+                          <span style={{fontSize:8,fontWeight:700,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.3)"}}>{t.n}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                      {[{l:"Elite",n:pe.elite,c:T.gold},{l:"Great",n:pe.great,c:T.green},{l:"Above",n:pe.above,c:T.blue},{l:"Avg",n:pe.average,c:T.textDim},{l:"Poor",n:pe.poor,c:T.red}].map(t=>(
+                        <span key={t.l} style={{fontSize:8,fontFamily:T.sans,color:t.c,fontWeight:600}}>{t.l}: {t.n}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Top 5 players */}
+                  <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans,marginBottom:8}}>TOP 5 RATED</div>
+                  {pe.top5.map((p,i)=>(
+                    <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"8px 6px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
+                      <div style={{fontFamily:T.display,fontWeight:900,fontSize:14,color:i<3?T.gold:T.textMute,width:18,textAlign:"center"}}>{i+1}</div>
+                      <TeamBadge abbr={p.team} size={26} logo={p.teamLogo}/>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+                        <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{p.team} · {p.goals}G {p.assists}A · {p.mins} min</div>
+                      </div>
+                      <Badge grade={p.overall} size="sm"/>
+                    </div>
+                  ))}
+
+                  {/* Top scorers if forwards/mids */}
+                  {(pe.pos==="Forward"||pe.pos==="Midfielder")&&pe.topScorers[0]?.goals>0&&<div style={{marginTop:14}}>
+                    <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans,marginBottom:8}}>TOP SCORERS</div>
+                    <div style={{display:"flex",gap:8}}>
+                      {pe.topScorers.filter(p=>p.goals>0).map((p,i)=>(
+                        <div key={p.id} onClick={()=>setSel(p)} style={{flex:1,padding:"10px 8px",background:T.card,borderRadius:4,textAlign:"center",cursor:"pointer",border:`1px solid ${T.borderLt}`}}>
+                          <div style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:T.ink,lineHeight:1}}>{p.goals}</div>
+                          <div style={{fontSize:7,color:T.textMute,fontWeight:600,letterSpacing:.5,marginTop:2}}>GOALS</div>
+                          <div style={{fontFamily:T.serif,fontWeight:600,fontSize:11,color:T.ink,marginTop:6,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name.split(" ").slice(-1)[0]}</div>
+                          <div style={{fontSize:8,color:T.textDim}}>{p.team}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>}
+                </div>
               </div>
-              <div style={{height:50,marginTop:8}}><ResponsiveContainer width="100%" height="100%"><BarChart data={b.grades.sort((a,z)=>z-a).map((g,i)=>({n:i,g}))} barSize={5}><RBar dataKey="g" radius={[2,2,0,0]}>{b.grades.sort((a,z)=>z-a).map((g,i)=><Cell key={i} fill={T.ink} opacity={.15+((g-40)/60)*.35}/>)}</RBar></BarChart></ResponsiveContainer></div>
-            </div>)}
-          </div>}
-        </div>}
+            ))}
+          </div>
+
+          {/* Grade bar chart per position */}
+          <div style={{marginTop:24,background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"20px 24px"}}>
+            <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:16}}>Position Grade Comparison</div>
+            <div className="resp-grid4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16}}>
+              {posEntries.map(pe=>(
+                <div key={pe.pos} style={{textAlign:"center"}}>
+                  <div style={{fontFamily:T.serif,fontWeight:700,fontSize:13,color:T.ink,marginBottom:8}}>{pe.pos}s</div>
+                  {[{l:"OVR",v:pe.avg},{l:"ATT",v:pe.avgAtt},{l:"PAS",v:pe.avgPas},{l:"DEF",v:pe.avgDef},{l:"CRE",v:pe.avgCre},{l:"CAR",v:pe.avgCar}].map(g=>(
+                    <div key={g.l} style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}>
+                      <span style={{fontSize:8,color:T.textMute,fontFamily:T.sans,fontWeight:600,width:24}}>{g.l}</span>
+                      <div style={{flex:1,height:6,background:T.borderLt,borderRadius:3,overflow:"hidden"}}>
+                        <div style={{width:`${Math.max(2,(g.v-40)/60*100)}%`,height:"100%",background:gc(g.v),borderRadius:3,opacity:.6}}/>
+                      </div>
+                      <span style={{fontSize:9,fontFamily:T.mono,fontWeight:700,color:gc(g.v),width:22,textAlign:"right"}}>{g.v}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Age Curve Scatter Plot */}
+          {(()=>{
+            const withAge=posEntries.flatMap(pe=>pe.top5).length>0?players.filter(p=>p.age&&parseFloat(p.age)>16&&p.overall>0):[];
+            if(withAge.length<10)return null;
+            const minAge=16,maxAge=40,minG=42,maxG=99;
+            const u23Elite=withAge.filter(p=>parseFloat(p.age)<23&&p.overall>=75).sort((a,b)=>b.overall-a.overall).slice(0,5);
+            const peakElite=withAge.filter(p=>{const a=parseFloat(p.age);return a>=23&&a<=29&&p.overall>=75;}).sort((a,b)=>b.overall-a.overall).slice(0,5);
+            const veteranElite=withAge.filter(p=>parseFloat(p.age)>29&&p.overall>=75).sort((a,b)=>b.overall-a.overall).slice(0,5);
+
+            return <div style={{marginTop:24,background:T.surface,border:`1px solid ${T.border}`,borderRadius:8,padding:"20px 24px"}}>
+              <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:4}}>Age-Grade Curve</div>
+              <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,marginBottom:16}}>Every player plotted by age vs overall grade. Hover to identify, click to open. Find young stars, peak performers, and aging veterans.</div>
+
+              {/* SVG scatter */}
+              <div style={{position:"relative",width:"100%",height:320,background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`,overflow:"hidden"}}>
+                {/* Quadrant lines */}
+                <div style={{position:"absolute",left:`${((23-minAge)/(maxAge-minAge))*100}%`,top:0,bottom:0,borderLeft:`1px dashed ${T.border}`,zIndex:1}}/>
+                <div style={{position:"absolute",left:`${((30-minAge)/(maxAge-minAge))*100}%`,top:0,bottom:0,borderLeft:`1px dashed ${T.border}`,zIndex:1}}/>
+                <div style={{position:"absolute",top:`${(1-(75-minG)/(maxG-minG))*100}%`,left:0,right:0,borderTop:`1px dashed ${T.border}`,zIndex:1}}/>
+                {/* Quadrant labels */}
+                <div style={{position:"absolute",left:"4%",top:6,fontSize:8,color:T.green,fontFamily:T.sans,fontWeight:700,opacity:.6}}>Young Stars</div>
+                <div style={{position:"absolute",left:`${((23-minAge)/(maxAge-minAge))*100+1}%`,top:6,fontSize:8,color:T.gold,fontFamily:T.sans,fontWeight:700,opacity:.6}}>Peak Years</div>
+                <div style={{position:"absolute",left:`${((30-minAge)/(maxAge-minAge))*100+1}%`,top:6,fontSize:8,color:T.blue,fontFamily:T.sans,fontWeight:700,opacity:.6}}>Veterans</div>
+                {/* Age axis */}
+                {[18,20,22,24,26,28,30,32,34,36,38].map(a=>(
+                  <div key={a} style={{position:"absolute",left:`${((a-minAge)/(maxAge-minAge))*100}%`,bottom:4,fontSize:8,color:T.textMute,fontFamily:T.mono,transform:"translateX(-50%)"}}>{a}</div>
+                ))}
+                {/* Grade axis */}
+                {[50,60,70,80,90].map(g=>(
+                  <div key={g} style={{position:"absolute",top:`${(1-(g-minG)/(maxG-minG))*100}%`,left:4,fontSize:8,color:T.textMute,fontFamily:T.mono,transform:"translateY(-50%)"}}>{g}</div>
+                ))}
+                {/* Player dots */}
+                {withAge.map(p=>{const age=parseFloat(p.age);const x=((age-minAge)/(maxAge-minAge))*100;const y=(1-(p.overall-minG)/(maxG-minG))*100;return <div key={p.id} onClick={()=>setSel(p)} title={`${p.name} · ${p.age} yrs · ${p.overall} grade`} style={{position:"absolute",left:`${x}%`,top:`${y}%`,width:8,height:8,borderRadius:"50%",background:gc(p.overall),opacity:.5,transform:"translate(-50%,-50%)",cursor:"pointer",transition:"opacity .15s, transform .15s",zIndex:2}} onMouseEnter={e=>{e.currentTarget.style.opacity="1";e.currentTarget.style.transform="translate(-50%,-50%) scale(2)";}} onMouseLeave={e=>{e.currentTarget.style.opacity=".5";e.currentTarget.style.transform="translate(-50%,-50%)";}}/>;})}
+              </div>
+
+              {/* Spotlight lists */}
+              <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginTop:16}}>
+                {[{title:"Young Stars (U23)",icon:"🌟",color:T.green,list:u23Elite},{title:"Peak Years (23-29)",icon:"🔥",color:T.gold,list:peakElite},{title:"Elite Veterans (30+)",icon:"🎖",color:T.blue,list:veteranElite}].map(cat=>(
+                  <div key={cat.title}>
+                    <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
+                      <span style={{fontSize:14}}>{cat.icon}</span>
+                      <span style={{fontSize:10,fontFamily:T.sans,fontWeight:700,color:cat.color,letterSpacing:.5}}>{cat.title}</span>
+                    </div>
+                    {cat.list.length===0&&<div style={{fontSize:10,color:T.textMute,fontStyle:"italic",padding:8}}>None qualify</div>}
+                    {cat.list.map(p=>(
+                      <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:8,padding:"6px 8px",cursor:"pointer",borderBottom:`1px solid ${T.borderLt}`}}>
+                        <TeamBadge abbr={p.team} size={20} logo={p.teamLogo}/>
+                        <div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:11,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div></div>
+                        <span style={{fontSize:9,color:T.textDim,fontFamily:T.mono}}>{p.age}y</span>
+                        <Badge grade={p.overall} size="sm"/>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>;
+          })()}
+        </div>;})()}
 
         {/* ═══ COMPARE TAB ═══════════════════════════════════════════════════ */}
         {!loading&&tab==="compare"&&(()=>{
@@ -1096,8 +2595,8 @@ function MLSAnalytics(){
           };
 
           return <div style={{animation:"fadeUp .4s ease"}}>
-            <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink,letterSpacing:-.5,marginBottom:4}}>Player Comparison</div>
-            <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans,marginBottom:20}}>Select up to 3 players to compare side-by-side</div>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5,marginBottom:4}}>Player Comparison</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginBottom:20}}>Select up to 3 players for a side-by-side breakdown of grades, stats, physical attributes, and value.</div>
 
             {/* Player slots */}
             <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:cp.length<3?"1fr 1fr 1fr":"1fr 1fr 1fr",gap:12,marginBottom:24}}>
@@ -1214,7 +2713,7 @@ function MLSAnalytics(){
             <div className="resp-footer-cols" style={{display:"flex",gap:32}}>
               <div>
                 <div style={{fontSize:8,color:T.textMute,fontWeight:700,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:8}}>Explore</div>
-                {["Player Grades","Defense","Passing","Teams","Rankings","Leaders"].map(l=><div key={l} style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4,cursor:"pointer"}} onClick={()=>setTab(l==="Player Grades"?"players":l.toLowerCase())}>{l}</div>)}
+                {["Player Grades","Season Rating","Defense","Passing","Teams","Rankings","Leaders"].map(l=><div key={l} style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4,cursor:"pointer"}} onClick={()=>setTab(l==="Player Grades"?"players":l==="Season Rating"?"season":l.toLowerCase())}>{l}</div>)}
               </div>
               <div>
                 <div style={{fontSize:8,color:T.textMute,fontWeight:700,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:8}}>Tools</div>
@@ -1226,7 +2725,7 @@ function MLSAnalytics(){
                 <div style={{fontSize:10,color:T.accent,fontFamily:T.sans,marginBottom:4,cursor:"pointer"}} onClick={()=>setShowAbout(true)}>About</div>
                 <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4}}>Data via Claude AI</div>
                 <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4}}>Season: {season}</div>
-                <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>v8 Prototype</div>
+                <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>v9 — Season Rating</div>
               </div>
             </div>
           </div>
@@ -1237,7 +2736,7 @@ function MLSAnalytics(){
         </div>
       </footer>
 
-      {sel&&<PlayerModal player={sel} onClose={()=>setSel(null)} onCompare={addCompare} isInCompare={comparePlayers.some(c=>c.id===sel.id)} pctRanks={pctRanks[sel.id]}/>}
+      {sel&&<PlayerModal player={sel} onClose={()=>setSel(null)} onCompare={addCompare} isInCompare={comparePlayers.some(c=>c.id===sel.id)} pctRanks={pctRanks[sel.id]} history={playerHistory[sel.id]} formCurve={genFormCurve(sel)} seasonInfo={seasonRatings.ratings.find(r=>r.id===sel.id)||null} similarPlayers={findSimilar(sel.id)} onSelectPlayer={setSel} dark={dark}/>}
     </div>
   );
 }
