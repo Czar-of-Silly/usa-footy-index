@@ -5,11 +5,18 @@ on:
     - cron: '0 15 * * 2'
   workflow_dispatch:
 
+concurrency:
+  group: repo-writes
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -22,11 +29,20 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node weekly-newsletter.js
 
-      - name: Commit newsletter
+      - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || git commit -m "📰 Weekly newsletter $(date +%Y-%m-%d)"
-          git pull origin main --no-rebase || true
-          git push
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "📰 Weekly newsletter $(date +%Y-%m-%d)"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && exit 0
+            echo "Retry $i..."
+            sleep 5
+          done
+          echo "Failed after 3 retries"
+          exit 1
