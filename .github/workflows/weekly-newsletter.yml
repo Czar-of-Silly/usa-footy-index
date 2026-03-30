@@ -28,13 +28,15 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node weekly-newsletter.js
 
-      - name: Pull latest
-        run: git pull origin main --no-rebase
-
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || git commit -m "📰 Weekly newsletter $(date +%Y-%m-%d)"
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git stash
+          git pull origin main --no-rebase
+          git stash pop || true
+          git add -A
+          git commit -m "📰 Weekly newsletter $(date +%Y-%m-%d)"
           git push origin main
