@@ -5,18 +5,11 @@ on:
     - cron: '0 15 * * 2'
   workflow_dispatch:
 
-concurrency:
-  group: repo-writes
-  cancel-in-progress: false
-
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:
@@ -29,8 +22,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node weekly-newsletter.js
 
-      - name: Commit and push
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Upload newsletter
+        uses: actions/upload-artifact@v4
         with:
-          commit_message: "📰 Weekly newsletter"
-          file_pattern: "public/data/newsletter-latest.html"
+          name: newsletter
+          path: public/data/newsletter-latest.html
+          retention-days: 30
