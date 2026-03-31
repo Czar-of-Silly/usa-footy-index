@@ -1268,7 +1268,7 @@ function MLSAnalytics(){
         }
         @media(max-width:480px){
           .resp-grid3{grid-template-columns:1fr!important}
-          .resp-grid4{grid-template-columns:1fr!important}
+          .resp-grid4{grid-template-columns:1fr 1fr!important}
           .resp-h2h{grid-template-columns:1fr!important}
           .resp-season-strip>div{width:calc(50% - 4px)!important}
           .resp-pitch{padding-bottom:110%!important}
@@ -1587,17 +1587,16 @@ function MLSAnalytics(){
             </div>
 
             {/* Summary cards */}
-            <div className="resp-grid4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+            <div className="resp-grid4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>
               {[
                 {v:srFiltered.length,l:"Players",sub:srMinMins>0?`${srMinMins}+ min`:"All minutes"},
                 {v:avgSR,l:"Avg Rating",sub:gl(avgSR),c:gc(avgSR)},
                 {v:eliteCount,l:"Elite Rated",sub:"85+ grade",c:T.gold},
                 {v:`${avgConsistency}%`,l:"Avg Consistency",sub:"Cross-category",c:avgConsistency>=70?T.green:T.textDim},
               ].map(s=>(
-                <div key={s.l} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,padding:"16px 14px",textAlign:"center"}}>
-                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:28,color:s.c||T.ink,lineHeight:1}}>{s.v}</div>
-                  <div style={{fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:.8,marginTop:4,fontFamily:T.sans,textTransform:"uppercase"}}>{s.l}</div>
-                  <div style={{fontSize:8,color:T.textMute,fontFamily:T.sans,marginTop:2}}>{s.sub}</div>
+                <div key={s.l} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,padding:"10px 8px",textAlign:"center"}}>
+                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:s.c||T.ink,lineHeight:1}}>{s.v}</div>
+                  <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:.5,marginTop:3,fontFamily:T.sans,textTransform:"uppercase"}}>{s.l}</div>
                 </div>
               ))}
             </div>
