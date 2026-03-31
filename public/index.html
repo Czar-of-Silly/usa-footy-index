@@ -260,7 +260,7 @@ function Select({value,onChange,options,label,width=140}){
 function Rule(){return <div style={{borderTop:`1px solid ${T.border}`,margin:"20px 0"}}/>;}
 
 function TableWrap({children}){
-  return <div className="table-scroll" style={{borderRadius:6,border:`1px solid ${T.border}`,overflow:"hidden",background:T.surface}}>
+  return <div className="table-scroll" style={{borderRadius:6,border:`1px solid ${T.border}`,overflowX:"auto",overflowY:"hidden",background:T.surface,WebkitOverflowScrolling:"touch"}}>
     <div className="table-inner">{children}</div>
   </div>;
 }
@@ -1233,7 +1233,6 @@ function MLSAnalytics(){
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Playfair+Display:wght@400;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
-        main{max-width:100vw;overflow-x:hidden}
         @keyframes modalIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
         @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
         @keyframes spin{to{transform:rotate(360deg)}}
