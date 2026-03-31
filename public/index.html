@@ -695,7 +695,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
               img.onload=()=>r(img);img.onerror=()=>r(null);
               img.src=src;setTimeout(()=>r(null),5000);
             });
-            const[headImg,logoImg]=await Promise.all([loadImg(p.headshot),loadImg(p.teamLogo)]);
+            const[headImg,logoImg]=await Promise.all([loadImg(p.localHeadshot||p.headshot),loadImg(p.teamLogo)]);
             const c=document.createElement("canvas");c.width=W;c.height=H;
             const x=c.getContext("2d");
             // Theme
@@ -943,7 +943,7 @@ function MLSAnalytics(){
         matchLog:Array.isArray(r.matchLog)?r.matchLog:[],
         sal:safe(r.salary,0,20e6,0),
         sv:safe(r.sv,0,200,0),cs:safe(r.cs,0,40,0),gaCon:safe(r.ga_conceded,0,100,0),
-        prevTeam:r.prevTeam||null,
+        prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null,
       }));
       setLoadProgress(85);
       const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,
@@ -953,7 +953,7 @@ function MLSAnalytics(){
       const grades=computeGrades(inter);
       setLoadProgress(95);
       const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,prevTeam:r.prevTeam||null};});
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}

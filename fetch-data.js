@@ -366,6 +366,36 @@ async function main() {
     awayScore: g.awayScore,
   })).sort((a, b) => (a.date || "").localeCompare(b.date || ""));
 
+  // ═══ DOWNLOAD HEADSHOTS (local copies for Canvas share cards) ═════════
+  const hsDir = path.join(__dirname, "public", "headshots");
+  if (!fs.existsSync(hsDir)) fs.mkdirSync(hsDir, { recursive: true });
+  let hsDown = 0, hsSkip = 0, hsFail = 0;
+  console.log(`\n  📸 Downloading headshots...`);
+  for (const p of output.players) {
+    if (!p.headshot) { hsSkip++; continue; }
+    const slug = p.n.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
+    const localPath = path.join(hsDir, `${slug}.png`);
+    const localUrl = `./headshots/${slug}.png`;
+    // Skip if already downloaded
+    if (fs.existsSync(localPath)) {
+      p.localHeadshot = localUrl;
+      hsSkip++;
+      continue;
+    }
+    try {
+      const res = await fetch(p.headshot);
+      if (res.ok) {
+        const buf = Buffer.from(await res.arrayBuffer());
+        fs.writeFileSync(localPath, buf);
+        p.localHeadshot = localUrl;
+        hsDown++;
+      } else { hsFail++; }
+    } catch { hsFail++; }
+    if ((hsDown + hsFail) % 50 === 0) process.stdout.write(`          ${hsDown + hsFail + hsSkip}/${output.players.length}\r`);
+    await sleep(50);
+  }
+  console.log(`          ✅ Headshots: ${hsDown} new · ${hsSkip} cached · ${hsFail} failed`);
+
   // ═══ WRITE ═════════════════════════════════════════════════════════════
   const outDir = path.join(__dirname, "data");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
