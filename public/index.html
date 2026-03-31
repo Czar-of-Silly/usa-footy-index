@@ -66,15 +66,37 @@
   }
   </script>
   <link rel="icon" href="./favicon.png">
+  <!-- Preconnect to CDN and data sources -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://a.espncdn.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <!-- Preload data so it starts downloading immediately -->
+  <link rel="preload" href="./data/mls-cache.json" as="fetch" crossorigin>
+  <!-- Preload critical scripts -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" as="script" crossorigin>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" as="script" crossorigin>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.5.0/Recharts.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-  <style>body{margin:0;padding:0}</style>
+  <style>
+    body{margin:0;padding:0}
+    /* Instant loading screen — shows before React boots */
+    #boot-loader{position:fixed;inset:0;background:#F4F1EA;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}
+    #boot-loader.hide{opacity:0;pointer-events:none}
+    #boot-loader .bar{width:200px;height:3px;background:#D6D0C4;border-radius:3px;overflow:hidden;margin-top:16px}
+    #boot-loader .bar-fill{width:0%;height:100%;background:#1A1A1A;border-radius:3px;animation:bootFill 3s ease forwards}
+    @keyframes bootFill{0%{width:0%}30%{width:40%}60%{width:70%}90%{width:85%}100%{width:95%}}
+  </style>
 <!-- v1773628287414 -->
 </head>
 <body>
+  <!-- Instant loading screen — visible before React/Babel even parse -->
+  <div id="boot-loader">
+    <div style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#1A1A1A;letter-spacing:-0.5px">USA Footy Index</div>
+    <div style="font-family:Arial,sans-serif;font-size:11px;color:#A09A90;margin-top:6px">Loading MLS analytics...</div>
+    <div class="bar"><div class="bar-fill"></div></div>
+  </div>
   <div id="root"></div>
   <script type="text/babel" data-type="module">
 const { useState, useEffect, useMemo, useRef } = React;
@@ -667,7 +689,12 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             const isDark=isDarkMode;
             const W=640,H=820;
             // Load images first
-            const loadImg=(src)=>new Promise(r=>{if(!src)return r(null);const img=new Image();img.crossOrigin="anonymous";img.onload=()=>r(img);img.onerror=()=>r(null);img.src=src;setTimeout(()=>r(null),3000);});
+            const loadImg=(src)=>new Promise(r=>{
+              if(!src)return r(null);
+              const img=new Image();img.crossOrigin="anonymous";
+              img.onload=()=>r(img);img.onerror=()=>r(null);
+              img.src=src;setTimeout(()=>r(null),5000);
+            });
             const[headImg,logoImg]=await Promise.all([loadImg(p.headshot),loadImg(p.teamLogo)]);
             const c=document.createElement("canvas");c.width=W;c.height=H;
             const x=c.getContext("2d");
@@ -702,11 +729,12 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
               x.beginPath();x.arc(hsX+hsSize/2,hsY+hsSize/2,hsSize/2,0,Math.PI*2);
               x.strokeStyle=BORDER;x.lineWidth=2;x.stroke();
             } else {
+              // Styled initial fallback
               x.beginPath();x.arc(hsX+hsSize/2,hsY+hsSize/2,hsSize/2,0,Math.PI*2);
-              x.fillStyle=isDark?"rgba(255,255,255,.06)":"rgba(0,0,0,.04)";x.fill();
-              x.strokeStyle=BORDER;x.lineWidth=1.5;x.stroke();
-              x.fillStyle=DIM;x.font="bold 24px 'Source Serif 4',Georgia,serif";x.textAlign="center";
-              x.fillText(p.name.charAt(0),hsX+hsSize/2,hsY+hsSize/2+8);x.textAlign="left";
+              x.fillStyle=isDark?"#1e2636":"#E8E4DA";x.fill();
+              x.strokeStyle=gcC(p.overall);x.lineWidth=2.5;x.stroke();
+              x.fillStyle=gcC(p.overall);x.font="bold 28px 'Source Serif 4',Georgia,serif";x.textAlign="center";
+              x.fillText(p.name.charAt(0),hsX+hsSize/2,hsY+hsSize/2+10);x.textAlign="left";
             }
             // Name + details to right of headshot
             const nameX=hsX+hsSize+16;
@@ -1208,6 +1236,7 @@ function MLSAnalytics(){
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Playfair+Display:wght@400;700;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
+        html,body{overflow-x:hidden;max-width:100vw}
         @keyframes modalIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
         @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
         @keyframes spin{to{transform:rotate(360deg)}}
@@ -2214,6 +2243,8 @@ function MLSAnalytics(){
             </div>;
           })()}
 
+          <div className="table-scroll" style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+          <div className="table-inner" style={{minWidth:800}}>
           <div style={{display:"grid",gridTemplateColumns:"40px 44px 220px 70px 100px 80px 44px 44px 44px 44px 1fr",padding:"8px 16px",fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:.8,fontFamily:T.sans,textTransform:"uppercase",borderBottom:`1px solid ${T.border}`}}>
             <div style={{textAlign:"center"}}>#</div><div></div><div>Team</div><div style={{textAlign:"center"}}>Record</div><div style={{textAlign:"center"}}>Pts / GD</div><div style={{textAlign:"center"}}>GF / GA</div><div style={{textAlign:"center"}}>OVR</div><div style={{textAlign:"center"}}>ATT</div><div style={{textAlign:"center"}}>PAS</div><div style={{textAlign:"center"}}>DEF</div><div style={{textAlign:"right"}}>Best Player</div>
           </div>
@@ -2230,6 +2261,7 @@ function MLSAnalytics(){
             <div style={{textAlign:"center",fontFamily:T.serif,fontWeight:700,fontSize:14,color:gc(t.defense)}}>{t.defense}</div>
             <div style={{textAlign:"right"}}>{t.topRated&&<div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"3px 10px",background:T.card,borderRadius:4,border:`1px solid ${T.borderLt}`,cursor:"pointer"}} onClick={()=>setSel(t.topRated)}><span style={{fontSize:11,fontFamily:T.serif,fontWeight:600,color:T.ink}}>{t.topRated.name}</span><Badge grade={t.topRated.overall} size="sm"/></div>}</div>
           </div>;})}
+          </div></div>
           <div style={{marginTop:16,fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic",textAlign:"center"}}>Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and Sofascore.</div>
         </div>})()}
 
@@ -2397,7 +2429,7 @@ function MLSAnalytics(){
                 <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
                 <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
                 <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
-                <div style={{position:"absolute",top:12,left:"50%",transform:"translateX(-50%)",padding:"4px 14px",background:"rgba(0,0,0,.5)",borderRadius:20,zIndex:3,backdropFilter:"blur(4px)"}}>
+                <div style={{position:"absolute",bottom:10,right:14,padding:"4px 14px",background:"rgba(0,0,0,.5)",borderRadius:20,zIndex:3,backdropFilter:"blur(4px)"}}>
                   <span style={{fontFamily:T.sans,fontWeight:700,fontSize:10,color:"#fff"}}>MW{weekIdx+1} · AVG {totwAvg}</span>
                 </div>
                 {totwXi.map(s=>(
@@ -2952,14 +2984,7 @@ function MLSAnalytics(){
         <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
           <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink,marginBottom:6}}>Stay in the Loop</div>
           <div style={{fontSize:13,color:T.textDim,fontFamily:T.sans,marginBottom:16,lineHeight:1.6}}>Get weekly TOTW picks, power rankings, and player movers straight to your inbox. Free, no spam.</div>
-          {emailStatus==="done"?<div style={{padding:"14px 20px",background:`${T.green}10`,border:`1px solid ${T.green}30`,borderRadius:6}}>
-            <div style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.green}}>You're in!</div>
-            <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,marginTop:4}}>We'll send you weekly MLS analytics — no spam, ever.</div>
-          </div>
-          :<div style={{display:"flex",gap:8,maxWidth:440,margin:"0 auto"}}>
-            <input type="email" value={emailInput} onChange={e=>setEmailInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&emailInput.includes("@")){setEmailStatus("sending");const existing=JSON.parse(localStorage.getItem("ufi_emails")||"[]");if(!existing.includes(emailInput)){existing.push(emailInput);localStorage.setItem("ufi_emails",JSON.stringify(existing));}setEmailStatus("done");}}} placeholder="your@email.com" style={{flex:1,padding:"10px 14px",borderRadius:4,border:`1px solid ${T.border}`,background:T.bg,color:T.ink,fontFamily:T.sans,fontSize:13,outline:"none"}}/>
-            <button onClick={()=>{if(!emailInput.includes("@"))return;setEmailStatus("sending");const existing=JSON.parse(localStorage.getItem("ufi_emails")||"[]");if(!existing.includes(emailInput)){existing.push(emailInput);localStorage.setItem("ufi_emails",JSON.stringify(existing));}setEmailStatus("done");}} disabled={emailStatus==="sending"} style={{background:T.ink,color:T.bg,border:"none",padding:"10px 22px",borderRadius:4,fontFamily:T.sans,fontWeight:600,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",opacity:emailStatus==="sending"?.6:1}}>{emailStatus==="sending"?"Joining...":"Join Free"}</button>
-          </div>}
+          <iframe src="https://subscribe-forms.beehiiv.com/cb52b06e-c56f-461f-9477-ecca6a8dd45a" style={{width:"100%",maxWidth:480,height:60,border:"none",margin:"0 auto",display:"block",background:"transparent"}} scrolling="no"></iframe>
         </div>
       </div>
 
@@ -3004,6 +3029,8 @@ function MLSAnalytics(){
 // Render
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(MLSAnalytics));
+// Hide boot loader once React takes over
+const bl=document.getElementById("boot-loader");if(bl)bl.classList.add("hide");setTimeout(()=>{if(bl)bl.remove();},500);
   </script>
 </body>
 </html>
