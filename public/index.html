@@ -375,6 +375,8 @@ function TopCards({players,metric,metricLabel,onSelect}){
 
 // ─── PLAYER MODAL ────────────────────────────────────────────────────────────
 function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
+  const[hsError,setHsError]=useState(false);
+  useEffect(()=>setHsError(false),[p?.id]);
   if(!p)return null;
   const ae=Number(p.passAboveExp);
   const pct=pctRanks||{};
@@ -395,8 +397,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
       {/* Header */}
       <div style={{padding:"28px 48px 24px 32px",borderBottom:`1px solid ${T.border}`}}>
         <div style={{display:"flex",alignItems:"center",gap:16}}>
-          {p.headshot&&<img src={p.headshot} alt={p.name} style={{width:76,height:76,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.border}`,flexShrink:0}} onError={e=>{e.target.src="";e.target.style.display="none"}}/>}
-          {!p.headshot&&<TeamBadge abbr={p.team} size={52} logo={p.teamLogo}/>}
+          {p.headshot&&!hsError?<img src={p.headshot} alt={p.name} style={{width:76,height:76,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.border}`,flexShrink:0}} onError={()=>setHsError(true)}/>:<TeamBadge abbr={p.team} size={52} logo={p.teamLogo}/>}
           <div style={{flex:1}}>
             <div style={{fontFamily:T.display,fontWeight:700,fontSize:34,color:T.ink,letterSpacing:-.5,lineHeight:1}}>{p.name}</div>
             <div style={{display:"flex",gap:12,marginTop:2,fontSize:13,color:T.textDim,fontFamily:T.sans,flexWrap:"wrap"}}>
