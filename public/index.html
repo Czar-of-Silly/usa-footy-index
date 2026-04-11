@@ -1041,7 +1041,7 @@ function MLSAnalytics(){
   const filtered=useMemo(()=>{const c=POS[posFilter];const dir=sortDir==="asc"?1:-1;return[...players].filter(p=>(!c||c.includes(p.position))&&(teamFilter==="All"||p.team===teamFilter)&&(p.mins||0)>=minMins).sort((a,b)=>{if(sortKey==="team")return dir*(a.team||"").localeCompare(b.team||"");if(sortKey==="age")return dir*(parseFloat(a.age||99)-parseFloat(b.age||99));const av=Number(a[sortKey])||0,bv=Number(b[sortKey])||0;return dir*(av-bv);}).slice(0,100);},[players,posFilter,teamFilter,sortKey,sortDir,minMins]);
   const posBuckets=useMemo(()=>{const b={};players.forEach(p=>{if(!b[p.position])b[p.position]=[];b[p.position].push(p.overall);});return Object.entries(b).filter(([,g])=>g.length>=2).map(([pos,gr])=>({pos,avg:Math.round(gr.reduce((a,b)=>a+b,0)/gr.length),count:gr.length,top:Math.max(...gr),grades:gr})).sort((a,b)=>b.avg-a.avg);},[players]);
   const teamLogos=useMemo(()=>{const m={};players.forEach(p=>{if(p.teamLogo&&!m[p.team])m[p.team]=p.teamLogo;});return m;},[players]);
-  const best=filtered[0];
+  const best=filtered.length?[...filtered].sort((a,b)=>b.overall-a.overall)[0]:null;
 
   // Percentile ranks per player
   const pctRanks=useMemo(()=>{
