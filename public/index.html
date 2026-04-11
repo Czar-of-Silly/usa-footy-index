@@ -885,8 +885,8 @@ function MLSAnalytics(){
   const removeCompare=(id)=>setComparePlayers(prev=>prev.filter(p=>p.id!==id));
 
   // Mobile detection
-  const[isMobile,setIsMobile]=useState(()=>typeof window!=="undefined"&&window.innerWidth<=768);
-  useEffect(()=>{const mq=window.matchMedia("(max-width:768px)");const h=e=>setIsMobile(e.matches);mq.addEventListener("change",h);return()=>mq.removeEventListener("change",h);},[]);
+  const[isMobile,setIsMobile]=useState(()=>typeof window!=="undefined"&&window.matchMedia("(max-width:768px)").matches);
+  useEffect(()=>{const mq=window.matchMedia("(max-width:768px)");setIsMobile(mq.matches);const h=e=>setIsMobile(e.matches);mq.addEventListener("change",h);return()=>mq.removeEventListener("change",h);},[]);
   const shortName=(name)=>{if(!name||!isMobile)return name;const parts=name.trim().split(/\s+/);if(parts.length<2)return name;return parts[0][0]+". "+parts.slice(1).join(" ");};
 
 
