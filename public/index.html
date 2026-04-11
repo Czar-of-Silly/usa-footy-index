@@ -76,22 +76,10 @@
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
   <style>
     body{margin:0;padding:0}
-    /* Instant loading screen — shows before React boots */
-    #boot-loader{position:fixed;inset:0;background:#F4F1EA;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .3s}
-    #boot-loader.hide{opacity:0;pointer-events:none}
-    #boot-loader .bar{width:200px;height:3px;background:#D6D0C4;border-radius:3px;overflow:hidden;margin-top:16px}
-    #boot-loader .bar-fill{width:0%;height:100%;background:#1A1A1A;border-radius:3px;animation:bootFill 3s ease forwards}
-    @keyframes bootFill{0%{width:0%}30%{width:40%}60%{width:70%}90%{width:85%}100%{width:95%}}
   </style>
-<!-- v1773628287414 -->
+<!-- v20260411-fix -->
 </head>
 <body>
-  <!-- Instant loading screen — visible before React/Babel even parse -->
-  <div id="boot-loader">
-    <div style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#1A1A1A;letter-spacing:-0.5px">USA Footy Index</div>
-    <div style="font-family:Arial,sans-serif;font-size:11px;color:#A09A90;margin-top:6px">Loading MLS analytics...</div>
-    <div class="bar"><div class="bar-fill"></div></div>
-  </div>
   <div id="root"></div>
   <script type="text/babel" data-type="module">
 const { useState, useEffect, useMemo, useRef } = React;
@@ -3023,8 +3011,6 @@ function MLSAnalytics(){
 // Render
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(MLSAnalytics));
-// Hide boot loader once React takes over
-const bl=document.getElementById("boot-loader");if(bl)bl.classList.add("hide");setTimeout(()=>{if(bl)bl.remove();},500);
   </script>
 </body>
 </html>
