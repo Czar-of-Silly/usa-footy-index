@@ -1513,70 +1513,52 @@ function MLSAnalytics(){
             </div>
           </div>}
 
-          <TableWrap><div>
-            {isMobile?<>
-            {/* Mobile: fixed name + scrollable stats */}
-            <div style={{display:"flex"}}>
-              {/* Fixed left column */}
-              <div style={{flexShrink:0,width:160,borderRight:`1px solid ${T.border}`}}>
-                <div style={{padding:"6px 8px",background:T.card,fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase",height:28,display:"flex",alignItems:"center"}}># PLAYER</div>
-                {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:5,padding:"6px 6px",height:44,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,cursor:"pointer"}}>
-                  <span style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:i<3?T.accent:T.textMute,width:20,textAlign:"center",flexShrink:0}}>{i+1}</span>
-                  <TeamBadge abbr={p.team} size={20} logo={p.teamLogo}/>
-                  <div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:8,color:T.textDim}}>{p.position} · {p.team}</div></div>
-                </div>)}
-              </div>
-              {/* Scrollable right stats */}
-              <div style={{flex:1,overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
-                <div style={{display:"grid",gridTemplateColumns:"38px 38px 30px 30px 44px 48px 38px 44px 36px 46px",padding:"6px 4px",background:T.card,fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:.5,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase",height:28,alignItems:"center",minWidth:392}}>
-                  <div style={{textAlign:"center"}}>GRD</div><div style={{textAlign:"center"}}>AGE</div><div style={{textAlign:"center"}}>G</div><div style={{textAlign:"center"}}>A</div><div style={{textAlign:"center"}}>xG/90</div><div style={{textAlign:"center"}}>PASS%</div><div style={{textAlign:"center"}}>TKL</div><div style={{textAlign:"center"}}>SH/SOT</div><div style={{textAlign:"center"}}>FLS</div><div style={{textAlign:"center"}}>G+</div>
-                </div>
-                {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:"38px 38px 30px 30px 44px 48px 38px 44px 36px 46px",padding:"4px 4px",height:44,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",minWidth:392}}>
-                  <div style={{textAlign:"center"}}><Badge grade={p.overall} size="sm"/></div>
-                  <div style={{fontSize:10,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono}}>{p.age||"—"}</div>
-                  <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink,textAlign:"center"}}>{p.goals}</div>
-                  <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink,textAlign:"center"}}>{p.assists}</div>
-                  <div style={{fontSize:9,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.xg90}</div>
-                  <div style={{fontSize:9,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.passComp}%</div>
-                  <div style={{fontSize:10,color:T.ink,fontWeight:600,textAlign:"center"}}>{sv(p.tackles)}</div>
-                  <div style={{fontSize:9,color:T.textDim,textAlign:"center"}}>{p.shots!=null?`${p.shots}/${p.shotsOnTarget}`:"—"}</div>
-                  <div style={{fontSize:9,color:T.textDim,textAlign:"center"}}>{sv(p.fouls)}</div>
-                  <div style={{fontSize:10,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,textAlign:"center"}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>
-                </div>)}
-              </div>
-            </div>
-            </>:<>
-            {/* Desktop: normal grid */}
-            <div style={{display:"grid",gridTemplateColumns:tbl,padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}>
-              <div style={{textAlign:"center"}}>#</div><div>Player</div>
-              <ColHead label="Grd" sortKey="overall" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-              <ColHead label="Age" sortKey="age" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-              <ColHead label="G" sortKey="goals" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-              <ColHead label="A" sortKey="assists" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-              <ColHead label="xG/90" sortKey="xg90" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-              <ColHead label="Pass%" sortKey="passComp" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-              <ColHead label="Tkl" sortKey="tackles" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-              <div style={{textAlign:"center"}}>Sh/SoT</div>
-              <ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-              <ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-            </div>
-            {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,padding:"14px 14px",minHeight:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
-              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
-              <div style={{display:"flex",alignItems:"center",gap:12,marginLeft:6,minWidth:0}}><TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div><div style={{fontSize:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div></div>
-              <div style={{textAlign:"center"}}><Badge grade={p.overall} size="md"/></div>
-              <div style={{fontSize:13,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono,fontWeight:500}}>{p.age||"—"}</div>
-              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,background:hm(p.goals,20),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.goals}</div>
-              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,background:hm(p.assists,15),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.assists}</div>
-              <div style={{fontSize:12,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.xg90}</div>
-              <div style={{fontSize:14,color:T.textDim,fontFamily:T.mono,background:hm(+p.passComp,100),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.passComp}%</div>
-              <div style={{fontSize:15,color:T.ink,fontWeight:600,background:hm(p.tackles,40),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.tackles)}</div>
-              <div style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{p.shots!=null?`${p.shots}/${p.shotsOnTarget}`:"—"}</div>
-              <div style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{sv(p.fouls)}</div>
-              <div style={{fontSize:14,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,background:hm(Math.abs(+p.totalGA),5),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>
-            </div>)}
-            </>}
-          </div></TableWrap>
-          </div></TableWrap>
+          <div style={{borderRadius:6,border:`1px solid ${T.border}`,overflow:"hidden",background:T.surface}}>
+          <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",minWidth:isMobile?620:800}}>
+              <thead>
+                <tr style={{background:T.card,fontSize:isMobile?9:11,color:T.textMute,fontWeight:600,letterSpacing:.8,fontFamily:T.sans,textTransform:"uppercase"}}>
+                  <th style={{padding:isMobile?"6px 6px":"10px 10px",textAlign:"center",borderBottom:`1px solid ${T.border}`,position:"sticky",left:0,background:T.card,zIndex:3,width:isMobile?24:34}}>#</th>
+                  <th style={{padding:isMobile?"6px 4px":"10px 8px",textAlign:"left",borderBottom:`1px solid ${T.border}`,position:"sticky",left:isMobile?24:34,background:T.card,zIndex:3,minWidth:isMobile?120:200,borderRight:`2px solid ${T.border}`}}>Player</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?36:48,cursor:"pointer"}} onClick={()=>toggleSort("overall")}>Grd{sortKey==="overall"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?36:46,cursor:"pointer"}} onClick={()=>toggleSort("age")}>Age{sortKey==="age"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?30:46,cursor:"pointer"}} onClick={()=>toggleSort("goals")}>G{sortKey==="goals"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?30:46,cursor:"pointer"}} onClick={()=>toggleSort("assists")}>A{sortKey==="assists"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?42:56,cursor:"pointer"}} onClick={()=>toggleSort("xg90")}>xG/90{sortKey==="xg90"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?48:60,cursor:"pointer"}} onClick={()=>toggleSort("passComp")}>Pass%{sortKey==="passComp"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?36:52,cursor:"pointer"}} onClick={()=>toggleSort("tackles")}>Tkl{sortKey==="tackles"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?44:60}}>Sh/SoT</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?30:48,cursor:"pointer"}} onClick={()=>toggleSort("fouls")}>Fls{sortKey==="fouls"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                  <th style={{padding:"6px 4px",textAlign:"center",borderBottom:`1px solid ${T.border}`,width:isMobile?44:60,cursor:"pointer"}} onClick={()=>toggleSort("totalGA")}>G+{sortKey==="totalGA"?(sortDir==="desc"?"▼":"▲"):""}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((p,i)=>{const rowBg=i%2===0?"transparent":T.surface;return <tr key={p.id} onClick={()=>setSel(p)} className="rh" style={{background:rowBg,cursor:"pointer"}}>
+                  <td style={{padding:isMobile?"6px 4px":"12px 10px",fontFamily:T.serif,fontWeight:700,fontSize:isMobile?12:16,color:i<3?T.accent:T.textMute,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`,position:"sticky",left:0,background:rowBg,zIndex:2}}>{i+1}</td>
+                  <td style={{padding:isMobile?"6px 4px":"12px 8px",borderBottom:`1px solid ${T.borderLt}`,position:"sticky",left:isMobile?24:34,background:rowBg,zIndex:2,borderRight:`2px solid ${T.border}`}}>
+                    <div style={{display:"flex",alignItems:"center",gap:isMobile?5:10}}>
+                      <TeamBadge abbr={p.team} size={isMobile?20:32} logo={p.teamLogo}/>
+                      <div style={{minWidth:0}}>
+                        <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?12:18,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div>
+                        <div style={{fontSize:isMobile?8:12,color:T.textDim}}>{p.position} · {p.team}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{textAlign:"center",borderBottom:`1px solid ${T.borderLt}`,padding:"4px 2px"}}><Badge grade={p.overall} size={isMobile?"sm":"md"}/></td>
+                  <td style={{fontSize:isMobile?10:13,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono,borderBottom:`1px solid ${T.borderLt}`}}>{p.age||"—"}</td>
+                  <td style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?12:16,color:T.ink,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`}}>{p.goals}</td>
+                  <td style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?12:16,color:T.ink,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`}}>{p.assists}</td>
+                  <td style={{fontSize:isMobile?9:12,color:T.textDim,fontFamily:T.mono,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`}}>{p.xg90}</td>
+                  <td style={{fontSize:isMobile?9:14,color:T.textDim,fontFamily:T.mono,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`}}>{p.passComp}%</td>
+                  <td style={{fontSize:isMobile?10:15,color:T.ink,fontWeight:600,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`}}>{sv(p.tackles)}</td>
+                  <td style={{fontSize:isMobile?9:13,color:T.textDim,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`}}>{p.shots!=null?`${p.shots}/${p.shotsOnTarget}`:"—"}</td>
+                  <td style={{fontSize:isMobile?9:13,color:T.textDim,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`}}>{sv(p.fouls)}</td>
+                  <td style={{fontSize:isMobile?10:14,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,textAlign:"center",borderBottom:`1px solid ${T.borderLt}`}}>{+p.totalGA>=0?"+":""}{p.totalGA}</td>
+                </tr>;})}
+              </tbody>
+            </table>
+          </div>
+          </div>
         </div>}
 
         {/* ═══ SEASON RATING ═══════════════════════════════════════════════ */}
