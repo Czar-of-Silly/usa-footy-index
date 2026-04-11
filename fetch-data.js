@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /**
- * USA Footy Index — Data Fetcher v5 (MATCH LOGS)
+ * USA Footy Index — Data Fetcher v4 (FINAL)
  * ESPN + American Soccer Analysis + Sofascore
  * 100% REAL DATA — zero estimates
- * v5: Per-game match logs for form curves
  */
 const fs = require("fs");
 const path = require("path");
@@ -25,8 +24,8 @@ const POS_MAP = {"G":"GK","GK":"GK","Goalkeeper":"GK","D":"Defender","DF":"Defen
 function norm(a){return TEAM_MAP[a?.toUpperCase()]||TEAM_MAP[a]||(a||"").toUpperCase().slice(0,4);}
 
 async function main() {
-  console.log("\n  USA Footy Index — Data Fetcher v5");
-  console.log("  ESPN + ASA + Sofascore — ALL REAL DATA + MATCH LOGS");
+  console.log("\n  USA Footy Index — Data Fetcher v4");
+  console.log("  ESPN + ASA + Sofascore — ALL REAL DATA");
   console.log("  ═══════════════════════════════════════\n");
   const output = { generated: new Date().toISOString(), season: CY, players: [], standings: [], matches: [], dataSources: [] };
 
@@ -60,83 +59,98 @@ async function main() {
   console.log(`          ✅ ${rc} players`);
 
   console.log("  [ESPN] Boxscores...");
-  const espn={}; const gameIds=[]; const gameInfo={}; const now=new Date();
-  // Per-game player logs: { playerName: [ {date, opp, ha, mins, g, a, sh, sot, fl, yc, rc, gid} ] }
-  const matchLogs = {};
+  const espn={}; const gameIds=[]; const now=new Date();
   for(let d=new Date(CY,1,1);d<now;d.setDate(d.getDate()+14)){
     const f=d.toISOString().slice(0,10).replace(/-/g,""),td=new Date(d);td.setDate(td.getDate()+14);
     const t=(td>now?now:td).toISOString().slice(0,10).replace(/-/g,"");
-    try{const data=await get(`${ESPN}/scoreboard?dates=${f}-${t}&limit=100`);for(const ev of(data?.events||[])){const c=ev?.competitions?.[0];if(c?.status?.type?.completed&&ev.id&&!gameIds.includes(ev.id)){
-      gameIds.push(ev.id);
-      // Store match metadata for linking
-      const hTeam=c?.competitors?.find(x=>x.homeAway==="home");
-      const aTeam=c?.competitors?.find(x=>x.homeAway==="away");
-      gameInfo[ev.id]={date:ev.date,home:norm(hTeam?.team?.abbreviation),away:norm(aTeam?.team?.abbreviation),homeScore:+(hTeam?.score||0),awayScore:+(aTeam?.score||0)};
-    }}await sleep(80);}catch{}
+    try{const data=await get(`${ESPN}/scoreboard?dates=${f}-${t}&limit=100`);for(const ev of(data?.events||[])){const c=ev?.competitions?.[0];if(c?.status?.type?.completed&&ev.id&&!gameIds.includes(ev.id))gameIds.push(ev.id);}await sleep(80);}catch{}
   }
   console.log(`          Found ${gameIds.length} games`);
   let bd=0;
   for(const gid of gameIds){
     try{const d=await get(`${ESPN_WEB}/summary?event=${gid}`);
-    const gi=gameInfo[gid]||{};
-    if(Array.isArray(d?.rosters))for(const tr of d.rosters){
-      // Determine which side this roster is (home or away)
-      const rosterTeam=norm(tr?.team?.abbreviation);
-      const isHome=rosterTeam===gi.home;
-      const opp=isHome?gi.away:gi.home;
-      for(const e of(tr?.roster||[])){
+    if(Array.isArray(d?.rosters))for(const tr of d.rosters)for(const e of(tr?.roster||[])){
       const n=e?.athlete?.displayName;if(!n||!e.stats)continue;
       if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,games:0};
-      // Parse this game's stats
-      const gStats={g:0,a:0,sh:0,sot:0,fl:0,yc:0,rc:0,sv:0};
-      const minsPlayed=e.starter?90:e.subbedIn?30:90;
-      for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":gStats.g=v;break;case"goalAssists":gStats.a=v;break;case"totalShots":gStats.sh=v;break;case"shotsOnTarget":gStats.sot=v;break;case"foulsCommitted":gStats.fl=v;break;case"yellowCards":gStats.yc=v;break;case"redCards":gStats.rc=v;break;case"saves":gStats.sv=v;break;}}
-      // Aggregate season totals (backward compatible)
-      espn[n].games++;espn[n].mins+=minsPlayed;espn[n].goals+=gStats.g;espn[n].assists+=gStats.a;espn[n].shots+=gStats.sh;espn[n].sot+=gStats.sot;espn[n].fouls+=gStats.fl;espn[n].yc+=gStats.yc;espn[n].rc+=gStats.rc;espn[n].saves+=gStats.sv;
-      // Store per-game log
-      if(!matchLogs[n])matchLogs[n]=[];
-      matchLogs[n].push({date:gi.date||null,opp:opp||"?",ha:isHome?"H":"A",mins:minsPlayed,g:gStats.g,a:gStats.a,sh:gStats.sh,sot:gStats.sot,fl:gStats.fl,yc:gStats.yc,rc:gStats.rc,sv:gStats.sv,hs:gi.homeScore,as:gi.awayScore,team:rosterTeam});
-    }}
-    }catch{}bd++;if(bd%10===0)process.stdout.write(`          ${bd}/${gameIds.length}\r`);await sleep(120);
+      espn[n].games++;espn[n].mins+=(e.starter?90:e.subbedIn?30:90);
+      for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;break;case"goalAssists":espn[n].assists+=v;break;case"totalShots":espn[n].shots+=v;break;case"shotsOnTarget":espn[n].sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;break;case"yellowCards":espn[n].yc+=v;break;case"redCards":espn[n].rc+=v;break;case"saves":espn[n].saves+=v;break;}}
+    }}catch{}bd++;if(bd%10===0)process.stdout.write(`          ${bd}/${gameIds.length}\r`);await sleep(120);
   }
-  // Sort each player's match log by date
-  for(const n of Object.keys(matchLogs)){matchLogs[n].sort((a,b)=>(a.date||"").localeCompare(b.date||""));}
   console.log(`          ✅ ${Object.keys(espn).length} players from ${gameIds.length} games`);
-  console.log(`          ✅ ${Object.keys(matchLogs).length} players with match-level logs`);
 
   // ═══════════════════════════════════════════════════════════════════════
   // SOURCE 2: ASA (xG, xA, Goals Added, xPass)
   // ═══════════════════════════════════════════════════════════════════════
   output.dataSources.push("ASA");
 
-  console.log("  [ASA]  Player directory...");
+  console.log("  [ASA]  Player directory (paginated)...");
   const asaNames={};
-  try{const p=await get(`${ASA}/players`);for(const x of p)asaNames[x.player_id]=x.player_name;console.log(`          ✅ ${Object.keys(asaNames).length} players`);}catch(e){console.error("          ❌",e.message);}
+  try{
+    let offset=0, batch=0;
+    while(true){
+      const url=offset===0?`${ASA}/players`:`${ASA}/players?offset=${offset}`;
+      const p=await get(url);
+      if(!p||p.length===0)break;
+      batch++;
+      for(const x of p)asaNames[x.player_id]=x.player_name;
+      if(p.length<1000)break; // last page
+      offset+=1000;
+      await sleep(300);
+    }
+    console.log(`          ✅ ${Object.keys(asaNames).length} players (${batch} pages)`);
+  }catch(e){console.error("          ❌",e.message);}
   const asaTeams={};
   try{const t=await get(`${ASA}/teams`);for(const x of t){const a=norm(x.team_abbreviation);if(a)asaTeams[x.team_id]=a;}console.log(`          ✅ ${Object.keys(asaTeams).length} teams`);}catch{}
   await sleep(500);
 
   console.log("  [ASA]  xGoals...");
   const asaXG={};
-  try{const d=await get(`${ASA}/players/xgoals?season_name=${CY}&stage_name=Regular+Season`);
-  for(const p of d){const n=asaNames[p.player_id]||p.player_id;asaXG[n]={xg:p.xgoals||0,xa:p.xassists||0,shots:p.shots||0,sot:p.shots_on_target||0,goals:p.goals||0,assists:p.primary_assists||0,kp:p.key_passes||0,mins:p.minutes_played||0,pos:p.general_position||""};}
-  console.log(`          ✅ ${Object.keys(asaXG).length} players`);}catch(e){console.error("          ❌",e.message);}
+  try{
+    let offset=0;
+    while(true){
+      const url=`${ASA}/players/xgoals?season_name=${CY}&stage_name=Regular+Season${offset?`&offset=${offset}`:""}`;
+      const d=await get(url);
+      if(!d||d.length===0)break;
+      for(const p of d){const n=asaNames[p.player_id]||p.player_id;asaXG[n]={xg:p.xgoals||0,xa:p.xassists||0,shots:p.shots||0,sot:p.shots_on_target||0,goals:p.goals||0,assists:p.primary_assists||0,kp:p.key_passes||0,mins:p.minutes_played||0,pos:p.general_position||""};}
+      if(d.length<1000)break;
+      offset+=1000;await sleep(300);
+    }
+    console.log(`          ✅ ${Object.keys(asaXG).length} players`);
+  }catch(e){console.error("          ❌",e.message);}
   await sleep(500);
 
   console.log("  [ASA]  Goals Added...");
   const asaGA={};
-  try{const d=await get(`${ASA}/players/goals-added?season_name=${CY}&stage_name=Regular+Season`);
-  for(const p of d){const n=asaNames[p.player_id]||p.player_id;if(!asaGA[n])asaGA[n]={dribbling:0,fouling:0,interrupting:0,passing:0,receiving:0,shooting:0,total:0};
-  for(const a of(p.data||[])){const k=a.action_type?.toLowerCase();if(k&&asaGA[n][k]!==undefined)asaGA[n][k]=a.goals_added_raw||0;}
-  asaGA[n].total=asaGA[n].dribbling+asaGA[n].fouling+asaGA[n].interrupting+asaGA[n].passing+asaGA[n].receiving+asaGA[n].shooting;}
-  console.log(`          ✅ ${Object.keys(asaGA).length} players`);}catch(e){console.error("          ❌",e.message);}
+  try{
+    let offset=0;
+    while(true){
+      const url=`${ASA}/players/goals-added?season_name=${CY}&stage_name=Regular+Season${offset?`&offset=${offset}`:""}`;
+      const d=await get(url);
+      if(!d||d.length===0)break;
+      for(const p of d){const n=asaNames[p.player_id]||p.player_id;if(!asaGA[n])asaGA[n]={dribbling:0,fouling:0,interrupting:0,passing:0,receiving:0,shooting:0,total:0};
+      for(const a of(p.data||[])){const k=a.action_type?.toLowerCase();if(k&&asaGA[n][k]!==undefined)asaGA[n][k]=a.goals_added_raw||0;}
+      asaGA[n].total=asaGA[n].dribbling+asaGA[n].fouling+asaGA[n].interrupting+asaGA[n].passing+asaGA[n].receiving+asaGA[n].shooting;}
+      if(d.length<1000)break;
+      offset+=1000;await sleep(300);
+    }
+    console.log(`          ✅ ${Object.keys(asaGA).length} players`);
+  }catch(e){console.error("          ❌",e.message);}
   await sleep(500);
 
   console.log("  [ASA]  xPass...");
   const asaPass={};
-  try{const d=await get(`${ASA}/players/xpass?season_name=${CY}&stage_name=Regular+Season`);
-  for(const p of d){const n=asaNames[p.player_id]||p.player_id;asaPass[n]={pp:p.pass_completion_percentage?Math.round(p.pass_completion_percentage*1000)/10:0,xpp:p.xpass_completion_percentage?Math.round(p.xpass_completion_percentage*1000)/10:0,poe:p.passes_completed_over_expected?Math.round(p.passes_completed_over_expected*100)/100:0,att:p.attempted_passes||0};}
-  console.log(`          ✅ ${Object.keys(asaPass).length} players`);}catch(e){console.error("          ❌",e.message);}
+  try{
+    let offset=0;
+    while(true){
+      const url=`${ASA}/players/xpass?season_name=${CY}&stage_name=Regular+Season${offset?`&offset=${offset}`:""}`;
+      const d=await get(url);
+      if(!d||d.length===0)break;
+      for(const p of d){const n=asaNames[p.player_id]||p.player_id;asaPass[n]={pp:p.pass_completion_percentage?Math.round(p.pass_completion_percentage*1000)/10:0,xpp:p.xpass_completion_percentage?Math.round(p.xpass_completion_percentage*1000)/10:0,poe:p.passes_completed_over_expected?Math.round(p.passes_completed_over_expected*100)/100:0,att:p.attempted_passes||0};}
+      if(d.length<1000)break;
+      offset+=1000;await sleep(300);
+    }
+    console.log(`          ✅ ${Object.keys(asaPass).length} players`);
+  }catch(e){console.error("          ❌",e.message);}
 
   console.log("  [ASA]  Salaries (2025)...");
   const asaSalary={};
@@ -247,16 +261,23 @@ async function main() {
   // ═══════════════════════════════════════════════════════════════════════
   console.log("\n  [Merge] Building player objects...");
 
-  // Name matching — try exact, then last name + first initial
+  // Name matching — try exact, normalized, then last name + first initial
+  const stripAccents=(s)=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   function find(name, ...maps) {
     for (const m of maps) { if (m[name]) return m[name]; }
+    // Try accent-stripped exact match
+    const norm2 = stripAccents(name);
+    for (const m of maps) for (const [k, v] of Object.entries(m)) {
+      if (stripAccents(k) === norm2) return v;
+    }
+    // Try last name + first initial
     const parts = name.split(" ");
     if (parts.length >= 2) {
-      const last = parts[parts.length - 1].toLowerCase();
-      const fi = parts[0][0]?.toLowerCase();
+      const last = stripAccents(parts[parts.length - 1]);
+      const fi = stripAccents(parts[0][0] || "");
       for (const m of maps) for (const [k, v] of Object.entries(m)) {
         const kp = k.split(" ");
-        if (kp[kp.length - 1]?.toLowerCase() === last && kp[0]?.[0]?.toLowerCase() === fi) return v;
+        if (stripAccents(kp[kp.length - 1] || "") === last && stripAccents(kp[0]?.[0] || "") === fi) return v;
       }
     }
     return null;
@@ -325,76 +346,12 @@ async function main() {
       salary: sal.guaranteed || sal.base || 0,
       headshot: rp.headshot || sofaImg || null,
       games: e.games || 0,
-      // GK-specific
-      sv: e.saves || 0,
-      cs: (()=>{
-        // Clean sheets: count games where team conceded 0 from matchLogs
-        const logs = matchLogs[rp.name] || [];
-        if (rp.pos !== "GK" || !logs.length) return 0;
-        return logs.filter(m => {
-          const conceded = m.ha === "H" ? (m.as || 0) : (m.hs || 0);
-          return conceded === 0 && (m.mins || 0) >= 60;
-        }).length;
-      })(),
-      ga_conceded: (()=>{
-        const logs = matchLogs[rp.name] || [];
-        if (rp.pos !== "GK" || !logs.length) return 0;
-        return logs.reduce((s, m) => s + (m.ha === "H" ? (m.as || 0) : (m.hs || 0)), 0);
-      })(),
       _src: sources.join("+"),
-      // Per-game match log (real ESPN boxscore data)
-      matchLog: matchLogs[rp.name] || [],
-      // Mid-season transfer detection
-      prevTeam: (()=>{
-        const logs = matchLogs[rp.name] || [];
-        if (!logs.length) return null;
-        const teams = [...new Set(logs.map(m => m.team).filter(Boolean))];
-        // If they played for multiple teams, the one that isn't their current team is previous
-        const prev = teams.filter(t => t !== rp.team);
-        return prev.length > 0 ? prev[0] : null;
-      })(),
     });
   }
 
-  // Matches — use our richer gameInfo instead of re-fetching
-  output.matches = Object.values(gameInfo).map(g => ({
-    date: g.date,
-    completed: true,
-    home: g.home,
-    away: g.away,
-    homeScore: g.homeScore,
-    awayScore: g.awayScore,
-  })).sort((a, b) => (a.date || "").localeCompare(b.date || ""));
-
-  // ═══ DOWNLOAD HEADSHOTS (local copies for Canvas share cards) ═════════
-  const hsDir = path.join(__dirname, "public", "headshots");
-  if (!fs.existsSync(hsDir)) fs.mkdirSync(hsDir, { recursive: true });
-  let hsDown = 0, hsSkip = 0, hsFail = 0;
-  console.log(`\n  📸 Downloading headshots...`);
-  for (const p of output.players) {
-    if (!p.headshot) { hsSkip++; continue; }
-    const slug = p.n.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
-    const localPath = path.join(hsDir, `${slug}.png`);
-    const localUrl = `./headshots/${slug}.png`;
-    // Skip if already downloaded
-    if (fs.existsSync(localPath)) {
-      p.localHeadshot = localUrl;
-      hsSkip++;
-      continue;
-    }
-    try {
-      const res = await fetch(p.headshot);
-      if (res.ok) {
-        const buf = Buffer.from(await res.arrayBuffer());
-        fs.writeFileSync(localPath, buf);
-        p.localHeadshot = localUrl;
-        hsDown++;
-      } else { hsFail++; }
-    } catch { hsFail++; }
-    if ((hsDown + hsFail) % 50 === 0) process.stdout.write(`          ${hsDown + hsFail + hsSkip}/${output.players.length}\r`);
-    await sleep(50);
-  }
-  console.log(`          ✅ Headshots: ${hsDown} new · ${hsSkip} cached · ${hsFail} failed`);
+  // Matches
+  try{const d=await get(`${ESPN}/scoreboard?limit=20`);output.matches=(d?.events||[]).map(ev=>{const c=ev?.competitions?.[0]||{};const h=c?.competitors?.find(x=>x.homeAway==="home")||{};const a=c?.competitors?.find(x=>x.homeAway==="away")||{};return{date:ev.date,status:c?.status?.type?.description,completed:c?.status?.type?.completed,home:norm(h?.team?.abbreviation),away:norm(a?.team?.abbreviation),homeScore:h?.score,awayScore:a?.score};});}catch{}
 
   // ═══ WRITE ═════════════════════════════════════════════════════════════
   const outDir = path.join(__dirname, "data");
@@ -410,8 +367,6 @@ async function main() {
   const withMV = output.players.filter(p => p.mv > 0).length;
   const withSalary = output.players.filter(p => p.salary > 0).length;
   const withPass = output.players.filter(p => p.pp > 0).length;
-  const withLogs = output.players.filter(p => p.matchLog && p.matchLog.length > 0).length;
-  const totalLogs = output.players.reduce((s, p) => s + (p.matchLog?.length || 0), 0);
 
   console.log(`\n  ═══════════════════════════════════════`);
   console.log(`  ✅ data/mls-cache.json (${mb} MB)`);
@@ -422,7 +377,13 @@ async function main() {
   console.log(`  ASA      xG: ${withXG} · G+: ${withGA} · Pass%: ${withPass}`);
   console.log(`  Sofascore Tackles: ${withTkl} · Market Values: ${withMV} · Interceptions/Duels/Dribbles`);
   console.log(`  ─────────────────────────────────────`);
-  console.log(`  Match Logs: ${withLogs} players · ${totalLogs} total game entries`);
+  // Data quality check
+  const noASA = output.players.filter(p => p.g >= 2 && p.xg === 0);
+  if(noASA.length){
+    console.log(`  ⚠️  ${noASA.length} players with 2+ goals but NO ASA data:`);
+    noASA.sort((a,b)=>b.g-a.g).slice(0,10).forEach(p=>console.log(`     ${p.g}G ${p.n} (${p.t})`));
+  }
+  console.log(`  ASA directory: ${Object.keys(asaNames).length} names | xG data: ${Object.keys(asaXG).length} | G+ data: ${Object.keys(asaGA).length} | Pass data: ${Object.keys(asaPass).length}`);
   console.log(`  ASA      Salaries: ${withSalary}`);
   console.log(`  Still unavailable (StatsBomb exclusive):`);
   console.log(`    Progressive Passes, Progressive Carries, SCA, Pressures (using real proxies instead)`);
