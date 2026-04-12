@@ -385,7 +385,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
       {/* Header */}
       <div style={{padding:"28px 48px 24px 32px",borderBottom:`1px solid ${T.border}`}}>
         <div style={{display:"flex",alignItems:"center",gap:16}}>
-          {p.headshot&&!hsError?<img src={p.headshot} alt={p.name} style={{width:76,height:76,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.border}`,flexShrink:0}} onError={()=>setHsError(true)}/>:<TeamBadge abbr={p.team} size={52} logo={p.teamLogo}/>}
+          {(p.localHeadshot||p.headshot)&&!hsError?<img src={p.localHeadshot||p.headshot} alt={p.name} style={{width:76,height:76,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.border}`,flexShrink:0}} onError={()=>setHsError(true)}/>:<TeamBadge abbr={p.team} size={52} logo={p.teamLogo}/>}
           <div style={{flex:1}}>
             <div style={{fontFamily:T.display,fontWeight:700,fontSize:34,color:T.ink,letterSpacing:-.5,lineHeight:1}}>{p.name}</div>
             <div style={{display:"flex",gap:12,marginTop:2,fontSize:13,color:T.textDim,fontFamily:T.sans,flexWrap:"wrap"}}>
@@ -656,7 +656,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
         <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4}}>
           {similarPlayers.map((sp,i)=>(
             <div key={sp.id} onClick={()=>onSelectPlayer&&onSelectPlayer(sp)} style={{minWidth:110,padding:"12px 10px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`,textAlign:"center",cursor:"pointer",flexShrink:0,transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=T.borderLt}>
-              {sp.headshot?<img src={sp.headshot} alt={sp.name} style={{width:36,height:36,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.borderLt}`,margin:"0 auto 6px",display:"block"}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={sp.team} size={28} logo={sp.teamLogo}/>}
+              {(sp.localHeadshot||sp.headshot)?<img src={sp.localHeadshot||sp.headshot} alt={sp.name} style={{width:36,height:36,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.borderLt}`,margin:"0 auto 6px",display:"block"}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={sp.team} size={28} logo={sp.teamLogo}/>}
               <div style={{fontFamily:T.serif,fontWeight:600,fontSize:11,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{sp.name.split(" ").slice(-1)[0]}</div>
               <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans,marginTop:2}}>{sp.team}</div>
               <Badge grade={sp.overall} size="sm"/>
@@ -2863,7 +2863,7 @@ function MLSAnalytics(){
                   <button onClick={()=>removeCompare(p.id)} style={{position:"absolute",top:8,right:8,background:"none",border:`1px solid ${T.border}`,borderRadius:3,color:T.textMute,width:20,height:20,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>×</button>
                   <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
                     <div style={{width:8,height:8,borderRadius:"50%",background:compColors[i]}}/>
-                    {p.headshot?<img src={p.headshot} alt={p.name} style={{width:48,height:48,borderRadius:"50%",objectFit:"cover",border:`2px solid ${compColors[i]}40`,flexShrink:0}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>}
+                    {(p.localHeadshot||p.headshot)?<img src={p.localHeadshot||p.headshot} alt={p.name} style={{width:48,height:48,borderRadius:"50%",objectFit:"cover",border:`2px solid ${compColors[i]}40`,flexShrink:0}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>}
                   </div>
                   <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink,lineHeight:1,marginBottom:4}}>{p.name}</div>
                   <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:10}}>{p.position} · {p.teamName}</div>

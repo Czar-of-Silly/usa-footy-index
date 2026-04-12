@@ -353,6 +353,38 @@ async function main() {
   // Matches
   try{const d=await get(`${ESPN}/scoreboard?limit=20`);output.matches=(d?.events||[]).map(ev=>{const c=ev?.competitions?.[0]||{};const h=c?.competitors?.find(x=>x.homeAway==="home")||{};const a=c?.competitors?.find(x=>x.homeAway==="away")||{};return{date:ev.date,status:c?.status?.type?.description,completed:c?.status?.type?.completed,home:norm(h?.team?.abbreviation),away:norm(a?.team?.abbreviation),homeScore:h?.score,awayScore:a?.score};});}catch{}
 
+  // ═══ DOWNLOAD HEADSHOTS LOCALLY ═══════════════════════════════════════
+  const hsDir = path.join(__dirname, "public", "headshots");
+  if (!fs.existsSync(hsDir)) fs.mkdirSync(hsDir, { recursive: true });
+  let hsDown = 0, hsSkip = 0, hsFail = 0;
+  console.log(`\n  📸 Downloading headshots...`);
+  for (const p of output.players) {
+    if (!p.headshot) { hsSkip++; continue; }
+    const slug = p.n.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+    const ext = p.headshot.includes("espncdn") ? "png" : "png";
+    const localPath = path.join(hsDir, `${slug}.${ext}`);
+    const localUrl = `./headshots/${slug}.${ext}`;
+    if (fs.existsSync(localPath) && fs.statSync(localPath).size > 500) {
+      p.localHeadshot = localUrl;
+      hsSkip++;
+      continue;
+    }
+    try {
+      const res = await fetch(p.headshot, { headers: { "User-Agent": "Mozilla/5.0" } });
+      if (res.ok) {
+        const buf = Buffer.from(await res.arrayBuffer());
+        if (buf.length > 500) {
+          fs.writeFileSync(localPath, buf);
+          p.localHeadshot = localUrl;
+          hsDown++;
+        } else { hsFail++; }
+      } else { hsFail++; }
+    } catch { hsFail++; }
+    if ((hsDown + hsFail) % 50 === 0) process.stdout.write(`          ${hsDown + hsFail + hsSkip}/${output.players.length}\r`);
+    await sleep(30);
+  }
+  console.log(`          ✅ Headshots: ${hsDown} new · ${hsSkip} cached · ${hsFail} failed`);
+
   // ═══ WRITE ═════════════════════════════════════════════════════════════
   const outDir = path.join(__dirname, "data");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
