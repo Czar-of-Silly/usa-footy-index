@@ -1427,16 +1427,16 @@ function MLSAnalytics(){
               ))}
             </div>
 
-            <div style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:10}}>THE ROAD AHEAD</div>
+            <div style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:10}}>DATA SOURCES</div>
             <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,lineHeight:1.7,marginBottom:16}}>
-              This is currently a prototype powered by AI-estimated data. The production version will feature live data from ESPN, American Soccer Analysis, and API-Football — covering real match-by-match stats, historical season comparisons back to 2024, form guides, match previews, and shareable player cards.
+              Every grade is powered by real match data from three independent sources: ESPN (goals, assists, shots, fouls, cards, match logs), American Soccer Analysis (xG, xA, Goals Added, xPass, salaries), and Sofascore (tackles, interceptions, market values, dribbles). Data refreshes daily.
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:20}}>
               {[
-                {v:"6",l:"Grade Categories"},
+                {v:"700+",l:"Players Graded"},
                 {v:"30",l:"MLS Clubs"},
-                {v:"10",l:"Analytics Views"},
+                {v:"3",l:"Data Sources"},
               ].map(s=>(
                 <div key={s.l} style={{textAlign:"center",padding:"12px 8px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
                   <div style={{fontFamily:T.display,fontWeight:700,fontSize:24,color:T.ink,lineHeight:1}}>{s.v}</div>
@@ -2989,7 +2989,7 @@ function MLSAnalytics(){
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:20}}>
             <div>
               <Logo size={36} dark={dark}/>
-              <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,marginTop:8,lineHeight:1.6,maxWidth:280}}>Advanced player analytics and composite grading for Major League Soccer. Not affiliated with MLS or its clubs. Player images and team logos courtesy of ESPN.</div>
+              <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,marginTop:8,lineHeight:1.6,maxWidth:280}}>Advanced player analytics and composite grading for Major League Soccer. Not affiliated with MLS or its clubs. Data from ESPN, American Soccer Analysis, and Sofascore.</div>
             </div>
             <div className="resp-footer-cols" style={{display:"flex",gap:32}}>
               <div>
@@ -3004,9 +3004,9 @@ function MLSAnalytics(){
               <div>
                 <div style={{fontSize:8,color:T.textMute,fontWeight:700,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:8}}>Info</div>
                 <div style={{fontSize:10,color:T.accent,fontFamily:T.sans,marginBottom:4,cursor:"pointer"}} onClick={()=>setShowAbout(true)}>About</div>
-                <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4}}>Data via Claude AI</div>
+                <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4}}>Data: ESPN · ASA · Sofascore</div>
                 <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4}}>Season: {season}</div>
-                <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>v9 — Season Rating</div>
+                <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>v10</div>
               </div>
             </div>
           </div>
