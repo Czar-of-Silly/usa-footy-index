@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-04-13T05:58:39.933Z -->
+<!-- built: 2026-04-13T06:15:15.559Z -->
 </head>
 <body>
   <div id="root"></div>
@@ -8462,7 +8462,303 @@ function MLSAnalytics() {
         fontStyle: "italic",
         textAlign: "center"
       }
-    }, "Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and Sofascore."));
+    }, "Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and Sofascore."), (() => {
+      const upcoming = (matches || []).filter(m => !m.completed && m.home && m.away);
+      if (!upcoming.length) return null;
+      const teamPower = {};
+      (enrichedTeams || []).forEach(t => {
+        teamPower[t.abbr] = t.power || 50;
+      });
+      const teamSchedule = {};
+      upcoming.forEach(m => {
+        if (!teamSchedule[m.home]) teamSchedule[m.home] = [];
+        if (!teamSchedule[m.away]) teamSchedule[m.away] = [];
+        teamSchedule[m.home].push({
+          opp: m.away,
+          ha: "H",
+          date: m.date,
+          power: teamPower[m.away] || 50
+        });
+        teamSchedule[m.away].push({
+          opp: m.home,
+          ha: "A",
+          date: m.date,
+          power: teamPower[m.home] || 50
+        });
+      });
+      const diffRanked = Object.entries(teamSchedule).map(([team, games]) => {
+        const next5 = games.sort((a, b) => (a.date || "").localeCompare(b.date || "")).slice(0, 5);
+        const avgDiff = next5.length ? Math.round(next5.reduce((s, g) => s + g.power, 0) / next5.length) : 50;
+        return {
+          team,
+          games: next5,
+          avgDiff
+        };
+      }).sort((a, b) => b.avgDiff - a.avgDiff);
+      if (!diffRanked.length) return null;
+      const diffColor = d => d >= 75 ? T.red : d >= 60 ? T.accent : d >= 45 ? T.textDim : T.green;
+      return /*#__PURE__*/React.createElement("div", {
+        style: {
+          marginTop: 24
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.display,
+          fontWeight: 700,
+          fontSize: 20,
+          color: T.ink,
+          marginBottom: 4
+        }
+      }, "Fixture Difficulty"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 11,
+          color: T.textMute,
+          fontFamily: T.sans,
+          marginBottom: 14
+        }
+      }, "Next 5 matches ranked by opponent power rating. Harder schedules at top."), /*#__PURE__*/React.createElement("div", {
+        style: {
+          background: T.surface,
+          border: `1px solid ${T.border}`,
+          borderRadius: 8,
+          overflow: "hidden"
+        }
+      }, diffRanked.slice(0, isMobile ? 10 : 15).map((t, i) => /*#__PURE__*/React.createElement("div", {
+        key: t.team,
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "8px 14px",
+          borderBottom: `1px solid ${T.borderLt}`
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.serif,
+          fontWeight: 700,
+          fontSize: 13,
+          color: i < 3 ? T.accent : T.textMute,
+          width: 22,
+          textAlign: "center"
+        }
+      }, i + 1), /*#__PURE__*/React.createElement(TeamBadge, {
+        abbr: t.team,
+        size: 24,
+        logo: teamLogos[t.team]
+      }), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.serif,
+          fontWeight: 700,
+          fontSize: 13,
+          color: T.ink,
+          width: 40
+        }
+      }, t.team), /*#__PURE__*/React.createElement("div", {
+        style: {
+          flex: 1,
+          display: "flex",
+          gap: 3
+        }
+      }, t.games.map((g, j) => /*#__PURE__*/React.createElement("div", {
+        key: j,
+        style: {
+          flex: 1,
+          textAlign: "center",
+          padding: "4px 2px",
+          borderRadius: 4,
+          background: `${diffColor(g.power)}12`,
+          border: `1px solid ${diffColor(g.power)}25`
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 8,
+          fontFamily: T.mono,
+          fontWeight: 700,
+          color: diffColor(g.power)
+        }
+      }, g.opp), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 7,
+          color: T.textMute
+        }
+      }, g.ha)))), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.mono,
+          fontWeight: 700,
+          fontSize: 13,
+          color: diffColor(t.avgDiff),
+          width: 32,
+          textAlign: "right"
+        }
+      }, t.avgDiff)))));
+    })(), (() => {
+      const totalGames = 34;
+      const sims = 500;
+      const teamData = {};
+      (standings || []).forEach(s => {
+        const played = (s.w || 0) + (s.d || 0) + (s.l || 0);
+        teamData[s.team] = {
+          pts: s.pts || 0,
+          w: s.w || 0,
+          d: s.d || 0,
+          l: s.l || 0,
+          played,
+          remaining: totalGames - played,
+          conf: s.conf,
+          abbr: s.abbr
+        };
+      });
+      const teams = Object.values(teamData);
+      if (!teams.length || !teams[0].remaining) return null;
+      // Simple simulation: for each remaining game, win=40%, draw=30%, loss=30% weighted by current form
+      const results = {};
+      teams.forEach(t => {
+        results[t.abbr] = {
+          playoff: 0,
+          shield: 0,
+          totalPts: 0
+        };
+      });
+      for (let s = 0; s < sims; s++) {
+        const simPts = {};
+        teams.forEach(t => {
+          const winRate = Math.min(0.65, 0.2 + t.pts / (t.played || 1) * 3 / 100);
+          let pts = t.pts;
+          for (let g = 0; g < t.remaining; g++) {
+            const r = Math.random();
+            if (r < winRate) pts += 3;else if (r < winRate + 0.28) pts += 1;
+          }
+          simPts[t.abbr] = pts;
+        });
+        // Top 9 per conference make playoffs
+        const east = teams.filter(t => t.conf === "Eastern").map(t => ({
+          ...t,
+          simPts: simPts[t.abbr]
+        })).sort((a, b) => b.simPts - a.simPts);
+        const west = teams.filter(t => t.conf === "Western").map(t => ({
+          ...t,
+          simPts: simPts[t.abbr]
+        })).sort((a, b) => b.simPts - a.simPts);
+        east.slice(0, 9).forEach(t => {
+          results[t.abbr].playoff++;
+        });
+        west.slice(0, 9).forEach(t => {
+          results[t.abbr].playoff++;
+        });
+        const all = [...east, ...west].sort((a, b) => b.simPts - a.simPts);
+        if (all[0]) results[all[0].abbr].shield++;
+        teams.forEach(t => {
+          results[t.abbr].totalPts += simPts[t.abbr];
+        });
+      }
+      const probData = teams.map(t => ({
+        ...t,
+        playoffPct: Math.round(results[t.abbr].playoff / sims * 100),
+        shieldPct: Math.round(results[t.abbr].shield / sims * 100),
+        projPts: Math.round(results[t.abbr].totalPts / sims)
+      })).sort((a, b) => b.playoffPct - a.playoffPct || b.projPts - a.projPts);
+      const probColor = pct => pct >= 80 ? T.green : pct >= 50 ? T.blue : pct >= 20 ? T.accent : T.red;
+      return /*#__PURE__*/React.createElement("div", {
+        style: {
+          marginTop: 24
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.display,
+          fontWeight: 700,
+          fontSize: 20,
+          color: T.ink,
+          marginBottom: 4
+        }
+      }, "Playoff Probability"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 11,
+          color: T.textMute,
+          fontFamily: T.sans,
+          marginBottom: 14
+        }
+      }, "Simulated ", sims, "x based on current form and remaining games. Top 9 per conference qualify."), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: 16
+        }
+      }, ["Eastern", "Western"].map(conf => /*#__PURE__*/React.createElement("div", {
+        key: conf,
+        style: {
+          background: T.surface,
+          border: `1px solid ${T.border}`,
+          borderRadius: 8,
+          overflow: "hidden"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          padding: "10px 14px",
+          borderBottom: `1px solid ${T.border}`,
+          fontFamily: T.sans,
+          fontWeight: 700,
+          fontSize: 10,
+          color: T.textMute,
+          letterSpacing: 1.5,
+          textTransform: "uppercase"
+        }
+      }, conf, " Conference"), probData.filter(t => t.conf === conf).map((t, i) => /*#__PURE__*/React.createElement("div", {
+        key: t.abbr,
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "6px 14px",
+          borderBottom: `1px solid ${T.borderLt}`,
+          background: i < 9 ? `${T.green}04` : "transparent"
+        }
+      }, /*#__PURE__*/React.createElement(TeamBadge, {
+        abbr: t.abbr,
+        size: 22,
+        logo: teamLogos[t.abbr]
+      }), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.serif,
+          fontWeight: 700,
+          fontSize: 12,
+          color: T.ink,
+          width: 36
+        }
+      }, t.abbr), /*#__PURE__*/React.createElement("div", {
+        style: {
+          flex: 1,
+          height: 6,
+          background: `${T.border}50`,
+          borderRadius: 3,
+          overflow: "hidden"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          width: `${t.playoffPct}%`,
+          height: "100%",
+          background: probColor(t.playoffPct),
+          borderRadius: 3,
+          transition: "width .3s"
+        }
+      })), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.mono,
+          fontWeight: 700,
+          fontSize: 12,
+          color: probColor(t.playoffPct),
+          width: 38,
+          textAlign: "right"
+        }
+      }, t.playoffPct, "%"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 9,
+          color: T.textMute,
+          fontFamily: T.mono,
+          width: 32,
+          textAlign: "right"
+        }
+      }, t.projPts, "pt")))))));
+    })());
   })(), !loading && tab === "leaders" && (() => {
     // Best XI: top rated at each position slot (4-3-3)
     const byPos = pos => [...players].filter(p => pos.includes(p.position)).sort((a, b) => b.overall - a.overall);
@@ -8574,6 +8870,9 @@ function MLSAnalytics() {
     }, {
       id: "movers",
       l: "Movers"
+    }, {
+      id: "awards",
+      l: "Award Races"
     }].map(v => /*#__PURE__*/React.createElement("button", {
       key: v.id,
       onClick: () => setLeadersView(v.id),
@@ -9566,6 +9865,183 @@ function MLSAnalytics() {
           fontFamily: T.sans
         }
       }, "No players cooling down right now")));
+    })(), leadersView === "awards" && (() => {
+      const mvpCandidates = [...players].filter(p => p.position !== "GK" && p.position !== "Goalkeeper" && (p.mins || 0) >= 200).map(p => {
+        const minFactor = Math.min((p.mins || 0) / 450, 1);
+        const score = Math.round((p.overall * 0.4 + ((p.goals || 0) * 3 + (p.assists || 0) * 2) * 2 + (+p.totalGA >= 0 ? +p.totalGA * 8 : +p.totalGA * 4)) * minFactor * 10) / 10;
+        return {
+          ...p,
+          mvpScore: score
+        };
+      }).sort((a, b) => b.mvpScore - a.mvpScore).slice(0, 10);
+      const bootRace = [...players].filter(p => (p.goals || 0) >= 1).sort((a, b) => (b.goals || 0) - (a.goals || 0) || (b.assists || 0) - (a.assists || 0)).slice(0, 10);
+      const doyRace = [...players].filter(p => (p.position === "Defender" || p.position === "DF" || p.position === "DEF") && (p.mins || 0) >= 200).sort((a, b) => b.defense - a.defense).slice(0, 10);
+      const gkRace = [...players].filter(p => (p.position === "GK" || p.position === "Goalkeeper") && (p.mins || 0) >= 200).sort((a, b) => b.overall - a.overall).slice(0, 10);
+      const youngRace = [...players].filter(p => p.age && +p.age < 23 && (p.mins || 0) >= 200).sort((a, b) => b.overall - a.overall).slice(0, 10);
+      const RaceCard = ({
+        title,
+        icon,
+        candidates,
+        metricLabel,
+        metricFn,
+        gradeFn
+      }) => /*#__PURE__*/React.createElement("div", {
+        style: {
+          background: T.surface,
+          border: `1px solid ${T.border}`,
+          borderRadius: 8,
+          overflow: "hidden"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          padding: "14px 18px",
+          borderBottom: `1px solid ${T.borderLt}`,
+          display: "flex",
+          alignItems: "center",
+          gap: 8
+        }
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 18
+        }
+      }, icon), /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontFamily: T.display,
+          fontWeight: 700,
+          fontSize: 16,
+          color: T.ink
+        }
+      }, title)), candidates.map((p, i) => /*#__PURE__*/React.createElement("div", {
+        key: p.id,
+        onClick: () => setSel(p),
+        className: "rh",
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: i === 0 ? "12px 18px" : "8px 18px",
+          borderBottom: `1px solid ${T.borderLt}`,
+          cursor: "pointer",
+          background: i === 0 ? `${T.gold}06` : "transparent"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.display,
+          fontWeight: 900,
+          fontSize: i === 0 ? 24 : 16,
+          color: i === 0 ? T.gold : i < 3 ? T.accent : T.textMute,
+          width: 24,
+          textAlign: "center"
+        }
+      }, i + 1), /*#__PURE__*/React.createElement(TeamBadge, {
+        abbr: p.team,
+        size: i === 0 ? 34 : 26,
+        logo: p.teamLogo
+      }), /*#__PURE__*/React.createElement("div", {
+        style: {
+          flex: 1,
+          minWidth: 0
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.serif,
+          fontWeight: 700,
+          fontSize: i === 0 ? 17 : 13,
+          color: T.ink,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }
+      }, p.name), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 9,
+          color: T.textDim,
+          fontFamily: T.sans
+        }
+      }, p.position, " \xB7 ", p.teamName || p.team, i === 0 && p.goals > 0 ? ` · ${p.goals}G ${p.assists}A` : "")), gradeFn && /*#__PURE__*/React.createElement(Badge, {
+        grade: gradeFn(p),
+        size: "sm"
+      }), /*#__PURE__*/React.createElement("div", {
+        style: {
+          textAlign: "right",
+          minWidth: 50
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.mono,
+          fontWeight: 700,
+          fontSize: i === 0 ? 16 : 13,
+          color: i === 0 ? T.gold : T.ink
+        }
+      }, metricFn(p)), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 7,
+          color: T.textMute,
+          fontFamily: T.sans,
+          textTransform: "uppercase",
+          letterSpacing: .5
+        }
+      }, metricLabel)))));
+      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+        style: {
+          marginBottom: 16
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.display,
+          fontWeight: 700,
+          fontSize: 22,
+          color: T.ink
+        }
+      }, "Award Races"), /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontSize: 11,
+          color: T.textMute,
+          fontFamily: T.sans,
+          marginTop: 4
+        }
+      }, "Data-driven predictions based on composite grades, production, and minutes played. Updated daily.")), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: 16
+        }
+      }, /*#__PURE__*/React.createElement(RaceCard, {
+        title: "MVP Race",
+        icon: "\uD83C\uDFC6",
+        candidates: mvpCandidates,
+        metricLabel: "MVP Score",
+        metricFn: p => p.mvpScore,
+        gradeFn: p => p.overall
+      }), /*#__PURE__*/React.createElement(RaceCard, {
+        title: "Golden Boot",
+        icon: "\uD83D\uDC5F",
+        candidates: bootRace,
+        metricLabel: "Goals",
+        metricFn: p => `${p.goals}G ${p.assists}A`,
+        gradeFn: p => p.overall
+      }), /*#__PURE__*/React.createElement(RaceCard, {
+        title: "Defender of the Year",
+        icon: "\uD83D\uDEE1",
+        candidates: doyRace,
+        metricLabel: "DEF Grade",
+        metricFn: p => p.defense,
+        gradeFn: p => p.defense
+      }), /*#__PURE__*/React.createElement(RaceCard, {
+        title: "Young Player",
+        icon: "\u2B50",
+        candidates: youngRace,
+        metricLabel: "Grade",
+        metricFn: p => p.overall,
+        gradeFn: p => p.overall
+      }), /*#__PURE__*/React.createElement(RaceCard, {
+        title: "GK of the Year",
+        icon: "\uD83E\uDDE4",
+        candidates: gkRace,
+        metricLabel: "GK Grade",
+        metricFn: p => p.overall,
+        gradeFn: p => p.overall
+      })));
     })());
   })(), !loading && tab === "valuations" && /*#__PURE__*/React.createElement("div", {
     style: {

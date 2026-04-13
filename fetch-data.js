@@ -352,8 +352,37 @@ async function main() {
     });
   }
 
-  // Matches
-  try{const d=await get(`${ESPN}/scoreboard?limit=20`);output.matches=(d?.events||[]).map(ev=>{const c=ev?.competitions?.[0]||{};const h=c?.competitors?.find(x=>x.homeAway==="home")||{};const a=c?.competitors?.find(x=>x.homeAway==="away")||{};return{date:ev.date,status:c?.status?.type?.description,completed:c?.status?.type?.completed,home:norm(h?.team?.abbreviation),away:norm(a?.team?.abbreviation),homeScore:h?.score,awayScore:a?.score};});}catch{}
+  // Matches — recent + upcoming
+  console.log("  [ESPN] Schedule...");
+  try{
+    const now=new Date();
+    const dates=[];
+    // Get 2 weeks back and 4 weeks forward
+    for(let d=-14;d<=28;d++){
+      const dt=new Date(now);dt.setDate(dt.getDate()+d);
+      dates.push(dt.toISOString().slice(0,10).replace(/-/g,""));
+    }
+    const allMatches=[];
+    const seen=new Set();
+    for(let i=0;i<dates.length;i+=7){
+      const chunk=dates.slice(i,i+7);
+      for(const dt of chunk){
+        try{
+          const d=await get(`${ESPN}/scoreboard?dates=${dt}`);
+          for(const ev of(d?.events||[])){
+            if(seen.has(ev.id))continue;seen.add(ev.id);
+            const c=ev?.competitions?.[0]||{};const h=c?.competitors?.find(x=>x.homeAway==="home")||{};const a=c?.competitors?.find(x=>x.homeAway==="away")||{};
+            allMatches.push({id:ev.id,date:ev.date,status:c?.status?.type?.description,completed:c?.status?.type?.completed,home:norm(h?.team?.abbreviation),away:norm(a?.team?.abbreviation),homeScore:h?.score,awayScore:a?.score});
+          }
+        }catch{}
+      }
+      await sleep(300);
+    }
+    output.matches=allMatches.sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+    const completed=allMatches.filter(m=>m.completed).length;
+    const upcoming=allMatches.filter(m=>!m.completed).length;
+    console.log(`          ✅ ${allMatches.length} matches (${completed} played, ${upcoming} upcoming)`);
+  }catch(e){console.error("          ❌",e.message);}
 
   // ═══ DOWNLOAD HEADSHOTS LOCALLY ═══════════════════════════════════════
   const hsDir = path.join(__dirname, "public", "headshots");
