@@ -53,7 +53,9 @@ async function main() {
   for(const[a,info]of Object.entries(teamInfo)){
     try{const d=await get(`${ESPN}/teams/${info.id}/roster`);const ath=d?.athletes||[];const flat=ath[0]?.items?ath.flatMap(g=>g.items||[]):ath;
     for(const p of flat){const pr=p?.position?.abbreviation||p?.position?.name||"M";let age=p.age||(p.dateOfBirth?Math.floor((Date.now()-new Date(p.dateOfBirth).getTime())/31557600000):null);
-      roster.push({name:p.displayName||p.fullName||"Unknown",team:a,pos:POS_MAP[pr]||POS_MAP[pr?.charAt(0)]||"Midfielder",age,headshot:p.headshot?.href||null,ht:p.height?Math.round(p.height*2.54):null,wt:p.weight?Math.round(p.weight*0.453592):null});rc++;}
+      const espnId = p.id || p.uid?.split(":")?.[5] || null;
+      const hsUrl = p.headshot?.href || (espnId ? `https://a.espncdn.com/i/headshots/soccer/players/full/${espnId}.png` : null);
+      roster.push({name:p.displayName||p.fullName||"Unknown",team:a,pos:POS_MAP[pr]||POS_MAP[pr?.charAt(0)]||"Midfielder",age,headshot:hsUrl,espnId,ht:p.height?Math.round(p.height*2.54):null,wt:p.weight?Math.round(p.weight*0.453592):null});rc++;}
     await sleep(120);}catch{}
   }
   console.log(`          ✅ ${rc} players`);
