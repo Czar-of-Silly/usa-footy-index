@@ -308,6 +308,20 @@ function FormSparkline({data,width=200,height=50}){
 }
 
 // Season-over-season sparkline — shows grade dots connected by a line
+
+// Mini inline sparkline for table rows — pure SVG, no Recharts
+function MiniSparkline({matchLog,w=40,h=14}){
+  if(!matchLog||matchLog.length<2)return null;
+  const last5=matchLog.slice(-5);
+  const rates=last5.map(m=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));});
+  const mn=Math.min(...rates),mx=Math.max(...rates),rng=mx-mn||1;
+  const pts=rates.map((v,i)=>[i*(w/(rates.length-1)),h-2-((v-mn)/rng)*(h-4)]);
+  const d="M"+pts.map(p=>p.join(",")).join("L");
+  const latest=rates[rates.length-1];
+  const col=gc(latest);
+  return <svg width={w} height={h} style={{display:"block",flexShrink:0}}><path d={d} fill="none" stroke={col} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/><circle cx={pts[pts.length-1][0]} cy={pts[pts.length-1][1]} r={2} fill={col}/></svg>;
+}
+
 function SeasonSparkline({seasons,width=180,height=60}){
   if(!seasons||seasons.length<1)return <span style={{fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic"}}>No history</span>;
   return <div>
@@ -1517,7 +1531,7 @@ function MLSAnalytics(){
             </div>
             {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
-              <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div></div>
+              <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0,flex:1}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div>{!isMobile&&p.matchLog?.length>=2&&<MiniSparkline matchLog={p.matchLog} w={48} h={16}/>}</div>
               <div style={{textAlign:"center"}}><Badge grade={p.overall} size={isMobile?"sm":"md"}/></div>
               <div style={{fontSize:isMobile?11:13,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono,fontWeight:500}}>{p.age||"—"}</div>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.goals,20),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.goals}</div>
