@@ -684,9 +684,10 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
         <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic"}}>Stats via ESPN, ASA, Sofascore · USA Footy Index</div>
         <div style={{display:"flex",gap:8}}>
           <button onClick={async()=>{
-            const isDark=isDarkMode;const W=720,H=1100;
+            const isDark=isDarkMode;const W=720,H=1000;
             const loadImg=(src)=>new Promise(r=>{if(!src)return r(null);const img=new Image();img.crossOrigin="anonymous";img.onload=()=>r(img);img.onerror=()=>r(null);img.src=src;setTimeout(()=>r(null),5000);});
-            const[headImg,logoImg,siteLogo]=await Promise.all([loadImg(p.localHeadshot||p.headshot),loadImg(p.teamLogo),loadImg(isDark?"./logo-dark.png":"./logo.png")]);
+            const loadImgLocal=(src)=>new Promise(r=>{if(!src)return r(null);const img=new Image();img.onload=()=>r(img);img.onerror=()=>r(null);img.src=src;setTimeout(()=>r(null),3000);});
+            const[headImg,logoImg,siteLogo]=await Promise.all([loadImg(p.localHeadshot||p.headshot),loadImg(p.teamLogo),loadImgLocal(isDark?"./logo-dark.png":"./logo.png")]);
             const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
             const BG=isDark?"#0f1724":"#F4F1EA";const INK=isDark?"#E8E4DA":"#1A1A1A";const DIM=isDark?"#8B8680":"#6B6560";
             const MUTE=isDark?"#5a5550":"#A09A90";const BORDER=isDark?"#2a3040":"#D6D0C4";const CARD=isDark?"#1a2232":"#FDFCF9";
@@ -740,27 +741,27 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
               const barW2=(W-60)/rates.length-4;
               rates.forEach((v,i)=>{const barH=((v-mn2)/rng2)*sparkH+6;const bx=30+i*(barW2+4);const by=sparkY+sparkH-barH;x.fillStyle=gcC(v);x.beginPath();x.roundRect(bx,by,barW2,barH,2);x.fill();x.fillStyle=INK;x.font="bold 9px Inter,sans-serif";x.textAlign="center";x.fillText(v,bx+barW2/2,by-4);if(last10[i].opp){x.fillStyle=MUTE;x.font="7px Inter,sans-serif";x.fillText(last10[i].opp,bx+barW2/2,sparkY+sparkH+12);}});x.textAlign="left";
             }
-            const simY2=p.matchLog&&p.matchLog.length>=2?780:670;
+            const simY2=p.matchLog&&p.matchLog.length>=2?760:660;
             x.fillStyle=BORDER;x.fillRect(30,simY2,W-60,1);
             if(similarPlayers&&similarPlayers.length>0){
-              x.fillStyle=MUTE;x.font="bold 9px Inter,sans-serif";x.fillText("SIMILAR PLAYERS",30,simY2+28);
-              similarPlayers.slice(0,4).forEach((sp,i)=>{const sy=simY2+48+i*24;x.fillStyle=INK;x.font="bold 12px Inter,sans-serif";x.fillText(sp.name,30,sy);x.fillStyle=DIM;x.font="11px Inter,sans-serif";x.fillText(`${sp.position} · ${sp.team}`,200,sy);x.fillStyle=gcC(sp.overall);x.font="bold 12px 'Source Serif 4',Georgia,serif";x.textAlign="right";x.fillText(sp.overall,W-30,sy);x.textAlign="left";});
+              x.fillStyle=MUTE;x.font="bold 9px Inter,sans-serif";x.fillText("SIMILAR PLAYERS",30,simY2+24);
+              similarPlayers.slice(0,3).forEach((sp,i)=>{const sy=simY2+42+i*22;x.fillStyle=INK;x.font="bold 12px Inter,sans-serif";x.fillText(sp.name,30,sy);x.fillStyle=DIM;x.font="11px Inter,sans-serif";x.fillText(`${sp.position} · ${sp.team}`,200,sy);x.fillStyle=gcC(sp.overall);x.font="bold 12px 'Source Serif 4',Georgia,serif";x.textAlign="right";x.fillText(sp.overall,W-30,sy);x.textAlign="left";});
             }
             // Banner
-            const banY=H-140;
+            const banY=H-130;
             x.fillStyle=`${BORDER}40`;x.fillRect(30,banY,W-60,1);
             if(siteLogo){
-              const maxLogoW=280,maxLogoH=70;
+              const maxLogoW=260,maxLogoH=60;
               const lw=siteLogo.naturalWidth,lh=siteLogo.naturalHeight;
               const logoScale=Math.min(maxLogoW/lw,maxLogoH/lh);
               const drawW=lw*logoScale,drawH=lh*logoScale;
-              x.drawImage(siteLogo,(W-drawW)/2,banY+14,drawW,drawH);
+              x.drawImage(siteLogo,(W-drawW)/2,banY+10,drawW,drawH);
             } else {
               x.fillStyle=INK;x.font="bold 22px 'Source Serif 4',Georgia,serif";x.textAlign="center";
-              x.fillText("US Footy Index",W/2,banY+40);x.textAlign="left";
+              x.fillText("US Footy Index",W/2,banY+36);x.textAlign="left";
             }
             x.fillStyle=MUTE;x.font="10px Inter,sans-serif";x.textAlign="center";
-            x.fillText("MLS Player Analytics & Composite Grades",W/2,banY+94);
+            x.fillText("MLS Player Analytics & Composite Grades",W/2,banY+82);
             x.textAlign="left";
             // Footer
             x.fillStyle=INK;x.fillRect(0,H-44,W,44);x.fillStyle=MUTE;x.font="9px Inter,sans-serif";x.textAlign="center";x.fillText("Data: ESPN · American Soccer Analysis · Sofascore",W/2,H-20);x.textAlign="left";
