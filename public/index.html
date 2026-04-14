@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-04-13T06:33:34.683Z -->
+<!-- built: 2026-04-14T05:15:18.480Z -->
 </head>
 <body>
   <div id="root"></div>
@@ -8463,11 +8463,11 @@ function MLSAnalytics() {
         textAlign: "center"
       }
     }, "Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and Sofascore."), (() => {
-      const upcoming = (matches || []).filter(m => !m.completed && m.home && m.away);
+      const upcoming = (matchesData || []).filter(m => !m.completed && m.home && m.away);
       if (!upcoming.length) return null;
       const teamPower = {};
       (enrichedTeams || []).forEach(t => {
-        teamPower[t.abbr] = t.power || 50;
+        teamPower[t.abbr] = t.overall || 55;
       });
       const teamSchedule = {};
       upcoming.forEach(m => {
@@ -8595,7 +8595,7 @@ function MLSAnalytics() {
       const totalGames = 34;
       const sims = 500;
       const teamData = {};
-      (standings || []).forEach(s => {
+      (standingsData || []).forEach(s => {
         const played = (s.w || 0) + (s.d || 0) + (s.l || 0);
         teamData[s.team] = {
           pts: s.pts || 0,
@@ -8605,7 +8605,7 @@ function MLSAnalytics() {
           played,
           remaining: totalGames - played,
           conf: s.conf,
-          abbr: s.abbr
+          abbr: s.team
         };
       });
       const teams = Object.values(teamData);
