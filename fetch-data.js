@@ -176,7 +176,8 @@ async function main() {
 
   const sofaStats = {};
   let sofaValues = {};
-  let sofaImages = {}; // player name → { tackles, interceptions, ... }
+  let sofaImages = {}; // player name → image URL
+  let sofaPlayerIds = {}; // player name → sofascore ID
   if (sofaSeasonId) {
     console.log("  [Sofa] Fetching defensive + possession stats...");
     const fields = "tackles,interceptions,aerialDuelsWon,successfulDribbles,accuratePasses,keyPasses,groundDuelsWon,blockedShots,totalDuelsWon,accurateFinalThirdPasses,ballRecovery,possessionWonAttThird,bigChancesCreated,totalPasses,accurateLongBalls,possessionLost,dispossessed";
@@ -252,6 +253,7 @@ async function main() {
     for (const p of allIds) {
       // Sofascore serves images at a predictable URL pattern
       sofaImages[p.name] = `https://api.sofascore.com/api/v1/player/${p.id}/image`;
+      sofaPlayerIds[p.name] = p.id;
       imgCount++;
     }
     console.log(`          ✅ ${imgCount} player image URLs mapped`);
@@ -295,6 +297,7 @@ async function main() {
     const sal = find(rp.name, asaSalary) || {};
     const mvVal = find(rp.name, sofaValues) || 0;
     const sofaImg = typeof sofaImages !== 'undefined' ? (find(rp.name, sofaImages) || null) : null;
+    const sofaId = typeof sofaPlayerIds !== 'undefined' ? (find(rp.name, sofaPlayerIds) || null) : null;
 
     const hasESPN = (e.games || 0) > 0;
     const hasASA = !!xg.mins;
@@ -347,6 +350,7 @@ async function main() {
       // Meta
       salary: sal.guaranteed || sal.base || 0,
       headshot: rp.headshot || sofaImg || null,
+      _sofaId: sofaId || null,
       games: e.games || 0,
       _src: sources.join("+"),
     });
@@ -392,27 +396,43 @@ async function main() {
   for (const p of output.players) {
     if (!p.headshot) { hsSkip++; continue; }
     const slug = p.n.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
-    const ext = p.headshot.includes("espncdn") ? "png" : "png";
-    const localPath = path.join(hsDir, `${slug}.${ext}`);
-    const localUrl = `./headshots/${slug}.${ext}`;
-    if (fs.existsSync(localPath) && fs.statSync(localPath).size > 500) {
+    const localPath = path.join(hsDir, `${slug}.png`);
+    const localUrl = `./headshots/${slug}.png`;
+    if (fs.existsSync(localPath) && fs.statSync(localPath).size > 100) {
       p.localHeadshot = localUrl;
       hsSkip++;
       continue;
     }
-    try {
-      const res = await fetch(p.headshot, { headers: { "User-Agent": "Mozilla/5.0" } });
-      if (res.ok) {
-        const buf = Buffer.from(await res.arrayBuffer());
-        if (buf.length > 500) {
-          fs.writeFileSync(localPath, buf);
-          p.localHeadshot = localUrl;
-          hsDown++;
-        } else { hsFail++; }
-      } else { hsFail++; }
-    } catch { hsFail++; }
+    // Try primary URL, then fallback to alternate source
+    const urls = [p.headshot];
+    // If primary is ESPN, also try Sofascore and vice versa
+    if (p.headshot.includes("espncdn") && p._sofaId) {
+      urls.push(`https://api.sofascore.com/api/v1/player/${p._sofaId}/image`);
+    }
+    let downloaded = false;
+    for (const url of urls) {
+      try {
+        const hdrs = url.includes("sofascore") 
+          ? { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Accept": "image/*", "Referer": "https://www.sofascore.com/" }
+          : { "User-Agent": "Mozilla/5.0" };
+        const res = await fetch(url, { headers: hdrs });
+        if (res.ok) {
+          const ct = res.headers.get("content-type") || "";
+          const buf = Buffer.from(await res.arrayBuffer());
+          // Accept any image over 100 bytes (some headshots are small)
+          if (buf.length > 100 && (ct.includes("image") || buf[0] === 0x89 || buf[0] === 0xFF)) {
+            fs.writeFileSync(localPath, buf);
+            p.localHeadshot = localUrl;
+            hsDown++;
+            downloaded = true;
+            break;
+          }
+        }
+      } catch {}
+    }
+    if (!downloaded) hsFail++;
     if ((hsDown + hsFail) % 50 === 0) process.stdout.write(`          ${hsDown + hsFail + hsSkip}/${output.players.length}\r`);
-    await sleep(30);
+    await sleep(40);
   }
   console.log(`          ✅ Headshots: ${hsDown} new · ${hsSkip} cached · ${hsFail} failed`);
 
