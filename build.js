@@ -2,42 +2,61 @@
 /**
  * USA Footy Index — Build Script
  * Pre-compiles JSX so the browser doesn't need Babel at runtime.
- * Cuts ~2-3 seconds off every page load.
  * 
- * Usage: node build.js
- * Input:  public/index.html (with <script type="text/babel">)
- * Output: public/index.html (with pre-compiled <script>)
- * Backup: public/index.dev.html (original with Babel)
+ * Workflow:
+ *   1. Edit public/index.dev.html (your JSX source)
+ *   2. Run: node build.js
+ *   3. Push: git add . && git commit && git push
+ * 
+ * Input:  public/index.dev.html (JSX + Babel)
+ * Output: public/index.html (pre-compiled, no Babel needed)
  */
 
 const fs = require("fs");
 const path = require("path");
 const { transformSync } = require("@babel/core");
 
-const SRC = path.join(__dirname, "public", "index.html");
-const BACKUP = path.join(__dirname, "public", "index.dev.html");
-const OUT = SRC; // overwrite in place
+const DEV = path.join(__dirname, "public", "index.dev.html");
+const OUT = path.join(__dirname, "public", "index.html");
 
 console.log("\n⚡ USA Footy Index — Build\n");
 
-if (!fs.existsSync(SRC)) {
-  console.error("❌ public/index.html not found");
+// Determine source file
+let srcPath = DEV;
+if (!fs.existsSync(DEV)) {
+  if (fs.existsSync(OUT)) {
+    const html = fs.readFileSync(OUT, "utf8");
+    if (html.includes('type="text/babel"')) {
+      fs.copyFileSync(OUT, DEV);
+      console.log("  📋 Created index.dev.html from index.html");
+      srcPath = DEV;
+    } else {
+      console.error("  ❌ No JSX source found. Need index.dev.html with <script type=\"text/babel\">");
+      process.exit(1);
+    }
+  } else {
+    console.error("  ❌ No source files found");
+    process.exit(1);
+  }
+}
+
+const html = fs.readFileSync(srcPath, "utf8");
+
+if (!html.includes('type="text/babel"')) {
+  console.error("  ❌ index.dev.html doesn't contain JSX");
   process.exit(1);
 }
 
-const html = fs.readFileSync(SRC, "utf8");
-
-// Extract the JSX script block
 const match = html.match(/<script type="text\/babel"[^>]*>([\s\S]*?)<\/script>/);
 if (!match) {
-  console.log("⚠️  No <script type=\"text/babel\"> found — already compiled?");
-  process.exit(0);
+  console.error("  ❌ Could not extract JSX block");
+  process.exit(1);
 }
 
 const jsx = match[1];
-console.log(`  📄 Extracted ${jsx.split("\n").length} lines of JSX`);
+console.log(`  📄 Source: ${path.basename(srcPath)} (${jsx.split("\n").length} lines)`);
 
-// Compile JSX → JS
+// Compile
 let compiled;
 try {
   const result = transformSync(jsx, {
@@ -45,46 +64,31 @@ try {
     filename: "app.jsx",
   });
   compiled = result.code;
-  console.log(`  ✅ Babel compiled (${(compiled.length / 1024).toFixed(0)} KB)`);
+  console.log(`  ✅ Compiled (${(compiled.length / 1024).toFixed(0)} KB)`);
 } catch (e) {
-  console.error("  ❌ Babel error:", e.message);
+  const loc = e.loc ? ` at line ${e.loc.line}` : "";
+  console.error(`  ❌ Babel error${loc}:`, e.message.split("\n")[0]);
   process.exit(1);
 }
 
-// Save backup of dev version
-fs.copyFileSync(SRC, BACKUP);
-console.log(`  💾 Backup saved to index.dev.html`);
+// Validate
+const checks = ["React.createElement", "PlayerModal", "MLSAnalytics", "TableWrap", "matchesData", "standingsData"];
+for (const c of checks) {
+  if (!compiled.includes(c)) {
+    console.error(`  ❌ Missing in output: ${c}`);
+    process.exit(1);
+  }
+}
+console.log("  ✅ Validation passed");
 
-// Remove Babel script tag from head, replace script block with compiled JS
+// Build output
 let output = html;
-
-// Remove the Babel CDN script
-output = output.replace(
-  /\s*<script crossorigin src="[^"]*babel[^"]*"><\/script>\s*/,
-  "\n"
-);
-
-// Remove the preload for Babel if present
-output = output.replace(
-  /\s*<link rel="preload"[^>]*babel[^>]*>\s*/g,
-  "\n"
-);
-
-// Replace <script type="text/babel" ...>...</script> with <script>compiled</script>
-output = output.replace(
-  /<script type="text\/babel"[^>]*>[\s\S]*?<\/script>/,
-  `<script>${compiled}</script>`
-);
-
-// Add build timestamp
-output = output.replace(
-  "</head>",
-  `<!-- built: ${new Date().toISOString()} -->\n</head>`
-);
+output = output.replace(/\s*<script crossorigin src="[^"]*babel[^"]*"><\/script>\s*/, "\n");
+output = output.replace(/\s*<link rel="preload"[^>]*babel[^>]*>\s*/g, "\n");
+output = output.replace(/<script type="text\/babel"[^>]*>[\s\S]*?<\/script>/, `<script>${compiled}</script>`);
+output = output.replace("</head>", `<!-- built: ${new Date().toISOString().slice(0,19)} -->\n</head>`);
 
 fs.writeFileSync(OUT, output);
-const savings = ((html.length - output.length) / 1024).toFixed(0);
-const babelSize = "~800KB";
-console.log(`  📦 Output: ${(output.length / 1024).toFixed(0)} KB`);
-console.log(`  🚀 Eliminated Babel runtime (${babelSize} download + parse time)`);
-console.log(`  💡 To edit: work on index.dev.html, then run 'node build.js' again\n`);
+console.log(`\n  📦 index.html: ${(output.length / 1024).toFixed(0)} KB (no Babel)`);
+console.log(`  📝 Edit: index.dev.html → run build.js → push`);
+console.log(`  🚀 ~800KB Babel download eliminated\n`);
