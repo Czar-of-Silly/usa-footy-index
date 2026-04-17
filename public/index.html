@@ -12451,155 +12451,13 @@ function MLSAnalytics() {
       background: "transparent"
     },
     scrolling: "no"
-  }))), /*#__PURE__*/React.createElement("footer", {
-    style: {
-      borderTop: `1px solid ${T.border}`,
-      padding: "24px 24px 20px",
-      marginTop: 0
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      maxWidth: 1200,
-      margin: "0 auto"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
-      flexWrap: "wrap",
-      gap: 20
-    }
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Logo, {
-    size: 36,
-    dark: dark
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 9,
-      color: T.textMute,
-      fontFamily: T.sans,
-      marginTop: 8,
-      lineHeight: 1.6,
-      maxWidth: 280
-    }
-  }, "Advanced player analytics and composite grading for Major League Soccer. Not affiliated with MLS or its clubs. Data from ESPN, American Soccer Analysis, and Sofascore.")), /*#__PURE__*/React.createElement("div", {
-    className: "resp-footer-cols",
-    style: {
-      display: "flex",
-      gap: 32
-    }
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 8,
-      color: T.textMute,
-      fontWeight: 700,
-      letterSpacing: 1.5,
-      fontFamily: T.sans,
-      textTransform: "uppercase",
-      marginBottom: 8
-    }
-  }, "Explore"), ["Player Grades", "Season Rating", "Defense", "Passing", "Teams", "Rankings", "Leaders"].map(l => /*#__PURE__*/React.createElement("div", {
-    key: l,
-    style: {
-      fontSize: 10,
-      color: T.textDim,
-      fontFamily: T.sans,
-      marginBottom: 4,
-      cursor: "pointer"
-    },
-    onClick: () => setTab(l === "Player Grades" ? "players" : l === "Season Rating" ? "season" : l.toLowerCase())
-  }, l))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 8,
-      color: T.textMute,
-      fontWeight: 700,
-      letterSpacing: 1.5,
-      fontFamily: T.sans,
-      textTransform: "uppercase",
-      marginBottom: 8
-    }
-  }, "Tools"), [["Compare", "compare"], ["Values", "valuations"], ["Positional", "positions"]].map(([l, id]) => /*#__PURE__*/React.createElement("div", {
-    key: id,
-    style: {
-      fontSize: 10,
-      color: T.textDim,
-      fontFamily: T.sans,
-      marginBottom: 4,
-      cursor: "pointer"
-    },
-    onClick: () => setTab(id)
-  }, l)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: T.accent,
-      fontFamily: T.sans,
-      marginBottom: 4,
-      cursor: "pointer"
-    },
-    onClick: () => setShowGrading(true)
-  }, "How We Grade")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 8,
-      color: T.textMute,
-      fontWeight: 700,
-      letterSpacing: 1.5,
-      fontFamily: T.sans,
-      textTransform: "uppercase",
-      marginBottom: 8
-    }
-  }, "Info"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: T.accent,
-      fontFamily: T.sans,
-      marginBottom: 4,
-      cursor: "pointer"
-    },
-    onClick: () => setShowAbout(true)
-  }, "About"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: T.textDim,
-      fontFamily: T.sans,
-      marginBottom: 4
-    }
-  }, "Data: ESPN \xB7 ASA \xB7 Sofascore"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: T.textDim,
-      fontFamily: T.sans,
-      marginBottom: 4
-    }
-  }, "Season: ", season), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10,
-      color: T.textDim,
-      fontFamily: T.sans
-    }
-  }, "v10")))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      borderTop: `1px solid ${T.borderLt}`,
-      marginTop: 16,
-      paddingTop: 12,
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: 8
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 9,
-      color: T.textMute,
-      fontFamily: T.sans
-    }
-  }, "\xA9 ", CY, " USA Footy Index. All rights reserved."), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 9,
-      color: T.textMute,
-      fontFamily: T.sans
-    }
-  }, "Created by Czar of Silly")))), sel && /*#__PURE__*/React.createElement(PlayerModal, {
+  }))), /*#__PURE__*/React.createElement(NewsletterFooter, {
+    dark: dark,
+    setTab: setTab,
+    setShowAbout: setShowAbout,
+    setShowGrading: setShowGrading,
+    season: season
+  }), sel && /*#__PURE__*/React.createElement(PlayerModal, {
     player: sel,
     onClose: () => setSel(null),
     onCompare: addCompare,
@@ -12612,6 +12470,323 @@ function MLSAnalytics() {
     onSelectPlayer: setSel,
     dark: dark
   }));
+}
+
+
+function NewsletterFooter({ dark, setTab, setShowAbout, setShowGrading, season }) {
+  const [email, setEmail] = React.useState("");
+  const [status, setStatus] = React.useState("idle");
+  const onSubmit = () => {
+    if (!email || !email.includes("@")) { setStatus("invalid"); return; }
+    // Stub — wire to Beehiiv API later. For now: log and show success state.
+    console.log("[newsletter] signup:", email);
+    setStatus("success");
+    setEmail("");
+  };
+  const playerLinks = [
+    ["Grades", "players"],
+    ["Season rating", "season"],
+    ["Defense", "defense"],
+    ["Passing", "passing"],
+    ["Positional", "positions"]
+  ];
+  const toolsLinks = [
+    ["Team analytics", "teams"],
+    ["MLS table", "rankings"],
+    ["Season leaders", "leaders"],
+    ["Market values", "valuations"],
+    ["Compare players", "compare"]
+  ];
+  return /*#__PURE__*/React.createElement("footer", { style: { marginTop: 40 } },
+    // ─── Newsletter band ───────────────────────────────────────────────
+    /*#__PURE__*/React.createElement("div", {
+      style: {
+        background: T.ink,
+        color: T.bg,
+        padding: "32px 24px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: 1200,
+        margin: "0 auto",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 28,
+        flexWrap: "wrap"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: { flex: "1 1 auto", minWidth: 240 }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: T.sans,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: "0.28em",
+        textTransform: "uppercase",
+        color: T.gold,
+        marginBottom: 6
+      }
+    }, "The Index \u00B7 Free weekly"),
+    /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: T.display,
+        fontWeight: 700,
+        fontSize: 26,
+        lineHeight: 1.1,
+        letterSpacing: "-0.015em",
+        color: T.bg
+      }
+    }, "MLS grades, delivered every Monday."),
+    /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: T.serif,
+        fontStyle: "italic",
+        fontSize: 13,
+        color: T.textMute,
+        marginTop: 6,
+        maxWidth: "54ch",
+        lineHeight: 1.5
+      }
+    }, "Team of the Week, movers, and the stat nobody else is talking about.")),
+    /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        minWidth: 280
+      }
+    }, status === "success"
+      ? /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.serif,
+            fontStyle: "italic",
+            fontSize: 14,
+            color: T.gold,
+            padding: "10px 0"
+          }
+        }, "\u2713 You're on the list. See you Monday.")
+      : /*#__PURE__*/React.createElement("div", {
+          style: { display: "flex", gap: 8, flexWrap: "wrap" }
+        },
+          /*#__PURE__*/React.createElement("input", {
+            type: "email",
+            value: email,
+            onChange: e => { setEmail(e.target.value); if (status !== "idle") setStatus("idle"); },
+            onKeyDown: e => { if (e.key === "Enter") onSubmit(); },
+            placeholder: "your@email.com",
+            style: {
+              background: "transparent",
+              border: `1px solid ${T.textDim}`,
+              color: T.bg,
+              padding: "10px 14px",
+              fontFamily: T.sans,
+              fontSize: 13,
+              flex: "1 1 180px",
+              outline: "none"
+            }
+          }),
+          /*#__PURE__*/React.createElement("button", {
+            onClick: onSubmit,
+            style: {
+              background: T.bg,
+              color: T.ink,
+              border: "none",
+              padding: "10px 18px",
+              fontFamily: T.sans,
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              whiteSpace: "nowrap"
+            }
+          }, "Subscribe")
+        ),
+      status === "invalid" && /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.sans,
+          fontSize: 11,
+          color: T.gold,
+          marginTop: 2
+        }
+      }, "Please enter a valid email.")
+    ))),
+
+    // ─── Main footer ───────────────────────────────────────────────────
+    /*#__PURE__*/React.createElement("div", {
+      style: {
+        padding: "32px 24px 20px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: { maxWidth: 1200, margin: "0 auto" }
+    },
+      /*#__PURE__*/React.createElement("div", {
+        style: { height: 3, background: T.ink, marginBottom: 24 }
+      }),
+      /*#__PURE__*/React.createElement("div", {
+        className: "resp-footer-cols",
+        style: {
+          display: "grid",
+          gridTemplateColumns: "1.4fr 1fr 1fr 1fr",
+          gap: 28
+        }
+      },
+        // Brand column
+        /*#__PURE__*/React.createElement("div", null,
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.display,
+              fontWeight: 700,
+              fontSize: 20,
+              color: T.ink,
+              letterSpacing: "-0.01em",
+              marginBottom: 8
+            }
+          }, "USA Footy Index"),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.serif,
+              fontSize: 13,
+              color: T.textDim,
+              lineHeight: 1.5,
+              maxWidth: "28ch"
+            }
+          }, "Advanced player analytics and composite grading for Major League Soccer. Updated daily.")
+        ),
+        // Players column
+        /*#__PURE__*/React.createElement("div", null,
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: T.ink,
+              marginBottom: 12
+            }
+          }, "Players"),
+          playerLinks.map(([label, id]) => /*#__PURE__*/React.createElement("div", {
+            key: id,
+            onClick: () => { setTab(id); window.scrollTo({ top: 0, behavior: "smooth" }); },
+            style: {
+              fontFamily: T.sans,
+              fontSize: 13,
+              color: T.textDim,
+              marginBottom: 7,
+              cursor: "pointer",
+              transition: "color .15s"
+            },
+            onMouseEnter: e => e.currentTarget.style.color = T.ink,
+            onMouseLeave: e => e.currentTarget.style.color = T.textDim
+          }, label))
+        ),
+        // Clubs & Tools column
+        /*#__PURE__*/React.createElement("div", null,
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: T.ink,
+              marginBottom: 12
+            }
+          }, "Clubs & Tools"),
+          toolsLinks.map(([label, id]) => /*#__PURE__*/React.createElement("div", {
+            key: id,
+            onClick: () => { setTab(id); window.scrollTo({ top: 0, behavior: "smooth" }); },
+            style: {
+              fontFamily: T.sans,
+              fontSize: 13,
+              color: T.textDim,
+              marginBottom: 7,
+              cursor: "pointer",
+              transition: "color .15s"
+            },
+            onMouseEnter: e => e.currentTarget.style.color = T.ink,
+            onMouseLeave: e => e.currentTarget.style.color = T.textDim
+          }, label))
+        ),
+        // About column
+        /*#__PURE__*/React.createElement("div", null,
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: T.ink,
+              marginBottom: 12
+            }
+          }, "About"),
+          /*#__PURE__*/React.createElement("div", {
+            onClick: () => setShowGrading(true),
+            style: {
+              fontFamily: T.sans,
+              fontSize: 13,
+              color: T.ink,
+              fontWeight: 500,
+              marginBottom: 7,
+              cursor: "pointer"
+            }
+          }, "How we grade"),
+          /*#__PURE__*/React.createElement("div", {
+            onClick: () => setShowAbout(true),
+            style: {
+              fontFamily: T.sans,
+              fontSize: 13,
+              color: T.textDim,
+              marginBottom: 7,
+              cursor: "pointer",
+              transition: "color .15s"
+            },
+            onMouseEnter: e => e.currentTarget.style.color = T.ink,
+            onMouseLeave: e => e.currentTarget.style.color = T.textDim
+          }, "About"),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 13,
+              color: T.textDim,
+              marginBottom: 7
+            }
+          }, "Data: ESPN \u00B7 ASA \u00B7 Sofascore")
+        )
+      ),
+
+      // Meta row
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          borderTop: `1px solid ${T.border}`,
+          marginTop: 28,
+          paddingTop: 14,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 8,
+          fontFamily: T.sans,
+          fontSize: 11,
+          color: T.textMute
+        }
+      },
+        /*#__PURE__*/React.createElement("div", {
+          style: { display: "flex", gap: 12, flexWrap: "wrap" }
+        },
+          /*#__PURE__*/React.createElement("span", null, "\u00A9 ", new Date().getFullYear(), " USA Footy Index"),
+          /*#__PURE__*/React.createElement("span", { style: { color: T.border } }, "\u00B7"),
+          /*#__PURE__*/React.createElement("span", null, "Season ", season),
+          /*#__PURE__*/React.createElement("span", { style: { color: T.border } }, "\u00B7"),
+          /*#__PURE__*/React.createElement("span", null, "Not affiliated with MLS")
+        ),
+        /*#__PURE__*/React.createElement("div", null, "Data refreshed daily at 2:30am ET")
+      )
+    ))
+  );
 }
 
 // Render
