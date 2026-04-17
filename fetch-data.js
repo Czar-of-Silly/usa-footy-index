@@ -61,7 +61,7 @@ async function main() {
   console.log(`          ✅ ${rc} players`);
 
   console.log("  [ESPN] Boxscores...");
-  const espn={}; const gameIds=[]; const now=new Date();
+  const espn={}; const espnLogs={}; const gameIds=[]; const now=new Date();
   for(let d=new Date(CY,1,1);d<now;d.setDate(d.getDate()+14)){
     const f=d.toISOString().slice(0,10).replace(/-/g,""),td=new Date(d);td.setDate(td.getDate()+14);
     const t=(td>now?now:td).toISOString().slice(0,10).replace(/-/g,"");
@@ -71,13 +71,31 @@ async function main() {
   let bd=0;
   for(const gid of gameIds){
     try{const d=await get(`${ESPN_WEB}/summary?event=${gid}`);
-    if(Array.isArray(d?.rosters))for(const tr of d.rosters)for(const e of(tr?.roster||[])){
-      const n=e?.athlete?.displayName;if(!n||!e.stats)continue;
-      if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,games:0};
-      espn[n].games++;espn[n].mins+=(e.starter?90:e.subbedIn?30:90);
-      for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;break;case"goalAssists":espn[n].assists+=v;break;case"totalShots":espn[n].shots+=v;break;case"shotsOnTarget":espn[n].sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;break;case"yellowCards":espn[n].yc+=v;break;case"redCards":espn[n].rc+=v;break;case"saves":espn[n].saves+=v;break;}}
+    const comp=d?.header?.competitions?.[0]||{};
+    const gameDate=comp?.date||null;
+    const cs=comp?.competitors||[];
+    const hc=cs.find(x=>x?.homeAway==="home")||{};
+    const ac=cs.find(x=>x?.homeAway==="away")||{};
+    const hAbbr=norm(hc?.team?.abbreviation||"");
+    const aAbbr=norm(ac?.team?.abbreviation||"");
+    const hScore=Number(hc?.score)||0;
+    const aScore=Number(ac?.score)||0;
+    if(Array.isArray(d?.rosters))for(const tr of d.rosters){
+      const teamHA=tr?.homeAway==="home"?"H":"A";
+      const opp=teamHA==="H"?aAbbr:hAbbr;
+      for(const e of(tr?.roster||[])){
+        const n=e?.athlete?.displayName;if(!n||!e.stats)continue;
+        if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,games:0};
+        const pMins=(e.starter?90:e.subbedIn?30:90);
+        espn[n].games++;espn[n].mins+=pMins;
+        const row={date:gameDate,opp,ha:teamHA,hs:hScore,as:aScore,mins:pMins,g:0,a:0,sh:0,sot:0,fl:0,yc:0,rc:0};
+        for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;row.g+=v;break;case"goalAssists":espn[n].assists+=v;row.a+=v;break;case"totalShots":espn[n].shots+=v;row.sh+=v;break;case"shotsOnTarget":espn[n].sot+=v;row.sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;row.fl+=v;break;case"yellowCards":espn[n].yc+=v;row.yc+=v;break;case"redCards":espn[n].rc+=v;row.rc+=v;break;case"saves":espn[n].saves+=v;break;}}
+        if(!espnLogs[n])espnLogs[n]=[];
+        espnLogs[n].push(row);
+      }
     }}catch{}bd++;if(bd%10===0)process.stdout.write(`          ${bd}/${gameIds.length}\r`);await sleep(120);
   }
+  for(const n in espnLogs)espnLogs[n].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
   console.log(`          ✅ ${Object.keys(espn).length} players from ${gameIds.length} games`);
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -350,6 +368,7 @@ async function main() {
       // Meta
       salary: sal.guaranteed || sal.base || 0,
       headshot: rp.headshot || sofaImg || null,
+      matchLog: espnLogs[rp.name] || [],
       _sofaId: sofaId || null,
       games: e.games || 0,
       _src: sources.join("+"),
@@ -438,9 +457,12 @@ async function main() {
 
   // ═══ WRITE ═════════════════════════════════════════════════════════════
   const outDir = path.join(__dirname, "data");
+  const publicOutDir = path.join(__dirname, "public", "data");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+  if (!fs.existsSync(publicOutDir)) fs.mkdirSync(publicOutDir, { recursive: true });
   const json = JSON.stringify(output);
   fs.writeFileSync(path.join(outDir, "mls-cache.json"), json);
+  fs.writeFileSync(path.join(publicOutDir, "mls-cache.json"), json);
   const mb = (Buffer.byteLength(json) / 1048576).toFixed(2);
 
   // Count what we got
@@ -450,13 +472,14 @@ async function main() {
   const withMV = output.players.filter(p => p.mv > 0).length;
   const withSalary = output.players.filter(p => p.salary > 0).length;
   const withPass = output.players.filter(p => p.pp > 0).length;
+  const withML = output.players.filter(p => (p.matchLog?.length || 0) > 0).length;
 
   console.log(`\n  ═══════════════════════════════════════`);
   console.log(`  ✅ data/mls-cache.json (${mb} MB)`);
   console.log(`  ${output.standings.length} teams · ${output.players.length} players · ${gameIds.length} games`);
   console.log(`  Multi-source: ${merged} | Single-source: ${partial} | Skipped: ${skipped}`);
   console.log(`  ─────────────────────────────────────`);
-  console.log(`  ESPN     Goals/Assists/Shots/Fouls/Cards/Saves`);
+  console.log(`  ESPN     Goals/Assists/Shots/Fouls/Cards/Saves · Match logs: ${withML} players`);
   console.log(`  ASA      xG: ${withXG} · G+: ${withGA} · Pass%: ${withPass}`);
   console.log(`  Sofascore Tackles: ${withTkl} · Market Values: ${withMV} · Interceptions/Duels/Dribbles`);
   console.log(`  ─────────────────────────────────────`);
