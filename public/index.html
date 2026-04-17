@@ -7427,256 +7427,269 @@ function MLSAnalytics() {
         textAlign: "center"
       }
     }, level === 2 ? "▲" : level === 1 ? "▼▼" : "▼")), isOpen && level >= 1 && /*#__PURE__*/React.createElement("div", {
+      // pass-8-team-overview-applied
       style: {
         background: T.card,
-        padding: "16px 20px",
+        padding: "20px 24px",
         borderBottom: level === 1 ? `2px solid ${T.border}` : "none",
         animation: "fadeUp .2s ease"
       }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 14
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 9,
-        color: T.textMute,
-        fontWeight: 600,
-        letterSpacing: 1.5,
-        fontFamily: T.sans,
-        textTransform: "uppercase"
-      }
-    }, t.name, " \xB7 Team Overview"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 9,
-        color: T.accent,
-        fontWeight: 600,
-        fontFamily: T.sans,
-        cursor: "pointer"
+    },
+      // ── Header: team name kicker + View Roster link ─────────────────
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 18,
+          paddingBottom: 10,
+          borderBottom: `2px solid ${T.ink}`
+        }
       },
-      onClick: e => {
-        e.stopPropagation();
-        setTeamLevel(2);
-      }
-    }, "View Roster \u2192")), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "grid",
-        gridTemplateColumns: "repeat(6,1fr)",
-        gap: 8,
-        marginBottom: 16
-      }
-    }, [{
-      l: "Overall",
-      g: t.overall
-    }, {
-      l: "Attack",
-      g: t.attack
-    }, {
-      l: "Passing",
-      g: t.passing
-    }, {
-      l: "Defense",
-      g: t.defense
-    }, {
-      l: "Creative",
-      g: t.creativity
-    }, {
-      l: "Carry",
-      g: t.carrying
-    }].map(r => /*#__PURE__*/React.createElement("div", {
-      key: r.l,
-      style: {
-        background: T.bg,
-        border: `1px solid ${T.borderLt}`,
-        borderRadius: 6,
-        padding: "12px",
-        textAlign: "center"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.display,
-        fontWeight: 700,
-        fontSize: 26,
-        color: gc(r.g),
-        lineHeight: 1
-      }
-    }, r.g), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 7,
-        color: gc(r.g),
-        fontWeight: 600,
-        letterSpacing: 1,
-        marginTop: 3,
-        textTransform: "uppercase"
-      }
-    }, gl(r.g)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 9,
-        color: T.textMute,
-        marginTop: 2,
-        fontFamily: T.sans
-      }
-    }, r.l)))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "grid",
-        gridTemplateColumns: "repeat(6,1fr)",
-        gap: 8
-      }
-    }, [{
-      l: "Total Goals",
-      v: t.totalGoals,
-      c: T.ink
-    }, {
-      l: "Total Assists",
-      v: t.totalAssists,
-      c: T.ink
-    }, {
-      l: "Avg Age",
-      v: t.avgAge || "—",
-      c: T.textDim
-    }, {
-      l: "Total Tackles",
-      v: t.totalTackles,
-      c: T.ink
-    }, {
-      l: "Squad Value",
-      v: fv(t.squadValue),
-      c: vc(t.squadValue)
-    }, {
-      l: "Players",
-      v: t.count,
-      c: T.textDim
-    }].map(s => /*#__PURE__*/React.createElement("div", {
-      key: s.l,
-      style: {
-        textAlign: "center",
-        padding: "8px 4px",
-        background: T.bg,
-        borderRadius: 4,
-        border: `1px solid ${T.borderLt}`
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.serif,
-        fontWeight: 700,
-        fontSize: 16,
-        color: s.c,
-        lineHeight: 1
-      }
-    }, s.v), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 7,
-        color: T.textMute,
-        fontWeight: 600,
-        letterSpacing: .8,
-        marginTop: 4,
-        fontFamily: T.sans,
-        textTransform: "uppercase"
-      }
-    }, s.l)))), (t.topScorer || t.topRated) && /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        gap: 12,
-        marginTop: 14
-      }
-    }, t.topRated && /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "8px 12px",
-        background: T.bg,
-        borderRadius: 4,
-        border: `1px solid ${T.borderLt}`,
-        cursor: "pointer"
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.sans,
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: T.ink
+          }
+        }, t.name, " \u00B7 Team Overview"),
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.sans,
+            fontSize: 11,
+            color: T.accent,
+            fontWeight: 600,
+            letterSpacing: "0.08em",
+            cursor: "pointer",
+            transition: "opacity .15s"
+          },
+          onClick: e => { e.stopPropagation(); setTeamLevel(2); },
+          onMouseEnter: e => e.currentTarget.style.opacity = "0.7",
+          onMouseLeave: e => e.currentTarget.style.opacity = "1"
+        }, "View Roster \u2192")
+      ),
+
+      // ── Sub-grades strip (6 columns, thin rule dividers) ────────────
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "repeat(6, 1fr)",
+          gap: 0,
+          marginBottom: 20,
+          paddingBottom: 20,
+          borderBottom: `1px solid ${T.borderLt}`
+        }
+      }, [
+        { l: "Overall", g: t.overall },
+        { l: "Attack", g: t.attack },
+        { l: "Passing", g: t.passing },
+        { l: "Defense", g: t.defense },
+        { l: "Creative", g: t.creativity },
+        { l: "Carry", g: t.carrying }
+      ].map((r, i) => /*#__PURE__*/React.createElement("div", {
+        key: r.l,
+        style: {
+          textAlign: "center",
+          paddingLeft: i === 0 ? 0 : 12,
+          paddingRight: 12,
+          borderLeft: i === 0 ? "none" : `1px solid ${T.borderLt}`
+        }
       },
-      onClick: e => {
-        e.stopPropagation();
-        setSel(t.topRated);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 4,
-        height: 24,
-        borderRadius: 2,
-        background: gc(t.topRated.overall)
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 8,
-        color: T.textMute,
-        fontWeight: 600,
-        letterSpacing: 1,
-        fontFamily: T.sans
-      }
-    }, "TOP RATED"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.serif,
-        fontWeight: 700,
-        fontSize: 13,
-        color: T.ink
-      }
-    }, t.topRated.name)), /*#__PURE__*/React.createElement(Badge, {
-      grade: t.topRated.overall,
-      size: "sm"
-    })), t.topScorer && t.topScorer.id !== t.topRated?.id && /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "8px 12px",
-        background: T.bg,
-        borderRadius: 4,
-        border: `1px solid ${T.borderLt}`,
-        cursor: "pointer"
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.sans,
+            fontSize: 10,
+            color: T.textMute,
+            fontWeight: 600,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            marginBottom: 6
+          }
+        }, r.l),
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.display,
+            fontWeight: 700,
+            fontSize: 26,
+            color: gc(r.g),
+            lineHeight: 1,
+            letterSpacing: "-0.02em"
+          }
+        }, r.g),
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.sans,
+            fontSize: 9,
+            color: gc(r.g),
+            fontWeight: 600,
+            letterSpacing: "0.18em",
+            marginTop: 4,
+            textTransform: "uppercase"
+          }
+        }, gl(r.g))
+      ))),
+
+      // ── Meta stats strip (6 columns, thin rule dividers) ────────────
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "repeat(6, 1fr)",
+          gap: 0
+        }
+      }, [
+        { l: "Goals", v: t.totalGoals, c: T.ink },
+        { l: "Assists", v: t.totalAssists, c: T.ink },
+        { l: "Avg age", v: t.avgAge || "\u2014", c: T.textDim },
+        { l: "Tackles", v: t.totalTackles, c: T.ink },
+        { l: "Squad value", v: fv(t.squadValue), c: vc(t.squadValue) },
+        { l: "Players", v: t.count, c: T.textDim }
+      ].map((s, i) => /*#__PURE__*/React.createElement("div", {
+        key: s.l,
+        style: {
+          textAlign: "center",
+          paddingLeft: i === 0 ? 0 : 10,
+          paddingRight: 10,
+          borderLeft: i === 0 ? "none" : `1px solid ${T.borderLt}`
+        }
       },
-      onClick: e => {
-        e.stopPropagation();
-        setSel(t.topScorer);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 4,
-        height: 24,
-        borderRadius: 2,
-        background: T.accent
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 8,
-        color: T.textMute,
-        fontWeight: 600,
-        letterSpacing: 1,
-        fontFamily: T.sans
-      }
-    }, "TOP SCORER"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.serif,
-        fontWeight: 700,
-        fontSize: 13,
-        color: T.ink
-      }
-    }, t.topScorer.name)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.serif,
-        fontWeight: 700,
-        fontSize: 16,
-        color: T.ink
-      }
-    }, t.topScorer.goals, "G")))), isOpen && level === 2 && /*#__PURE__*/React.createElement("div", {
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.sans,
+            fontSize: 10,
+            color: T.textMute,
+            fontWeight: 600,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            marginBottom: 4
+          }
+        }, s.l),
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.serif,
+            fontWeight: 700,
+            fontSize: 18,
+            color: s.c,
+            lineHeight: 1
+          }
+        }, s.v)
+      ))),
+
+      // ── Top Rated / Top Scorer highlight rows ───────────────────────
+      (t.topScorer || t.topRated) && /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16,
+          marginTop: 20,
+          paddingTop: 16,
+          borderTop: `1px solid ${T.borderLt}`
+        }
+      },
+        t.topRated && /*#__PURE__*/React.createElement("div", {
+          style: {
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            cursor: "pointer",
+            transition: "opacity .15s"
+          },
+          onClick: e => { e.stopPropagation(); setSel(t.topRated); },
+          onMouseEnter: e => e.currentTarget.style.opacity = "0.7",
+          onMouseLeave: e => e.currentTarget.style.opacity = "1"
+        },
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              width: 3,
+              height: 32,
+              background: gc(t.topRated.overall),
+              flexShrink: 0
+            }
+          }),
+          /*#__PURE__*/React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.sans,
+                fontSize: 10,
+                color: T.textMute,
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase"
+              }
+            }, "Top rated"),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.serif,
+                fontWeight: 700,
+                fontSize: 15,
+                color: T.ink,
+                marginTop: 2,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }
+            }, t.topRated.name)
+          ),
+          /*#__PURE__*/React.createElement(Badge, { grade: t.topRated.overall, size: "sm" })
+        ),
+        t.topScorer && t.topScorer.id !== t.topRated?.id && /*#__PURE__*/React.createElement("div", {
+          style: {
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            cursor: "pointer",
+            transition: "opacity .15s"
+          },
+          onClick: e => { e.stopPropagation(); setSel(t.topScorer); },
+          onMouseEnter: e => e.currentTarget.style.opacity = "0.7",
+          onMouseLeave: e => e.currentTarget.style.opacity = "1"
+        },
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              width: 3,
+              height: 32,
+              background: T.accent,
+              flexShrink: 0
+            }
+          }),
+          /*#__PURE__*/React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.sans,
+                fontSize: 10,
+                color: T.textMute,
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase"
+              }
+            }, "Top scorer"),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.serif,
+                fontWeight: 700,
+                fontSize: 15,
+                color: T.ink,
+                marginTop: 2,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }
+            }, t.topScorer.name)
+          ),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.serif,
+              fontWeight: 700,
+              fontSize: 20,
+              color: T.ink,
+              fontVariantNumeric: "tabular-nums"
+            }
+          }, t.topScorer.goals, "G")
+        )
+      )
+    ), isOpen && level === 2 && /*#__PURE__*/React.createElement("div", {
       style: {
         background: T.card,
         borderBottom: `2px solid ${T.border}`,
