@@ -3214,6 +3214,7 @@ function MLSAnalytics() {
   const [h2hAway, setH2hAway] = useState("");
   const [totwWeek, setTotwWeek] = useState(0); // 0 = latest
   const [leadersView, setLeadersView] = useState("overview"); // overview, bestxi, totw, movers
+  const [xiView, setXiView] = useState("pitch"); // pitch | list
   const [emailInput, setEmailInput] = useState("");
   const [emailStatus, setEmailStatus] = useState("idle"); // idle, sending, done
   const addCompare = p => {
@@ -9353,17 +9354,19 @@ function MLSAnalytics() {
       key: v.id,
       onClick: () => setLeadersView(v.id),
       style: {
-        background: leadersView === v.id ? T.ink : "transparent",
-        color: leadersView === v.id ? T.bg : T.textDim,
-        border: `1px solid ${leadersView === v.id ? T.ink : T.border}`,
-        padding: "7px 18px",
-        borderRadius: 4,
+        background: "transparent",
+        color: leadersView === v.id ? T.ink : T.textDim,
+        border: "none",
+        borderBottom: `2px solid ${leadersView === v.id ? T.ink : "transparent"}`,
+        padding: "8px 4px",
+        marginRight: 18,
         cursor: "pointer",
         fontFamily: T.sans,
-        fontWeight: 600,
+        fontWeight: 700,
         fontSize: 11,
-        letterSpacing: .5,
-        transition: "all .15s"
+        letterSpacing: "0.18em",
+        textTransform: "uppercase",
+        transition: "color .15s, border-color .15s"
       }
     }, v.l))), leadersView === "overview" && /*#__PURE__*/React.createElement("div", {
       style: {
@@ -9463,185 +9466,311 @@ function MLSAnalytics() {
       grade: p.overall,
       size: "sm"
     })))))), leadersView === "bestxi" && xi.length >= 11 && /*#__PURE__*/React.createElement("div", {
+      // pass-10-bestxi-applied
       style: {
         background: T.surface,
         border: `1px solid ${T.border}`,
-        borderRadius: 8,
         overflow: "hidden"
       }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        padding: "16px 22px",
-        borderBottom: `1px solid ${T.borderLt}`,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center"
-      }
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.display,
-        fontWeight: 700,
-        fontSize: 20,
-        color: T.ink
-      }
-    }, "Best XI"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10,
-        color: T.textMute,
-        fontFamily: T.sans
-      }
-    }, "Top-graded player at each position \xB7 4-3-3 formation")), /*#__PURE__*/React.createElement("div", {
-      style: {
-        textAlign: "right"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.display,
-        fontWeight: 700,
-        fontSize: 24,
-        color: gc(xiAvg)
-      }
-    }, xiAvg), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 8,
-        color: T.textMute,
-        fontWeight: 600,
-        letterSpacing: .8
-      }
-    }, "AVG GRADE"))), /*#__PURE__*/React.createElement("div", {
-      className: "resp-pitch",
-      style: {
-        position: "relative",
-        width: "100%",
-        paddingBottom: "62%",
-        background: `linear-gradient(180deg,${dark ? "#1a3a1a" : "#4a8c3f"} 0%,${dark ? "#1d4020" : "#5a9c4f"} 100%)`,
-        overflow: "hidden",
-        borderRadius: "0 0 8px 8px"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        inset: "4%",
-        border: "2px solid rgba(255,255,255,.3)",
-        borderRadius: 4
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        left: "4%",
-        right: "4%",
-        top: "50%",
-        height: 0,
-        borderTop: "2px solid rgba(255,255,255,.2)"
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: 80,
-        height: 80,
-        marginLeft: -40,
-        marginTop: -40,
-        border: "2px solid rgba(255,255,255,.15)",
-        borderRadius: "50%"
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: 6,
-        height: 6,
-        marginLeft: -3,
-        marginTop: -3,
-        background: "rgba(255,255,255,.3)",
-        borderRadius: "50%"
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        left: "30%",
-        right: "30%",
-        top: "4%",
-        height: "16%",
-        border: "2px solid rgba(255,255,255,.15)",
-        borderTop: "none"
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        left: "30%",
-        right: "30%",
-        bottom: "4%",
-        height: "16%",
-        border: "2px solid rgba(255,255,255,.15)",
-        borderBottom: "none"
-      }
-    }), xi.map(s => /*#__PURE__*/React.createElement("div", {
-      key: s.slot,
-      className: "pitch-dot",
-      onClick: () => setSel(s.p),
-      style: {
-        position: "absolute",
-        left: `${s.x}%`,
-        top: `${s.y}%`,
-        transform: "translate(-50%,-50%)",
-        textAlign: "center",
-        cursor: "pointer",
-        zIndex: 2,
-        transition: "transform .15s"
+    },
+      // ── Editorial header ─────────────────────────────────────────────
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          padding: "22px 26px",
+          borderBottom: `3px solid ${T.ink}`,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          gap: 20,
+          flexWrap: "wrap"
+        }
       },
-      onMouseEnter: e => e.currentTarget.style.transform = "translate(-50%,-50%) scale(1.08)",
-      onMouseLeave: e => e.currentTarget.style.transform = "translate(-50%,-50%)"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 52,
-        height: 52,
-        borderRadius: "50%",
-        background: "rgba(0,0,0,.55)",
-        border: `3px solid ${gc(s.p.overall)}`,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        margin: "0 auto",
-        boxShadow: "0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontFamily: T.serif,
-        fontWeight: 700,
-        fontSize: 20,
-        color: "#fff",
-        textShadow: "0 1px 2px rgba(0,0,0,.5)"
-      }
-    }, s.p.overall)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginTop: 4,
-        padding: "2px 8px",
-        background: "rgba(0,0,0,.5)",
-        borderRadius: 3,
-        display: "inline-block",
-        backdropFilter: "blur(4px)"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.sans,
-        fontWeight: 700,
-        fontSize: 12,
-        color: "#fff",
-        whiteSpace: "nowrap",
-        letterSpacing: .3
-      }
-    }, s.p.name.split(" ").slice(-1)[0])), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 9,
-        color: "rgba(255,255,255,.8)",
-        fontFamily: T.sans,
-        fontWeight: 600,
-        marginTop: 1
-      }
-    }, s.p.team))))), leadersView === "totw" && (() => {
+        /*#__PURE__*/React.createElement("div", { style: { flex: "1 1 auto", minWidth: 220 } },
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: "0.28em",
+              textTransform: "uppercase",
+              color: T.accent,
+              marginBottom: 6
+            }
+          }, "Best XI \u00B7 Season to date"),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.display,
+              fontWeight: 700,
+              fontSize: 34,
+              lineHeight: 1,
+              letterSpacing: "-0.018em",
+              color: T.ink
+            }
+          }, "The Best Eleven"),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.serif,
+              fontStyle: "italic",
+              fontSize: 13,
+              color: T.textDim,
+              marginTop: 8,
+              maxWidth: "52ch",
+              lineHeight: 1.5
+            }
+          }, "Top-graded player at each position in a 4-3-3. Position-weighted grading; forwards judged on attack, defenders on defense.")
+        ),
+        // Right side: XI avg + view toggle
+        /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: 24, flexShrink: 0 } },
+          /*#__PURE__*/React.createElement("div", { style: { textAlign: "right" } },
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.display,
+                fontWeight: 700,
+                fontSize: 48,
+                lineHeight: 1,
+                color: gc(xiAvg),
+                letterSpacing: "-0.02em",
+                fontVariantNumeric: "tabular-nums"
+              }
+            }, xiAvg),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.sans,
+                fontSize: 9,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: T.textMute,
+                fontWeight: 600,
+                marginTop: 4
+              }
+            }, "XI avg")
+          ),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              display: "flex",
+              border: `1px solid ${T.border}`,
+              marginTop: 4
+            }
+          }, [
+            { id: "pitch", l: "Pitch" },
+            { id: "list", l: "List" }
+          ].map(v => /*#__PURE__*/React.createElement("button", {
+            key: v.id,
+            onClick: () => setXiView(v.id),
+            style: {
+              background: xiView === v.id ? T.ink : "transparent",
+              color: xiView === v.id ? T.bg : T.textDim,
+              border: "none",
+              padding: "6px 14px",
+              fontFamily: T.sans,
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              cursor: "pointer"
+            }
+          }, v.l)))
+        )
+      ),
+
+      // ── Pitch view ────────────────────────────────────────────────────
+      xiView === "pitch" && /*#__PURE__*/React.createElement("div", {
+        className: "resp-pitch",
+        style: {
+          position: "relative",
+          width: "100%",
+          paddingBottom: "62%",
+          background: dark ? "#14331a" : "#1d4526",
+          backgroundImage: `repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, transparent 2px, transparent 50px), repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 40px, transparent 40px, transparent 80px)`,
+          overflow: "hidden"
+        }
+      },
+        /*#__PURE__*/React.createElement("div", {
+          style: { position: "absolute", inset: "5%", border: "1px solid rgba(255,255,255,.22)" }
+        }),
+        /*#__PURE__*/React.createElement("div", {
+          style: { position: "absolute", left: "5%", right: "5%", top: "50%", borderTop: "1px solid rgba(255,255,255,.15)" }
+        }),
+        /*#__PURE__*/React.createElement("div", {
+          style: { position: "absolute", left: "50%", top: "50%", width: 80, height: 80, marginLeft: -40, marginTop: -40, border: "1px solid rgba(255,255,255,.18)", borderRadius: "50%" }
+        }),
+        /*#__PURE__*/React.createElement("div", {
+          style: { position: "absolute", left: "30%", right: "30%", top: "5%", height: "16%", border: "1px solid rgba(255,255,255,.15)", borderTop: "none" }
+        }),
+        /*#__PURE__*/React.createElement("div", {
+          style: { position: "absolute", left: "30%", right: "30%", bottom: "5%", height: "16%", border: "1px solid rgba(255,255,255,.15)", borderBottom: "none" }
+        }),
+        xi.map(s => /*#__PURE__*/React.createElement("div", {
+          key: s.slot,
+          className: "pitch-dot",
+          onClick: () => setSel(s.p),
+          style: {
+            position: "absolute",
+            left: `${s.x}%`,
+            top: `${s.y}%`,
+            transform: "translate(-50%,-50%)",
+            textAlign: "center",
+            cursor: "pointer",
+            zIndex: 2,
+            transition: "transform .15s"
+          },
+          onMouseEnter: e => e.currentTarget.style.transform = "translate(-50%,-50%) scale(1.08)",
+          onMouseLeave: e => e.currentTarget.style.transform = "translate(-50%,-50%)"
+        },
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              width: 54,
+              height: 54,
+              borderRadius: "50%",
+              background: "#1a1a1a",
+              border: `3px solid ${gc(s.p.overall)}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto",
+              boxShadow: "0 2px 10px rgba(0,0,0,.35)"
+            }
+          }, /*#__PURE__*/React.createElement("span", {
+            style: {
+              fontFamily: T.display,
+              fontWeight: 700,
+              fontSize: 22,
+              color: "#fff",
+              fontVariantNumeric: "tabular-nums",
+              letterSpacing: "-0.01em"
+            }
+          }, s.p.overall)),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              marginTop: 6,
+              fontFamily: T.serif,
+              fontWeight: 700,
+              fontSize: 13,
+              color: "#fff",
+              whiteSpace: "nowrap",
+              letterSpacing: "0.02em",
+              textShadow: "0 1px 3px rgba(0,0,0,.7)"
+            }
+          }, s.p.name.split(" ").slice(-1)[0].toUpperCase()),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 9,
+              color: "rgba(255,255,255,.75)",
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              marginTop: 1,
+              textShadow: "0 1px 2px rgba(0,0,0,.6)"
+            }
+          }, s.p.team)
+        ))
+      ),
+
+      // ── List view ─────────────────────────────────────────────────────
+      xiView === "list" && /*#__PURE__*/React.createElement("div", {
+        style: { padding: "4px 24px 20px" }
+      },
+        [
+          { label: "Forwards", slots: ["LW", "ST", "RW"] },
+          { label: "Midfielders", slots: ["LCM", "CM", "RCM"] },
+          { label: "Defenders", slots: ["LB", "LCB", "RCB", "RB"] },
+          { label: "Goalkeeper", slots: ["GK"] }
+        ].map(group => {
+          const rows = group.slots.map(slot => xi.find(s => s.slot === slot)).filter(Boolean);
+          if (!rows.length) return null;
+          return /*#__PURE__*/React.createElement("div", {
+            key: group.label,
+            style: { marginTop: 18 }
+          },
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.sans,
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: T.textMute,
+                marginBottom: 10
+              }
+            }, group.label),
+            rows.map(s => /*#__PURE__*/React.createElement("div", {
+              key: s.slot,
+              onClick: () => setSel(s.p),
+              className: "rh",
+              style: {
+                display: "grid",
+                gridTemplateColumns: "38px minmax(0, 1fr) 50px 60px",
+                gap: 14,
+                padding: "12px 0",
+                borderBottom: `1px solid ${T.borderLt}`,
+                alignItems: "center",
+                cursor: "pointer"
+              }
+            },
+              /*#__PURE__*/React.createElement("div", {
+                style: {
+                  fontFamily: T.sans,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.16em",
+                  color: T.textMute,
+                  textAlign: "center"
+                }
+              }, s.slot),
+              /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, minWidth: 0 } },
+                /*#__PURE__*/React.createElement(TeamBadge, { abbr: s.p.team, size: 30, logo: s.p.teamLogo }),
+                /*#__PURE__*/React.createElement("div", { style: { minWidth: 0 } },
+                  /*#__PURE__*/React.createElement("div", {
+                    style: {
+                      fontFamily: T.serif,
+                      fontWeight: 700,
+                      fontSize: 15,
+                      color: T.ink,
+                      lineHeight: 1.1,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }
+                  }, s.p.name),
+                  /*#__PURE__*/React.createElement("div", {
+                    style: {
+                      fontFamily: T.sans,
+                      fontSize: 11,
+                      color: T.textMute,
+                      fontWeight: 500,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      marginTop: 3
+                    }
+                  }, s.p.goals, "G \u00B7 ", s.p.assists, "A \u00B7 ", s.p.mins, "'")
+                )
+              ),
+              /*#__PURE__*/React.createElement("div", {
+                style: {
+                  fontFamily: T.sans,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: T.ink,
+                  textAlign: "center",
+                  letterSpacing: "0.04em"
+                }
+              }, s.p.team),
+              /*#__PURE__*/React.createElement("div", {
+                style: {
+                  fontFamily: T.display,
+                  fontWeight: 700,
+                  fontSize: 24,
+                  color: gc(s.p.overall),
+                  textAlign: "right",
+                  fontVariantNumeric: "tabular-nums",
+                  lineHeight: 1
+                }
+              }, s.p.overall)
+            ))
+          );
+        })
+      )
+    ), leadersView === "totw" && (() => {
       const allLogs = [];
       players.forEach(pl => {
         (pl.matchLog || []).forEach(m => {
@@ -9785,321 +9914,438 @@ function MLSAnalytics() {
         return true;
       }).slice(0, 5);
       return /*#__PURE__*/React.createElement("div", {
+        // pass-10-totw-applied
         style: {
           background: T.surface,
           border: `1px solid ${T.border}`,
-          borderRadius: 8,
           overflow: "hidden"
         }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          padding: "16px 22px",
-          borderBottom: `1px solid ${T.borderLt}`,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 10
-        }
-      }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontFamily: T.display,
-          fontWeight: 700,
-          fontSize: 20,
-          color: T.ink
-        }
-      }, "Team of the Week"), /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontSize: 10,
-          color: T.textMute,
-          fontFamily: T.sans
-        }
-      }, "Best per-match ratings \xB7 Matchweek ", weekIdx + 1, " \xB7 ", weekLabel)), /*#__PURE__*/React.createElement("div", {
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 6
-        }
-      }, /*#__PURE__*/React.createElement("button", {
-        onClick: () => setTotwWeek(Math.max(1, weekIdx)),
-        disabled: weekIdx <= 0,
-        style: {
-          background: "none",
-          border: `1px solid ${weekIdx <= 0 ? T.borderLt : T.border}`,
-          borderRadius: 4,
-          color: weekIdx <= 0 ? T.textMute : T.ink,
-          width: 28,
-          height: 28,
-          cursor: weekIdx <= 0 ? "default" : "pointer",
-          fontSize: 14,
-          fontWeight: 700,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: T.sans
-        }
-      }, "\u2039"), /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontFamily: T.mono,
-          fontSize: 12,
-          fontWeight: 600,
-          color: T.textDim,
-          minWidth: 50,
-          textAlign: "center"
-        }
-      }, "MW ", weekIdx + 1), /*#__PURE__*/React.createElement("button", {
-        onClick: () => setTotwWeek(Math.min(weeks.length, weekIdx + 2)),
-        disabled: weekIdx >= weeks.length - 1,
-        style: {
-          background: "none",
-          border: `1px solid ${weekIdx >= weeks.length - 1 ? T.borderLt : T.border}`,
-          borderRadius: 4,
-          color: weekIdx >= weeks.length - 1 ? T.textMute : T.ink,
-          width: 28,
-          height: 28,
-          cursor: weekIdx >= weeks.length - 1 ? "default" : "pointer",
-          fontSize: 14,
-          fontWeight: 700,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: T.sans
-        }
-      }, "\u203A"))), totwXi.length >= 8 && /*#__PURE__*/React.createElement("div", {
-        className: "resp-pitch",
-        style: {
-          position: "relative",
-          width: "100%",
-          paddingBottom: "62%",
-          background: `linear-gradient(180deg,${dark ? "#1a3a1a" : "#4a8c3f"} 0%,${dark ? "#1d4020" : "#5a9c4f"} 100%)`,
-          overflow: "hidden"
-        }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "absolute",
-          inset: "4%",
-          border: "2px solid rgba(255,255,255,.3)",
-          borderRadius: 4
-        }
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "absolute",
-          left: "4%",
-          right: "4%",
-          top: "50%",
-          height: 0,
-          borderTop: "2px solid rgba(255,255,255,.2)"
-        }
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: 80,
-          height: 80,
-          marginLeft: -40,
-          marginTop: -40,
-          border: "2px solid rgba(255,255,255,.15)",
-          borderRadius: "50%"
-        }
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: 6,
-          height: 6,
-          marginLeft: -3,
-          marginTop: -3,
-          background: "rgba(255,255,255,.3)",
-          borderRadius: "50%"
-        }
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "absolute",
-          left: "30%",
-          right: "30%",
-          top: "4%",
-          height: "16%",
-          border: "2px solid rgba(255,255,255,.15)",
-          borderTop: "none"
-        }
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "absolute",
-          left: "30%",
-          right: "30%",
-          bottom: "4%",
-          height: "16%",
-          border: "2px solid rgba(255,255,255,.15)",
-          borderBottom: "none"
-        }
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "absolute",
-          bottom: 10,
-          right: 14,
-          padding: "4px 14px",
-          background: "rgba(0,0,0,.5)",
-          borderRadius: 20,
-          zIndex: 3,
-          backdropFilter: "blur(4px)"
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontFamily: T.sans,
-          fontWeight: 700,
-          fontSize: 10,
-          color: "#fff"
-        }
-      }, "MW", weekIdx + 1, " \xB7 AVG ", totwAvg)), totwXi.map(s => /*#__PURE__*/React.createElement("div", {
-        key: s.slot,
-        className: "pitch-dot",
-        onClick: () => setSel(s.l.player),
-        style: {
-          position: "absolute",
-          left: `${s.x}%`,
-          top: `${s.y}%`,
-          transform: "translate(-50%,-50%)",
-          textAlign: "center",
-          cursor: "pointer",
-          zIndex: 2,
-          transition: "transform .15s"
+      },
+        // ── Editorial header with week navigator + view toggle ───────────
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            padding: "22px 26px",
+            borderBottom: `3px solid ${T.ink}`,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 20,
+            flexWrap: "wrap"
+          }
         },
-        onMouseEnter: e => e.currentTarget.style.transform = "translate(-50%,-50%) scale(1.08)",
-        onMouseLeave: e => e.currentTarget.style.transform = "translate(-50%,-50%)"
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          width: 52,
-          height: 52,
-          borderRadius: "50%",
-          background: "rgba(0,0,0,.55)",
-          border: `3px solid ${gc(s.l.rating)}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "0 auto",
-          boxShadow: "0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontFamily: T.serif,
-          fontWeight: 700,
-          fontSize: 20,
-          color: "#fff",
-          textShadow: "0 1px 2px rgba(0,0,0,.5)"
-        }
-      }, s.l.rating)), /*#__PURE__*/React.createElement("div", {
-        style: {
-          marginTop: 4,
-          padding: "2px 8px",
-          background: "rgba(0,0,0,.5)",
-          borderRadius: 3,
-          display: "inline-block",
-          backdropFilter: "blur(4px)"
-        }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontFamily: T.sans,
-          fontWeight: 700,
-          fontSize: 12,
-          color: "#fff",
-          whiteSpace: "nowrap"
-        }
-      }, s.l.player.name.split(" ").slice(-1)[0])), /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontSize: 9,
-          color: "rgba(255,255,255,.8)",
-          fontFamily: T.sans,
-          fontWeight: 600,
-          marginTop: 1
-        }
-      }, s.l.player.team, s.l.g > 0 ? ` · ${s.l.g}G` : "", s.l.a > 0 ? ` · ${s.l.a}A` : "")))), /*#__PURE__*/React.createElement("div", {
-        style: {
-          padding: "14px 22px",
-          borderTop: `1px solid ${T.borderLt}`
-        }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontSize: 8,
-          color: T.textMute,
-          fontWeight: 600,
-          letterSpacing: 1,
-          fontFamily: T.sans,
-          marginBottom: 8
-        }
-      }, "TOP PERFORMERS \xB7 MW", weekIdx + 1), /*#__PURE__*/React.createElement("div", {
-        style: {
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))",
-          gap: 6
-        }
-      }, topUnique.map((l, i) => /*#__PURE__*/React.createElement("div", {
-        key: l.player.id,
-        onClick: () => setSel(l.player),
-        className: "rh",
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          padding: "8px 10px",
-          borderRadius: 4,
-          cursor: "pointer",
-          border: `1px solid ${T.borderLt}`
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontFamily: T.display,
-          fontWeight: 900,
-          fontSize: 14,
-          color: i === 0 ? T.gold : i < 3 ? T.green : T.textMute,
-          width: 16
-        }
-      }, i + 1), /*#__PURE__*/React.createElement(TeamBadge, {
-        abbr: l.player.team,
-        size: 22,
-        logo: l.player.teamLogo
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          flex: 1,
-          minWidth: 0
-        }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontFamily: T.serif,
-          fontWeight: 600,
-          fontSize: 12,
-          color: T.ink,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis"
-        }
-      }, l.player.name), /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontSize: 8,
-          color: T.textDim,
-          fontFamily: T.sans
-        }
-      }, l.player.position, " \xB7 ", l.opp, " (", l.ha, ") \xB7 ", l.g > 0 ? `${l.g}G ` : "", l.a > 0 ? `${l.a}A ` : "", l.mins, "'")), /*#__PURE__*/React.createElement("div", {
-        style: {
-          display: "inline-flex",
-          flexDirection: "column",
-          alignItems: "center",
-          background: gb(l.rating),
-          border: `1.5px solid ${gc(l.rating)}30`,
-          borderRadius: 5,
-          padding: "2px 8px",
-          minWidth: 34
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          color: gc(l.rating),
-          fontWeight: 700,
-          fontSize: 15,
-          fontFamily: T.serif,
-          lineHeight: 1
-        }
-      }, l.rating)))))));
+          /*#__PURE__*/React.createElement("div", { style: { flex: "1 1 auto", minWidth: 220 } },
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.sans,
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                color: T.accent,
+                marginBottom: 6
+              }
+            }, "Team of the Week \u00B7 Matchweek ", weekIdx + 1),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.display,
+                fontWeight: 700,
+                fontSize: 34,
+                lineHeight: 1,
+                letterSpacing: "-0.018em",
+                color: T.ink
+              }
+            }, "The Best Eleven"),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.serif,
+                fontStyle: "italic",
+                fontSize: 13,
+                color: T.textDim,
+                marginTop: 8,
+                lineHeight: 1.5
+              }
+            }, weekLabel, " \u00B7 Goals, assists, and impact across a full matchday.")
+          ),
+          /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: 20, flexShrink: 0, flexWrap: "wrap" } },
+            // Week navigator
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 6, marginTop: 4 } },
+              /*#__PURE__*/React.createElement("button", {
+                onClick: () => setTotwWeek(Math.max(1, weekIdx)),
+                disabled: weekIdx <= 0,
+                style: {
+                  background: "none",
+                  border: `1px solid ${weekIdx <= 0 ? T.borderLt : T.border}`,
+                  color: weekIdx <= 0 ? T.textMute : T.ink,
+                  width: 28,
+                  height: 28,
+                  cursor: weekIdx <= 0 ? "default" : "pointer",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  fontFamily: T.sans
+                }
+              }, "\u2039"),
+              /*#__PURE__*/React.createElement("span", {
+                style: {
+                  fontFamily: T.sans,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.18em",
+                  color: T.ink,
+                  minWidth: 52,
+                  textAlign: "center"
+                }
+              }, "MW ", weekIdx + 1),
+              /*#__PURE__*/React.createElement("button", {
+                onClick: () => setTotwWeek(Math.min(weeks.length, weekIdx + 2)),
+                disabled: weekIdx >= weeks.length - 1,
+                style: {
+                  background: "none",
+                  border: `1px solid ${weekIdx >= weeks.length - 1 ? T.borderLt : T.border}`,
+                  color: weekIdx >= weeks.length - 1 ? T.textMute : T.ink,
+                  width: 28,
+                  height: 28,
+                  cursor: weekIdx >= weeks.length - 1 ? "default" : "pointer",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  fontFamily: T.sans
+                }
+              }, "\u203A")
+            ),
+            // Avg + View toggle
+            /*#__PURE__*/React.createElement("div", { style: { textAlign: "right" } },
+              /*#__PURE__*/React.createElement("div", {
+                style: {
+                  fontFamily: T.display,
+                  fontWeight: 700,
+                  fontSize: 48,
+                  lineHeight: 1,
+                  color: gc(totwAvg),
+                  letterSpacing: "-0.02em",
+                  fontVariantNumeric: "tabular-nums"
+                }
+              }, totwAvg),
+              /*#__PURE__*/React.createElement("div", {
+                style: {
+                  fontFamily: T.sans,
+                  fontSize: 9,
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  color: T.textMute,
+                  fontWeight: 600,
+                  marginTop: 4
+                }
+              }, "XI avg")
+            ),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                display: "flex",
+                border: `1px solid ${T.border}`,
+                marginTop: 4
+              }
+            }, [
+              { id: "pitch", l: "Pitch" },
+              { id: "list", l: "List" }
+            ].map(v => /*#__PURE__*/React.createElement("button", {
+              key: v.id,
+              onClick: () => setXiView(v.id),
+              style: {
+                background: xiView === v.id ? T.ink : "transparent",
+                color: xiView === v.id ? T.bg : T.textDim,
+                border: "none",
+                padding: "6px 14px",
+                fontFamily: T.sans,
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                cursor: "pointer"
+              }
+            }, v.l)))
+          )
+        ),
+
+        // ── Pitch view ──────────────────────────────────────────────────
+        xiView === "pitch" && totwXi.length >= 8 && /*#__PURE__*/React.createElement("div", {
+          className: "resp-pitch",
+          style: {
+            position: "relative",
+            width: "100%",
+            paddingBottom: "62%",
+            background: dark ? "#14331a" : "#1d4526",
+            backgroundImage: `repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, transparent 2px, transparent 50px), repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 40px, transparent 40px, transparent 80px)`,
+            overflow: "hidden"
+          }
+        },
+          /*#__PURE__*/React.createElement("div", {
+            style: { position: "absolute", inset: "5%", border: "1px solid rgba(255,255,255,.22)" }
+          }),
+          /*#__PURE__*/React.createElement("div", {
+            style: { position: "absolute", left: "5%", right: "5%", top: "50%", borderTop: "1px solid rgba(255,255,255,.15)" }
+          }),
+          /*#__PURE__*/React.createElement("div", {
+            style: { position: "absolute", left: "50%", top: "50%", width: 80, height: 80, marginLeft: -40, marginTop: -40, border: "1px solid rgba(255,255,255,.18)", borderRadius: "50%" }
+          }),
+          /*#__PURE__*/React.createElement("div", {
+            style: { position: "absolute", left: "30%", right: "30%", top: "5%", height: "16%", border: "1px solid rgba(255,255,255,.15)", borderTop: "none" }
+          }),
+          /*#__PURE__*/React.createElement("div", {
+            style: { position: "absolute", left: "30%", right: "30%", bottom: "5%", height: "16%", border: "1px solid rgba(255,255,255,.15)", borderBottom: "none" }
+          }),
+          totwXi.map(s => /*#__PURE__*/React.createElement("div", {
+            key: s.slot,
+            className: "pitch-dot",
+            onClick: () => setSel(s.l.player),
+            style: {
+              position: "absolute",
+              left: `${s.x}%`,
+              top: `${s.y}%`,
+              transform: "translate(-50%,-50%)",
+              textAlign: "center",
+              cursor: "pointer",
+              zIndex: 2,
+              transition: "transform .15s"
+            },
+            onMouseEnter: e => e.currentTarget.style.transform = "translate(-50%,-50%) scale(1.08)",
+            onMouseLeave: e => e.currentTarget.style.transform = "translate(-50%,-50%)"
+          },
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                width: 54,
+                height: 54,
+                borderRadius: "50%",
+                background: "#1a1a1a",
+                border: `3px solid ${gc(s.l.rating)}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto",
+                boxShadow: "0 2px 10px rgba(0,0,0,.35)"
+              }
+            }, /*#__PURE__*/React.createElement("span", {
+              style: {
+                fontFamily: T.display,
+                fontWeight: 700,
+                fontSize: 22,
+                color: "#fff",
+                fontVariantNumeric: "tabular-nums",
+                letterSpacing: "-0.01em"
+              }
+            }, s.l.rating)),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                marginTop: 6,
+                fontFamily: T.serif,
+                fontWeight: 700,
+                fontSize: 13,
+                color: "#fff",
+                whiteSpace: "nowrap",
+                letterSpacing: "0.02em",
+                textShadow: "0 1px 3px rgba(0,0,0,.7)"
+              }
+            }, s.l.player.name.split(" ").slice(-1)[0].toUpperCase()),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.sans,
+                fontSize: 9,
+                color: "rgba(255,255,255,.75)",
+                fontWeight: 600,
+                letterSpacing: "0.12em",
+                marginTop: 1,
+                textShadow: "0 1px 2px rgba(0,0,0,.6)"
+              }
+            }, s.l.player.team, s.l.g > 0 ? ` \u00B7 ${s.l.g}G` : "", s.l.a > 0 ? ` \u00B7 ${s.l.a}A` : "")
+          ))
+        ),
+
+        // ── List view ───────────────────────────────────────────────────
+        xiView === "list" && /*#__PURE__*/React.createElement("div", {
+          style: { padding: "4px 24px 20px" }
+        },
+          [
+            { label: "Forwards", slots: ["LW", "ST", "RW"] },
+            { label: "Midfielders", slots: ["LCM", "CM", "RCM"] },
+            { label: "Defenders", slots: ["LB", "LCB", "RCB", "RB"] },
+            { label: "Goalkeeper", slots: ["GK"] }
+          ].map(group => {
+            const rows = group.slots.map(slot => totwXi.find(s => s.slot === slot)).filter(Boolean);
+            if (!rows.length) return null;
+            return /*#__PURE__*/React.createElement("div", {
+              key: group.label,
+              style: { marginTop: 18 }
+            },
+              /*#__PURE__*/React.createElement("div", {
+                style: {
+                  fontFamily: T.sans,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  color: T.textMute,
+                  marginBottom: 10
+                }
+              }, group.label),
+              rows.map(s => /*#__PURE__*/React.createElement("div", {
+                key: s.slot,
+                onClick: () => setSel(s.l.player),
+                className: "rh",
+                style: {
+                  display: "grid",
+                  gridTemplateColumns: "38px minmax(0, 1fr) 50px 60px",
+                  gap: 14,
+                  padding: "12px 0",
+                  borderBottom: `1px solid ${T.borderLt}`,
+                  alignItems: "center",
+                  cursor: "pointer"
+                }
+              },
+                /*#__PURE__*/React.createElement("div", {
+                  style: {
+                    fontFamily: T.sans,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.16em",
+                    color: T.textMute,
+                    textAlign: "center"
+                  }
+                }, s.slot),
+                /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, minWidth: 0 } },
+                  /*#__PURE__*/React.createElement(TeamBadge, { abbr: s.l.player.team, size: 30, logo: s.l.player.teamLogo }),
+                  /*#__PURE__*/React.createElement("div", { style: { minWidth: 0 } },
+                    /*#__PURE__*/React.createElement("div", {
+                      style: {
+                        fontFamily: T.serif,
+                        fontWeight: 700,
+                        fontSize: 15,
+                        color: T.ink,
+                        lineHeight: 1.1,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                      }
+                    }, s.l.player.name),
+                    /*#__PURE__*/React.createElement("div", {
+                      style: {
+                        fontFamily: T.sans,
+                        fontSize: 11,
+                        color: T.textMute,
+                        fontWeight: 500,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        marginTop: 3
+                      }
+                    }, s.l.g || 0, "G \u00B7 ", s.l.a || 0, "A \u00B7 ", s.l.mins || 0, "'")
+                  )
+                ),
+                /*#__PURE__*/React.createElement("div", {
+                  style: {
+                    fontFamily: T.sans,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: T.ink,
+                    textAlign: "center",
+                    letterSpacing: "0.04em"
+                  }
+                }, s.l.player.team),
+                /*#__PURE__*/React.createElement("div", {
+                  style: {
+                    fontFamily: T.display,
+                    fontWeight: 700,
+                    fontSize: 24,
+                    color: gc(s.l.rating),
+                    textAlign: "right",
+                    fontVariantNumeric: "tabular-nums",
+                    lineHeight: 1
+                  }
+                }, s.l.rating)
+              ))
+            );
+          })
+        ),
+
+        // ── Top performers strip (unchanged data, restyled) ─────────────
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            padding: "18px 24px",
+            borderTop: `1px solid ${T.borderLt}`
+          }
+        },
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 10,
+              color: T.textMute,
+              fontWeight: 700,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              marginBottom: 12
+            }
+          }, "Top performers \u00B7 Matchweek ", weekIdx + 1),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: 0
+            }
+          }, topUnique.map((l, i) => /*#__PURE__*/React.createElement("div", {
+            key: l.player.id,
+            onClick: () => setSel(l.player),
+            className: "rh",
+            style: {
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "10px 14px",
+              paddingLeft: i === 0 ? 0 : 14,
+              borderLeft: i === 0 ? "none" : `1px solid ${T.borderLt}`,
+              cursor: "pointer"
+            }
+          },
+            /*#__PURE__*/React.createElement("span", {
+              style: {
+                fontFamily: T.display,
+                fontWeight: 700,
+                fontSize: 15,
+                color: i === 0 ? T.gold : i < 3 ? T.green : T.textMute,
+                width: 18,
+                fontVariantNumeric: "tabular-nums"
+              }
+            }, i + 1),
+            /*#__PURE__*/React.createElement(TeamBadge, { abbr: l.player.team, size: 24, logo: l.player.teamLogo }),
+            /*#__PURE__*/React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+              /*#__PURE__*/React.createElement("div", {
+                style: {
+                  fontFamily: T.serif,
+                  fontWeight: 700,
+                  fontSize: 13,
+                  color: T.ink,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }
+              }, l.player.name),
+              /*#__PURE__*/React.createElement("div", {
+                style: {
+                  fontFamily: T.sans,
+                  fontSize: 10,
+                  color: T.textMute,
+                  fontWeight: 500,
+                  letterSpacing: "0.04em",
+                  marginTop: 1
+                }
+              }, l.player.position, " \u00B7 ", l.opp, " (", l.ha, ")", l.g > 0 ? ` \u00B7 ${l.g}G` : "", l.a > 0 ? ` \u00B7 ${l.a}A` : "")
+            ),
+            /*#__PURE__*/React.createElement("span", {
+              style: {
+                fontFamily: T.display,
+                fontWeight: 700,
+                fontSize: 18,
+                color: gc(l.rating),
+                fontVariantNumeric: "tabular-nums"
+              }
+            }, l.rating)
+          )))
+        )
+      );
     })(), leadersView === "movers" && (() => {
       const withForm = players.filter(p => p.matchLog && p.matchLog.length >= 5).map(p => {
         const logs = p.matchLog;
