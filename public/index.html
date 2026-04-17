@@ -11010,60 +11010,131 @@ function MLSAnalytics() {
         maxWidth: "52ch",
         lineHeight: 1.5
       }
-    }, "Grade distribution, top players, and key stat profiles by position group across the league.")), /*#__PURE__*/React.createElement("div", {
-      className: "resp-grid4",
-      style: {
-        display: "grid",
-        gridTemplateColumns: "repeat(4,1fr)",
-        gap: 12,
-        marginBottom: 24
-      }
-    }, posEntries.map(pe => /*#__PURE__*/React.createElement("div", {
-      key: pe.pos,
-      style: {
-        background: T.surface,
-        border: `1px solid ${T.border}`,
-        borderRadius: 6,
-        padding: "16px 14px",
-        textAlign: "center"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 20,
-        marginBottom: 4
-      }
-    }, posIcons[pe.pos]), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.display,
-        fontWeight: 700,
-        fontSize: 18,
-        color: T.ink
-      }
-    }, pe.pos, "s"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.display,
-        fontWeight: 700,
-        fontSize: 28,
-        color: gc(pe.avg),
-        lineHeight: 1,
-        marginTop: 6
-      }
-    }, pe.avg), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 8,
-        color: gc(pe.avg),
-        fontWeight: 600,
-        letterSpacing: .8,
-        marginTop: 2
-      }
-    }, gl(pe.avg), " AVG"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 10,
-        color: T.textMute,
-        fontFamily: T.sans,
-        marginTop: 6
-      }
-    }, pe.count, " players")))), /*#__PURE__*/React.createElement("div", {
+    }, "Grade distribution, top players, and key stat profiles by position group across the league.")),
+    // pass-7-positional-summary-applied
+    /*#__PURE__*/React.createElement("div", {
+      style: { marginBottom: 28 }
+    },
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.sans,
+          fontSize: 10,
+          fontWeight: 600,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          color: T.textMute,
+          marginBottom: 8
+        }
+      }, "By position \u00B7 League averages"),
+      /*#__PURE__*/React.createElement("div", {
+        style: { height: 2, background: T.ink, marginBottom: 4 }
+      }),
+      posEntries.map(pe => /*#__PURE__*/React.createElement("div", {
+        key: pe.pos,
+        style: {
+          display: "grid",
+          gridTemplateColumns: "minmax(180px, 1.2fr) minmax(120px, 0.9fr) minmax(0, 2fr)",
+          gap: 20,
+          padding: "18px 0",
+          borderBottom: `1px solid ${T.borderLt}`,
+          alignItems: "center"
+        }
+      },
+        // Left: position title + count
+        /*#__PURE__*/React.createElement("div", null,
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.display,
+              fontWeight: 700,
+              fontSize: 22,
+              color: T.ink,
+              letterSpacing: "-0.01em",
+              lineHeight: 1
+            }
+          }, pe.pos, "s"),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 11,
+              color: T.textMute,
+              fontWeight: 500,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginTop: 4
+            }
+          }, pe.count, " players")
+        ),
+        // Middle: overall grade + tier
+        /*#__PURE__*/React.createElement("div", {
+          style: { display: "flex", alignItems: "baseline", gap: 10 }
+        },
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.display,
+              fontWeight: 700,
+              fontSize: 32,
+              color: gc(pe.avg),
+              lineHeight: 1,
+              letterSpacing: "-0.02em"
+            }
+          }, pe.avg),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: gc(pe.avg)
+            }
+          }, gl(pe.avg))
+        ),
+        // Right: 5 sub-grades with thin dividers
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            display: "grid",
+            gridTemplateColumns: "repeat(5, 1fr)",
+            gap: 0
+          }
+        },
+          [
+            { l: "ATT", v: pe.avgAtt },
+            { l: "PAS", v: pe.avgPas },
+            { l: "DEF", v: pe.avgDef },
+            { l: "CRE", v: pe.avgCre },
+            { l: "CAR", v: pe.avgCar }
+          ].map((g, i) => /*#__PURE__*/React.createElement("div", {
+            key: g.l,
+            style: {
+              paddingLeft: i === 0 ? 0 : 14,
+              borderLeft: i === 0 ? "none" : `1px solid ${T.borderLt}`
+            }
+          },
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.sans,
+                fontSize: 10,
+                color: T.textMute,
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                marginBottom: 4
+              }
+            }, g.l),
+            /*#__PURE__*/React.createElement("div", {
+              style: {
+                fontFamily: T.serif,
+                fontWeight: 700,
+                fontSize: 20,
+                color: gc(g.v),
+                lineHeight: 1
+              }
+            }, g.v)
+          ))
+        )
+      ))
+    ),
+    /*#__PURE__*/React.createElement("div", {
       className: "resp-pos-cards",
       style: {
         display: "grid",
