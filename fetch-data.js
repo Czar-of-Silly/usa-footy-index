@@ -339,6 +339,7 @@ async function main() {
       fl: e.fouls || 0,
       yc: e.yc || 0,
       rc: e.rc || 0,
+      sv: e.saves || 0,
       // ASA
       xg: Math.round((xg.xg || 0) * 100) / 100,
       xa: Math.round((xg.xa || 0) * 100) / 100,
