@@ -5626,17 +5626,19 @@ function MLSAnalytics() {
       key: v,
       onClick: () => setSrView(v),
       style: {
-        background: srView === v ? T.ink : "transparent",
-        color: srView === v ? T.bg : T.textDim,
-        border: `1px solid ${srView === v ? T.ink : T.border}`,
-        borderRadius: 4,
-        padding: "5px 14px",
+        background: "transparent",
+        color: srView === v ? T.ink : T.textDim,
+        border: "none",
+        borderBottom: `2px solid ${srView === v ? T.ink : "transparent"}`,
+        padding: "8px 4px",
+        marginRight: 18,
         cursor: "pointer",
         fontFamily: T.sans,
-        fontWeight: 600,
-        fontSize: 10,
-        letterSpacing: .5,
-        textTransform: "uppercase"
+        fontWeight: 700,
+        fontSize: 11,
+        letterSpacing: "0.18em",
+        textTransform: "uppercase",
+        transition: "color .15s, border-color .15s"
       }
     }, v === "table" ? "Table" : v === "position" ? "By Position" : "Tiers")))), /*#__PURE__*/React.createElement("div", {
       className: "resp-grid4",
