@@ -323,7 +323,7 @@ async function main() {
 
   let merged=0, partial=0, skipped=0;
   for (const rp of roster) {
-    const e = espn[rp.name] || {};
+    const e = find(rp.name, espn) || {};
     const xg = find(rp.name, asaXG) || {};
     const ga = find(rp.name, asaGA) || {};
     const pass = find(rp.name, asaPass) || {};
