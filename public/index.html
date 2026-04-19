@@ -6321,7 +6321,7 @@ function MLSAnalytics() {
       return /*#__PURE__*/React.createElement("div", {
         style: {
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit,minmax(320px,1fr))",
           gap: 16
         }
       }, Object.entries(filteredByPos).sort(([a], [b]) => ({
@@ -6352,7 +6352,7 @@ function MLSAnalytics() {
           }
         }, /*#__PURE__*/React.createElement("div", {
           style: {
-            padding: "16px 18px",
+            padding: isMobile ? "12px 12px" : "16px 18px",
             borderBottom: `1px solid ${T.borderLt}`,
             display: "flex",
             justifyContent: "space-between",
@@ -6381,8 +6381,8 @@ function MLSAnalytics() {
           style: {
             display: "flex",
             alignItems: "center",
-            gap: 10,
-            padding: "10px 18px",
+            gap: isMobile ? 8 : 10,
+            padding: isMobile ? "10px 12px" : "10px 18px",
             borderBottom: `1px solid ${T.borderLt}`,
             cursor: "pointer"
           }
