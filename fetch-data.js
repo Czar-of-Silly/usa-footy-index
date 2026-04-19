@@ -61,6 +61,9 @@ async function main() {
   console.log(`          ✅ ${rc} players`);
 
   console.log("  [ESPN] Boxscores...");
+  // name→position lookup so we can identify GKs during the boxscore loop
+  const posByName = {};
+  for (const rp of roster) posByName[rp.name] = rp.pos;
   const espn={}; const espnLogs={}; const gameIds=[]; const now=new Date();
   for(let d=new Date(CY,1,1);d<now;d.setDate(d.getDate()+14)){
     const f=d.toISOString().slice(0,10).replace(/-/g,""),td=new Date(d);td.setDate(td.getDate()+14);
@@ -83,11 +86,17 @@ async function main() {
     if(Array.isArray(d?.rosters))for(const tr of d.rosters){
       const teamHA=tr?.homeAway==="home"?"H":"A";
       const opp=teamHA==="H"?aAbbr:hAbbr;
+      const conceded=teamHA==="H"?aScore:hScore;
       for(const e of(tr?.roster||[])){
         const n=e?.athlete?.displayName;if(!n||!e.stats)continue;
-        if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,games:0};
+        if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,cs:0,ga_conceded:0,games:0};
         const pMins=(e.starter?90:e.subbedIn?30:90);
         espn[n].games++;espn[n].mins+=pMins;
+        // GK-only: credit starter with opponent's score as conceded goals
+        if(e.starter && posByName[n]==="GK"){
+          espn[n].ga_conceded += conceded;
+          if(conceded === 0) espn[n].cs += 1;
+        }
         const row={date:gameDate,opp,ha:teamHA,hs:hScore,as:aScore,mins:pMins,g:0,a:0,sh:0,sot:0,fl:0,yc:0,rc:0};
         for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;row.g+=v;break;case"goalAssists":espn[n].assists+=v;row.a+=v;break;case"totalShots":espn[n].shots+=v;row.sh+=v;break;case"shotsOnTarget":espn[n].sot+=v;row.sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;row.fl+=v;break;case"yellowCards":espn[n].yc+=v;row.yc+=v;break;case"redCards":espn[n].rc+=v;row.rc+=v;break;case"saves":espn[n].saves+=v;break;}}
         if(!espnLogs[n])espnLogs[n]=[];
@@ -340,6 +349,8 @@ async function main() {
       yc: e.yc || 0,
       rc: e.rc || 0,
       sv: e.saves || 0,
+      cs: e.cs || 0,
+      ga_conceded: e.ga_conceded || 0,
       // ASA
       xg: Math.round((xg.xg || 0) * 100) / 100,
       xa: Math.round((xg.xa || 0) * 100) / 100,
