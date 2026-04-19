@@ -12798,47 +12798,7 @@ function MLSAnalytics() {
         fontSize: 14
       }
     }, cp.length === 0 ? "Add at least 2 players to compare" : "Add one more player to start comparing"));
-  })()), /*#__PURE__*/React.createElement("div", {
-    style: {
-      borderTop: `1px solid ${T.border}`,
-      background: T.surface,
-      padding: "32px 24px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      maxWidth: 600,
-      margin: "0 auto",
-      textAlign: "center"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: T.display,
-      fontWeight: 700,
-      fontSize: 22,
-      color: T.ink,
-      marginBottom: 6
-    }
-  }, "Stay in the Loop"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: T.textDim,
-      fontFamily: T.sans,
-      marginBottom: 16,
-      lineHeight: 1.6
-    }
-  }, "Get weekly TOTW picks, power rankings, and player movers straight to your inbox. Free, no spam."), /*#__PURE__*/React.createElement("iframe", {
-    src: "https://subscribe-forms.beehiiv.com/cb52b06e-c56f-461f-9477-ecca6a8dd45a",
-    style: {
-      width: "100%",
-      maxWidth: 480,
-      height: 60,
-      border: "none",
-      margin: "0 auto",
-      display: "block",
-      background: "transparent"
-    },
-    scrolling: "no"
-  }))), /*#__PURE__*/React.createElement(NewsletterFooter, {
+  })()), /*#__PURE__*/React.createElement(NewsletterFooter, {
     dark: dark,
     setTab: setTab,
     setShowAbout: setShowAbout,
@@ -12943,61 +12903,25 @@ function NewsletterFooter({ dark, setTab, setShowAbout, setShowGrading, season }
         gap: 6,
         minWidth: 280
       }
-    }, status === "success"
-      ? /*#__PURE__*/React.createElement("div", {
-          style: {
-            fontFamily: T.serif,
-            fontStyle: "italic",
-            fontSize: 14,
-            color: T.gold,
-            padding: "10px 0"
-          }
-        }, "\u2713 You're on the list. See you Monday.")
-      : /*#__PURE__*/React.createElement("div", {
-          style: { display: "flex", gap: 8, flexWrap: "wrap" }
-        },
-          /*#__PURE__*/React.createElement("input", {
-            type: "email",
-            value: email,
-            onChange: e => { setEmail(e.target.value); if (status !== "idle") setStatus("idle"); },
-            onKeyDown: e => { if (e.key === "Enter") onSubmit(); },
-            placeholder: "your@email.com",
-            style: {
-              background: "transparent",
-              border: `1px solid ${T.textDim}`,
-              color: T.bg,
-              padding: "10px 14px",
-              fontFamily: T.sans,
-              fontSize: 13,
-              flex: "1 1 180px",
-              outline: "none"
-            }
-          }),
-          /*#__PURE__*/React.createElement("button", {
-            onClick: onSubmit,
-            style: {
-              background: T.bg,
-              color: T.ink,
-              border: "none",
-              padding: "10px 18px",
-              fontFamily: T.sans,
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              whiteSpace: "nowrap"
-            }
-          }, "Subscribe")
-        ),
-      status === "invalid" && /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("div", {
         style: {
-          fontFamily: T.sans,
-          fontSize: 11,
-          color: T.gold,
-          marginTop: 2
+          background: T.bg,
+          padding: "10px 14px",
+          width: "100%"
         }
-      }, "Please enter a valid email.")
+      }, /*#__PURE__*/React.createElement("iframe", {
+        src: "https://subscribe-forms.beehiiv.com/cb52b06e-c56f-461f-9477-ecca6a8dd45a",
+        title: "Subscribe to The Index",
+        style: {
+          width: "100%",
+          maxWidth: 480,
+          height: 60,
+          border: "none",
+          background: "transparent",
+          display: "block"
+        },
+        scrolling: "no"
+      }))
     ))),
 
     // ─── Main footer ───────────────────────────────────────────────────
