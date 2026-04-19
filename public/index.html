@@ -12903,25 +12903,37 @@ function NewsletterFooter({ dark, setTab, setShowAbout, setShowGrading, season }
         gap: 6,
         minWidth: 280
       }
-    }, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("a", {
+        href: "https://usfootyindex.beehiiv.com/subscribe",
+        target: "_blank",
+        rel: "noopener noreferrer",
         style: {
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 10,
           background: T.bg,
-          padding: "10px 14px",
-          width: "100%"
-        }
-      }, /*#__PURE__*/React.createElement("iframe", {
-        src: "https://subscribe-forms.beehiiv.com/cb52b06e-c56f-461f-9477-ecca6a8dd45a",
-        title: "Subscribe to The Index",
-        style: {
-          width: "100%",
-          maxWidth: 480,
-          height: 60,
-          border: "none",
-          background: "transparent",
-          display: "block"
+          color: T.ink,
+          textDecoration: "none",
+          padding: "14px 22px",
+          fontFamily: T.sans,
+          fontSize: 12,
+          fontWeight: 700,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          whiteSpace: "nowrap",
+          transition: "opacity .15s"
         },
-        scrolling: "no"
-      }))
+        onMouseEnter: e => e.currentTarget.style.opacity = "0.85",
+        onMouseLeave: e => e.currentTarget.style.opacity = "1"
+      }, "Subscribe",
+      /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontFamily: T.sans,
+          fontSize: 14,
+          fontWeight: 400,
+          letterSpacing: 0
+        }
+      }, "\u2192"))
     ))),
 
     // ─── Main footer ───────────────────────────────────────────────────
