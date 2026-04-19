@@ -9369,103 +9369,124 @@ function MLSAnalytics() {
         transition: "color .15s, border-color .15s"
       }
     }, v.l))), leadersView === "overview" && /*#__PURE__*/React.createElement("div", {
+      // pass-11-stat-leaders-applied
       style: {
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
-        gap: 14
+        gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
+        columnGap: 40,
+        rowGap: 32
       }
     }, leaders.map(cat => /*#__PURE__*/React.createElement("div", {
-      key: cat.k,
-      style: {
-        background: T.surface,
-        border: `1px solid ${T.border}`,
-        borderRadius: 8,
-        overflow: "hidden"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        padding: "14px 18px",
-        borderBottom: `1px solid ${T.borderLt}`,
-        display: "flex",
-        alignItems: "center",
-        gap: 10
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 20
-      }
-    }, cat.icon), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.display,
-        fontWeight: 700,
-        fontSize: 20,
-        color: T.ink
-      }
-    }, cat.l), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 9,
-        color: T.textMute,
-        fontFamily: T.sans
-      }
-    }, cat.desc))), cat.top.map((p, i) => /*#__PURE__*/React.createElement("div", {
-      key: p.id,
-      onClick: () => setSel(p),
-      className: "rh",
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "9px 18px",
-        borderBottom: `1px solid ${T.borderLt}`,
-        cursor: "pointer"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.serif,
-        fontWeight: 700,
-        fontSize: 14,
-        color: i === 0 ? T.accent : T.textMute,
-        width: 18
-      }
-    }, i + 1), /*#__PURE__*/React.createElement(TeamBadge, {
-      abbr: p.team,
-      size: 36,
-      logo: p.teamLogo
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1,
-        minWidth: 0
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.serif,
-        fontWeight: 600,
-        fontSize: 14,
-        color: T.ink,
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis"
-      }
-    }, p.name), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 8,
-        color: T.textMute
-      }
-    }, p.position, " \xB7 ", p.team)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: T.serif,
-        fontWeight: 700,
-        fontSize: 18,
-        color: i === 0 ? T.ink : T.textDim
-      }
-    }, parseFloat(p[cat.k]) || 0), /*#__PURE__*/React.createElement(Badge, {
-      grade: p.overall,
-      size: "sm"
-    })))))), leadersView === "bestxi" && xi.length >= 11 && /*#__PURE__*/React.createElement("div", {
+      key: cat.k
+    },
+      // ── Category header ────────────────────────────────────────────
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.sans,
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          color: T.textMute,
+          marginBottom: 6
+        }
+      }, cat.l),
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.display,
+          fontWeight: 700,
+          fontSize: 22,
+          color: T.ink,
+          letterSpacing: "-0.01em",
+          lineHeight: 1
+        }
+      }, cat.desc.split(" \u00B7 ")[0]),
+      /*#__PURE__*/React.createElement("div", {
+        style: {
+          fontFamily: T.serif,
+          fontStyle: "italic",
+          fontSize: 12,
+          color: T.textDim,
+          marginTop: 4,
+          marginBottom: 10
+        }
+      }, cat.desc.includes(" \u00B7 ") ? cat.desc.split(" \u00B7 ").slice(1).join(" \u00B7 ") : "League leaders, top five."),
+      /*#__PURE__*/React.createElement("div", {
+        style: { height: 2, background: T.ink, marginBottom: 4 }
+      }),
+      // ── Leader rows ────────────────────────────────────────────────
+      cat.top.map((p, i) => /*#__PURE__*/React.createElement("div", {
+        key: p.id,
+        onClick: () => setSel(p),
+        className: "rh",
+        style: {
+          display: "grid",
+          gridTemplateColumns: "22px 32px minmax(0, 1fr) 56px 44px",
+          gap: 10,
+          padding: "11px 0",
+          borderBottom: `1px solid ${T.borderLt}`,
+          alignItems: "center",
+          cursor: "pointer"
+        }
+      },
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.display,
+            fontWeight: 700,
+            fontSize: 15,
+            color: i === 0 ? T.gold : T.textMute,
+            textAlign: "center",
+            fontVariantNumeric: "tabular-nums",
+            lineHeight: 1
+          }
+        }, i + 1),
+        /*#__PURE__*/React.createElement(TeamBadge, {
+          abbr: p.team,
+          size: 32,
+          logo: p.teamLogo
+        }),
+        /*#__PURE__*/React.createElement("div", { style: { minWidth: 0 } },
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.serif,
+              fontWeight: 700,
+              fontSize: 14,
+              color: T.ink,
+              lineHeight: 1.1,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }
+          }, p.name),
+          /*#__PURE__*/React.createElement("div", {
+            style: {
+              fontFamily: T.sans,
+              fontSize: 10,
+              color: T.textMute,
+              fontWeight: 500,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginTop: 2
+            }
+          }, p.position, " \u00B7 ", p.team)
+        ),
+        /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.display,
+            fontWeight: 700,
+            fontSize: 22,
+            color: i === 0 ? T.ink : T.textDim,
+            textAlign: "right",
+            fontVariantNumeric: "tabular-nums",
+            lineHeight: 1
+          }
+        }, parseFloat(p[cat.k]) || 0),
+        /*#__PURE__*/React.createElement(Badge, {
+          grade: p.overall,
+          size: "sm"
+        })
+      ))
+    ))), leadersView === "bestxi" && xi.length >= 11 && /*#__PURE__*/React.createElement("div", {
       // pass-10-bestxi-applied
       style: {
         background: T.surface,
