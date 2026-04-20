@@ -1932,7 +1932,7 @@ function PlayerModal({
       fontSize: 14,
       color: T.green
     }
-  }, p.saves > 0 ? Math.round(p.saves / (p.saves + p.goalsConceded) * 100) : 0, "%"))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, (p.saves > 0 || p.goalsConceded > 0) ? Math.round(p.saves / (p.saves + p.goalsConceded) * 100) + "%" : "\u2014"))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       justifyContent: "space-between",
@@ -3322,7 +3322,7 @@ function MLSAnalytics() {
           gdr: safe(r.gdr, -3, 5, 0),
           gdf: safe(r.gdf, -3, 5, 0),
           gi: safe(r.gi, -3, 5, 0),
-          mv: safe(r.mv, 0, 50e6, 500000),
+          mv: safe(r.mv, 0, 50e6, 0),
           tk: safe(r.tk, 0, 80, 0),
           sh: safe(r.sh, 0, 120, 0),
           so: safe(r.so, 0, 60, 0),
@@ -3350,7 +3350,7 @@ function MLSAnalytics() {
         setLoadProgress(85);
         const inter = validated.map((r, i) => {
           const id = "p" + i,
-            m = r.m || 600,
+            m = Math.max(r.m || 0, 90),
             p90 = m / 90;
           const games = Math.max(1, Math.round(m / 90));
           return {
