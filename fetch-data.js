@@ -588,6 +588,26 @@ async function main() {
   console.log(`  Still unavailable (StatsBomb exclusive):`);
   console.log(`    Progressive Passes, Progressive Carries, SCA, Pressures (using real proxies instead)`);
   console.log(`  Season: ${CY} · ${output.generated}\n`);
+
+  // ─── DATA QUALITY ASSERTIONS ───
+  // Fail the build if data quality is poor — triggers GitHub Actions email alert
+  const issues = [];
+  const totalPlayers = output.players.length;
+  if (totalPlayers < 600) issues.push(`Only ${totalPlayers} players (expected 600+)`);
+  if (output.teams.length < 28) issues.push(`Only ${output.teams.length} teams (expected 30)`);
+  if (withXG < 300) issues.push(`Only ${withXG} players with xG (expected 400+) — ASA may have failed`);
+  if (withTkl < 200) issues.push(`Only ${withTkl} players with tackles (expected 400+) — Sofascore likely blocked`);
+  if (withMV < 200) issues.push(`Only ${withMV} players with market values (expected 400+)`);
+
+  if (issues.length > 0) {
+    console.log(`\n  🚨 DATA QUALITY ISSUES DETECTED:`);
+    issues.forEach(i => console.log(`     ❌ ${i}`));
+    console.log(`\n  Pipeline failing to alert on data quality regression.`);
+    console.log(`  Existing cache values were preserved where possible (see fallback logs above).`);
+    process.exit(1);
+  } else {
+    console.log(`  ✅ Data quality check passed — all sources healthy\n`);
+  }
 }
 
 main().catch(e => { console.error("\n  ❌ Fatal:", e.message); process.exit(1); });

@@ -136,7 +136,7 @@ function pct(a,v){const s=[...a].sort((x,y)=>x-y);return s.filter(x=>x<v).length
 // For stats where 0 commonly means "missing data" (offensive + carrying + advanced defensive)
 // Players with 0 get neutral 0.5 instead of being slammed with bottom percentile
 function pctSparse(a,v){if(!v)return 0.5;return pct(a,v);}
-console.log("UFI grading version: POSITION-RELATIVE-2026-05-06");
+console.log("UFI grading version: PASS-QUALITY-GK-SAVE-PCT-2026-05-07");
 window.__ufiDebug = (players) => {
   const messi = players.find(p => p.name && p.name.includes("Messi"));
   if (!messi) return;
@@ -190,7 +190,11 @@ function computeGrades(ps){
   ps.forEach(p=>{
     if(p.isGK&&gks.length>=3){
       // ── GK GRADING (already position-relative) ──
-      const shotStop=pct(gkSv,p.sv90)*.60+pct(gkCs,p.csRate)*.40;
+      // Shot-stopping: 40% saves/90, 30% save percentage (saves / (saves + goals against)), 30% clean sheet rate
+      const gkSvPct=ps.filter(x=>x.isGK).map(x=>{const tot=(x.sv90||0)+(x.gaCon90||0);return tot>0?(x.sv90||0)/tot:0;});
+      const myTot=(p.sv90||0)+(p.gaCon90||0);
+      const mySvPct=myTot>0?(p.sv90||0)/myTot:0;
+      const shotStop=pct(gkSv,p.sv90)*.40+pct(gkSvPct,mySvPct)*.30+pct(gkCs,p.csRate)*.30;
       const dist=pctFull(gkPc,p.pc)*.50+pct(gkPrgp,p.prgp90)*.50;
       const gcInv=gkGa.length>1?1-pct(gkGa,p.gaCon90):0.5;
       const command=pct(gkPrs,p.prs90)*.40+pct(gkArl,p.arl90)*.40+gcInv*.20;
@@ -208,7 +212,10 @@ function computeGrades(ps){
       const pDrb=posPool(p,"drb90"),pPrgc=posPool(p,"prgc90"),pGa=posPool(p,"tga");
 
       const att=pctSparse(pXg,p.xg90)*.35+pctSparse(pXa,p.xa90)*.15+pctSparse(pKp,p.kp90)*.25+pctSparse(pSca,p.sca90)*.25;
-      const pas=pctFull(pPc,p.pc)*.30+pct(pPga,p.pga)*.15+pctSparse(pFtp,p.ftp90)*.30+pctSparse(pKp,p.kp90)*.25;
+      // Passing now factors in pass quality (passAboveExp): completion above what was expected
+      // 25% raw completion, 15% pass quality (NEW), 10% pass goals-added, 25% final-third, 25% key passes
+      const pPaq=posPool(p,"paq");
+      const pas=pctFull(pPc,p.pc)*.25+pctSparse(pPaq,p.paq)*.15+pct(pPga,p.pga)*.10+pctSparse(pFtp,p.ftp90)*.25+pctSparse(pKp,p.kp90)*.25;
       const def=pct(pDga,p.dga)*.25+pctSparse(pPrs,p.prs90)*.25+pctSparse(pIntc,p.intc90)*.25+pctSparse(pArl,p.arl90)*.25;
       const cre=pctSparse(pKp,p.kp90)*.35+pctSparse(pSca,p.sca90)*.35+pctSparse(pXa,p.xa90)*.30;
       const car=pctSparse(pDrb,p.drb90)*.50+pctSparse(pFtp,p.ftp90)*.30+pctSparse(pPrgc,p.prgc90)*.20;
@@ -910,7 +917,12 @@ function MLSAnalytics(){
         prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null,
       }));
       setLoadProgress(85);
-      const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,
+      const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));
+        // Pass quality: completion - expected. Positive = better than expected, negative = worse
+        // Only meaningful when both real values exist; 0 when defaults are used
+        const hasPassData=r.pp>0&&r.xpp>0;
+        const paq=hasPassData?(r.pp-r.xpp):0;
+        return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,paq:paq,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,
         // GK-specific
         isGK:r.p==="GK",pos:r.p,sv90:(r.sv||0)/p90,csRate:games>0?(r.cs||0)/games:0,gaCon90:games>0?(r.gaCon||0)/p90:0,
         raw:r};});
