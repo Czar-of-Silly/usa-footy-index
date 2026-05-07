@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <style>
+      .blk{fill:#111111;stroke:#111111;stroke-linecap:round;stroke-linejoin:round}
+      .crm{fill:#F3E8D2;stroke:#111111;stroke-linecap:round;stroke-linejoin:round}
+      .rst{fill:#C95533;stroke:#111111;stroke-linecap:round;stroke-linejoin:round}
+      .nof{fill:none;stroke:#111111;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <rect width="256" height="256" fill="none"/>
+  
+  <g transform="translate(12 36) rotate(-8 116 92)">
+    <path class="crm" d="M20 40 H212 V68 Q196 68 196 84 Q196 100 212 100 V128 H20 V100 Q36 100 36 84 Q36 68 20 68 Z" stroke-width="10"/>
+    <path class="nof" d="M62 53 V115 M170 53 V115" stroke-width="8" stroke-dasharray="8 10"/>
+    <rect class="crm" x="72" y="52" width="88" height="64" rx="12" stroke-width="8"/>
+    <path class="rst" d="M116 64 l11 23 25 3-18 16 5 24-23-12-23 12 5-24-18-16 25-3z" stroke-width="8"/>
+  </g>
+
+</svg>

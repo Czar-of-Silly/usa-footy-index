@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <style>
+      .blk{fill:#111111;stroke:#111111;stroke-linecap:round;stroke-linejoin:round}
+      .crm{fill:#F3E8D2;stroke:#111111;stroke-linecap:round;stroke-linejoin:round}
+      .rst{fill:#C95533;stroke:#111111;stroke-linecap:round;stroke-linejoin:round}
+      .nof{fill:none;stroke:#111111;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <rect width="256" height="256" fill="none"/>
+  
+  <g transform="translate(2 8)">
+    <path class="crm" d="M30 154 Q36 100 74 87 L130 83 Q148 83 163 96 L213 139 Q224 148 223 164 Q222 177 208 177 H67 Q46 177 30 154 Z" stroke-width="10"/>
+    <path class="blk" d="M121 88 H158 Q174 88 186 102 L214 138 Q220 145 221 157 L180 160 Q161 125 121 88 Z" stroke-width="8"/>
+    <path class="rst" d="M64 95 H112 Q125 95 136 104 L108 128 H55 Q51 107 64 95 Z" stroke-width="8"/>
+    <path class="rst" d="M177 132 H214 Q223 136 221 147 H169 Q165 140 177 132 Z" stroke-width="8"/>
+    <path class="crm" d="M36 154 H223 Q219 176 198 176 H67 Q49 176 36 154 Z" stroke-width="8"/>
+    <path class="nof" d="M55 153 H214" stroke-width="8"/>
+    <path class="nof" d="M149 105 l14 9" stroke-width="7"/>
+    <path class="nof" d="M141 117 l16 10" stroke-width="7"/>
+    <path class="nof" d="M133 129 l16 10" stroke-width="7"/>
+    <path class="nof" d="M125 141 l15 9" stroke-width="7"/>
+    <path class="nof" d="M118 100 V150" stroke-width="8"/>
+    <path class="nof" d="M79 132 q17-12 40-2" stroke-width="8"/>
+    <circle class="blk" cx="186" cy="141" r="2"/>
+    <circle class="blk" cx="194" cy="141" r="2"/>
+    <circle class="blk" cx="202" cy="141" r="2"/>
+  </g>
+
+</svg>
