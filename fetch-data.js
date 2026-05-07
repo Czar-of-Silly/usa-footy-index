@@ -17,29 +17,50 @@ const MLS_TOURNAMENT = 242;
 const CY = new Date().getFullYear();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function get(url, hdrs) { const r = await fetch(url, hdrs ? { headers: hdrs } : undefined); if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); }
+// Sofascore uses native https module with browser-like TLS ciphers to bypass Cloudflare
+// The standard fetch() API can't set custom ciphers, but https.request() can
+const _https = require("https");
 function sofaGet(ep, retries = 2) {
-  const headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept": "application/json, text/plain, */*",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer": "https://www.sofascore.com/",
-    "Origin": "https://www.sofascore.com",
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "same-site"
-  };
   return (async () => {
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
-        const r = await fetch(`${SOFA}${ep}`, { headers });
-        if (r.ok) return r.json();
-        if (r.status === 403 || r.status === 429) {
-          if (attempt < retries) {
-            await new Promise(res => setTimeout(res, 2000 * (attempt + 1)));
-            continue;
-          }
+        const result = await new Promise((resolve, reject) => {
+          const u = new URL(`${SOFA}${ep}`);
+          const req = _https.request({
+            hostname: u.hostname, port: 443, path: u.pathname + u.search, method: "GET",
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "Accept": "application/json, text/plain, */*",
+              "Accept-Language": "en-US,en;q=0.9",
+              "Accept-Encoding": "gzip, deflate, br",
+              "Connection": "keep-alive",
+              "Cache-Control": "max-age=0",
+              "Referer": "https://www.sofascore.com/",
+              "Origin": "https://www.sofascore.com",
+              "Sec-Fetch-Dest": "empty",
+              "Sec-Fetch-Mode": "cors",
+              "Sec-Fetch-Site": "same-site",
+            },
+            ciphers: "TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256",
+          }, res => {
+            const encoding = res.headers["content-encoding"];
+            const chunks = [];
+            const stream = encoding === "gzip" ? res.pipe(require("zlib").createGunzip())
+                         : encoding === "br" ? res.pipe(require("zlib").createBrotliDecompress())
+                         : encoding === "deflate" ? res.pipe(require("zlib").createInflate())
+                         : res;
+            stream.on("data", c => chunks.push(c));
+            stream.on("end", () => resolve({ status: res.statusCode, body: Buffer.concat(chunks).toString() }));
+            stream.on("error", reject);
+          });
+          req.on("error", reject);
+          req.end();
+        });
+        if (result.status === 200) return JSON.parse(result.body);
+        if (result.status === 403 || result.status === 429) {
+          if (attempt < retries) { await new Promise(r => setTimeout(r, 3000 * (attempt + 1))); continue; }
         }
-        throw new Error(`${r.status} ${ep}`);
+        throw new Error(`${result.status} ${ep}`);
       } catch(e) {
         if (attempt === retries) throw e;
       }
@@ -349,7 +370,7 @@ async function main() {
   // ─── DATA PRESERVATION: load existing cache to fall back on if sources fail ───
   let existingPlayers = {};
   try {
-    const existingPath = path.join(outDir, "mls-cache.json");
+    const existingPath = path.join(__dirname, "data", "mls-cache.json");
     if (fs.existsSync(existingPath)) {
       const existing = JSON.parse(fs.readFileSync(existingPath, "utf8"));
       for (const p of existing.players || []) existingPlayers[p.n] = p;
