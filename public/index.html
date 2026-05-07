@@ -133,20 +133,20 @@ const T = {...LIGHT};
 
 // Grade engine
 function pct(a,v){const s=[...a].sort((x,y)=>x-y);return s.filter(x=>x<v).length/Math.max(s.length,1);}
-console.log("UFI grading version: DEBUG2-2026-05-06");
+// For stats where 0 commonly means "missing data" (offensive + carrying + advanced defensive)
+// Players with 0 get neutral 0.5 instead of being slammed with bottom percentile
+function pctSparse(a,v){if(!v)return 0.5;return pct(a,v);}
+console.log("UFI grading version: SPARSE-FIX-2026-05-06");
 window.__ufiDebug = (players) => {
   const messi = players.find(p => p.name && p.name.includes("Messi"));
-  if (!messi) { console.log("DEBUG: Messi not found"); return; }
+  if (!messi) return;
   console.log("DEBUG MESSI:");
-  console.log("  name:", messi.name, "| pos:", messi.position, "| mins:", messi.mins);
-  console.log("  goals:", messi.goals, "| assists:", messi.assists, "| xG:", messi.xGoals, "| xA:", messi.xAssists);
-  console.log("  totalGA:", messi.totalGA, "| pass%:", messi.passComp);
+  console.log("  goals:", messi.goals, "| xG:", messi.xGoals, "| totalGA:", messi.totalGA);
   console.log("  GRADES → overall:", messi.overall, "| attack:", messi.attack, "| passing:", messi.passing);
   console.log("  GRADES → defense:", messi.defense, "| creativity:", messi.creativity, "| carrying:", messi.carrying);
-  // Also show top 3 by overall to see if anyone is in 90s
-  const top3 = [...players].sort((a,b) => (b.overall||0) - (a.overall||0)).slice(0,5);
-  console.log("DEBUG TOP 5 OVERALL:");
-  top3.forEach((p,i) => console.log(`  ${i+1}. ${p.overall} | ${p.name} (${p.position} · ${p.team})`));
+  const top5 = [...players].sort((a,b) => (b.overall||0) - (a.overall||0)).slice(0,5);
+  console.log("DEBUG TOP 5:");
+  top5.forEach((p,i) => console.log(`  ${i+1}. ${p.overall} | ${p.name} (${p.position})`));
 };
 const pctFull=pct;
 function toG(p){return Math.round(42+Math.max(0,Math.min(1,p))*57);}
@@ -189,11 +189,11 @@ function computeGrades(ps){
     } else {
       // ── OUTFIELD GRADING ──
       // Sub-grades: universal, same formula for all positions
-      const att=pct(xg,p.xg90)*.35+pct(xa,p.xa90)*.15+pct(kp,p.kp90)*.25+pct(sca,p.sca90)*.25;
-      const pas=pctFull(pc,p.pc)*.30+pct(pg,p.pga)*.15+pct(ftp,p.ftp90)*.30+pct(kp,p.kp90)*.25;
-      const def=pct(df,p.dga)*.25+pct(prs,p.prs90)*.25+pct(intc,p.intc90)*.25+pct(arl,p.arl90)*.25;
-      const cre=pct(kp,p.kp90)*.35+pct(sca,p.sca90)*.35+pct(xa,p.xa90)*.30;
-      const car=pct(drb,p.drb90)*.50+pct(ftp,p.ftp90)*.30+pct(prgc,p.prgc90)*.20;
+      const att=pctSparse(xg,p.xg90)*.35+pctSparse(xa,p.xa90)*.15+pctSparse(kp,p.kp90)*.25+pctSparse(sca,p.sca90)*.25;
+      const pas=pctFull(pc,p.pc)*.30+pct(pg,p.pga)*.15+pctSparse(ftp,p.ftp90)*.30+pctSparse(kp,p.kp90)*.25;
+      const def=pct(df,p.dga)*.25+pctSparse(prs,p.prs90)*.25+pctSparse(intc,p.intc90)*.25+pctSparse(arl,p.arl90)*.25;
+      const cre=pctSparse(kp,p.kp90)*.35+pctSparse(sca,p.sca90)*.35+pctSparse(xa,p.xa90)*.30;
+      const car=pctSparse(drb,p.drb90)*.50+pctSparse(ftp,p.ftp90)*.30+pctSparse(prgc,p.prgc90)*.20;
       const gaP=pct(ga,p.tga);
 
       // Position-weighted Overall: what matters for each role
