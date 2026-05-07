@@ -133,16 +133,20 @@ const T = {...LIGHT};
 
 // Grade engine
 function pct(a,v){const s=[...a].sort((x,y)=>x-y);return s.filter(x=>x<v).length/Math.max(s.length,1);}
-console.log("UFI grading version: DEBUG-2026-05-06");
-window.__ufiDebug = (players, computeGrades) => {
+console.log("UFI grading version: DEBUG2-2026-05-06");
+window.__ufiDebug = (players) => {
   const messi = players.find(p => p.name && p.name.includes("Messi"));
   if (!messi) { console.log("DEBUG: Messi not found"); return; }
-  console.log("DEBUG MESSI:", {
-    name: messi.name, position: messi.position, mins: messi.mins,
-    goals: messi.goals, xG: messi.xGoals, totalGA: messi.totalGA,
-    overall: messi.overall, attack: messi.attack, passing: messi.passing,
-    defense: messi.defense, creativity: messi.creativity, carrying: messi.carrying
-  });
+  console.log("DEBUG MESSI:");
+  console.log("  name:", messi.name, "| pos:", messi.position, "| mins:", messi.mins);
+  console.log("  goals:", messi.goals, "| assists:", messi.assists, "| xG:", messi.xGoals, "| xA:", messi.xAssists);
+  console.log("  totalGA:", messi.totalGA, "| pass%:", messi.passComp);
+  console.log("  GRADES → overall:", messi.overall, "| attack:", messi.attack, "| passing:", messi.passing);
+  console.log("  GRADES → defense:", messi.defense, "| creativity:", messi.creativity, "| carrying:", messi.carrying);
+  // Also show top 3 by overall to see if anyone is in 90s
+  const top3 = [...players].sort((a,b) => (b.overall||0) - (a.overall||0)).slice(0,5);
+  console.log("DEBUG TOP 5 OVERALL:");
+  top3.forEach((p,i) => console.log(`  ${i+1}. ${p.overall} | ${p.name} (${p.position} · ${p.team})`));
 };
 const pctFull=pct;
 function toG(p){return Math.round(42+Math.max(0,Math.min(1,p))*57);}
