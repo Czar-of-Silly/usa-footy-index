@@ -17,7 +17,35 @@ const MLS_TOURNAMENT = 242;
 const CY = new Date().getFullYear();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function get(url, hdrs) { const r = await fetch(url, hdrs ? { headers: hdrs } : undefined); if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); }
-function sofaGet(ep) { return get(`${SOFA}${ep}`, { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }); }
+function sofaGet(ep, retries = 2) {
+  const headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.sofascore.com/",
+    "Origin": "https://www.sofascore.com",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-site"
+  };
+  return (async () => {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const r = await fetch(`${SOFA}${ep}`, { headers });
+        if (r.ok) return r.json();
+        if (r.status === 403 || r.status === 429) {
+          if (attempt < retries) {
+            await new Promise(res => setTimeout(res, 2000 * (attempt + 1)));
+            continue;
+          }
+        }
+        throw new Error(`${r.status} ${ep}`);
+      } catch(e) {
+        if (attempt === retries) throw e;
+      }
+    }
+  })();
+}
 
 const TEAM_MAP = {"ATL":"ATL","ATX":"ATX","CLT":"CLT","CHI":"CHI","CIN":"CIN","CLB":"CLB","COL":"COL","DAL":"DAL","DC":"DC","HOU":"HOU","MIA":"MIA","LA":"LA","LAFC":"LAFC","MIN":"MIN","MTL":"MTL","NSH":"NSH","NE":"NE","RBNY":"RBNY","NYC":"NYC","NYCFC":"NYC","ORL":"ORL","PHI":"PHI","POR":"POR","RSL":"RSL","SJ":"SJ","SEA":"SEA","SKC":"SKC","STL":"STL","TOR":"TOR","VAN":"VAN","SD":"SD","SJE":"SJ","NYRB":"RBNY","ATLUTD":"ATL","LAG":"LA","NER":"NE","NSC":"NSH","FCC":"CIN","STLC":"STL","SDFC":"SD"};
 const POS_MAP = {"G":"GK","GK":"GK","Goalkeeper":"GK","D":"Defender","DF":"Defender","Defender":"Defender","M":"Midfielder","MF":"Midfielder","Midfielder":"Midfielder","F":"Forward","FW":"Forward","Forward":"Forward"};
@@ -61,11 +89,7 @@ async function main() {
   console.log(`          ✅ ${rc} players`);
 
   console.log("  [ESPN] Boxscores...");
-  // name→position lookup so we can identify GKs during the boxscore loop
-  const posByName = {};
-  for (const rp of roster) posByName[rp.name] = rp.pos;
-  let gkCreditCount = 0;
-  const espn={}; const espnLogs={}; const gameIds=[]; const now=new Date();
+  const espn={}; const gameIds=[]; const now=new Date();
   for(let d=new Date(CY,1,1);d<now;d.setDate(d.getDate()+14)){
     const f=d.toISOString().slice(0,10).replace(/-/g,""),td=new Date(d);td.setDate(td.getDate()+14);
     const t=(td>now?now:td).toISOString().slice(0,10).replace(/-/g,"");
@@ -75,44 +99,14 @@ async function main() {
   let bd=0;
   for(const gid of gameIds){
     try{const d=await get(`${ESPN_WEB}/summary?event=${gid}`);
-    const comp=d?.header?.competitions?.[0]||{};
-    const gameDate=comp?.date||null;
-    const cs=comp?.competitors||[];
-    const hc=cs.find(x=>x?.homeAway==="home")||{};
-    const ac=cs.find(x=>x?.homeAway==="away")||{};
-    const hAbbr=norm(hc?.team?.abbreviation||"");
-    const aAbbr=norm(ac?.team?.abbreviation||"");
-    const hScore=Number(hc?.score)||0;
-    const aScore=Number(ac?.score)||0;
-    if(Array.isArray(d?.rosters))for(const tr of d.rosters){
-      const teamHA=tr?.homeAway==="home"?"H":"A";
-      const opp=teamHA==="H"?aAbbr:hAbbr;
-      const conceded=teamHA==="H"?aScore:hScore;
-      for(const e of(tr?.roster||[])){
-        const n=e?.athlete?.displayName;if(!n||!e.stats)continue;
-        if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,cs:0,ga_conceded:0,games:0};
-        const pMins=(e.starter?90:e.subbedIn?30:90);
-        espn[n].games++;espn[n].mins+=pMins;
-        // GK-only: credit starter with opponent's score as conceded goals.
-        // Check box-score position first (most reliable), fall back to roster map.
-        const posAbbr = e?.athlete?.position?.abbreviation || "";
-        const posName = e?.athlete?.position?.name || "";
-        const isGK = posAbbr === "G" || posAbbr === "GK" || posName === "Goalkeeper" || posByName[n] === "GK";
-        if(e.starter && isGK){
-          espn[n].ga_conceded += conceded;
-          if(conceded === 0) espn[n].cs += 1;
-          gkCreditCount++;
-        }
-        const row={date:gameDate,opp,ha:teamHA,hs:hScore,as:aScore,mins:pMins,g:0,a:0,sh:0,sot:0,fl:0,yc:0,rc:0};
-        for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;row.g+=v;break;case"goalAssists":espn[n].assists+=v;row.a+=v;break;case"totalShots":espn[n].shots+=v;row.sh+=v;break;case"shotsOnTarget":espn[n].sot+=v;row.sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;row.fl+=v;break;case"yellowCards":espn[n].yc+=v;row.yc+=v;break;case"redCards":espn[n].rc+=v;row.rc+=v;break;case"saves":espn[n].saves+=v;break;}}
-        if(!espnLogs[n])espnLogs[n]=[];
-        espnLogs[n].push(row);
-      }
+    if(Array.isArray(d?.rosters))for(const tr of d.rosters)for(const e of(tr?.roster||[])){
+      const n=e?.athlete?.displayName;if(!n||!e.stats)continue;
+      if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,games:0};
+      espn[n].games++;espn[n].mins+=(e.starter?90:e.subbedIn?30:90);
+      for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;break;case"goalAssists":espn[n].assists+=v;break;case"totalShots":espn[n].shots+=v;break;case"shotsOnTarget":espn[n].sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;break;case"yellowCards":espn[n].yc+=v;break;case"redCards":espn[n].rc+=v;break;case"saves":espn[n].saves+=v;break;}}
     }}catch{}bd++;if(bd%10===0)process.stdout.write(`          ${bd}/${gameIds.length}\r`);await sleep(120);
   }
-  for(const n in espnLogs)espnLogs[n].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
   console.log(`          ✅ ${Object.keys(espn).length} players from ${gameIds.length} games`);
-  console.log(`          ✅ ${gkCreditCount} GK-game attributions for clean sheets/conceded`);
 
   // ═══════════════════════════════════════════════════════════════════════
   // SOURCE 2: ASA (xG, xA, Goals Added, xPass)
@@ -213,43 +207,74 @@ async function main() {
   let sofaImages = {}; // player name → image URL
   let sofaPlayerIds = {}; // player name → sofascore ID
   if (sofaSeasonId) {
-    console.log("  [Sofa] Fetching defensive + possession stats...");
-    const fields = "tackles,interceptions,aerialDuelsWon,successfulDribbles,accuratePasses,keyPasses,groundDuelsWon,blockedShots,totalDuelsWon,accurateFinalThirdPasses,ballRecovery,possessionWonAttThird,bigChancesCreated,totalPasses,accurateLongBalls,possessionLost,dispossessed";
-    let totalSofa = 0;
-    for (let page = 1; page <= 7; page++) {
-      try {
-        const offset = (page - 1) * 100;
-        const d = await sofaGet(`/unique-tournament/${MLS_TOURNAMENT}/season/${sofaSeasonId}/statistics?limit=100&offset=${offset}&order=-tackles&accumulation=total&fields=${fields}`);
-        if (!d.results?.length) break;
-        for (const r of d.results) {
-          const name = r.player?.name;
-          if (!name) continue;
-          sofaStats[name] = {
-            tackles: r.tackles || 0,
-            interceptions: r.interceptions || 0,
-            aerialsWon: r.aerialDuelsWon || 0,
-            dribbles: r.successfulDribbles || 0,
-            accuratePasses: r.accuratePasses || 0,
-            keyPasses: r.keyPasses || 0,
-            groundDuelsWon: r.groundDuelsWon || 0,
-            blockedShots: r.blockedShots || 0,
-            totalDuelsWon: r.totalDuelsWon || 0,
-            finalThirdPasses: r.accurateFinalThirdPasses || 0,
-            ballRecovery: r.ballRecovery || 0,
-            possWonAttThird: r.possessionWonAttThird || 0,
-            bigChancesCreated: r.bigChancesCreated || 0,
-            totalPasses: r.totalPasses || 0,
-            longBalls: r.accurateLongBalls || 0,
-            possessionLost: r.possessionLost || 0,
-            dispossessed: r.dispossessed || 0,
-          };
-          totalSofa++;
-        }
-        if (d.results.length < 100) break;
-        await sleep(1000); // Be respectful to Sofascore
-      } catch(e) { console.error(`          ⚠️ Page ${page}:`, e.message); break; }
+    console.log("  [Sofa] Fetching player stats (multiple sort orders)...");
+    const fields = "tackles,interceptions,aerialDuelsWon,successfulDribbles,accuratePasses,keyPasses,groundDuelsWon,blockedShots,totalDuelsWon,accurateFinalThirdPasses,ballRecovery,possessionWonAttThird,bigChancesCreated,totalPasses,accurateLongBalls,possessionLost,dispossessed,goals,assists,minutesPlayed";
+    // Multiple sort orders to capture different player types:
+    // -tackles: defenders, defensive mids
+    // -accuratePasses: midfielders, deep-lying playmakers
+    // -goals: forwards, attackers
+    // -keyPasses: creative attacking midfielders, wingers
+    // -successfulDribbles: dribblers (wingers, attacking mids)
+    const sortOrders = [
+      { order: "-tackles", label: "tackles" },
+      { order: "-accuratePasses", label: "passes" },
+      { order: "-goals", label: "goals" },
+      { order: "-keyPasses", label: "keyPasses" },
+      { order: "-successfulDribbles", label: "dribbles" },
+    ];
+    for (const so of sortOrders) {
+      let pageCount = 0;
+      for (let page = 1; page <= 5; page++) {
+        try {
+          const offset = (page - 1) * 100;
+          const d = await sofaGet(`/unique-tournament/${MLS_TOURNAMENT}/season/${sofaSeasonId}/statistics?limit=100&offset=${offset}&order=${so.order}&accumulation=total&fields=${fields}`);
+          if (!d.results?.length) break;
+          for (const r of d.results) {
+            const name = r.player?.name;
+            if (!name) continue;
+            // Don't overwrite existing data — first sort order wins for each player
+            // But merge in any non-zero values from subsequent fetches
+            if (!sofaStats[name]) {
+              sofaStats[name] = {
+                tackles: r.tackles || 0,
+                interceptions: r.interceptions || 0,
+                aerialsWon: r.aerialDuelsWon || 0,
+                dribbles: r.successfulDribbles || 0,
+                accuratePasses: r.accuratePasses || 0,
+                keyPasses: r.keyPasses || 0,
+                groundDuelsWon: r.groundDuelsWon || 0,
+                blockedShots: r.blockedShots || 0,
+                totalDuelsWon: r.totalDuelsWon || 0,
+                finalThirdPasses: r.accurateFinalThirdPasses || 0,
+                ballRecovery: r.ballRecovery || 0,
+                possWonAttThird: r.possessionWonAttThird || 0,
+                bigChancesCreated: r.bigChancesCreated || 0,
+                totalPasses: r.totalPasses || 0,
+                longBalls: r.accurateLongBalls || 0,
+                possessionLost: r.possessionLost || 0,
+                dispossessed: r.dispossessed || 0,
+              };
+            } else {
+              // Merge: take max value (some endpoints return more complete data)
+              const s = sofaStats[name];
+              s.tackles = Math.max(s.tackles, r.tackles || 0);
+              s.interceptions = Math.max(s.interceptions, r.interceptions || 0);
+              s.aerialsWon = Math.max(s.aerialsWon, r.aerialDuelsWon || 0);
+              s.dribbles = Math.max(s.dribbles, r.successfulDribbles || 0);
+              s.keyPasses = Math.max(s.keyPasses, r.keyPasses || 0);
+              s.bigChancesCreated = Math.max(s.bigChancesCreated, r.bigChancesCreated || 0);
+              s.finalThirdPasses = Math.max(s.finalThirdPasses, r.accurateFinalThirdPasses || 0);
+              s.ballRecovery = Math.max(s.ballRecovery, r.ballRecovery || 0);
+            }
+            pageCount++;
+          }
+          if (d.results.length < 100) break;
+          await sleep(800);
+        } catch(e) { console.error(`          ⚠️ ${so.label} page ${page}:`, e.message); break; }
+      }
+      process.stdout.write(`          ${so.label}: ${Object.keys(sofaStats).length} total\r`);
     }
-    console.log(`          ✅ ${totalSofa} players with defensive stats`);
+    console.log(`          ✅ ${Object.keys(sofaStats).length} players with stats (multi-sort merged)`);
 
     // Fetch market values from individual player profiles
     console.log("  [Sofa] Fetching market values (this takes a few minutes)...");
@@ -321,13 +346,31 @@ async function main() {
     return null;
   }
 
+  // ─── DATA PRESERVATION: load existing cache to fall back on if sources fail ───
+  let existingPlayers = {};
+  try {
+    const existingPath = path.join(outDir, "mls-cache.json");
+    if (fs.existsSync(existingPath)) {
+      const existing = JSON.parse(fs.readFileSync(existingPath, "utf8"));
+      for (const p of existing.players || []) existingPlayers[p.n] = p;
+      console.log(`\n  💾 Loaded ${Object.keys(existingPlayers).length} players from existing cache (for fallback)`);
+    }
+  } catch(e) { console.log(`  ⚠️  Could not load existing cache: ${e.message}`); }
+
+  const sofaWorking = Object.keys(sofaStats).length >= 50;
+  if (!sofaWorking) {
+    console.log(`  ⚠️  Sofascore returned only ${Object.keys(sofaStats).length} players — preserving existing values for tackles/dribbles/etc.`);
+  }
+
   let merged=0, partial=0, skipped=0;
   for (const rp of roster) {
-    const e = find(rp.name, espn) || {};
+    const e = espn[rp.name] || {};
     const xg = find(rp.name, asaXG) || {};
     const ga = find(rp.name, asaGA) || {};
     const pass = find(rp.name, asaPass) || {};
     const sofa = find(rp.name, sofaStats) || {};
+    const ex = existingPlayers[rp.name] || {};
+    const sofaOK = !!sofa.tackles || !!sofa.interceptions || !!sofa.dribbles || !!sofa.aerialsWon;
     const sal = find(rp.name, asaSalary) || {};
     const mvVal = find(rp.name, sofaValues) || 0;
     const sofaImg = typeof sofaImages !== 'undefined' ? (find(rp.name, sofaImages) || null) : null;
@@ -355,9 +398,6 @@ async function main() {
       fl: e.fouls || 0,
       yc: e.yc || 0,
       rc: e.rc || 0,
-      sv: e.saves || 0,
-      cs: e.cs || 0,
-      ga_conceded: e.ga_conceded || 0,
       // ASA
       xg: Math.round((xg.xg || 0) * 100) / 100,
       xa: Math.round((xg.xa || 0) * 100) / 100,
@@ -372,22 +412,21 @@ async function main() {
       gdf: Math.round((ga.interrupting || 0) * 100) / 100,
       gi: Math.round((ga.receiving || 0) * 100) / 100,
       totalGA: Math.round((ga.total || 0) * 100) / 100,
-      // Sofascore
-      tk: sofa.tackles || 0,
-      intc: sofa.interceptions || 0,
-      arl: sofa.aerialsWon || 0,
-      drb: sofa.dribbles || 0,
-      prs: sofa.ballRecovery || 0, // ball recoveries as defensive activity
-      // Derived / unavailable
-      sca: sofa.bigChancesCreated || 0, // using Big Chances Created as SCA proxy
-      prgp: sofa.finalThirdPasses || 0, // using Final Third Passes
-      prgc: sofa.dribbles || 0, // using successful dribbles as carry proxy
-      ftp: sofa.finalThirdPasses || 0,
-      mv: mvVal || 0, // Sofascore market value or ASA salary
+      // Sofascore (with fallback to existing cache if Sofa returns nothing)
+      tk: (sofa.tackles || (sofaOK ? 0 : ex.tk)) || 0,
+      intc: (sofa.interceptions || (sofaOK ? 0 : ex.intc)) || 0,
+      arl: (sofa.aerialsWon || (sofaOK ? 0 : ex.arl)) || 0,
+      drb: (sofa.dribbles || (sofaOK ? 0 : ex.drb)) || 0,
+      prs: (sofa.ballRecovery || (sofaOK ? 0 : ex.prs)) || 0,
+      // Derived / unavailable (with fallback)
+      sca: (sofa.bigChancesCreated || (sofaOK ? 0 : ex.sca)) || 0,
+      prgp: (sofa.finalThirdPasses || (sofaOK ? 0 : ex.prgp)) || 0,
+      prgc: (sofa.dribbles || (sofaOK ? 0 : ex.prgc)) || 0,
+      ftp: (sofa.finalThirdPasses || (sofaOK ? 0 : ex.ftp)) || 0,
+      mv: mvVal || ex.mv || 0,
       // Meta
       salary: sal.guaranteed || sal.base || 0,
       headshot: rp.headshot || sofaImg || null,
-      matchLog: espnLogs[rp.name] || [],
       _sofaId: sofaId || null,
       games: e.games || 0,
       _src: sources.join("+"),
@@ -476,12 +515,28 @@ async function main() {
 
   // ═══ WRITE ═════════════════════════════════════════════════════════════
   const outDir = path.join(__dirname, "data");
-  const publicOutDir = path.join(__dirname, "public", "data");
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-  if (!fs.existsSync(publicOutDir)) fs.mkdirSync(publicOutDir, { recursive: true });
   const json = JSON.stringify(output);
   fs.writeFileSync(path.join(outDir, "mls-cache.json"), json);
-  fs.writeFileSync(path.join(publicOutDir, "mls-cache.json"), json);
+
+  // Auto-backup if data quality is good
+  try {
+    const tk = output.players.filter(p => p.tk > 0).length;
+    const drb = output.players.filter(p => p.drb > 0).length;
+    const xg = output.players.filter(p => p.xg > 0).length;
+    if (tk >= 100 && drb >= 50 && xg >= 50) {
+      const backupDir = path.join(outDir, "backups");
+      if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+      const ts = new Date().toISOString().replace(/[:.]/g, "-").substring(0, 19);
+      fs.writeFileSync(path.join(backupDir, `mls-cache-${ts}.json`), json);
+      // Keep last 10 backups
+      const backups = fs.readdirSync(backupDir).filter(f => f.startsWith("mls-cache-")).sort().reverse();
+      for (const f of backups.slice(10)) fs.unlinkSync(path.join(backupDir, f));
+      console.log(`  💾 Backup saved (tk:${tk} drb:${drb} xg:${xg})`);
+    } else {
+      console.log(`  ⚠️  Skipped backup — data quality low (tk:${tk} drb:${drb} xg:${xg})`);
+    }
+  } catch(e) { console.log(`  Backup error: ${e.message}`); }
   const mb = (Buffer.byteLength(json) / 1048576).toFixed(2);
 
   // Count what we got
@@ -491,14 +546,13 @@ async function main() {
   const withMV = output.players.filter(p => p.mv > 0).length;
   const withSalary = output.players.filter(p => p.salary > 0).length;
   const withPass = output.players.filter(p => p.pp > 0).length;
-  const withML = output.players.filter(p => (p.matchLog?.length || 0) > 0).length;
 
   console.log(`\n  ═══════════════════════════════════════`);
   console.log(`  ✅ data/mls-cache.json (${mb} MB)`);
   console.log(`  ${output.standings.length} teams · ${output.players.length} players · ${gameIds.length} games`);
   console.log(`  Multi-source: ${merged} | Single-source: ${partial} | Skipped: ${skipped}`);
   console.log(`  ─────────────────────────────────────`);
-  console.log(`  ESPN     Goals/Assists/Shots/Fouls/Cards/Saves · Match logs: ${withML} players`);
+  console.log(`  ESPN     Goals/Assists/Shots/Fouls/Cards/Saves`);
   console.log(`  ASA      xG: ${withXG} · G+: ${withGA} · Pass%: ${withPass}`);
   console.log(`  Sofascore Tackles: ${withTkl} · Market Values: ${withMV} · Interceptions/Duels/Dribbles`);
   console.log(`  ─────────────────────────────────────`);
