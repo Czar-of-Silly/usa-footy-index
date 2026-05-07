@@ -136,7 +136,7 @@ function pct(a,v){const s=[...a].sort((x,y)=>x-y);return s.filter(x=>x<v).length
 // For stats where 0 commonly means "missing data" (offensive + carrying + advanced defensive)
 // Players with 0 get neutral 0.5 instead of being slammed with bottom percentile
 function pctSparse(a,v){if(!v)return 0.5;return pct(a,v);}
-console.log("UFI grading version: SPARSE-FIX-2026-05-06");
+console.log("UFI grading version: POSITION-RELATIVE-2026-05-06");
 window.__ufiDebug = (players) => {
   const messi = players.find(p => p.name && p.name.includes("Messi"));
   if (!messi) return;
@@ -149,14 +149,32 @@ window.__ufiDebug = (players) => {
   top5.forEach((p,i) => console.log(`  ${i+1}. ${p.overall} | ${p.name} (${p.position})`));
 };
 const pctFull=pct;
-function toG(p){return Math.round(42+Math.max(0,Math.min(1,p))*57);}
+function toG(p){
+  // Boost curve: elite production hits elite grades regardless of pool dynamics
+  // p^0.75 keeps middle reasonable but pushes top end up
+  // 50% → 75 | 70% → 84 | 85% → 92 | 95% → 96 | 99% → 99
+  const v=Math.max(0,Math.min(1,p));
+  return Math.round(42+Math.pow(v,0.75)*57);
+}
 function computeGrades(ps){
   if(!ps.length)return{};
   const v=(k)=>ps.map(p=>p[k]||0);
+  // League-wide pools (for stats where all-position comparison makes sense)
   const xg=v("xg90"),xa=v("xa90"),ga=v("tga"),df=v("dga"),pc=v("pc"),pg=v("pga");
   const kp=v("kp90"),sca=v("sca90"),ftp=v("ftp90");
   const prs=v("prs90"),intc=v("intc90"),arl=v("arl90");
   const drb=v("drb90"),prgc=v("prgc90");
+
+  // Position-specific pools — every player is ranked against peers at their position
+  // This means top forward, top defender, top GK all get top grades regardless of cross-position dilution
+  const fwds=ps.filter(p=>(p.pos||"").includes("orward"));
+  const dfs=ps.filter(p=>(p.pos||"").includes("efender"));
+  const mids=ps.filter(p=>!(p.pos||"").includes("orward")&&!(p.pos||"").includes("efender")&&!p.isGK);
+  const posPool=(p,key)=>{
+    if(p.isGK)return null;
+    const pool=(p.pos||"").includes("orward")?fwds:(p.pos||"").includes("efender")?dfs:mids;
+    return pool.map(x=>x[key]||0);
+  };
 
   // GK-specific pools (only GKs compared to GKs)
   const gks=ps.filter(p=>p.isGK);
@@ -171,35 +189,31 @@ function computeGrades(ps){
   const o={};
   ps.forEach(p=>{
     if(p.isGK&&gks.length>=3){
-      // ── GK GRADING ──
-      // Shot-Stopping (mapped to "attack"): saves/90 60%, clean sheet rate 40%
+      // ── GK GRADING (already position-relative) ──
       const shotStop=pct(gkSv,p.sv90)*.60+pct(gkCs,p.csRate)*.40;
-      // Distribution (mapped to "passing"): pass completion 50%, progressive passes/90 50%
       const dist=pctFull(gkPc,p.pc)*.50+pct(gkPrgp,p.prgp90)*.50;
-      // Command (mapped to "defense"): ball recovery/90 40%, aerials/90 40%, goals conceded/90 inverted 20%
-      const gcInv=gkGa.length>1?1-pct(gkGa,p.gaCon90):0.5; // lower GA = better
+      const gcInv=gkGa.length>1?1-pct(gkGa,p.gaCon90):0.5;
       const command=pct(gkPrs,p.prs90)*.40+pct(gkArl,p.arl90)*.40+gcInv*.20;
-      // Sweeping (mapped to "creativity"): aerials/90 50%, interceptions/90 50%
       const sweep=pct(gkArl,p.arl90)*.50+pct(v("intc90"),p.intc90)*.50;
-      // Handling (mapped to "carrying"): clean sheet rate 50%, saves/90 50%
       const handling=pct(gkCs,p.csRate)*.50+pct(gkSv,p.sv90)*.50;
-      // GK Overall: shot-stopping 35%, command 25%, distribution 20%, sweeping 10%, handling 10%
       const gkOv=shotStop*.35+command*.25+dist*.20+sweep*.10+handling*.10;
       o[p.id]={overall:toG(gkOv),attack:toG(shotStop),passing:toG(dist),defense:toG(command),creativity:toG(sweep),carrying:toG(handling),isGK:true};
     } else {
-      // ── OUTFIELD GRADING ──
-      // Sub-grades: universal, same formula for all positions
-      const att=pctSparse(xg,p.xg90)*.35+pctSparse(xa,p.xa90)*.15+pctSparse(kp,p.kp90)*.25+pctSparse(sca,p.sca90)*.25;
-      const pas=pctFull(pc,p.pc)*.30+pct(pg,p.pga)*.15+pctSparse(ftp,p.ftp90)*.30+pctSparse(kp,p.kp90)*.25;
-      const def=pct(df,p.dga)*.25+pctSparse(prs,p.prs90)*.25+pctSparse(intc,p.intc90)*.25+pctSparse(arl,p.arl90)*.25;
-      const cre=pctSparse(kp,p.kp90)*.35+pctSparse(sca,p.sca90)*.35+pctSparse(xa,p.xa90)*.30;
-      const car=pctSparse(drb,p.drb90)*.50+pctSparse(ftp,p.ftp90)*.30+pctSparse(prgc,p.prgc90)*.20;
-      const gaP=pct(ga,p.tga);
+      // ── OUTFIELD GRADING — POSITION-RELATIVE ──
+      // Each sub-grade ranks player against position peers (fwds vs fwds, etc.)
+      // This ensures top forwards/defenders/midfielders all hit elite grades
+      const pXg=posPool(p,"xg90"),pXa=posPool(p,"xa90"),pKp=posPool(p,"kp90"),pSca=posPool(p,"sca90");
+      const pPc=posPool(p,"pc"),pPga=posPool(p,"pga"),pFtp=posPool(p,"ftp90");
+      const pPrs=posPool(p,"prs90"),pIntc=posPool(p,"intc90"),pArl=posPool(p,"arl90"),pDga=posPool(p,"dga");
+      const pDrb=posPool(p,"drb90"),pPrgc=posPool(p,"prgc90"),pGa=posPool(p,"tga");
 
-      // Position-weighted Overall: what matters for each role
-      // FW: Attack 30%, Creativity 20%, G+ 25%, Carrying 10%, Passing 10%, Defense 5%
-      // MF: G+ 20%, Passing 20%, Creativity 20%, Attack 15%, Defense 15%, Carrying 10%
-      // DF: Defense 30%, G+ 25%, Passing 20%, Carrying 10%, Creativity 10%, Attack 5%
+      const att=pctSparse(pXg,p.xg90)*.35+pctSparse(pXa,p.xa90)*.15+pctSparse(pKp,p.kp90)*.25+pctSparse(pSca,p.sca90)*.25;
+      const pas=pctFull(pPc,p.pc)*.30+pct(pPga,p.pga)*.15+pctSparse(pFtp,p.ftp90)*.30+pctSparse(pKp,p.kp90)*.25;
+      const def=pct(pDga,p.dga)*.25+pctSparse(pPrs,p.prs90)*.25+pctSparse(pIntc,p.intc90)*.25+pctSparse(pArl,p.arl90)*.25;
+      const cre=pctSparse(pKp,p.kp90)*.35+pctSparse(pSca,p.sca90)*.35+pctSparse(pXa,p.xa90)*.30;
+      const car=pctSparse(pDrb,p.drb90)*.50+pctSparse(pFtp,p.ftp90)*.30+pctSparse(pPrgc,p.prgc90)*.20;
+      const gaP=pct(pGa,p.tga);
+
       const pos=p.pos||"Midfielder";
       const isFW=pos==="Forward"||pos==="FW";
       const isDF=pos==="Defender"||pos==="DF"||pos==="DEF";
@@ -209,7 +223,6 @@ function computeGrades(ps){
       }else if(isDF){
         ov=def*.30+gaP*.25+pas*.20+car*.10+cre*.10+att*.05;
       }else{
-        // Midfielder (default): balanced
         ov=gaP*.20+pas*.20+cre*.20+att*.15+def*.15+car*.10;
       }
       o[p.id]={overall:toG(ov),attack:toG(att),passing:toG(pas),defense:toG(def),creativity:toG(cre),carrying:toG(car)};
