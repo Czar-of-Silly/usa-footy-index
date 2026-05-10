@@ -594,7 +594,7 @@ async function main() {
   const issues = [];
   const totalPlayers = output.players.length;
   if (totalPlayers < 600) issues.push(`Only ${totalPlayers} players (expected 600+)`);
-  if (output.teams.length < 28) issues.push(`Only ${output.teams.length} teams (expected 30)`);
+  if (output.standings.length < 28) issues.push(`Only ${output.standings.length} teams (expected 30)`);
   if (withXG < 300) issues.push(`Only ${withXG} players with xG (expected 400+) — ASA may have failed`);
   if (withTkl < 200) issues.push(`Only ${withTkl} players with tackles (expected 400+) — Sofascore likely blocked`);
   if (withMV < 200) issues.push(`Only ${withMV} players with market values (expected 400+)`);
@@ -611,3 +611,5 @@ async function main() {
 }
 
 main().catch(e => { console.error("\n  ❌ Fatal:", e.message); process.exit(1); });
+
+
