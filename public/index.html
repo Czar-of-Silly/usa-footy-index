@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-05-16T20:27:44 -->
+<!-- built: 2026-05-16T20:45:16 -->
 </head>
 <body>
   <div id="root"></div>
@@ -377,6 +377,12 @@ function computeGrades(ps) {
   const gkSvMlsPool = gksWithMls.map(p => p.svMls90 || 0);
   const gkMlsPrsPool = gksWithMls.map(p => p.mlsPrs90 || 0);
   const gkDpasPool = gksWithMls.map(p => p.dpas90 || 0);
+  const gkPassPerfPool = gksWithMls.map(p => p.passPerf90 || 0);
+  const gkDpasPctPool = gksWithMls.map(p => p.dpasPct || 0);
+  const gkPassesPctPool = gksWithMls.map(p => p.passesPctMls || 0);
+  const gkClaimPool = gksWithMls.map(p => p.claim90 || 0);
+  const gkSweepMlsPool = gksWithMls.map(p => p.sweep90 || 0);
+  const gkAerRatePool = gksWithMls.map(p => p.aerWonRate || 0);
 
   // GK composites collected first (pass 1), then rank-rescaled (pass 2)
   const gkComposites = [];
@@ -389,12 +395,12 @@ function computeGrades(ps) {
       // Shot-Stopping: Save Quality is the gold-standard GK metric (PFF/FotMob use it)
       const shotStop = hasGkEff ? pct(gkEffPool, p.gkEff90) * .50 + pct(gkSvMlsPool, p.svMls90) * .30 + pct(gkCs, p.csRate) * .20 : pct(gkSv, p.sv90) * .60 + pct(gkCs, p.csRate) * .40;
       // Distribution (mapped to "passing"): pass completion 50%, progressive passes/90 50%
-      const dist = hasGkEff ? pct(gkPc, p.pc) * .40 + pct(gkDpasPool, p.dpas90) * .60 : pct(gkPc, p.pc) * .50 + pct(gkPrgp, p.prgp90) * .50;
+      const dist = hasGkEff ? pct(gkPassPerfPool, p.passPerf90) * .50 + pct(gkPassesPctPool, p.passesPctMls) * .25 + pct(gkDpasPctPool, p.dpasPct) * .25 : pct(gkPc, p.pc) * .50 + pct(gkPrgp, p.prgp90) * .50;
       // Command (mapped to "defense"): ball recovery/90 40%, aerials/90 40%, goals conceded/90 inverted 20%
       const gcInv = gkGa.length > 1 ? 1 - pct(gkGa, p.gaCon90) : 0.5; // lower GA = better
-      const command = hasGkEff ? pct(gkMlsPrsPool, p.mlsPrs90) * .50 + pct(gkArl, p.arl90) * .30 + gcInv * .20 : pct(gkPrs, p.prs90) * .40 + pct(gkArl, p.arl90) * .40 + gcInv * .20;
+      const command = hasGkEff ? pct(gkClaimPool, p.claim90) * .50 + pct(gkAerRatePool, p.aerWonRate) * .30 + gcInv * .20 : pct(gkPrs, p.prs90) * .40 + pct(gkArl, p.arl90) * .40 + gcInv * .20;
       // Sweeping (mapped to "creativity"): aerials/90 50%, interceptions/90 50%
-      const sweep = pct(gkArl, p.arl90) * .50 + pct(v("intc90"), p.intc90) * .50;
+      const sweep = hasGkEff ? pct(gkSweepMlsPool, p.sweep90) * .70 + gcInv * .30 : pct(gkArl, p.arl90) * .50 + pct(v("intc90"), p.intc90) * .50;
       // Handling (mapped to "carrying"): clean sheet rate 50%, saves/90 50%
       const handling = hasGkEff ? pct(gkCs, p.csRate) * .40 + pct(gkSvMlsPool, p.svMls90) * .60 : pct(gkCs, p.csRate) * .50 + pct(gkSv, p.sv90) * .50;
       // GK Overall: shot-stopping 35%, command 25%, distribution 20%, sweeping 10%, handling 10%
@@ -3414,6 +3420,12 @@ function MLSAnalytics() {
             svMls90: (r.gkSavesMLS || 0) / p90,
             mlsPrs90: (r.mlsPressures || 0) / p90,
             dpas90: (r.mlsDifficultPasses || 0) / p90,
+            passPerf90: games > 0 ? (r.mlsPassingPerformance || 0) / games : 0,
+            dpasPct: r.mlsDifficultPassesPct || 0,
+            passesPctMls: r.mlsPassesPct || r.pc || 0,
+            claim90: ((r.mlsIntCorner || 0) + (r.mlsIntHeld || 0)) / p90,
+            sweep90: ((r.mlsIntCross || 0) + (r.mlsIntFisted || 0)) / p90,
+            aerWonRate: r.mlsAerialsTotal > 0 ? (r.mlsAerialsWon || 0) / r.mlsAerialsTotal : 0,
             raw: r
           };
         });
