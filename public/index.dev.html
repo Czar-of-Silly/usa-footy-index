@@ -151,6 +151,10 @@ function computeGrades(ps){
   const gkPrs=gks.map(p=>p.prs90||0);
   const gkArl=gks.map(p=>p.arl90||0);
   const gkPrgp=gks.map(p=>p.prgp90||0);
+  // MLS-based GK pools — only includes GKs with real MLS data so percentiles aren't polluted
+  const gksWithMls=gks.filter(p=>(p.gkEff90||0)!==0);
+  const gkEffPool=gksWithMls.map(p=>p.gkEff90||0);
+  const gkSvMlsPool=gksWithMls.map(p=>p.svMls90||0);
 
   // GK composites collected first (pass 1), then rank-rescaled (pass 2)
   const gkComposites=[];
@@ -160,7 +164,11 @@ function computeGrades(ps){
     if(p.isGK&&gks.length>=3){
       // ── GK GRADING ──
       // Shot-Stopping (mapped to "attack"): saves/90 60%, clean sheet rate 40%
-      const shotStop=pct(gkSv,p.sv90)*.60+pct(gkCs,p.csRate)*.40;
+      const hasGkEff=(p.gkEff90||0)!==0&&gksWithMls.length>=3;
+      // Shot-Stopping: Save Quality is the gold-standard GK metric (PFF/FotMob use it)
+      const shotStop=hasGkEff
+        ?pct(gkEffPool,p.gkEff90)*.50+pct(gkSvMlsPool,p.svMls90)*.30+pct(gkCs,p.csRate)*.20
+        :pct(gkSv,p.sv90)*.60+pct(gkCs,p.csRate)*.40;
       // Distribution (mapped to "passing"): pass completion 50%, progressive passes/90 50%
       const dist=pct(gkPc,p.pc)*.50+pct(gkPrgp,p.prgp90)*.50;
       // Command (mapped to "defense"): ball recovery/90 40%, aerials/90 40%, goals conceded/90 inverted 20%
@@ -169,7 +177,9 @@ function computeGrades(ps){
       // Sweeping (mapped to "creativity"): aerials/90 50%, interceptions/90 50%
       const sweep=pct(gkArl,p.arl90)*.50+pct(v("intc90"),p.intc90)*.50;
       // Handling (mapped to "carrying"): clean sheet rate 50%, saves/90 50%
-      const handling=pct(gkCs,p.csRate)*.50+pct(gkSv,p.sv90)*.50;
+      const handling=hasGkEff
+        ?pct(gkCs,p.csRate)*.40+pct(gkSvMlsPool,p.svMls90)*.60
+        :pct(gkCs,p.csRate)*.50+pct(gkSv,p.sv90)*.50;
       // GK Overall: shot-stopping 35%, command 25%, distribution 20%, sweeping 10%, handling 10%
       const gkOv=shotStop*.35+command*.25+dist*.20+sweep*.10+handling*.10;
       gkComposites.push({id:p.id,ov:gkOv,shotStop,dist,command,sweep,handling});
@@ -919,7 +929,7 @@ function MLSAnalytics(){
       setLoadProgress(85);
       const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,
         // GK-specific
-        isGK:r.p==="GK",pos:r.p,sv90:(r.sv||0)/p90,csRate:games>0?(r.cs||0)/games:0,gaCon90:games>0?(r.gaCon||0)/p90:0,
+        isGK:r.p==="GK",pos:r.p,sv90:(r.sv||0)/p90,csRate:games>0?(r.cs||0)/games:0,gaCon90:games>0?(r.gaCon||0)/p90:0,gkEff90:games>0?(r.gkEfficiency||0)/games:0,svMls90:(r.gkSavesMLS||0)/p90,
         raw:r};});
       const grades=computeGrades(inter);
       setLoadProgress(95);
