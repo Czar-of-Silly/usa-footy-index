@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-05-16T20:22:42 -->
+<!-- built: 2026-05-16T20:27:44 -->
 </head>
 <body>
   <div id="root"></div>
@@ -375,6 +375,8 @@ function computeGrades(ps) {
   const gksWithMls = gks.filter(p => (p.gkEff90 || 0) !== 0);
   const gkEffPool = gksWithMls.map(p => p.gkEff90 || 0);
   const gkSvMlsPool = gksWithMls.map(p => p.svMls90 || 0);
+  const gkMlsPrsPool = gksWithMls.map(p => p.mlsPrs90 || 0);
+  const gkDpasPool = gksWithMls.map(p => p.dpas90 || 0);
 
   // GK composites collected first (pass 1), then rank-rescaled (pass 2)
   const gkComposites = [];
@@ -387,10 +389,10 @@ function computeGrades(ps) {
       // Shot-Stopping: Save Quality is the gold-standard GK metric (PFF/FotMob use it)
       const shotStop = hasGkEff ? pct(gkEffPool, p.gkEff90) * .50 + pct(gkSvMlsPool, p.svMls90) * .30 + pct(gkCs, p.csRate) * .20 : pct(gkSv, p.sv90) * .60 + pct(gkCs, p.csRate) * .40;
       // Distribution (mapped to "passing"): pass completion 50%, progressive passes/90 50%
-      const dist = pct(gkPc, p.pc) * .50 + pct(gkPrgp, p.prgp90) * .50;
+      const dist = hasGkEff ? pct(gkPc, p.pc) * .40 + pct(gkDpasPool, p.dpas90) * .60 : pct(gkPc, p.pc) * .50 + pct(gkPrgp, p.prgp90) * .50;
       // Command (mapped to "defense"): ball recovery/90 40%, aerials/90 40%, goals conceded/90 inverted 20%
       const gcInv = gkGa.length > 1 ? 1 - pct(gkGa, p.gaCon90) : 0.5; // lower GA = better
-      const command = pct(gkPrs, p.prs90) * .40 + pct(gkArl, p.arl90) * .40 + gcInv * .20;
+      const command = hasGkEff ? pct(gkMlsPrsPool, p.mlsPrs90) * .50 + pct(gkArl, p.arl90) * .30 + gcInv * .20 : pct(gkPrs, p.prs90) * .40 + pct(gkArl, p.arl90) * .40 + gcInv * .20;
       // Sweeping (mapped to "creativity"): aerials/90 50%, interceptions/90 50%
       const sweep = pct(gkArl, p.arl90) * .50 + pct(v("intc90"), p.intc90) * .50;
       // Handling (mapped to "carrying"): clean sheet rate 50%, saves/90 50%
@@ -3410,6 +3412,8 @@ function MLSAnalytics() {
             gaCon90: games > 0 ? (r.gaCon || 0) / p90 : 0,
             gkEff90: games > 0 ? (r.gkEfficiency || 0) / games : 0,
             svMls90: (r.gkSavesMLS || 0) / p90,
+            mlsPrs90: (r.mlsPressures || 0) / p90,
+            dpas90: (r.mlsDifficultPasses || 0) / p90,
             raw: r
           };
         });
