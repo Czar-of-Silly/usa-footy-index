@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-05-16T19:46:05 -->
+<!-- built: 2026-05-16T19:53:20 -->
 </head>
 <body>
   <div id="root"></div>
@@ -371,6 +371,9 @@ function computeGrades(ps) {
   const gkPrs = gks.map(p => p.prs90 || 0);
   const gkArl = gks.map(p => p.arl90 || 0);
   const gkPrgp = gks.map(p => p.prgp90 || 0);
+
+  // GK composites collected first (pass 1), then rank-rescaled (pass 2)
+  const gkComposites = [];
   const o = {};
   ps.forEach(p => {
     if (p.isGK && gks.length >= 3) {
@@ -388,15 +391,15 @@ function computeGrades(ps) {
       const handling = pct(gkCs, p.csRate) * .50 + pct(gkSv, p.sv90) * .50;
       // GK Overall: shot-stopping 35%, command 25%, distribution 20%, sweeping 10%, handling 10%
       const gkOv = shotStop * .35 + command * .25 + dist * .20 + sweep * .10 + handling * .10;
-      o[p.id] = {
-        overall: toG(gkOv),
-        attack: toG(shotStop),
-        passing: toG(dist),
-        defense: toG(command),
-        creativity: toG(sweep),
-        carrying: toG(handling),
-        isGK: true
-      };
+      gkComposites.push({
+        id: p.id,
+        ov: gkOv,
+        shotStop,
+        dist,
+        command,
+        sweep,
+        handling
+      });
     } else {
       // ── OUTFIELD GRADING ──
       // Sub-grades: universal, same formula for all positions
@@ -433,6 +436,39 @@ function computeGrades(ps) {
       };
     }
   });
+
+  // ── GK PASS 2: rank-rescale ──
+  // Convert each GK's composite + sub-grades to rank within GK pool, then
+  // map rank percentile to grade scale targeting top=95, median=75, bottom=40.
+  // Math: 40 + pow(rankPct, 0.6) * 55
+  if (gkComposites.length >= 3) {
+    const rankToGrade = rankPct => Math.round(40 + Math.pow(Math.max(0, Math.min(1, rankPct)), 0.6) * 55);
+    const buildRanks = key => {
+      const sorted = [...gkComposites].sort((a, b) => a[key] - b[key]);
+      const ranks = {};
+      sorted.forEach((g, idx) => {
+        ranks[g.id] = sorted.length > 1 ? idx / (sorted.length - 1) : 1;
+      });
+      return ranks;
+    };
+    const ovRanks = buildRanks('ov');
+    const ssRanks = buildRanks('shotStop');
+    const distRanks = buildRanks('dist');
+    const cmdRanks = buildRanks('command');
+    const swpRanks = buildRanks('sweep');
+    const hndRanks = buildRanks('handling');
+    for (const g of gkComposites) {
+      o[g.id] = {
+        overall: rankToGrade(ovRanks[g.id]),
+        attack: rankToGrade(ssRanks[g.id]),
+        passing: rankToGrade(distRanks[g.id]),
+        defense: rankToGrade(cmdRanks[g.id]),
+        creativity: rankToGrade(swpRanks[g.id]),
+        carrying: rankToGrade(hndRanks[g.id]),
+        isGK: true
+      };
+    }
+  }
   return o;
 }
 
