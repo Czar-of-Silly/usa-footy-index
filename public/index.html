@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-05-19T22:26:53 -->
+<!-- built: 2026-05-19T22:31:27 -->
 </head>
 <body>
   <div id="root"></div>
@@ -530,9 +530,9 @@ function computeGrades(ps) {
   // ── GK PASS 2: rank-rescale ──
   // Convert each GK's composite + sub-grades to rank within GK pool, then
   // map rank percentile to grade scale targeting top=95, median=75, bottom=40.
-  // Math: 40 + pow(rankPct, 0.6) * 55
+  // Math: 40 + pow(rankPct, 1.5) * 59 — ceiling 99
   if (gkComposites.length >= 3) {
-    const rankToGrade = rankPct => Math.round(40 + Math.pow(Math.max(0, Math.min(1, rankPct)), 0.6) * 55);
+    const rankToGrade = rankPct => Math.round(40 + Math.pow(Math.max(0, Math.min(1, rankPct)), 1.5) * 59);
     const buildRanks = key => {
       const sorted = [...gkComposites].sort((a, b) => a[key] - b[key]);
       const ranks = {};
@@ -561,7 +561,7 @@ function computeGrades(ps) {
   }
 
   // ── OUTFIELD PASS 2: rank-rescale within each position ──
-  const rankToGradeOf = rp => Math.round(40 + Math.pow(Math.max(0, Math.min(1, rp)), 0.6) * 55);
+  const rankToGradeOf = rp => Math.round(40 + Math.pow(Math.max(0, Math.min(1, rp)), 1.5) * 59);
   const rescalePosition = composites => {
     if (composites.length < 3) return;
     const buildRanks = key => {
