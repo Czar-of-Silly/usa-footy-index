@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-05-19T23:04:09 -->
+<!-- built: 2026-05-19T23:17:59 -->
 </head>
 <body>
   <div id="root"></div>
@@ -3786,6 +3786,17 @@ function MLSAnalytics() {
     const n = tp.length || 1;
     const sum = k => tp.reduce((s, p) => s + (parseFloat(p[k]) || 0), 0);
     const avg = k => Math.round(sum(k) / n);
+    const wAvg = k => {
+      let ws = 0,
+        wt = 0;
+      for (const p of tp) {
+        const w = parseFloat(p.mins) || 0;
+        if (w <= 0) continue;
+        ws += (parseFloat(p[k]) || 0) * w;
+        wt += w;
+      }
+      return wt > 0 ? Math.round(ws / wt) : 55;
+    };
     return {
       ...t,
       overall: tp.length ? avg("overall") : 55,
