@@ -1102,7 +1102,7 @@ function MLSAnalytics(){
     const tp=players.filter(p=>p.team===t.abbr);const n=tp.length||1;
     const sum=(k)=>tp.reduce((s,p)=>s+(parseFloat(p[k])||0),0);
     const avg=(k)=>Math.round(sum(k)/n);const wAvg=(k)=>{let ws=0,wt=0;for(const p of tp){const w=parseFloat(p.mins)||0;if(w<=0)continue;ws+=(parseFloat(p[k])||0)*w;wt+=w;}return wt>0?Math.round(ws/wt):55;};
-    return{...t,overall:tp.length?avg("overall"):55,attack:tp.length?avg("attack"):55,passing:tp.length?avg("passing"):55,defense:tp.length?avg("defense"):55,creativity:tp.length?avg("creativity"):55,carrying:tp.length?avg("carrying"):55,squadValue:sum("marketValue"),count:tp.length,totalGoals:sum("goals"),totalAssists:sum("assists"),avgAge:tp.length?(sum("age")/n).toFixed(1):null,totalTackles:sum("tackles"),topScorer:tp.length?[...tp].sort((a,b)=>b.goals-a.goals)[0]:null,topRated:tp.length?[...tp].sort((a,b)=>b.overall-a.overall)[0]:null};
+    return{...t,overall:tp.length?wAvg("overall"):55,attack:tp.length?wAvg("attack"):55,passing:tp.length?wAvg("passing"):55,defense:tp.length?wAvg("defense"):55,creativity:tp.length?wAvg("creativity"):55,carrying:tp.length?wAvg("carrying"):55,squadValue:sum("marketValue"),count:tp.length,totalGoals:sum("goals"),totalAssists:sum("assists"),avgAge:tp.length?(sum("age")/n).toFixed(1):null,totalTackles:sum("tackles"),topScorer:tp.length?[...tp].sort((a,b)=>b.goals-a.goals)[0]:null,topRated:tp.length?[...tp].sort((a,b)=>b.overall-a.overall)[0]:null};
   }).sort((a,b)=>b.overall-a.overall),[players]);
   const teamOpts=useMemo(()=>[["All","All Teams"],...MLS_TEAMS.map(t=>[t.abbr,t.name])],[]);
   const POS={All:null,Forward:["Forward","FW"],Midfielder:["Midfielder","MF"],Defender:["Defender","DF","DEF"],GK:["GK","Goalkeeper"]};

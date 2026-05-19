@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-05-19T23:22:54 -->
+<!-- built: 2026-05-19T23:23:56 -->
 </head>
 <body>
   <div id="root"></div>
@@ -3799,12 +3799,12 @@ function MLSAnalytics() {
     };
     return {
       ...t,
-      overall: tp.length ? avg("overall") : 55,
-      attack: tp.length ? avg("attack") : 55,
-      passing: tp.length ? avg("passing") : 55,
-      defense: tp.length ? avg("defense") : 55,
-      creativity: tp.length ? avg("creativity") : 55,
-      carrying: tp.length ? avg("carrying") : 55,
+      overall: tp.length ? wAvg("overall") : 55,
+      attack: tp.length ? wAvg("attack") : 55,
+      passing: tp.length ? wAvg("passing") : 55,
+      defense: tp.length ? wAvg("defense") : 55,
+      creativity: tp.length ? wAvg("creativity") : 55,
+      carrying: tp.length ? wAvg("carrying") : 55,
       squadValue: sum("marketValue"),
       count: tp.length,
       totalGoals: sum("goals"),
