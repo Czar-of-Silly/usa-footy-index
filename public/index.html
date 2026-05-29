@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-05-19T23:23:56 -->
+<!-- built: 2026-05-29T00:11:30 -->
 </head>
 <body>
   <div id="root"></div>
@@ -384,64 +384,29 @@ function computeGrades(ps) {
   const gkSweepMlsPool = gksWithMls.map(p => p.sweep90 || 0);
   const gkAerRatePool = gksWithMls.map(p => p.aerWonRate || 0);
 
-  // ── Per-position outfielder pools (so percentiles are position-relative) ──
-  const isFwP = p => !p.isGK && (p.pos === "Forward" || p.pos === "FW");
-  const isDfP = p => !p.isGK && (p.pos === "Defender" || p.pos === "DF" || p.pos === "DEF");
-  const isMfP = p => !p.isGK && !isFwP(p) && !isDfP(p);
-  const fws = ps.filter(isFwP),
-    mfs = ps.filter(isMfP),
-    dfs = ps.filter(isDfP);
+  // ── [OPT1] League-wide OUTFIELD pools (universal sub-grades; GKs excluded) ──
+  // Sub-grades rank against ALL outfielders, so "90 Defense" = elite defender
+  // league-wide. Overall stays position-weighted + position-rescaled (pass 2).
+  const ofs = ps.filter(p => !p.isGK);
   const mk = (arr, k) => arr.map(p => p[k] || 0);
-  // FW pools
-  const fwXg = mk(fws, "xg90"),
-    fwXa = mk(fws, "xa90"),
-    fwGa = mk(fws, "tga"),
-    fwDf = mk(fws, "dga"),
-    fwPc = mk(fws, "pc"),
-    fwPg = mk(fws, "pga"),
-    fwKp = mk(fws, "kp90"),
-    fwSca = mk(fws, "sca90"),
-    fwFtp = mk(fws, "ftp90"),
-    fwPrs = mk(fws, "prs90"),
-    fwIntc = mk(fws, "intc90"),
-    fwArl = mk(fws, "arl90"),
-    fwDrb = mk(fws, "drb90"),
-    fwPrgc = mk(fws, "prgc90");
-  // MF pools
-  const mfXg = mk(mfs, "xg90"),
-    mfXa = mk(mfs, "xa90"),
-    mfGa = mk(mfs, "tga"),
-    mfDf = mk(mfs, "dga"),
-    mfPc = mk(mfs, "pc"),
-    mfPg = mk(mfs, "pga"),
-    mfKp = mk(mfs, "kp90"),
-    mfSca = mk(mfs, "sca90"),
-    mfFtp = mk(mfs, "ftp90"),
-    mfPrs = mk(mfs, "prs90"),
-    mfIntc = mk(mfs, "intc90"),
-    mfArl = mk(mfs, "arl90"),
-    mfDrb = mk(mfs, "drb90"),
-    mfPrgc = mk(mfs, "prgc90");
-  // DF pools
-  const dfXg = mk(dfs, "xg90"),
-    dfXa = mk(dfs, "xa90"),
-    dfGa = mk(dfs, "tga"),
-    dfDf = mk(dfs, "dga"),
-    dfPc = mk(dfs, "pc"),
-    dfPg = mk(dfs, "pga"),
-    dfKp = mk(dfs, "kp90"),
-    dfSca = mk(dfs, "sca90"),
-    dfFtp = mk(dfs, "ftp90"),
-    dfPrs = mk(dfs, "prs90"),
-    dfIntc = mk(dfs, "intc90"),
-    dfArl = mk(dfs, "arl90"),
-    dfDrb = mk(dfs, "drb90"),
-    dfPrgc = mk(dfs, "prgc90");
+  const ofXg = mk(ofs, "xg90"),
+    ofXa = mk(ofs, "xa90"),
+    ofGa = mk(ofs, "tga"),
+    ofDf = mk(ofs, "dga"),
+    ofPc = mk(ofs, "pc"),
+    ofPg = mk(ofs, "pga"),
+    ofKp = mk(ofs, "kp90"),
+    ofSca = mk(ofs, "sca90"),
+    ofFtp = mk(ofs, "ftp90"),
+    ofPrs = mk(ofs, "prs90"),
+    ofIntc = mk(ofs, "intc90"),
+    ofArl = mk(ofs, "arl90"),
+    ofDrb = mk(ofs, "drb90"),
+    ofPrgc = mk(ofs, "prgc90");
 
-  // Outfielder composite collectors (collected pass 1, rank-rescaled pass 2)
-  const fwComposites = [],
-    mfComposites = [],
-    dfComposites = [];
+  // Single outfield composite collector (sub-grades ranked league-wide pass 2;
+  // overall ranked within position pass 2)
+  const ofComposites = [];
 
   // GK composites collected first (pass 1), then rank-rescaled (pass 2)
   const gkComposites = [];
@@ -475,34 +440,19 @@ function computeGrades(ps) {
       });
     } else {
       // ── OUTFIELD GRADING ──
-      // Position determines BOTH the percentile pools used AND the Overall weighting.
+      // [OPT1] Sub-grades use LEAGUE-WIDE outfield pools (universal). Position
+      // only drives the Overall weighting + the Overall rank pool (pass 2).
       const pos = p.pos || "Midfielder";
       const isFW = pos === "Forward" || pos === "FW";
       const isDF = pos === "Defender" || pos === "DF" || pos === "DEF";
 
-      // Pick the correct position pool (matches what we filtered above)
-      const pXg = isFW ? fwXg : isDF ? dfXg : mfXg;
-      const pXa = isFW ? fwXa : isDF ? dfXa : mfXa;
-      const pGa = isFW ? fwGa : isDF ? dfGa : mfGa;
-      const pDf = isFW ? fwDf : isDF ? dfDf : mfDf;
-      const pPc = isFW ? fwPc : isDF ? dfPc : mfPc;
-      const pPg = isFW ? fwPg : isDF ? dfPg : mfPg;
-      const pKp = isFW ? fwKp : isDF ? dfKp : mfKp;
-      const pSca = isFW ? fwSca : isDF ? dfSca : mfSca;
-      const pFtp = isFW ? fwFtp : isDF ? dfFtp : mfFtp;
-      const pPrs = isFW ? fwPrs : isDF ? dfPrs : mfPrs;
-      const pIntc = isFW ? fwIntc : isDF ? dfIntc : mfIntc;
-      const pArl = isFW ? fwArl : isDF ? dfArl : mfArl;
-      const pDrb = isFW ? fwDrb : isDF ? dfDrb : mfDrb;
-      const pPrgc = isFW ? fwPrgc : isDF ? dfPrgc : mfPrgc;
-
-      // Sub-grades: same formulas, but now position-relative
-      const att = pct(pXg, p.xg90) * .35 + pct(pXa, p.xa90) * .15 + pct(pKp, p.kp90) * .25 + pct(pSca, p.sca90) * .25;
-      const pas = pct(pPc, p.pc) * .30 + pct(pPg, p.pga) * .15 + pct(pFtp, p.ftp90) * .30 + pct(pKp, p.kp90) * .25;
-      const def = pct(pDf, p.dga) * .25 + pct(pPrs, p.prs90) * .25 + pct(pIntc, p.intc90) * .25 + pct(pArl, p.arl90) * .25;
-      const cre = pct(pKp, p.kp90) * .35 + pct(pSca, p.sca90) * .35 + pct(pXa, p.xa90) * .30;
-      const car = pct(pDrb, p.drb90) * .50 + pct(pFtp, p.ftp90) * .30 + pct(pPrgc, p.prgc90) * .20;
-      const gaP = pct(pGa, p.tga);
+      // Sub-grades: universal (ranked against all outfielders)
+      const att = pct(ofXg, p.xg90) * .35 + pct(ofXa, p.xa90) * .15 + pct(ofKp, p.kp90) * .25 + pct(ofSca, p.sca90) * .25;
+      const pas = pct(ofPc, p.pc) * .30 + pct(ofPg, p.pga) * .15 + pct(ofFtp, p.ftp90) * .30 + pct(ofKp, p.kp90) * .25;
+      const def = pct(ofDf, p.dga) * .25 + pct(ofPrs, p.prs90) * .25 + pct(ofIntc, p.intc90) * .25 + pct(ofArl, p.arl90) * .25;
+      const cre = pct(ofKp, p.kp90) * .35 + pct(ofSca, p.sca90) * .35 + pct(ofXa, p.xa90) * .30;
+      const car = pct(ofDrb, p.drb90) * .50 + pct(ofFtp, p.ftp90) * .30 + pct(ofPrgc, p.prgc90) * .20;
+      const gaP = pct(ofGa, p.tga);
 
       // Position-weighted Overall (weights unchanged)
       let ov;
@@ -513,17 +463,17 @@ function computeGrades(ps) {
       } else {
         ov = gaP * .20 + pas * .20 + cre * .20 + att * .15 + def * .15 + car * .10;
       }
-      // Collect for position rank-rescale (pass 2). Don't write to o[] yet.
-      const rec = {
+      // Collect once: sub-grades ranked league-wide, Overall ranked within position (pass 2).
+      ofComposites.push({
         id: p.id,
+        pos: isFW ? "FW" : isDF ? "DF" : "MF",
         ov,
         att,
         pas,
         def,
         cre,
         car
-      };
-      if (isFW) fwComposites.push(rec);else if (isDF) dfComposites.push(rec);else mfComposites.push(rec);
+      });
     }
   });
 
@@ -532,7 +482,7 @@ function computeGrades(ps) {
   // map rank percentile to grade scale targeting top=95, median=75, bottom=40.
   // Math: 40 + pow(rankPct, 1.5) * 59 — ceiling 99
   if (gkComposites.length >= 3) {
-    const rankToGrade = rankPct => Math.round(40 + Math.pow(Math.max(0, Math.min(1, rankPct)), 1.5) * 59);
+    const rankToGrade = rankPct => Math.round(42 + Math.pow(Math.max(0, Math.min(1, rankPct)), 1.5) * 57);
     const buildRanks = key => {
       const sorted = [...gkComposites].sort((a, b) => a[key] - b[key]);
       const ranks = {};
@@ -560,27 +510,37 @@ function computeGrades(ps) {
     }
   }
 
-  // ── OUTFIELD PASS 2: rank-rescale within each position ──
-  const rankToGradeOf = rp => Math.round(40 + Math.pow(Math.max(0, Math.min(1, rp)), 1.5) * 59);
-  const rescalePosition = composites => {
-    if (composites.length < 3) return;
-    const buildRanks = key => {
-      const sorted = [...composites].sort((a, b) => a[key] - b[key]);
+  // ── OUTFIELD PASS 2 [OPT1] ──
+  // Sub-grades ranked LEAGUE-WIDE (all outfielders); Overall ranked WITHIN
+  // position (so each position can top out near 99).
+  const rankToGradeOf = rp => Math.round(42 + Math.pow(Math.max(0, Math.min(1, rp)), 1.5) * 57);
+  if (ofComposites.length >= 3) {
+    const buildRanks = (arr, key) => {
+      const sorted = [...arr].sort((a, b) => a[key] - b[key]);
       const ranks = {};
       sorted.forEach((c, idx) => {
         ranks[c.id] = sorted.length > 1 ? idx / (sorted.length - 1) : 1;
       });
       return ranks;
     };
-    const ovR = buildRanks('ov'),
-      attR = buildRanks('att'),
-      pasR = buildRanks('pas'),
-      defR = buildRanks('def'),
-      creR = buildRanks('cre'),
-      carR = buildRanks('car');
-    for (const c of composites) {
+    // Sub-grades: league-wide ranks across every outfielder
+    const attR = buildRanks(ofComposites, 'att'),
+      pasR = buildRanks(ofComposites, 'pas'),
+      defR = buildRanks(ofComposites, 'def'),
+      creR = buildRanks(ofComposites, 'cre'),
+      carR = buildRanks(ofComposites, 'car');
+    // Overall: ranked within each position group
+    const ovR = {};
+    for (const grp of ["FW", "MF", "DF"]) {
+      const sub = ofComposites.filter(c => c.pos === grp);
+      if (sub.length >= 3) {
+        const r = buildRanks(sub, 'ov');
+        for (const id in r) ovR[id] = r[id];
+      } else for (const c of sub) ovR[c.id] = 0.5;
+    }
+    for (const c of ofComposites) {
       o[c.id] = {
-        overall: rankToGradeOf(ovR[c.id]),
+        overall: rankToGradeOf(ovR[c.id] != null ? ovR[c.id] : 0.5),
         attack: rankToGradeOf(attR[c.id]),
         passing: rankToGradeOf(pasR[c.id]),
         defense: rankToGradeOf(defR[c.id]),
@@ -588,10 +548,7 @@ function computeGrades(ps) {
         carrying: rankToGradeOf(carR[c.id])
       };
     }
-  };
-  rescalePosition(fwComposites);
-  rescalePosition(mfComposites);
-  rescalePosition(dfComposites);
+  }
   return o;
 }
 
@@ -3538,7 +3495,7 @@ function MLSAnalytics() {
             raw: r
           };
         });
-        const grades = computeGrades(inter);
+        const grades = computeGrades(inter.filter(p => (p.raw.m || 0) >= 1)); // [GRADEFIX] exclude 0-min players from pools
         setLoadProgress(95);
         const final = inter.map(p => {
           const r = p.raw,
@@ -3686,7 +3643,7 @@ function MLSAnalytics() {
               raw: r
             };
           });
-          const grades = computeGrades(inter);
+          const grades = computeGrades(inter.filter(p => (p.raw.m || 0) >= 1)); // [GRADEFIX] exclude 0-min players
           const byName = {};
           inter.forEach(p => {
             const r = p.raw,

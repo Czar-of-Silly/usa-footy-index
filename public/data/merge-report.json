@@ -1,0 +1,5618 @@
+{
+  "matched": 768,
+  "matchedExact": 712,
+  "matchedTokenSet": 0,
+  "matchedFirstLast": 6,
+  "matchedLastName": 35,
+  "matchedSubstring": 15,
+  "unmatchedMain": [
+    {
+      "name": "D'Avilla Dje Tah",
+      "team": "CHI"
+    },
+    {
+      "name": "Nariman Akhundzade",
+      "team": "CLB"
+    },
+    {
+      "name": "Juan González",
+      "team": "RBNY"
+    },
+    {
+      "name": "Gustaf Beggren",
+      "team": "RBNY"
+    },
+    {
+      "name": "Tiago",
+      "team": "ORL"
+    },
+    {
+      "name": "Kosi Thompson",
+      "team": "COL"
+    },
+    {
+      "name": "Georgi Minoungou",
+      "team": "COL"
+    },
+    {
+      "name": "Kaick",
+      "team": "DAL"
+    },
+    {
+      "name": "Rúben Ismael",
+      "team": "LA"
+    },
+    {
+      "name": "Daniel Munie",
+      "team": "SJ"
+    },
+    {
+      "name": "Ruben Messalles",
+      "team": "RSL"
+    },
+    {
+      "name": "Chance Cowell",
+      "team": "RSL"
+    },
+    {
+      "name": "Guilherme Augusto",
+      "team": "HOU"
+    },
+    {
+      "name": "Sebastian Gomez",
+      "team": "SEA"
+    },
+    {
+      "name": "Bruno Quiñonez",
+      "team": "VAN"
+    },
+    {
+      "name": "Artem Smolyakov",
+      "team": "LAFC"
+    }
+  ],
+  "mlsOnly": [
+    {
+      "name": "Daniel De Sousa Britto",
+      "team": "SJ",
+      "mins": 1146,
+      "isGK": true
+    },
+    {
+      "name": "Guilherme Santos",
+      "team": "HOU",
+      "mins": 989,
+      "isGK": false
+    },
+    {
+      "name": "Kaick Ferreira",
+      "team": "DAL",
+      "mins": 934,
+      "isGK": false
+    },
+    {
+      "name": "Dje D’Avilla",
+      "team": "CHI",
+      "mins": 872,
+      "isGK": false
+    },
+    {
+      "name": "Tiago Souza",
+      "team": "ORL",
+      "mins": 538,
+      "isGK": false
+    },
+    {
+      "name": "Bruno Caicedo",
+      "team": "VAN",
+      "mins": 275,
+      "isGK": false
+    },
+    {
+      "name": "Gustav Berggren",
+      "team": "RBNY",
+      "mins": 213,
+      "isGK": false
+    }
+  ],
+  "unmatchedMls": [
+    {
+      "name": "Kosi Thompson",
+      "team": "TOR",
+      "mins": 135
+    },
+    {
+      "name": "Yéimar Gómez Andrade",
+      "team": "SEA",
+      "mins": 172
+    },
+    {
+      "name": "Georgi Minoungou",
+      "team": "SEA",
+      "mins": 151
+    },
+    {
+      "name": "duplicated Jonathan duplicated González",
+      "team": "SJ",
+      "mins": 7
+    },
+    {
+      "name": "Adam Beaudry",
+      "team": "COL",
+      "mins": 0
+    },
+    {
+      "name": "Rubén Ramos Jr.",
+      "team": "LA",
+      "mins": 97
+    },
+    {
+      "name": "Tyler Wolff",
+      "team": "RSL",
+      "mins": 0
+    },
+    {
+      "name": "George Marks",
+      "team": "PHI",
+      "mins": 0
+    },
+    {
+      "name": "Nicksoen Gomis",
+      "team": "TOR",
+      "mins": 0
+    },
+    {
+      "name": "Ruben Mesalles",
+      "team": "RSL",
+      "mins": 0
+    },
+    {
+      "name": "Frankie Amaya",
+      "team": "MTL",
+      "mins": 0
+    },
+    {
+      "name": "Juan Mina",
+      "team": "RBNY",
+      "mins": 182
+    },
+    {
+      "name": "Olivier Mbaizo",
+      "team": "PHI",
+      "mins": 59
+    },
+    {
+      "name": "Ali Fadal",
+      "team": "COL",
+      "mins": 0
+    },
+    {
+      "name": "Adam  Pearlman",
+      "team": "TOR",
+      "mins": 0
+    },
+    {
+      "name": "Jacob Jackson",
+      "team": "SD",
+      "mins": 0
+    },
+    {
+      "name": "Kee-hee Kim",
+      "team": "SEA",
+      "mins": 0
+    },
+    {
+      "name": "Keegan Hughes",
+      "team": "NE",
+      "mins": 82
+    },
+    {
+      "name": "Charles-Emile Brunet",
+      "team": "NSH",
+      "mins": 42
+    },
+    {
+      "name": "Artem Smoliakov",
+      "team": "LAFC",
+      "mins": 166
+    },
+    {
+      "name": "Greg Ranjitsingh",
+      "team": "NYC",
+      "mins": 0
+    },
+    {
+      "name": "Stefan Kapor",
+      "team": "TOR",
+      "mins": 0
+    },
+    {
+      "name": "Sydney Wathuta",
+      "team": "COL",
+      "mins": 0
+    },
+    {
+      "name": "Nariman Akhundzada",
+      "team": "CLB",
+      "mins": 31
+    }
+  ],
+  "matches": [
+    {
+      "mainName": "Josh Cohen",
+      "mlsName": "Josh Cohen",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Chris Brady",
+      "mlsName": "Chris Brady",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jeff Gal",
+      "mlsName": "Jeffrey Gal",
+      "team": "CHI",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Mauricio Pineda",
+      "mlsName": "Mauricio Pineda",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jack Elliott",
+      "mlsName": "Jack Elliott",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joel Waterman",
+      "mlsName": "Joel Waterman",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andrew Gutman",
+      "mlsName": "Andrew Gutman",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Samual Rogers",
+      "mlsName": "Sam Rogers",
+      "team": "CHI",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Jonathan Dean",
+      "mlsName": "Jonathan Dean",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Viktor Radojevic",
+      "mlsName": "Viktor Radojević",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Christopher Cupps",
+      "mlsName": "Christopher Cupps",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jack Sandmeyer",
+      "mlsName": "Jack Sandmeyer",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Leonardo Barroso",
+      "mlsName": "Leonardo Barroso",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mbekezeli Mbokazi",
+      "mlsName": "Mbekezeli Mbokazi",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Anton Saletros",
+      "mlsName": "Anton Salétros",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Robin Lod",
+      "mlsName": "Robin Lod",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Maren Haile-Selassie",
+      "mlsName": "Maren Haile-Selassie",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sergio Oregel",
+      "mlsName": "Sergio Oregel",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "David Poreba",
+      "mlsName": "David Poreba",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Philip Zinckernagel",
+      "mlsName": "Philip Zinckernagel",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jonathan Bamba",
+      "mlsName": "Jonathan Bamba",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hugo Cuypers",
+      "mlsName": "Hugo Cuypers",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Chris Mueller",
+      "mlsName": "Chris Mueller",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jason Shokalook",
+      "mlsName": "Jason Shokalook",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Puso Dithejane",
+      "mlsName": "Puso Dithejane",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dylan Borso",
+      "mlsName": "Dylan Borso",
+      "team": "CHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Evan Bush",
+      "mlsName": "Evan Bush",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nicholas Hagen",
+      "mlsName": "Nicholas Hagen",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Patrick Schulte",
+      "mlsName": "Patrick Schulte",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rudy Camacho",
+      "mlsName": "Rudy Camacho",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Steven Moreira",
+      "mlsName": "Steven Moreira",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Yevhen Cheberko",
+      "mlsName": "Yevhen Cheberko",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Malte Amundsen",
+      "mlsName": "Malte Amundsen",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andres Herrera",
+      "mlsName": "Andrés Herrera",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mohamed Farsi",
+      "mlsName": "Mohamed Farsi",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Owen Presthus",
+      "mlsName": "Owen Presthus",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cesar Ruvalcaba",
+      "mlsName": "Cesar Ruvalcaba",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tristan Brown",
+      "mlsName": "Tristan Brown",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "André Gomes",
+      "mlsName": "André Gomes",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Amar Sejdic",
+      "mlsName": "Amar Sejdić",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Diego Rossi",
+      "mlsName": "Diego Rossi",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dániel Gazdag",
+      "mlsName": "Dániel Gazdag",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dylan Chambost",
+      "mlsName": "Dylan Chambost",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sean Zawadzki",
+      "mlsName": "Sean Zawadzki",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sékou Tidiany Bangoura",
+      "mlsName": "Sekou Bangoura",
+      "team": "CLB",
+      "score": 92,
+      "reason": "first+last"
+    },
+    {
+      "mainName": "Hugo Picard",
+      "mlsName": "Hugo Picard",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Taha Habroune",
+      "mlsName": "Taha Habroune",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jamal Thiaré",
+      "mlsName": "Jamal Thiaré",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Wessam Abou Ali",
+      "mlsName": "Wessam Abou Ali",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Max Arfsten",
+      "mlsName": "Max Arfsten",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Chase Adams",
+      "mlsName": "Chase Adams",
+      "team": "CLB",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matt Turner",
+      "mlsName": "Matt Turner",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "JD Gunn",
+      "mlsName": "JD Gunn",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Donovan Parisian",
+      "mlsName": "Donovan Parisian",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mamadou Fofana",
+      "mlsName": "Mamadou Fofana",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andrew Farrell",
+      "mlsName": "Andrew Farrell",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tanner Beason",
+      "mlsName": "Tanner Beason",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brayan Ceballos",
+      "mlsName": "Brayan Ceballos",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "William Sands",
+      "mlsName": "Will Sands",
+      "team": "NE",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Ilay Feingold",
+      "mlsName": "Ilay Feingold",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ethan Kohler",
+      "mlsName": "Ethan Kohler",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Peyton Miller",
+      "mlsName": "Peyton Miller",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Carles Gil",
+      "mlsName": "Carles Gil",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Diego Fagundez",
+      "mlsName": "Diego Fagúndez",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matt Polster",
+      "mlsName": "Matt Polster",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jackson Yueill",
+      "mlsName": "Jackson Yueill",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alhassan Yusuf",
+      "mlsName": "Alhassan Yusuf",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brooklyn Raines",
+      "mlsName": "Brooklyn Raines",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Eric Klein",
+      "mlsName": "Eric Klein",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cristiano Oliveira",
+      "mlsName": "Cristiano Oliveira",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Javaun Mussenden",
+      "mlsName": "Javaun Mussenden",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Leonardo Campana",
+      "mlsName": "Leo Campana",
+      "team": "NE",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Griffin Yow",
+      "mlsName": "Griffin Yow",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dor Turgeman",
+      "mlsName": "Dor Turgeman",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Malcolm Fry",
+      "mlsName": "Malcolm Fry",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jayden Da",
+      "mlsName": "Jayden Da",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Luca Langoni",
+      "mlsName": "Luca Langoni",
+      "team": "NE",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Marcos Zambrano-Delgado",
+      "mlsName": "Marcos Zambrano",
+      "team": "NE",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Ethan Horvath",
+      "mlsName": "Ethan Horvath",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "John McCarthy",
+      "mlsName": "John McCarthy",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tim Parker",
+      "mlsName": "Tim Parker",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dylan Nealis",
+      "mlsName": "Dylan Nealis",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Justin Che",
+      "mlsName": "Justin Che",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jahkeele Marshall-Rutty",
+      "mlsName": "Jahkeele Marshall-Rutty",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Robert Voloder",
+      "mlsName": "Robert Voloder",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Omar Valencia",
+      "mlsName": "Omar Valencia",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matthew Dos Santos",
+      "mlsName": "Matthew Dos Santos",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Emil Forsberg",
+      "mlsName": "Emil Forsberg",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nehuen Benedetti",
+      "mlsName": "Nehuén Benedetti",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ronald Donkor",
+      "mlsName": "Ronald  Donkor",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tanner Rosborough",
+      "mlsName": "Tanner Rosborough",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Adri Mehmeti",
+      "mlsName": "Adri Mehmeti",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joyeux Masanka Bungi",
+      "mlsName": "Joyeux Bungi",
+      "team": "RBNY",
+      "score": 92,
+      "reason": "first+last"
+    },
+    {
+      "mainName": "Eric Maxim Choupo-Moting",
+      "mlsName": "Eric Maxim Choupo-Moting",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cade Cowell",
+      "mlsName": "Cade Cowell",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Julian Hall",
+      "mlsName": "Julian Hall",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Roald Mitchell",
+      "mlsName": "Roald Mitchell",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jorge Ruvalcaba",
+      "mlsName": "Jorge Ruvalcaba",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rafael Mosquera",
+      "mlsName": "Rafael Mosquera",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andy Rojas",
+      "mlsName": "Andy Rojas",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mohammed Sofo",
+      "mlsName": "Mohammed Sofo",
+      "team": "RBNY",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sean Johnson",
+      "mlsName": "Sean Johnson",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alex Bono",
+      "mlsName": "Alex Bono",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jordan Farr",
+      "mlsName": "Jordan Farr",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Silvan Hefti",
+      "mlsName": "Silvan Hefti",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kye Rowles",
+      "mlsName": "Kye Rowles",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sean Nealis",
+      "mlsName": "Sean Nealis",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Aaron Herrera",
+      "mlsName": "Aarón Herrera",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Conner Antley",
+      "mlsName": "Conner Antley",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Keisuke Kurokawa",
+      "mlsName": "Keisuke Kurokawa",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matti Peltola",
+      "mlsName": "Matti Peltola",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lucas Bartlett",
+      "mlsName": "Lucas Bartlett",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nikola Markovic",
+      "mlsName": "Nikola Markovic",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brandon Servania",
+      "mlsName": "Brandon Servania",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jared Stroud",
+      "mlsName": "Jared Stroud",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Caden Clark",
+      "mlsName": "Caden Clark",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Gabriel Pirani",
+      "mlsName": "Gabriel Pirani",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hosei Kijima",
+      "mlsName": "Hosei Kijima",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jackson Hopkins",
+      "mlsName": "Jackson Hopkins",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Gavin Turner",
+      "mlsName": "Gavin Turner",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Louis Munteanu",
+      "mlsName": "Louis Munteanu",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "João Peglow",
+      "mlsName": "João Peglow",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tai Baribo",
+      "mlsName": "Tai Baribo",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jacob Murrell",
+      "mlsName": "Jacob Murrell",
+      "team": "DC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "William Yarbrough",
+      "mlsName": "William Yarbrough",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Luka Gavran",
+      "mlsName": "Luka Gavran",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Adisa De Rosario",
+      "mlsName": "Adisa De Rosario",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Walker Zimmerman",
+      "mlsName": "Walker Zimmerman",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Benjamín Kuscevic",
+      "mlsName": "Benjamín Kuscevic",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Henry Wingo",
+      "mlsName": "Henry Wingo",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Richie Laryea",
+      "mlsName": "Richie Laryea",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Raheem Edwards",
+      "mlsName": "Raheem Edwards",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kobe Franklin",
+      "mlsName": "Kobe Franklin",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matheus Pereira",
+      "mlsName": "Matheus Pereira",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zane Monlouis",
+      "mlsName": "Zane Monlouis",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jackson Gilman",
+      "mlsName": "Jackson Gilman",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lazar Stefanovic",
+      "mlsName": "Lazar Stefanović",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Richard Chukwu",
+      "mlsName": "Richard Chukwu",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Reid Fisher",
+      "mlsName": "Reid Fisher",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Micah Chisholm",
+      "mlsName": "Micah Chisholm",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jonathan Osorio",
+      "mlsName": "Jonathan Osorio",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "José Cifuentes",
+      "mlsName": "José Cifuentes",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Djordje Mihailovic",
+      "mlsName": "Djordje Mihailovic",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Malik Henry",
+      "mlsName": "Malik Henry",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Markus Cimermancic",
+      "mlsName": "Markus Cimermancic",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alonso Coello",
+      "mlsName": "Alonso Coello",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Antone Bossenberry",
+      "mlsName": "Antone Bossenberry",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Derrick Etienne Jr.",
+      "mlsName": "Derrick Etienne Jr.",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dániel Sallói",
+      "mlsName": "Dániel Sallói",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Josh Sargent",
+      "mlsName": "Josh Sargent",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Deandre Kerr",
+      "mlsName": "Deandre Kerr",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jules-Anthony Vilsaint",
+      "mlsName": "Jules-Anthony Vilsaint",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Emilio Aristizábal",
+      "mlsName": "Emilio Aristizábal",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jahmarie Nolan",
+      "mlsName": "Jahmarie Nolan",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Fletcher Bank",
+      "mlsName": "Fletcher Bank",
+      "team": "TOR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sébastian Breza",
+      "mlsName": "Sébastian Breza",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Thomas Gillier",
+      "mlsName": "Thomas Gillier",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brayan Vera",
+      "mlsName": "Brayan Vera",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Luca Petrasso",
+      "mlsName": "Luca Petrasso",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Bode Hidalgo",
+      "mlsName": "Bode Hidalgo",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jalen Neal",
+      "mlsName": "Jalen Neal",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brandan Craig",
+      "mlsName": "Brandan Craig",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Efraín Morales",
+      "mlsName": "Efraín Morales",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tomás Avilés",
+      "mlsName": "Tomás Avilés",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dawid Bugaj",
+      "mlsName": "Dawid Bugaj",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Aleksandr Guboglo",
+      "mlsName": "Aleksandr Guboglo",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Samuel Piette",
+      "mlsName": "Samuel Piette",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matthew Longstaff",
+      "mlsName": "Matty Longstaff",
+      "team": "MTL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Iván Jaime",
+      "mlsName": "Iván Jaime",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dagur Thórhallsson",
+      "mlsName": "Dagur Thórhallsson",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Wikelman Carmona",
+      "mlsName": "Wikelman Carmona",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Victor Loturi",
+      "mlsName": "Victor Loturi",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Noah Streit",
+      "mlsName": "Noah Streit",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ivan Losenko",
+      "mlsName": "Ivan Losenko",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hennadii Synchuk",
+      "mlsName": "Hennadii Synchuk",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Fabian Herbers",
+      "mlsName": "Fabian Herbers",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Prince Owusu",
+      "mlsName": "Prince Owusu",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kwadwo Opoku",
+      "mlsName": "Kwadwo Opoku",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Daniel Ríos",
+      "mlsName": "Daniel Ríos",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Olger Escobar",
+      "mlsName": "Olger Escobar",
+      "team": "MTL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andre Blake",
+      "mlsName": "Andre Blake",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andrew Rick",
+      "mlsName": "Andrew Rick",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nathan Harriel",
+      "mlsName": "Nathan Harriel",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Japhet Sery",
+      "mlsName": "Japhet Sery Larsen",
+      "team": "PHI",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Olwethu Makhanya",
+      "mlsName": "Olwethu Makhanya",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Giovanny Sequera",
+      "mlsName": "Giovanny Sequera",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Frankie Westfield",
+      "mlsName": "Frankie Westfield",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Philippe Ndinga Ossibadjouo",
+      "mlsName": "Philippe Ndinga",
+      "team": "PHI",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Finn Sundstrom",
+      "mlsName": "Finn Sundstrom",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Geiner Martínez",
+      "mlsName": "Geiner Martínez",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alejandro Bedoya",
+      "mlsName": "Alejandro Bedoya",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Indiana Vassilev",
+      "mlsName": "Indiana Vassilev",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jesús Bueno",
+      "mlsName": "Jesús Bueno",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jeremy Rafanello",
+      "mlsName": "Jeremy Rafanello",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ben Bender",
+      "mlsName": "Ben Bender",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jovan Lukic",
+      "mlsName": "Jovan Lukic",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Danley Jean Jacques",
+      "mlsName": "Danley Jean Jacques",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cavan Sullivan",
+      "mlsName": "Cavan Sullivan",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Milan Iloski",
+      "mlsName": "Milan Iloski",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Bruno Damiani",
+      "mlsName": "Bruno Damiani",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Augustin Anello",
+      "mlsName": "Agustín Anello",
+      "team": "PHI",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Sal Olivas",
+      "mlsName": "Sal Olivas",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ezekiel Alladoh",
+      "mlsName": "Ezekiel Alladoh",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Stas Korzeniowski",
+      "mlsName": "Stas Korzeniowski",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Malik Jakupovic",
+      "mlsName": "Malik Jakupovic",
+      "team": "PHI",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Maxime Crépeau",
+      "mlsName": "Maxime Crépeau",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Javier Otero",
+      "mlsName": "Javier Otero",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tristan Himes",
+      "mlsName": "Tristan Himes",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Robin Jansson",
+      "mlsName": "Robin Jansson",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Adrián Marín",
+      "mlsName": "Adrián Marín",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Griffin Dorsey",
+      "mlsName": "Griffin Dorsey",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "David Brekalo",
+      "mlsName": "David Brekalo",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Iago Teodoro",
+      "mlsName": "Iago Teodoro da Silva Nogueira",
+      "team": "ORL",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Nolan Miller",
+      "mlsName": "Nolan Miller",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tahir Reid-Brown",
+      "mlsName": "Tahir Reid-Brown",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Wilder Cartagena",
+      "mlsName": "Wilder Cartagena",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Martín Ojeda",
+      "mlsName": "Martín Ojeda",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Eduard Atuesta",
+      "mlsName": "Eduard Atuesta",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Iván Angulo",
+      "mlsName": "Iván Angulo",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Braian Ojeda",
+      "mlsName": "Braian Ojeda",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Luis Otávio",
+      "mlsName": "Luis Otávio",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Colin Guske",
+      "mlsName": "Colin Guske",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ignacio Gómez",
+      "mlsName": "Ignacio Gómez",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zakaria Taifi",
+      "mlsName": "Zakaria Taifi",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dylan Judelson",
+      "mlsName": "Dylan Judelson",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Duncan McGuire",
+      "mlsName": "Duncan McGuire",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Marco Pasalic",
+      "mlsName": "Marco Pašalić",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tyrese Spicer",
+      "mlsName": "Tyrese Spicer",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Yutaro Tsukada",
+      "mlsName": "Yutaro Tsukada",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Gustavo Caraballo",
+      "mlsName": "Gustavo Caraballo",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Pedro Leão",
+      "mlsName": "Pedro Leão",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Justin Ellis",
+      "mlsName": "Justin Ellis",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Bernardo Rhein Goncalves",
+      "mlsName": "Bernardo Rhein",
+      "team": "ORL",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Harvey Sarajian",
+      "mlsName": "Harvey Sarajian",
+      "team": "ORL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tomas Romero",
+      "mlsName": "Tomás Romero",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matthew Freese",
+      "mlsName": "Matt Freese",
+      "team": "NYC",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Thiago Martins",
+      "mlsName": "Thiago Martins",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kevin O'Toole",
+      "mlsName": "Kevin O'Toole",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Strahinja Tanasijevic",
+      "mlsName": "Strahinja Tanasijević",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Raul Gustavo",
+      "mlsName": "Raul Gustavo",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kai Trewin",
+      "mlsName": "Kai Trewin",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tayvon Gray",
+      "mlsName": "Tayvon Gray",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andrew Baiera",
+      "mlsName": "Drew Baiera",
+      "team": "NYC",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Nico Cavallo",
+      "mlsName": "Nico Cavallo",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Maxi Morález",
+      "mlsName": "Maxi Moralez",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nicolás Fernández",
+      "mlsName": "Nicolás Fernández",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Aiden O'Neill",
+      "mlsName": "Aiden O'Neill",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andrés Perea",
+      "mlsName": "Andrés Perea",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Keaton Parks",
+      "mlsName": "Keaton Parks",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jonathan Shore",
+      "mlsName": "Jonathan Shore",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Maxi Carrizo",
+      "mlsName": "Máximo Carrizo",
+      "team": "NYC",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Kevin Pierre",
+      "mlsName": "Kevin Pierre",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hannes Wolf",
+      "mlsName": "Hannes Wolf",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Talles Magno",
+      "mlsName": "Talles Magno",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Agustin Ojeda",
+      "mlsName": "Agustín Ojeda",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Malachi Jones",
+      "mlsName": "Malachi Jones",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Seymour Reid",
+      "mlsName": "Seymour Reid",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Arnau Farnós",
+      "mlsName": "Arnau Farnós",
+      "team": "NYC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Evan Louro",
+      "mlsName": "Evan Louro",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Roman Celentano",
+      "mlsName": "Roman Celentano",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Fabian Mrozek",
+      "mlsName": "Fabian Mrozek",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Gilberto Flores",
+      "mlsName": "Gilberto Flores",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alvas Powell",
+      "mlsName": "Alvas Powell",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matt Miazga",
+      "mlsName": "Matt Miazga",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nick Hagglund",
+      "mlsName": "Nick Hagglund",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Teenage Hadebe",
+      "mlsName": "Teenage Hadebe",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Bryan Ramirez",
+      "mlsName": "Bryan Ramírez",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kyle Smith",
+      "mlsName": "Kyle Smith",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Miles Robinson",
+      "mlsName": "Miles Robinson",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andrei Chirila",
+      "mlsName": "Andrei Chirila",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ayoub Lajhar",
+      "mlsName": "Ayoub Lajhar",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Evander",
+      "mlsName": "Evander Da Silva Ferreira",
+      "team": "CIN",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Tah Anunga",
+      "mlsName": "Brian Anunga",
+      "team": "CIN",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Obinna Nwobodo",
+      "mlsName": "Obinna Nwobodo",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Pavel Bucha",
+      "mlsName": "Pavel Bucha",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Stiven Jimenez",
+      "mlsName": "Stiven Jimenez",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Gerardo Valenzuela",
+      "mlsName": "Gerardo Valenzuela",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Samuel Gidi",
+      "mlsName": "Samuel Gidi",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Stefan Chirila",
+      "mlsName": "Stefan Chirila",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tom Barlow",
+      "mlsName": "Tom Barlow",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kévin Denkey",
+      "mlsName": "Kévin Denkey",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ayoub Jabbari",
+      "mlsName": "Ayoub Jabbari",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ender Echenique",
+      "mlsName": "Ender Echenique",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kenji Mboma Dem",
+      "mlsName": "Kenji Mboma Dem",
+      "team": "CIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lucas Hoyos",
+      "mlsName": "Lucas Hoyos",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jayden Hibbert",
+      "mlsName": "Jayden Hibbert",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matt Edwards",
+      "mlsName": "Matthew Edwards",
+      "team": "ATL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Stian Gregersen",
+      "mlsName": "Stian Gregersen",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ronald Hernández",
+      "mlsName": "Ronald Hernández",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Enea Mihaj",
+      "mlsName": "Enea Mihaj",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Juan Berrocal",
+      "mlsName": "Juan Berrocal",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Pedro Amador",
+      "mlsName": "Pedro Amador",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tomás Jacob",
+      "mlsName": "Tomás Jacob",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Elías Baez",
+      "mlsName": "Elías Báez",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Toto Majub",
+      "mlsName": "Toto Majub",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alexey Miranchuk",
+      "mlsName": "Alexey Miranchuk",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Steven Alzate",
+      "mlsName": "Steven Alzate",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tristan Muyumba",
+      "mlsName": "Tristan Muyumba",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Will Reilly",
+      "mlsName": "Will Reilly",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matías Galarza",
+      "mlsName": "Matías Galarza",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jay Fortune",
+      "mlsName": "Jay Fortune",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Luke Brennan",
+      "mlsName": "Luke Brennan",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Adrian Gill",
+      "mlsName": "Adrian Gill",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cooper Sanchez",
+      "mlsName": "Cooper Sanchez",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Miguel Almirón",
+      "mlsName": "Miguel Almirón",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Fafà Picault",
+      "mlsName": "Fafà Picault",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sergio Santos",
+      "mlsName": "Sergio Santos",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Saba Lobjanidze",
+      "mlsName": "Saba Lobjanidze",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cayman Togashi",
+      "mlsName": "Cayman Togashi",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Emmanuel Latte Lath",
+      "mlsName": "Emmanuel Latte Lath",
+      "team": "ATL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joe Willis",
+      "mlsName": "Joe Willis",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brian Schwake",
+      "mlsName": "Brian Schwake",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andy Nájar",
+      "mlsName": "Andy Nájar",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jeisson Palacios",
+      "mlsName": "Jeisson Palacios",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Daniel Lovitz",
+      "mlsName": "Daniel Lovitz",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jack Maher",
+      "mlsName": "Jack Maher",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Josh Bauer",
+      "mlsName": "Josh Bauer",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Maxwell Woledzi",
+      "mlsName": "Maxwell Woledzi",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Reed Baker-Whiting",
+      "mlsName": "Reed Baker-Whiting",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Thomas Williams",
+      "mlsName": "Thomas Williams",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jordan Knight",
+      "mlsName": "Jordan Knight",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hany Mukhtar",
+      "mlsName": "Hany Mukhtar",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Bryan Acosta",
+      "mlsName": "Bryan Acosta",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alex Muyl",
+      "mlsName": "Alex Muyl",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Edvard Tagseth",
+      "mlsName": "Edvard Tagseth",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Patrick Yazbek",
+      "mlsName": "Patrick Yazbek",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matthew Corcoran",
+      "mlsName": "Matthew Corcoran",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Shakur Mohammed",
+      "mlsName": "Abdul Shakur Mohammed",
+      "team": "NSH",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Cristian Espinoza",
+      "mlsName": "Cristian Espinoza",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sam Surridge",
+      "mlsName": "Sam Surridge",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Warren Madrigal",
+      "mlsName": "Warren Madrigal",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ahmed Qasem",
+      "mlsName": "Ahmed Qasem",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Woobens Pacius",
+      "mlsName": "Woobens Pacius",
+      "team": "NSH",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dayne St. Clair",
+      "mlsName": "Dayne St. Clair",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rocco Ríos Novo",
+      "mlsName": "Rocco Ríos Novo",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sergio Reguilón",
+      "mlsName": "Sergio Reguilón",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Facundo Mura",
+      "mlsName": "Facundo Mura",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Maximiliano Falcón",
+      "mlsName": "Maximiliano Falcón",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Micael",
+      "mlsName": "Micael dos Santos",
+      "team": "MIA",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Gonzalo Luján",
+      "mlsName": "Gonzalo Luján",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ian Fray",
+      "mlsName": "Ian Fray",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Noah Allen",
+      "mlsName": "Noah Allen",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cesar Abadia-Reda",
+      "mlsName": "Cesar Abadia-Reda",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Daniel Sumalla",
+      "mlsName": "Daniel Sumalla",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rodrigo De Paul",
+      "mlsName": "Rodrigo De Paul",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Santiago Morales",
+      "mlsName": "Santiago Morales",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "David Ruiz",
+      "mlsName": "David Ruíz",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "David Ayala",
+      "mlsName": "David Ayala",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Telasco Segovia",
+      "mlsName": "Telasco Segovia",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Yannick Bright",
+      "mlsName": "Yannick Bright",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Preston Plambeck",
+      "mlsName": "Preston Plambeck",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alexander Shaw",
+      "mlsName": "Alexander Shaw",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lionel Messi",
+      "mlsName": "Leo Messi",
+      "team": "MIA",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Luis Suárez",
+      "mlsName": "Luis Suárez",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Germán Berterame",
+      "mlsName": "Germán Berterame",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tadeo Allende",
+      "mlsName": "Tadeo Allende",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mateo Silvetti",
+      "mlsName": "Mateo Silvetti",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dániel Pintér",
+      "mlsName": "Daniel Pinter",
+      "team": "MIA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tyler Miller",
+      "mlsName": "Tyler Miller",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kristijan Kahlina",
+      "mlsName": "Kristijan Kahlina",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tim Ream",
+      "mlsName": "Tim Ream",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nathan Byrne",
+      "mlsName": "Nathan Byrne",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Harry Toffolo",
+      "mlsName": "Harry Toffolo",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "David Schnegg",
+      "mlsName": "David Schnegg",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Henry Kessler",
+      "mlsName": "Henry Kessler",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andrew Privett",
+      "mlsName": "Andrew Privett",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jack Neeley",
+      "mlsName": "Jack Neeley",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Will Cleary",
+      "mlsName": "Will Cleary",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Morrison Agyemang",
+      "mlsName": "Morrison Agyemang",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ashley Westwood",
+      "mlsName": "Ashley Westwood",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Luca de la Torre",
+      "mlsName": "Luca de la Torre",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brandt Bronico",
+      "mlsName": "Brandt Bronico",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Pep Biel",
+      "mlsName": "Pep Biel",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Djibril Diani",
+      "mlsName": "Djibril Diani",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Aron John",
+      "mlsName": "Aron John",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Wilfried Zaha",
+      "mlsName": "Wilfried Zaha",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Liel Abada",
+      "mlsName": "Liel Abada",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Archie Goodwin",
+      "mlsName": "Archie Goodwin",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kerwin Vargas",
+      "mlsName": "Kerwin Vargas",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Idan Toklomati",
+      "mlsName": "Idan Toklomati",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tyger Smalls",
+      "mlsName": "Tyger Smalls",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rodolfo Aloko",
+      "mlsName": "Rodolfo Aloko",
+      "team": "CLT",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zack Steffen",
+      "mlsName": "Zack Steffen",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nico Hansen",
+      "mlsName": "Nico Hansen",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zackory Campagnolo",
+      "mlsName": "Zack Campagnolo",
+      "team": "COL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Rob Holding",
+      "mlsName": "Rob Holding",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Keegan Rosenberry",
+      "mlsName": "Keegan Rosenberry",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Reggie Cannon",
+      "mlsName": "Reggie Cannon",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Miguel Navarro",
+      "mlsName": "Miguel Navarro",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ian Murphy",
+      "mlsName": "Ian Murphy",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Noah Cobb",
+      "mlsName": "Noah Cobb",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jackson Travis",
+      "mlsName": "Jackson Travis",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lucas Herrington",
+      "mlsName": "Lucas Herrington",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jabari De Coteau",
+      "mlsName": "Jabari De Coteau",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Connor Ronan",
+      "mlsName": "Connor Ronan",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joshua Atencio",
+      "mlsName": "Josh Atencio",
+      "team": "COL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Ted Ku-Dipietro",
+      "mlsName": "Ted Ku-Dipietro",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hamzat Ojediran",
+      "mlsName": "Hamzat Ojediran",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Paxten Aaronson",
+      "mlsName": "Paxten Aaronson",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alexis Castillo Manyoma",
+      "mlsName": "Alexis Manyoma",
+      "team": "COL",
+      "score": 92,
+      "reason": "first+last"
+    },
+    {
+      "mainName": "Wayne Frederick",
+      "mlsName": "Wayne Frederick",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alex Harris",
+      "mlsName": "Alex Harris",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rafael Navarro",
+      "mlsName": "Rafael Navarro",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Darren Yapi",
+      "mlsName": "Darren Yapi",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dante Sealy",
+      "mlsName": "Dante Sealy",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kimani Stewart-Baynes",
+      "mlsName": "Kimani Stewart-Baynes",
+      "team": "COL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mamadou Billo Diop",
+      "mlsName": "Mamadou Diop",
+      "team": "COL",
+      "score": 92,
+      "reason": "first+last"
+    },
+    {
+      "mainName": "Brooks Thompson",
+      "mlsName": "Brooks Thompson",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jonathan Sirois",
+      "mlsName": "Jonathan Sirois",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Michael Collodi",
+      "mlsName": "Michael Collodi",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Eryk Dymora",
+      "mlsName": "Eryk Dymora",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Shaq Moore",
+      "mlsName": "Shaq Moore",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sebastien Ibeagha",
+      "mlsName": "Sebastien Ibeagha",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lalas Abubakar",
+      "mlsName": "Lalas Abubakar",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Osaze Urhoghide",
+      "mlsName": "Osaze Urhoghide",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nolan Norris",
+      "mlsName": "Nolan Norris",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Álvaro Augusto",
+      "mlsName": "Álvaro Augusto",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ramiro",
+      "mlsName": "Ramiro Benetti",
+      "team": "DAL",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Christian Cappis",
+      "mlsName": "Chris Cappis",
+      "team": "DAL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Patrickson Delgado",
+      "mlsName": "Patrickson Delgado",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Herman Johansson",
+      "mlsName": "Herman Johansson",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joaquín Valiente",
+      "mlsName": "Joaquín Valiente",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ran Binyamin",
+      "mlsName": "Ran Binyamin",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Caleb Swann",
+      "mlsName": "Caleb Swann",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ricky Louis",
+      "mlsName": "Ricky Louis",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Anderson Julio",
+      "mlsName": "Anderson Julio",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Petar Musa",
+      "mlsName": "Petar Musa",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Santiago Moreno",
+      "mlsName": "Santiago Moreno",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Louicius Don Deedson",
+      "mlsName": "Louicius Deedson",
+      "team": "DAL",
+      "score": 92,
+      "reason": "first+last"
+    },
+    {
+      "mainName": "Bernard Kamungo",
+      "mlsName": "Bernard Kamungo",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Samuel Sarver",
+      "mlsName": "Samuel Sarver",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Logan Farrington",
+      "mlsName": "Logan Farrington",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nicholas Simmonds",
+      "mlsName": "Nicholas Simmonds",
+      "team": "DAL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Stefan Cleveland",
+      "mlsName": "Stefan Cleveland",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "John Pulskamp",
+      "mlsName": "John Pulskamp",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ryan Schewe",
+      "mlsName": "Ryan Schewe",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jack Kortkamp",
+      "mlsName": "Jack Kortkamp",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ian James",
+      "mlsName": "Ian James",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zorhan Bassong",
+      "mlsName": "Zorhan Bassong",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jansen Miller",
+      "mlsName": "Jansen Miller",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jayden Reid",
+      "mlsName": "Jayden Reid",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ethan Bartlow",
+      "mlsName": "Ethan Bartlow",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Justin Reynolds",
+      "mlsName": "Justin Reynolds",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Diego Borges",
+      "mlsName": "Diego Borges",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Wyatt Meyer",
+      "mlsName": "Wyatt Meyer",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jacob Bartlett",
+      "mlsName": "Jacob Bartlett",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Pierre Lurot",
+      "mlsName": "Pierre Lurot",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Manu García",
+      "mlsName": "Manu García",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lasse Berg Johnsen",
+      "mlsName": "Lasse Berg Johnsen",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jacob Davis",
+      "mlsName": "Jake Davis",
+      "team": "SKC",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Cielo Tschantret",
+      "mlsName": "Cielo Tschantret",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Johann Ortiz",
+      "mlsName": "Johann Ortiz",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Shane Donovan",
+      "mlsName": "Shane Donovan",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zamir Loyo Reynaga",
+      "mlsName": "Zamir Loyo Reynaga",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kwaku Agyabeng",
+      "mlsName": "Kwaku Agyabeng",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dejan Joveljic",
+      "mlsName": "Dejan Joveljić",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Shapi Suleymanov",
+      "mlsName": "Shapi Suleymanov",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Calvin Harris",
+      "mlsName": "Calvin Harris",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Capita",
+      "mlsName": "Capita Capemba",
+      "team": "SKC",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Stephen Afrifa",
+      "mlsName": "Stephen Afrifa",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Taylor Calheira",
+      "mlsName": "Taylor Calheira",
+      "team": "SKC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "JT Marcinkowski",
+      "mlsName": "James Marcinkowski",
+      "team": "LA",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Novak Micovic",
+      "mlsName": "Novak Micovic",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Maya Yoshida",
+      "mlsName": "Maya Yoshida",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Carlos Garcés",
+      "mlsName": "Emiro Garces",
+      "team": "LA",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "John Nelson",
+      "mlsName": "John Nelson",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jakob Glesnes",
+      "mlsName": "Jakob Glesnes",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Miki Yamane",
+      "mlsName": "Miki Yamane",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mauricio Cuevas",
+      "mlsName": "Mauricio Cuevas",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Chris Rindov",
+      "mlsName": "Christopher Rindov",
+      "team": "LA",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Julián Aude",
+      "mlsName": "Julián Aude",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Harbor Miller",
+      "mlsName": "Harbor Miller",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Marco Reus",
+      "mlsName": "Marco Reus",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Erik Thommy",
+      "mlsName": "Erik Thommy",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lucas Sanabria",
+      "mlsName": "Lucas Sanabria",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Justin Haak",
+      "mlsName": "Justin Haak",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Edwin Cerrillo",
+      "mlsName": "Edwin Cerrillo",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tucker Lepley",
+      "mlsName": "Tucker Lepley",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Elijah Wynder",
+      "mlsName": "Elijah Wynder",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Isaiah Parente",
+      "mlsName": "Isaiah Parente",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Troy Elgersma",
+      "mlsName": "Troy Elgersma",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "João Klauss",
+      "mlsName": "João Klauss",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joseph Paintsil",
+      "mlsName": "Joseph Paintsil",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Gabriel Pec",
+      "mlsName": "Gabriel Pec",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matheus Nascimento",
+      "mlsName": "Matheus Nascimento",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Julian Placias",
+      "mlsName": "Julian Placias",
+      "team": "LA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Earl Edwards",
+      "mlsName": "Earl Edwards Jr.",
+      "team": "SJ",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Daniel",
+      "mlsName": "Daniel Munie",
+      "team": "SJ",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Francesco Montali",
+      "mlsName": "Francesco Montali",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nate Crockford",
+      "mlsName": "Nathan Crockford",
+      "team": "SJ",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Dave Romney",
+      "mlsName": "Dave Romney",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Vítor Costa",
+      "mlsName": "Vítor Costa",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Paul Marie",
+      "mlsName": "Paul Marie",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "DeJuan Jones",
+      "mlsName": "DeJuan Jones",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jack Jasinski",
+      "mlsName": "Jack Jasinski",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Max Floriani",
+      "mlsName": "Max Floriani",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jamar Ricketts",
+      "mlsName": "Jamar Ricketts",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Reid Roberts",
+      "mlsName": "Reid Roberts",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jonathan Gonzalez",
+      "mlsName": "Jonathan González",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ronaldo Vieira",
+      "mlsName": "Ronaldo Vieira",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jack Skahan",
+      "mlsName": "Jack Skahan",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ian Harkes",
+      "mlsName": "Ian Harkes",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Noel Buck",
+      "mlsName": "Noel Buck",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Niko Tsakiris",
+      "mlsName": "Niko Tsakiris",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Beau Leroux",
+      "mlsName": "Beau Leroux",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nick Fernandez",
+      "mlsName": "Nick Fernandez",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Timo Werner",
+      "mlsName": "Timo Werner",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Preston Judd",
+      "mlsName": "Preston Judd",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ousseni Bouda",
+      "mlsName": "Ousseni Bouda",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Benjamin Kikanovic",
+      "mlsName": "Benji Kikanovic",
+      "team": "SJ",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Nonso Adimabua",
+      "mlsName": "Nonso Adimabua",
+      "team": "SJ",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rafael",
+      "mlsName": "Rafael Cabral",
+      "team": "RSL",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Mason Stajduhar",
+      "mlsName": "Mason Stajduhar",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Max Kerkvliet",
+      "mlsName": "Max Kerkvliet",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "DeAndre Yedlin",
+      "mlsName": "DeAndre Yedlin",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Justen Glad",
+      "mlsName": "Justen Glad",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alexandros Katranis",
+      "mlsName": "Alexandros Katranis",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Samuel Junqua",
+      "mlsName": "Sam Junqua",
+      "team": "RSL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Philip Quinton",
+      "mlsName": "Philip Quinton",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kobi Henry",
+      "mlsName": "Kobi Henry",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lukas Engel",
+      "mlsName": "Lukas Engel",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Diego Luna",
+      "mlsName": "Diego Luna",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Stijn Spierings",
+      "mlsName": "Stijn Spierings",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Pablo Ruiz",
+      "mlsName": "Pablo Ruiz",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Juan Manuel Sanabria",
+      "mlsName": "Juan Manuel Sanabria",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Griffin Dillon",
+      "mlsName": "Griffin Dillon",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zach Booth",
+      "mlsName": "Zach Booth",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Noel Caliskan",
+      "mlsName": "Noel Caliskan",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Luca Moisa",
+      "mlsName": "Luca Moisa",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Victor Olatunji",
+      "mlsName": "Victor Olatunji",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Morgan Guilavogui",
+      "mlsName": "Morgan Guilavogui",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jesús Barea",
+      "mlsName": "Jesus Barea",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ariath Piol",
+      "mlsName": "Ariath Piol",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dominik Marczuk",
+      "mlsName": "Dominik Marczuk",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zavier Gozo",
+      "mlsName": "Zavier Gozo",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Aiden Hezarkhani",
+      "mlsName": "Aiden Hezarkhani",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sergi Solans",
+      "mlsName": "Sergi Solans",
+      "team": "RSL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jonathan Bond",
+      "mlsName": "Jonathan Bond",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jimmy Maurer",
+      "mlsName": "Jimmy Maurer",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Blake Gillingham",
+      "mlsName": "Blake Gillingham",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Antônio Carlos",
+      "mlsName": "Antônio Carlos",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Erik Sviatchenko",
+      "mlsName": "Erik Sviatchenko",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Franco Negri",
+      "mlsName": "Franco Negri",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sam Vines",
+      "mlsName": "Sam Vines",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lucas Halter",
+      "mlsName": "Lucas Halter",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Felipe Andrade",
+      "mlsName": "Felipe Andrade",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Agustín Resch",
+      "mlsName": "Agustin Resch",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Gilberto Rivera",
+      "mlsName": "Gilberto Rivera",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Vinicius Rodrigues Da Silva",
+      "mlsName": "Vinicius Silva",
+      "team": "HOU",
+      "score": 92,
+      "reason": "first+last"
+    },
+    {
+      "mainName": "Héctor Herrera",
+      "mlsName": "Héctor Herrera",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Duane Holmes",
+      "mlsName": "Duane Holmes",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Diadie Samassekou",
+      "mlsName": "Diadié Samassékou",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Agustín Bouzat",
+      "mlsName": "Agustín Bouzat",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Artur",
+      "mlsName": "José Artur",
+      "team": "HOU",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Ondrej Lingr",
+      "mlsName": "Ondřej Lingr",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mateusz Bogusz",
+      "mlsName": "Mateusz Bogusz",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jack McGlynn",
+      "mlsName": "Jack McGlynn",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Diego Gonzalez",
+      "mlsName": "Diego Gonzalez",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matthew Arana",
+      "mlsName": "Matthew Arana",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ezequiel Ponce",
+      "mlsName": "Ezequiel Ponce",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ibrahim Aliyu",
+      "mlsName": "Ibrahim Aliyu",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lawrence Ennali",
+      "mlsName": "Lawrence Ennali",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nicholas Markanich",
+      "mlsName": "Nicholas Markanich",
+      "team": "HOU",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Trey Muse",
+      "mlsName": "Trey Muse",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "James Pantemis",
+      "mlsName": "James Pantemis",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hunter Sulte",
+      "mlsName": "Hunter Sulte",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ian Smith",
+      "mlsName": "Ian Smith",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Eric Miller",
+      "mlsName": "Eric Miller",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brandon Bye",
+      "mlsName": "Brandon Bye",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kamal Miller",
+      "mlsName": "Kamal Miller",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Juan Mosquera",
+      "mlsName": "Juan Mosquera",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Finn Surman",
+      "mlsName": "Finn Surman",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alex Bonetig",
+      "mlsName": "Alex Bonetig",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Charles Ondo",
+      "mlsName": "Charles Ondo",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sawyer Jura",
+      "mlsName": "Sawyer Jura",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Diego Chará",
+      "mlsName": "Diego Chará",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joao Ortiz",
+      "mlsName": "Joao Ortiz",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "José Caicedo",
+      "mlsName": "José Caicedo",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cole Bassett",
+      "mlsName": "Cole Bassett",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jimer Fory",
+      "mlsName": "Jimer Fory",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "David Da Costa",
+      "mlsName": "David Da Costa",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Eric Izoita",
+      "mlsName": "Eric Izoita",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Felipe Mora",
+      "mlsName": "Felipe Mora",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ariel Lassiter",
+      "mlsName": "Ariel Lassiter",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kristoffer Velde",
+      "mlsName": "Kristoffer Velde",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alexander Aravena",
+      "mlsName": "Alexander Aravena",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Antony",
+      "mlsName": "Antony Alves Santos",
+      "team": "POR",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Kevin Kelsy",
+      "mlsName": "Kevin Kelsy",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Noah Santos",
+      "mlsName": "Noah Santos",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Gage Guerra",
+      "mlsName": "Gage Guerra",
+      "team": "POR",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Stefan Frei",
+      "mlsName": "Stefan Frei",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andy Thomas",
+      "mlsName": "Andrew Thomas",
+      "team": "SEA",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Max Anchor",
+      "mlsName": "Max Anchor",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Yeimar Gómez",
+      "mlsName": "Sebastian Gomez",
+      "team": "SEA",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Nouhou Tolo",
+      "mlsName": "Nouhou Tolo",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jackson Ragen",
+      "mlsName": "Jackson Ragen",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alex Roldan",
+      "mlsName": "Alex Roldan",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Antino Lopez",
+      "mlsName": "Antino Lopez",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cody Baker",
+      "mlsName": "Cody Baker",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Stuart Hawkins",
+      "mlsName": "Stuart Hawkins",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Albert Rusnák",
+      "mlsName": "Albert Rusnák",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cristian Roldan",
+      "mlsName": "Cristian Roldan",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hassani Dotson",
+      "mlsName": "Hassani Dotson",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Peter Kingston",
+      "mlsName": "Peter Kingston",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kalani Kossa-Rienzi",
+      "mlsName": "Kalani Kossa-Rienzi",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nikola Petkovic",
+      "mlsName": "Nikola Petković",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Snyder Brunell",
+      "mlsName": "Snyder Brunell",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Paul Arriola",
+      "mlsName": "Paul Arriola",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jordan Morris",
+      "mlsName": "Jordan Morris",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jesús Ferreira",
+      "mlsName": "Jesús Ferreira",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Paul Rothrock",
+      "mlsName": "Paul Rothrock",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Daniel Musovski",
+      "mlsName": "Danny Musovski",
+      "team": "SEA",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Osaze De Rosario",
+      "mlsName": "Osaze De Rosario",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Yu Tsukanome",
+      "mlsName": "Yu Tsukanome",
+      "team": "SEA",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Adrián Zendejas",
+      "mlsName": "Adrían Zendejas",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Yohei Takaoka",
+      "mlsName": "Yohei Takaoka",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Isaac Boehmer",
+      "mlsName": "Isaac Boehmer",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sebastian Schonlau",
+      "mlsName": "Sebastian Schonlau",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tristan Blackmon",
+      "mlsName": "Tristan Blackmon",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mathías Laborda",
+      "mlsName": "Mathias  Laborda",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ranko Veselinovic",
+      "mlsName": "Ranko Veselinović",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tate Johnson",
+      "mlsName": "Tate Johnson",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Édier Ocampo",
+      "mlsName": "Édier Ocampo",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mihail Gherasimencov",
+      "mlsName": "Mihail Gherasimencov",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nikola Djordjevic",
+      "mlsName": "Nikola Djordjevic",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Andrés Cubas",
+      "mlsName": "Andrés Cubas",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jean-Claude Ngando",
+      "mlsName": "J.C. Ngando",
+      "team": "VAN",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Sebastian Berhalter",
+      "mlsName": "Sebastian Berhalter",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ralph Priso-Mbongue",
+      "mlsName": "Ralph Priso",
+      "team": "VAN",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Oliver Larraz",
+      "mlsName": "Oliver Larraz",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Aziel Jackson",
+      "mlsName": "Aziel Jackson",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jeevan Badwal",
+      "mlsName": "Jeevan Badwal",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Thomas Müller",
+      "mlsName": "Thomas Müller",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brian White",
+      "mlsName": "Brian White",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Emmanuel Sabbi",
+      "mlsName": "Emmanuel Sabbi",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cheick Sabaly",
+      "mlsName": "Cheikh Sabaly",
+      "team": "VAN",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Kenji Cabrera",
+      "mlsName": "Kenji Cabrera",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rayan Elloumi",
+      "mlsName": "Rayan Elloumi",
+      "team": "VAN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Drake Callender",
+      "mlsName": "Drake Callender",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alec Smir",
+      "mlsName": "Alec Smir",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Michael Boxall",
+      "mlsName": "Michael Boxall",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kyle Duncan",
+      "mlsName": "Kyle Duncan",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "D.J. Taylor",
+      "mlsName": "DJ Taylor",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Anthony Markanich",
+      "mlsName": "Anthony Markanich",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nicolás Romero",
+      "mlsName": "Nicolás Romero",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nectarios Triantis",
+      "mlsName": "Nectarios Triantis",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Devin Padelford",
+      "mlsName": "Devin Padelford",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Morris Duggan",
+      "mlsName": "Morris Duggan",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jefferson Díaz",
+      "mlsName": "Jefferson Diaz",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kieran Chandler",
+      "mlsName": "Kieran Chandler",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "James Rodríguez",
+      "mlsName": "James Rodríguez",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Wil Trapp",
+      "mlsName": "Wil Trapp",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joaquín Pereyra",
+      "mlsName": "Joaquín Pereyra",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Julian Gressel",
+      "mlsName": "Julian Gressel",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dominik Fitz",
+      "mlsName": "Dominik Fitz",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Peter Stroud",
+      "mlsName": "Peter Stroud",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Carlos Harvey",
+      "mlsName": "Carlos Harvey",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Owen Gene",
+      "mlsName": "Owen Gene",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tomás Chancalay",
+      "mlsName": "Tomás Chancalay",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Bongokuhle Hlongwane",
+      "mlsName": "Bongokuhle Hlongwane",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kelvin Yeboah",
+      "mlsName": "Kelvin Yeboah",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mauricio Gonzalez",
+      "mlsName": "Mauricio González",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mamadou Dieng",
+      "mlsName": "Mamadou Dieng",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Troy Putt",
+      "mlsName": "Troy Putt",
+      "team": "MIN",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Hugo Lloris",
+      "mlsName": "Hugo Lloris",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Thomas Hasal",
+      "mlsName": "Thomas Hasal",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cabral Carter",
+      "mlsName": "Cabral Carter",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ryan Hollingshead",
+      "mlsName": "Ryan Hollingshead",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Eddie Segura",
+      "mlsName": "Eddie Segura",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Aaron Long",
+      "mlsName": "Aaron Long",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sergi Palencia",
+      "mlsName": "Sergi Palencia",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ryan Porteous",
+      "mlsName": "Ryan Porteous",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nkosi Tafari",
+      "mlsName": "Nkosi Tafari",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kenny Nielsen",
+      "mlsName": "Kenny Nielsen",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mark Delgado",
+      "mlsName": "Mark Delgado",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Timothy Tillman",
+      "mlsName": "Timothy Tillman",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Stephen Eustáquio",
+      "mlsName": "Stephen Eustáquio",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mathieu Choinière",
+      "mlsName": "Mathieu Choinière",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ryan Raposo",
+      "mlsName": "Ryan Raposo",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Amin Boudri",
+      "mlsName": "Amin Boudri",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Matthew Evans",
+      "mlsName": "Matthew Evans",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jude Terry",
+      "mlsName": "Jude Terry",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "David Martínez",
+      "mlsName": "David Martínez",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Son Heung-Min",
+      "mlsName": "Son Heung-Min",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Tyler Boyd",
+      "mlsName": "Tyler Boyd",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Denis Bouanga",
+      "mlsName": "Denis Bouanga",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jeremy Ebobisse",
+      "mlsName": "Jeremy Ebobisse",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jacob Shaffelburg",
+      "mlsName": "Jacob Shaffelburg",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nathan Ordaz",
+      "mlsName": "Nathan Ordaz",
+      "team": "LAFC",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brad Stuver",
+      "mlsName": "Brad Stuver",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Damian Las",
+      "mlsName": "Damian Las",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Oleksandr Svatok",
+      "mlsName": "Oleksandr Svatok",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mikkel Desler",
+      "mlsName": "Mikkel Desler",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jon Gallagher",
+      "mlsName": "Jon Gallagher",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brendan Hines-Ike",
+      "mlsName": "Brendan Hines-Ike",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jon Bell",
+      "mlsName": "Jon Bell",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Zan Kolmanic",
+      "mlsName": "Žan Kolmanič",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Guilherme Biro",
+      "mlsName": "Guilherme Biro",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Riley Thomas",
+      "mlsName": "Riley Thomas",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mateja Djordjevic",
+      "mlsName": "Mateja Djordjević",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ilie Sánchez",
+      "mlsName": "Ilie Sánchez",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Besard Sabovic",
+      "mlsName": "Besard Sabovic",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joseph Rosales",
+      "mlsName": "Joseph Rosales",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Owen Wolff",
+      "mlsName": "Owen Wolff",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dani Pereira",
+      "mlsName": "Dani Pereira",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "CJ Fodrey",
+      "mlsName": "CJ Fodrey",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Micah Burton",
+      "mlsName": "Micah Burton",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jorge Alastuey",
+      "mlsName": "Jorge Alastuey",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Nicolás Dubersarsky",
+      "mlsName": "Nicolás Dubersarsky",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ervin Torres",
+      "mlsName": "Ervin Torres",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Facundo Torres",
+      "mlsName": "Facundo Torres",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brandon Vázquez",
+      "mlsName": "Brandon Vázquez",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Christian Ramírez",
+      "mlsName": "Christian Ramírez",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Robert Taylor",
+      "mlsName": "Robert Taylor",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Myrto Uzuni",
+      "mlsName": "Myrto Uzuni",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jayden Nelson",
+      "mlsName": "Jayden Nelson",
+      "team": "ATX",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Roman Bürki",
+      "mlsName": "Roman Bürki",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Benjamin Lundt",
+      "mlsName": "Ben Lundt",
+      "team": "STL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Timo Baumgartl",
+      "mlsName": "Timo Baumgartl",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Rafael Santos",
+      "mlsName": "Rafael Santos",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Joshua Yaro",
+      "mlsName": "Josh Yaro",
+      "team": "STL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Tomas Totland",
+      "mlsName": "Tomas Totland",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jaziel Orozco",
+      "mlsName": "Jaziel Orozco",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kyle Hiebert",
+      "mlsName": "Kyle Hiebert",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lukas MacNaughton",
+      "mlsName": "Lukas MacNaughton",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Fallou Fall",
+      "mlsName": "Fallou Fall",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mamadou Fall",
+      "mlsName": "Mbacke Fall",
+      "team": "STL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Eduard Löwen",
+      "mlsName": "Eduard Löwen",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Christopher Durkin",
+      "mlsName": "Chris Durkin",
+      "team": "STL",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Marcel Hartel",
+      "mlsName": "Marcel Hartel",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Dante Polvara",
+      "mlsName": "Dante Polvara",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Daniel Edelman",
+      "mlsName": "Daniel Edelman",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Conrad Wallem",
+      "mlsName": "Conrad Wallem",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Miguel Perez",
+      "mlsName": "Miguel Perez",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Célio Pompeu",
+      "mlsName": "Célio Pompeu",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Mykhi Joyner",
+      "mlsName": "Mykhi Joyner",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Sergio Córdova",
+      "mlsName": "Sergio Córdova",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Simon Becher",
+      "mlsName": "Simon Becher",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Cedric Teuchert",
+      "mlsName": "Cedric Teuchert",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jeong Sang-Bin",
+      "mlsName": "Jeong Sang-bin",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Brendan McSorley",
+      "mlsName": "Brendan McSorley",
+      "team": "STL",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Carlos Dos Santos",
+      "mlsName": "CJ dos Santos",
+      "team": "SD",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Pablo Sisniega",
+      "mlsName": "Pablo Sisniega",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Duran Ferree",
+      "mlsName": "Duran Ferree",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Christopher McVey",
+      "mlsName": "Christopher McVey",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "William Kumado",
+      "mlsName": "Willy Kumado",
+      "team": "SD",
+      "score": 88,
+      "reason": "lastname"
+    },
+    {
+      "mainName": "Oscar Verhoeven",
+      "mlsName": "Oscar Verhoeven",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Kieran Sargeant",
+      "mlsName": "Kieran Sargeant",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Luca Bombino",
+      "mlsName": "Luca Bombino",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Wilson Eisner",
+      "mlsName": "Wilson Eisner",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Ian Pilcher",
+      "mlsName": "Ian Pilcher",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Osvald Søe",
+      "mlsName": "Osvald Søe",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Aníbal Godoy",
+      "mlsName": "Aníbal Godoy",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Emmanuel Boateng",
+      "mlsName": "Emmanuel Boateng",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Jeppe Tverskov",
+      "mlsName": "Jeppe Tverskov",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Anders Dreyer",
+      "mlsName": "Anders Dreyer",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Onni Valakari",
+      "mlsName": "Onni Valakari",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Bryce Duke",
+      "mlsName": "Bryce Duke",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "David Vazquez",
+      "mlsName": "David Vazquez",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Pedro Soma",
+      "mlsName": "Pedro Soma",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Manu Duah",
+      "mlsName": "Manu Duah",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Lewis Morgan",
+      "mlsName": "Lewis Morgan",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Marcus Ingvartsen",
+      "mlsName": "Marcus Ingvartsen",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Amahl Pellegrino",
+      "mlsName": "Amahl Pellegrino",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alex Mighten",
+      "mlsName": "Alex Mighten",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Alejandro Alvarado Jr.",
+      "mlsName": "Alejandro Alvarado",
+      "team": "SD",
+      "score": 82,
+      "reason": "substring"
+    },
+    {
+      "mainName": "Anisse Saidi",
+      "mlsName": "Anisse Saidi",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    },
+    {
+      "mainName": "Bryan Zamblé",
+      "mlsName": "Bryan Zamblé",
+      "team": "SD",
+      "score": 100,
+      "reason": "exact"
+    }
+  ]
+}

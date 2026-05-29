@@ -378,14 +378,43 @@ async function main() {
     }
   } catch(e) { console.log(`  ⚠️  Could not load existing cache: ${e.message}`); }
 
+  // ───────────────────────────────────────────────────────────────────────
+  // [A.2 LAYER 1] Load MLS rosters as the authoritative roster source.
+  // ESPN/ASA/Sofa become Layer 2 enrichment keyed off MLS-rostered players.
+  // ───────────────────────────────────────────────────────────────────────
+  let mlsRoster = [];
+  try {
+    const rostersPath = path.join(__dirname, "public", "data", "rosters-cache.json");
+    if (!fs.existsSync(rostersPath)) {
+      throw new Error("rosters-cache.json missing — run `node fetch-mls-rosters.js` first.");
+    }
+    const rc = JSON.parse(fs.readFileSync(rostersPath, "utf8"));
+    mlsRoster = (rc.players || []).map(p => ({
+      // Shape compatible with the old ESPN-sourced roster items:
+      name:    p.displayName || ((p.firstName || "") + " " + (p.lastName || "")).trim() || "Unknown",
+      team:    p.clubAbbr,
+      pos:     p.position || "Midfielder",
+      age:     p.age || null,
+      ht:      p.height || null,
+      wt:      p.weight || null,
+      headshot: p.headshot || null,
+      // Full MLS record attached for enrichment fields:
+      _mls:    p
+    }));
+    console.log(`  💾 Loaded ${mlsRoster.length} MLS-rostered players from rosters-cache.json (Layer 1)`);
+  } catch (e) {
+    console.error(`  ✗ FATAL: ${e.message}`);
+    process.exit(1);
+  }
+
   const sofaWorking = Object.keys(sofaStats).length >= 50;
   if (!sofaWorking) {
     console.log(`  ⚠️  Sofascore returned only ${Object.keys(sofaStats).length} players — preserving existing values for tackles/dribbles/etc.`);
   }
 
-  let merged=0, partial=0, skipped=0;
-  for (const rp of roster) {
-    const e = espn[rp.name] || {};
+  let merged=0, partial=0, skipped=0, unavailable=0;
+  for (const rp of mlsRoster) {                              // [A.2] iterate MLS roster, not ESPN
+    const e = find(rp.name, espn) || {};                     // [A.2] fuzzy ESPN lookup
     const xg = find(rp.name, asaXG) || {};
     const ga = find(rp.name, asaGA) || {};
     const pass = find(rp.name, asaPass) || {};
@@ -400,17 +429,38 @@ async function main() {
     const hasESPN = (e.games || 0) > 0;
     const hasASA = !!xg.mins;
     const hasSofa = !!sofa.tackles || !!sofa.interceptions || !!sofa.dribbles;
-    if (!hasESPN && !hasASA && !hasSofa) { skipped++; continue; }
-
     const mins = e.mins || xg.mins || 0;
-    if (mins < 1) { skipped++; continue; }
+
+    // [A.2 LAYER 1] Every MLS-rostered player is included. Players with stats
+    // are 'available' (graded, leaderboards-eligible). Players without stats
+    // (SEI, recently signed, recovering, loaned out) get available:false and
+    // empty stat fields, but remain in the cache as rosterable trade-machine
+    // assets.
+    const available = (hasESPN || hasASA || hasSofa) && mins >= 1;
 
     const sources = [hasESPN && "ESPN", hasASA && "ASA", hasSofa && "Sofa"].filter(Boolean);
-    if (sources.length >= 2) merged++; else partial++;
+    if (!available) unavailable++;
+    else if (sources.length >= 2) merged++;
+    else partial++;
 
+    const _m = rp._mls || {};
     output.players.push({
       n: rp.name, t: rp.team, p: rp.pos, a: rp.age, ht: rp.ht, wt: rp.wt,
       m: Math.round(mins),
+      // [A.2 LAYER 1] MLS enrichment fields (authoritative source)
+      available,                                     // bool: has stats AND mins ≥ 1
+      isDP:           !!_m.isDP,
+      isU22:          !!_m.isU22,
+      isHomegrown:    !!_m.isHomegrown,
+      isInternational:!!_m.isInternational,
+      isLoanedOut:    !!_m.isLoanedOut,
+      rosterCategory: _m.rosterCategory || null,
+      country:        _m.countryOfBirth || null,
+      footedness:     _m.footedness || null,
+      jersey:         _m.jerseyNumber || null,
+      sportecId:      _m.sportecId || null,
+      optaId:         _m.optaId || null,
+      available: available,
       // ESPN
       g: e.goals || xg.goals || 0,
       as: e.assists || xg.assists || 0,
@@ -535,7 +585,7 @@ async function main() {
   console.log(`          ✅ Headshots: ${hsDown} new · ${hsSkip} cached · ${hsFail} failed`);
 
   // ═══ WRITE ═════════════════════════════════════════════════════════════
-  const outDir = path.join(__dirname, "data");
+  const outDir = path.join(__dirname, "public", "data"); // [PATHFIX] app reads public/data
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
   const json = JSON.stringify(output);
   fs.writeFileSync(path.join(outDir, "mls-cache.json"), json);
@@ -546,7 +596,7 @@ async function main() {
     const drb = output.players.filter(p => p.drb > 0).length;
     const xg = output.players.filter(p => p.xg > 0).length;
     if (tk >= 100 && drb >= 50 && xg >= 50) {
-      const backupDir = path.join(outDir, "backups");
+      const backupDir = path.join(__dirname, "data", "backups"); // [PATHFIX] backups stay out of public/
       if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
       const ts = new Date().toISOString().replace(/[:.]/g, "-").substring(0, 19);
       fs.writeFileSync(path.join(backupDir, `mls-cache-${ts}.json`), json);

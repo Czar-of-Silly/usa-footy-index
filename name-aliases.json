@@ -1,0 +1,5 @@
+{
+  "_description": "Maps ESPN player names to the canonical name used by ASA and Sofascore. Run `node detect-name-mismatches.js` to auto-suggest entries.",
+  "_format": "espnToCanonical: { \"ESPN Name\": \"Canonical Name\" }",
+  "espnToCanonical": {}
+}

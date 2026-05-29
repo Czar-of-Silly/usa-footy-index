@@ -1,0 +1,434 @@
+{
+  "generated": "2026-05-20T00:37:25.830Z",
+  "source": "MLSsoccer.com - Every Designated Player",
+  "sourceUrl": "https://www.mlssoccer.com/news/every-designated-player-in-mls-full-list-dps",
+  "asOfDate": "May 11, 2026",
+  "dpCount": 73,
+  "teams": {
+    "Atlanta United": [
+      {
+        "name": "Miguel Almirón",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Emmanuel Latte Lath",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Alexey Miranchuk",
+        "position": "M",
+        "onCurrentRoster": true
+      }
+    ],
+    "Austin FC": [
+      {
+        "name": "Facundo Torres",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Myrto Uzuni",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Brandon Vazquez",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Charlotte FC": [
+      {
+        "name": "Liel Abada",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Pep Biel",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Wilfried Zaha",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Chicago Fire FC": [
+      {
+        "name": "Jonathan Bamba",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Hugo Cuypers",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "FC Cincinnati": [
+      {
+        "name": "Kévin Denkey",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Evander",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Miles Robinson",
+        "position": "D",
+        "onCurrentRoster": true
+      }
+    ],
+    "Colorado Rapids": [
+      {
+        "name": "Paxten Aaronson",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Rafael Navarro",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Columbus Crew": [
+      {
+        "name": "Wessam Abou Ali",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Dániel Gazdag",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Diego Rossi",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "FC Dallas": [
+      {
+        "name": "Santiago Moreno",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Petar Musa",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "D.C. United": [
+      {
+        "name": "Tai Baribo",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Louis Munteanu",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Houston Dynamo FC": [
+      {
+        "name": "Mateusz Bogusz",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Guilherme",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Ezequiel Ponce",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Sporting Kansas City": [
+      {
+        "name": "Manu García",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Dejan Joveljić",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "LA Galaxy": [
+      {
+        "name": "João Klauss",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Joseph Paintsil",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Gabriel Pec",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Riqui Puig",
+        "position": "M",
+        "onCurrentRoster": false
+      }
+    ],
+    "LAFC": [
+      {
+        "name": "Denis Bouanga",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Son Heung-Min",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Inter Miami CF": [
+      {
+        "name": "Germán Berterame",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Rodrigo De Paul",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Lionel Messi",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Minnesota United FC": [
+      {
+        "name": "Joaquín Pereyra",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Kelvin Yeboah",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "CF Montréal": [
+      {
+        "name": "Iván Jaime",
+        "position": "M",
+        "onCurrentRoster": true
+      }
+    ],
+    "Nashville SC": [
+      {
+        "name": "Cristian Espinoza",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Hany Mukhtar",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Sam Surridge",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "New England Revolution": [
+      {
+        "name": "Carles Gil",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Matt Turner",
+        "position": "GK",
+        "onCurrentRoster": true
+      }
+    ],
+    "New York City FC": [
+      {
+        "name": "Nicolás Fernández Mercau",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Talles Magno",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Thiago Martins",
+        "position": "D",
+        "onCurrentRoster": true
+      }
+    ],
+    "Red Bull New York": [
+      {
+        "name": "Eric Maxim Choupo-Moting",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Emil Forsberg",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Jorge Ruvalcaba",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Orlando City": [
+      {
+        "name": "Braian Ojeda",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Martín Ojeda",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Marco Pašalić",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Philadelphia Union": [
+      {
+        "name": "Bruno Damiani",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Portland Timbers": [
+      {
+        "name": "David Da Costa",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Kristoffer Velde",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Real Salt Lake": [
+      {
+        "name": "Justen Glad",
+        "position": "D",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Morgan Guilavogui",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "San Diego FC": [
+      {
+        "name": "Anders Dreyer",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Chucky Lozano",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "San Jose Earthquakes": [
+      {
+        "name": "Hernán López",
+        "position": "M",
+        "onCurrentRoster": false
+      },
+      {
+        "name": "Timo Werner",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Seattle Sounders FC": [
+      {
+        "name": "Pedro de la Vega",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Jordan Morris",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Albert Rusnák",
+        "position": "M",
+        "onCurrentRoster": true
+      }
+    ],
+    "St. Louis CITY SC": [
+      {
+        "name": "Roman Bürki",
+        "position": "GK",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Sergio Córdova",
+        "position": "F",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Marcel Hartel",
+        "position": "M",
+        "onCurrentRoster": true
+      }
+    ],
+    "Toronto FC": [
+      {
+        "name": "Djordje Mihailovic",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Josh Sargent",
+        "position": "F",
+        "onCurrentRoster": true
+      }
+    ],
+    "Vancouver Whitecaps FC": [
+      {
+        "name": "Ryan Gauld",
+        "position": "M",
+        "onCurrentRoster": true
+      },
+      {
+        "name": "Thomas Müller",
+        "position": "M",
+        "onCurrentRoster": true
+      }
+    ]
+  }
+}

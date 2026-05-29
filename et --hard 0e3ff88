@@ -1,0 +1,30 @@
+[33mcf6167c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix(grades): rollback authoritative field swap — fixes pool pollution
+[33m9ae7311[m fix(grades): revert GK curve to linear; keep data + formula improvements
+[33m11156e3[m Merge branch 'main' of https://github.com/Czar-of-Silly/usa-footy-index
+[33mf5d74a0[m fix(grades): revert GK curve to linear; keep data + formula improvements
+[33m54c97fc[m feat(modal): add xG and Pressures columns to match log table
+[33m563b8db[m Auto-update MLS data + Sportec merge
+[33maf48fa4[m chore: gitignore local dev artifacts
+[33mc40d8b5[m fix(fetch): convert data-quality assertions to non-fatal warnings
+[33mf107c6e[m fix(fetch): defensive guards in assertion block; stack trace on fatal
+[33m40dda66[m ci: add MLS Sportec fetch + merge to daily workflow
+[33mc310414[m feat(modal): distance + top speed in outfielder carrying panel
+[33m59ba56f[m feat(modal): Save Quality row for GKs; pressures/saves authoritative across UI
+[33m0c9c7c5[m feat(grades): GK Option C calibration — reweight + concave curve
+[33m199e0af[m feat(grades): wire grading engine to MLS data; upgrade GK Shot-Stopping with Save Quality
+[33ma65555c[m feat(leaders): wire Presser/Shot Stopper to MLS data + add Save Quality
+[33m9876fc9[m feat: integrate MLS official Sportec stats pipeline
+[33m0e3ff88[m Fix: use output.standings.length not output.teams.length in quality check
+[33mf5e7b8b[m Pipeline alerts + pass quality + GK save percentage
+[33m323c280[m Fix Sofascore Cloudflare blocking via custom TLS + restore data integrity
+[33m2fef420[m Add backup system + Sofa retry logic
+[33m6b2382d[m Recover Sofa data + protect against future Sofa failures
+[33mfd8d40c[m Position-relative grading + curve boost
+[33md64561d[m Multi-sort Sofascore fetch - capture all player types
+[33ma6899ce[m Add debug logging
+[33mee2476a[m Add debug logging
+[33m5842dfb[m Direct deploy with grading fix
+[33mf65df7d[m Add version marker
+[33me97d563[m Merge branch 'main' of https://github.com/Czar-of-Silly/usa-footy-index
+[33m801695a[m Direct deploy - bypass build
+[33mde966c1[m Auto-update MLS data
