@@ -1,20 +1,15 @@
 name: Update MLS Data
-
 on:
   schedule:
     - cron: '30 7 * * *'
   workflow_dispatch:
-
 permissions:
   contents: write
-
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   update-data:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout latest
         uses: actions/checkout@v4
@@ -27,18 +22,34 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Fetch fresh 2026 data
+      # ── Layer 1: MLS official rosters (who's on each team, incl. SEI players) ──
+      # Produces public/data/rosters-cache.json — required by fetch-data.js below.
+      - name: Fetch MLS rosters (Layer 1)
+        run: node fetch-mls-rosters.js
+        timeout-minutes: 10
+
+      # ── Layer 2: ESPN/ASA/Sofascore stats, keyed off the MLS roster ──
+      # fetch-data.js now writes directly to public/data/mls-cache.json.
+      - name: Fetch stats data (Layer 2)
         run: node fetch-data.js
         timeout-minutes: 20
 
-      - name: Copy data to public folder
-        run: |
-          cp data/mls-cache.json public/data/mls-cache.json
-          cp data/mls-cache.json public/data/mls-cache-2026.json
+      # ── Layer 3: MLSPA salaries (salary-only; DP/U22/Intl come from Layer 1) ──
+      - name: Fetch salaries
+        run: node fetch-salary-data.js
+        timeout-minutes: 10
+
+      - name: Merge salaries into cache
+        run: node merge-salary-and-dp.js
+        timeout-minutes: 5
+
+      # Season-tagged copy for the historical loader (2026 == current season file).
+      - name: Tag current-season copy
+        run: cp public/data/mls-cache.json public/data/mls-cache-2026.json
 
       - name: Auto commit and push
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-update MLS data"
+          commit_message: "Auto-update MLS data (rosters + stats + salaries)"
           file_pattern: "public/data/*.json"
           push_options: "--force-with-lease"
