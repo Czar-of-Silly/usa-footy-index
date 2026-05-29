@@ -1,8 +1,10 @@
 name: Update MLS Data
 on:
   schedule:
-    - cron: '30 7 * * *'
-  workflow_dispatch:
+    # Mornings after MLS match days (UTC). 0,3,4,6 = Sun, Wed, Thu, Sat.
+    # MLS plays mostly Sat + Wed; this catches the morning after each.
+    - cron: '0 11 * * 0,3,4,6'
+  workflow_dispatch:   # manual "Run workflow" button for playoffs / makeups / off-schedule games
 permissions:
   contents: write
 env:
@@ -22,19 +24,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # ── Layer 1: MLS official rosters (who's on each team, incl. SEI players) ──
-      # Produces public/data/rosters-cache.json — required by fetch-data.js below.
+      # Layer 1: MLS official rosters (who's on each team, incl. SEI players)
       - name: Fetch MLS rosters (Layer 1)
         run: node fetch-mls-rosters.js
         timeout-minutes: 10
 
-      # ── Layer 2: ESPN/ASA/Sofascore stats, keyed off the MLS roster ──
-      # fetch-data.js now writes directly to public/data/mls-cache.json.
+      # Layer 2: ESPN/ASA/Sofascore stats. Sofascore tunnels through the
+      # residential proxy (SOFA_PROXY secret) so GitHub's datacenter IP isn't
+      # blocked. If the proxy fails, fetch-data.js exits non-zero and the
+      # commit is blocked - fresh-or-nothing, never stale.
       - name: Fetch stats data (Layer 2)
         run: node fetch-data.js
+        env:
+          SOFA_PROXY: ${{ secrets.SOFA_PROXY }}
         timeout-minutes: 20
 
-      # ── Layer 3: MLSPA salaries (salary-only; DP/U22/Intl come from Layer 1) ──
+      # Layer 3: MLSPA salaries (salary-only; DP/U22/Intl come from Layer 1)
       - name: Fetch salaries
         run: node fetch-salary-data.js
         timeout-minutes: 10
@@ -43,7 +48,7 @@ jobs:
         run: node merge-salary-and-dp.js
         timeout-minutes: 5
 
-      # Season-tagged copy for the historical loader (2026 == current season file).
+      # Season-tagged copy for the historical loader (2026 == current season).
       - name: Tag current-season copy
         run: cp public/data/mls-cache.json public/data/mls-cache-2026.json
 
