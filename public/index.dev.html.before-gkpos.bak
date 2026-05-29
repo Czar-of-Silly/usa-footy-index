@@ -987,7 +987,7 @@ function MLSAnalytics(){
       setLoadProgress(85);
       const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,
         // GK-specific
-        isGK:(r.p==="GK"||r.p==="Goalkeeper"),pos:r.p,sv90:(r.sv||0)/p90,csRate:games>0?(r.cs||0)/games:0,gaCon90:games>0?(r.gaCon||0)/p90:0,gkEff90:games>0?(r.gkEfficiency||0)/games:0,svMls90:(r.gkSavesMLS||0)/p90,mlsPrs90:(r.mlsPressures||0)/p90,dpas90:(r.mlsDifficultPasses||0)/p90,passPerf90:games>0?(r.mlsPassingPerformance||0)/games:0,dpasPct:(r.mlsDifficultPassesPct||0),passesPctMls:(r.mlsPassesPct||r.pc||0),claim90:((r.mlsIntCorner||0)+(r.mlsIntHeld||0))/p90,sweep90:((r.mlsIntCross||0)+(r.mlsIntFisted||0))/p90,aerWonRate:(r.mlsAerialsTotal>0?(r.mlsAerialsWon||0)/r.mlsAerialsTotal:0),
+        isGK:r.p==="GK",pos:r.p,sv90:(r.sv||0)/p90,csRate:games>0?(r.cs||0)/games:0,gaCon90:games>0?(r.gaCon||0)/p90:0,gkEff90:games>0?(r.gkEfficiency||0)/games:0,svMls90:(r.gkSavesMLS||0)/p90,mlsPrs90:(r.mlsPressures||0)/p90,dpas90:(r.mlsDifficultPasses||0)/p90,passPerf90:games>0?(r.mlsPassingPerformance||0)/games:0,dpasPct:(r.mlsDifficultPassesPct||0),passesPctMls:(r.mlsPassesPct||r.pc||0),claim90:((r.mlsIntCorner||0)+(r.mlsIntHeld||0))/p90,sweep90:((r.mlsIntCross||0)+(r.mlsIntFisted||0))/p90,aerWonRate:(r.mlsAerialsTotal>0?(r.mlsAerialsWon||0)/r.mlsAerialsTotal:0),
         raw:r};});
       const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players from pools
       setLoadProgress(95);
@@ -1187,7 +1187,7 @@ function MLSAnalytics(){
       const formTrend=ga>1?"up":ga<-0.5?"down":"steady";
 
       // Position group
-      const posGroup=p.position==="Forward"||p.position==="FW"?"FW":p.position==="Midfielder"||p.position==="MF"?"MF":p.position==="Defender"||p.position==="DF"||p.position==="DEF"?"DF":(p.position==="GK"||p.position==="Goalkeeper")?"GK":"MF";
+      const posGroup=p.position==="Forward"||p.position==="FW"?"FW":p.position==="Midfielder"||p.position==="MF"?"MF":p.position==="Defender"||p.position==="DF"||p.position==="DEF"?"DF":p.position==="GK"?"GK":"MF";
 
       return{
         ...p,seasonGrade,consistency,impactPer90:impactPer90.toFixed(1),
@@ -2836,7 +2836,7 @@ function MLSAnalytics(){
           // Build rich position data
           const posData={};
           players.forEach(p=>{
-            const pg=p.position==="Forward"||p.position==="FW"?"Forward":p.position==="Midfielder"||p.position==="MF"?"Midfielder":p.position==="Defender"||p.position==="DF"||p.position==="DEF"?"Defender":(p.position==="GK"||p.position==="Goalkeeper")?"Goalkeeper":"Midfielder";
+            const pg=p.position==="Forward"||p.position==="FW"?"Forward":p.position==="Midfielder"||p.position==="MF"?"Midfielder":p.position==="Defender"||p.position==="DF"||p.position==="DEF"?"Defender":p.position==="GK"?"Goalkeeper":"Midfielder";
             if(!posData[pg])posData[pg]={players:[],grades:[],goals:0,assists:0,tackles:0,totalMins:0,totalMV:0,ages:[]};
             posData[pg].players.push(p);
             posData[pg].grades.push(p.overall);

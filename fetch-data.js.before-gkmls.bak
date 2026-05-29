@@ -410,20 +410,6 @@ async function main() {
       ga_conceded: ms.goals_conceded || 0,
       xsv: ms.adv_x_saves != null ? Math.round(ms.adv_x_saves * 10) / 10 : 0,
       gkEff: ms.adv_keeper_efficiency != null ? Math.round(ms.adv_keeper_efficiency * 10) / 10 : 0,
-      // [GK ENGINE] field names the app's sophisticated GK grading expects
-      gkEfficiency: ms.adv_keeper_efficiency != null ? Math.round(ms.adv_keeper_efficiency * 10) / 10 : 0,
-      gkSavesMLS: ms.goalkeeper_saves || 0,
-      mlsPressures: ms.adv_player_pressure_count || 0,
-      mlsDifficultPasses: ms.adv_difficult_passes || 0,
-      mlsPassingPerformance: ms.adv_passing_performance != null ? Math.round(ms.adv_passing_performance * 10) / 10 : 0,
-      mlsDifficultPassesPct: ms.adv_difficult_passes_successful_ratio != null ? Math.round(ms.adv_difficult_passes_successful_ratio * 100) / 100 : 0,
-      mlsPassesPct: (ms.passes_sum > 0) ? Math.round(100 * (ms.passes_successful_sum || 0) / ms.passes_sum) : 0,
-      mlsIntCorner: ms.interceptions_corner || 0,
-      mlsIntHeld: ms.interceptions_held || 0,
-      mlsIntCross: ms.interceptions_cross || 0,
-      mlsIntFisted: ms.interceptions_fisted || 0,
-      mlsAerialsWon: ms.tackling_games_air_won || 0,
-      mlsAerialsTotal: ms.tackling_games_air_sum || 0,
       // Market value — no MLS equivalent; preserve last-known (salary is the live anchor)
       mv: ex.mv || 0,
       // Meta

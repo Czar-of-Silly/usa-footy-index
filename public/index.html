@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-05-29T00:11:30 -->
+<!-- built: 2026-05-29T03:15:03 -->
 </head>
 <body>
   <div id="root"></div>
@@ -3444,12 +3444,39 @@ function MLSAnalytics() {
           arl: safe(r.arl, 0, 80, 0),
           drb: safe(r.drb, 0, 80, 0),
           prgc: safe(r.prgc, 0, 100, 0),
+          /*3B-FIELDS*/oxg: safe(r.oxg, 0, 30, 0),
+          chc: safe(r.chc, 0, 150, 0),
+          gop: safe(r.gop, 0, 150, 0),
+          arlPct: safe(r.arlPct, 0, 100, 0),
+          arlLost: safe(r.arlLost, 0, 120, 0),
+          clr: safe(r.clr, 0, 250, 0),
+          presR: safe(r.presR, -5, 5, 0),
+          esc: safe(r.esc, 0, 5, 0),
+          dist: safe(r.dist, 0, 400, 0),
+          spd: safe(r.spd, 0, 45, 0),
+          nut: safe(r.nut, 0, 60, 0),
+          flSuf: safe(r.flSuf, 0, 200, 0),
+          xsv: safe(r.xsv, 0, 250, 0),
+          gkEff: safe(r.gkEff, -25, 25, 0),
           headshot: r.headshot || null,
           matchLog: Array.isArray(r.matchLog) ? r.matchLog : [],
           sal: safe(r.salary, 0, 20e6, 0),
           sv: safe(r.sv, 0, 200, 0),
           cs: safe(r.cs, 0, 40, 0),
           gaCon: safe(r.ga_conceded, 0, 100, 0),
+          /*GKMLS*/gkEfficiency: safe(r.gkEfficiency, -20, 20, 0),
+          gkSavesMLS: safe(r.gkSavesMLS, 0, 200, 0),
+          mlsPressures: safe(r.mlsPressures, 0, 1500, 0),
+          mlsDifficultPasses: safe(r.mlsDifficultPasses, 0, 500, 0),
+          mlsPassingPerformance: safe(r.mlsPassingPerformance, -50, 50, 0),
+          mlsDifficultPassesPct: safe(r.mlsDifficultPassesPct, 0, 1, 0),
+          mlsPassesPct: safe(r.mlsPassesPct, 0, 100, 0),
+          mlsIntCorner: safe(r.mlsIntCorner, 0, 50, 0),
+          mlsIntHeld: safe(r.mlsIntHeld, 0, 50, 0),
+          mlsIntCross: safe(r.mlsIntCross, 0, 50, 0),
+          mlsIntFisted: safe(r.mlsIntFisted, 0, 50, 0),
+          mlsAerialsWon: safe(r.mlsAerialsWon, 0, 80, 0),
+          mlsAerialsTotal: safe(r.mlsAerialsTotal, 0, 80, 0),
           prevTeam: r.prevTeam || null,
           localHeadshot: r.localHeadshot || null
         }));
@@ -3477,7 +3504,7 @@ function MLSAnalytics() {
             drb90: (r.drb || 0) / p90,
             prgc90: (r.prgc || 0) / p90,
             // GK-specific
-            isGK: r.p === "GK",
+            isGK: r.p === "GK" || r.p === "Goalkeeper",
             pos: r.p,
             sv90: (r.sv || 0) / p90,
             csRate: games > 0 ? (r.cs || 0) / games : 0,
@@ -3560,6 +3587,20 @@ function MLSAnalytics() {
             saves: r.sv || 0,
             cleanSheets: r.cs || 0,
             goalsConceded: r.gaCon || 0,
+            officialXg: +(r.oxg || 0),
+            chances: r.chc || 0,
+            goalOpps: r.gop || 0,
+            aerialPct: r.arlPct || 0,
+            aerialAtt: (r.arl || 0) + (r.arlLost || 0),
+            clearances: r.clr || 0,
+            pressureRes: +(r.presR || 0),
+            escapeRate: +(r.esc || 0),
+            distance: r.dist || 0,
+            topSpeed: +(r.spd || 0),
+            nutmegs: r.nut || 0,
+            foulsSuffered: r.flSuf || 0,
+            xSaves: +(r.xsv || 0),
+            keeperEff: +(r.gkEff || 0),
             prevTeam: r.prevTeam || null,
             localHeadshot: r.localHeadshot || null
           };
@@ -3935,7 +3976,7 @@ function MLSAnalytics() {
       const formTrend = ga > 1 ? "up" : ga < -0.5 ? "down" : "steady";
 
       // Position group
-      const posGroup = p.position === "Forward" || p.position === "FW" ? "FW" : p.position === "Midfielder" || p.position === "MF" ? "MF" : p.position === "Defender" || p.position === "DF" || p.position === "DEF" ? "DF" : p.position === "GK" ? "GK" : "MF";
+      const posGroup = p.position === "Forward" || p.position === "FW" ? "FW" : p.position === "Midfielder" || p.position === "MF" ? "MF" : p.position === "Defender" || p.position === "DF" || p.position === "DEF" ? "DF" : p.position === "GK" || p.position === "Goalkeeper" ? "GK" : "MF";
       return {
         ...p,
         seasonGrade,
@@ -4022,23 +4063,43 @@ function MLSAnalytics() {
       unit: "",
       desc: "Highest overall grade"
     }, {
+      k: "officialXg",
+      l: "xG Leader",
+      icon: "📊",
+      unit: "",
+      desc: "Highest official Opta xG"
+    }, {
       k: "keyPasses",
       l: "Key Passer",
       icon: "🔑",
       unit: "",
       desc: "Most key passes"
     }, {
-      k: "tackles",
-      l: "Tackler",
-      icon: "🛡",
+      k: "chances",
+      l: "Chance Creator",
+      icon: "✨",
       unit: "",
-      desc: "Most tackles won"
+      desc: "Most chances involved in"
     }, {
-      k: "dribbles",
-      l: "Dribbler",
-      icon: "💨",
+      k: "clearances",
+      l: "Clearances",
+      icon: "🧹",
       unit: "",
-      desc: "Most successful dribbles"
+      desc: "Most defensive clearances"
+    }, {
+      k: "aerialPct",
+      l: "Aerial King",
+      icon: "🦅",
+      unit: "%",
+      desc: "Best aerial duel win % · min 15 duels",
+      minField: "aerialAtt",
+      minVal: 15
+    }, {
+      k: "distance",
+      l: "Engine",
+      icon: "🏃",
+      unit: "km",
+      desc: "Most distance covered"
     }, {
       k: "pressures",
       l: "Presser",
@@ -4046,20 +4107,28 @@ function MLSAnalytics() {
       unit: "",
       desc: "Most pressures applied"
     }, {
-      k: "sca",
-      l: "Creator",
-      icon: "✨",
+      k: "nutmegs",
+      l: "Nutmegs",
+      icon: "🥜",
       unit: "",
-      desc: "Most shot-creating actions"
+      desc: "Most nutmegs"
     }, {
       k: "saves",
       l: "Shot Stopper",
       icon: "🧤",
       unit: "",
       desc: "Most saves · Goalkeepers only"
+    }, {
+      k: "keeperEff",
+      l: "Save Quality",
+      icon: "🥅",
+      unit: "",
+      desc: "Saves above expected (xSaves) · Goalkeepers"
     }];
     return cats.map(c => {
-      const sorted = [...players].filter(p => parseFloat(p[c.k]) > 0).sort((a, b) => (parseFloat(b[c.k]) || 0) - (parseFloat(a[c.k]) || 0));
+      let pool = [...players].filter(p => parseFloat(p[c.k]) > 0);
+      if (c.minField) pool = pool.filter(p => (parseFloat(p[c.minField]) || 0) >= c.minVal);
+      const sorted = pool.sort((a, b) => (parseFloat(b[c.k]) || 0) - (parseFloat(a[c.k]) || 0));
       return {
         ...c,
         top: sorted.slice(0, 5)
@@ -5178,7 +5247,7 @@ function MLSAnalytics() {
       setSortDir(v === "age" ? "asc" : "desc");
     },
     width: 130,
-    options: [["overall", "Overall"], ["goals", "Goals"], ["assists", "Assists"], ["xg90", "xG/90"], ["totalGA", "G+ Added"], ["tackles", "Tackles"], ["passComp", "Pass %"], ["age", "Age"], ["team", "Team"]]
+    options: [["overall", "Overall"], ["goals", "Goals"], ["assists", "Assists"], ["xg90", "xG/90"], ["officialXg", "Official xG"], ["chances", "Chances"], ["totalGA", "G+ Added"], ["clearances", "Clearances"], ["distance", "Distance"], ["passComp", "Pass %"], ["age", "Age"], ["team", "Team"]]
   }), /*#__PURE__*/React.createElement(Select, {
     label: "Team",
     value: teamFilter,
@@ -10765,7 +10834,7 @@ function MLSAnalytics() {
     // Build rich position data
     const posData = {};
     players.forEach(p => {
-      const pg = p.position === "Forward" || p.position === "FW" ? "Forward" : p.position === "Midfielder" || p.position === "MF" ? "Midfielder" : p.position === "Defender" || p.position === "DF" || p.position === "DEF" ? "Defender" : p.position === "GK" ? "Goalkeeper" : "Midfielder";
+      const pg = p.position === "Forward" || p.position === "FW" ? "Forward" : p.position === "Midfielder" || p.position === "MF" ? "Midfielder" : p.position === "Defender" || p.position === "DF" || p.position === "DEF" ? "Defender" : p.position === "GK" || p.position === "Goalkeeper" ? "Goalkeeper" : "Midfielder";
       if (!posData[pg]) posData[pg] = {
         players: [],
         grades: [],

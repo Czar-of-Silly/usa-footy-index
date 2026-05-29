@@ -299,6 +299,10 @@ async function main() {
     process.exit(1);
   }
 
+  const sofaWorking = Object.keys(sofaStats).length >= 50;
+  if (!sofaWorking) {
+    console.log(`  ⚠️  Sofascore returned only ${Object.keys(sofaStats).length} players — preserving existing values for tackles/dribbles/etc.`);
+  }
 
   let merged=0, partial=0, skipped=0, unavailable=0;
   for (const rp of mlsRoster) {                              // [A.2] iterate MLS roster, not ESPN
@@ -410,20 +414,6 @@ async function main() {
       ga_conceded: ms.goals_conceded || 0,
       xsv: ms.adv_x_saves != null ? Math.round(ms.adv_x_saves * 10) / 10 : 0,
       gkEff: ms.adv_keeper_efficiency != null ? Math.round(ms.adv_keeper_efficiency * 10) / 10 : 0,
-      // [GK ENGINE] field names the app's sophisticated GK grading expects
-      gkEfficiency: ms.adv_keeper_efficiency != null ? Math.round(ms.adv_keeper_efficiency * 10) / 10 : 0,
-      gkSavesMLS: ms.goalkeeper_saves || 0,
-      mlsPressures: ms.adv_player_pressure_count || 0,
-      mlsDifficultPasses: ms.adv_difficult_passes || 0,
-      mlsPassingPerformance: ms.adv_passing_performance != null ? Math.round(ms.adv_passing_performance * 10) / 10 : 0,
-      mlsDifficultPassesPct: ms.adv_difficult_passes_successful_ratio != null ? Math.round(ms.adv_difficult_passes_successful_ratio * 100) / 100 : 0,
-      mlsPassesPct: (ms.passes_sum > 0) ? Math.round(100 * (ms.passes_successful_sum || 0) / ms.passes_sum) : 0,
-      mlsIntCorner: ms.interceptions_corner || 0,
-      mlsIntHeld: ms.interceptions_held || 0,
-      mlsIntCross: ms.interceptions_cross || 0,
-      mlsIntFisted: ms.interceptions_fisted || 0,
-      mlsAerialsWon: ms.tackling_games_air_won || 0,
-      mlsAerialsTotal: ms.tackling_games_air_sum || 0,
       // Market value — no MLS equivalent; preserve last-known (salary is the live anchor)
       mv: ex.mv || 0,
       // Meta
@@ -523,11 +513,10 @@ async function main() {
 
   // Auto-backup if data quality is good
   try {
-    // [BACKUP GATE: MLS] key on stats the MLS Opta feed actually provides
-    const aer = output.players.filter(p => (p.arl || 0) > 0 || (p.clr || 0) > 0).length;
-    const oxg = output.players.filter(p => (p.oxg || 0) > 0).length;
+    const tk = output.players.filter(p => p.tk > 0).length;
+    const drb = output.players.filter(p => p.drb > 0).length;
     const xg = output.players.filter(p => p.xg > 0).length;
-    if (aer >= 200 && xg >= 50) {
+    if (tk >= 100 && drb >= 50 && xg >= 50) {
       const backupDir = path.join(__dirname, "data", "backups"); // [PATHFIX] backups stay out of public/
       if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
       const ts = new Date().toISOString().replace(/[:.]/g, "-").substring(0, 19);
@@ -535,9 +524,9 @@ async function main() {
       // Keep last 10 backups
       const backups = fs.readdirSync(backupDir).filter(f => f.startsWith("mls-cache-")).sort().reverse();
       for (const f of backups.slice(10)) fs.unlinkSync(path.join(backupDir, f));
-      console.log(`  💾 Backup saved (aerials:${aer} oxg:${oxg} xg:${xg})`);
+      console.log(`  💾 Backup saved (tk:${tk} drb:${drb} xg:${xg})`);
     } else {
-      console.log(`  ⚠️  Skipped backup — data quality low (aerials:${aer} oxg:${oxg} xg:${xg})`);
+      console.log(`  ⚠️  Skipped backup — data quality low (tk:${tk} drb:${drb} xg:${xg})`);
     }
   } catch(e) { console.log(`  Backup error: ${e.message}`); }
   const mb = (Buffer.byteLength(json) / 1048576).toFixed(2);

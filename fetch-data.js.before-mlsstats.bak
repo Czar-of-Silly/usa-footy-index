@@ -212,25 +212,133 @@ async function main() {
   // ═══════════════════════════════════════════════════════════════════════
   // SOURCE 3: SOFASCORE (tackles, interceptions, duels, dribbles, passes)
   // ═══════════════════════════════════════════════════════════════════════
-  output.dataSources.push("MLS Official (Opta)");
+  output.dataSources.push("Sofascore");
 
-  // ═══ [MLS STATS] Official MLS (Opta) player stats — replaces Sofascore ════
-  // Loaded from stats-cache.json (run `node fetch-mls-stats.js` first).
-  // Keyed by sportecId, so the merge joins by ID, not fuzzy name matching.
-  console.log("  [MLS Stats] Loading official Opta stats (stats-cache.json)...");
-  let mlsStats = {};
+  console.log("  [Sofa] Finding 2026 season...");
+  let sofaSeasonId = null;
   try {
-    const statsPath = path.join(__dirname, "public", "data", "stats-cache.json");
-    if (!fs.existsSync(statsPath)) throw new Error("stats-cache.json missing — run `node fetch-mls-stats.js` first.");
-    const sc = JSON.parse(fs.readFileSync(statsPath, "utf8"));
-    mlsStats = sc.players || {};
-    const gkCount = Object.values(mlsStats).filter(p => p.goal_keeper).length;
-    console.log(`          ✅ ${Object.keys(mlsStats).length} players (${gkCount} GK), keyed by sportecId`);
-  } catch (e) {
-    console.error(`          ❌ ${e.message}`);
+    const d = await sofaGet(`/unique-tournament/${MLS_TOURNAMENT}/seasons`);
+    const s = d.seasons?.find(s => s.year === CY || s.name?.includes(String(CY)));
+    if (s) { sofaSeasonId = s.id; console.log(`          ✅ Season ID: ${sofaSeasonId}`); }
+    else console.log("          ⚠️  2026 season not found");
+  } catch(e) { console.error("          ❌", e.message); }
+
+  const sofaStats = {};
+  let sofaValues = {};
+  let sofaImages = {}; // player name → image URL
+  let sofaPlayerIds = {}; // player name → sofascore ID
+  if (sofaSeasonId) {
+    console.log("  [Sofa] Fetching player stats (multiple sort orders)...");
+    const fields = "tackles,interceptions,aerialDuelsWon,successfulDribbles,accuratePasses,keyPasses,groundDuelsWon,blockedShots,totalDuelsWon,accurateFinalThirdPasses,ballRecovery,possessionWonAttThird,bigChancesCreated,totalPasses,accurateLongBalls,possessionLost,dispossessed,goals,assists,minutesPlayed";
+    // Multiple sort orders to capture different player types:
+    // -tackles: defenders, defensive mids
+    // -accuratePasses: midfielders, deep-lying playmakers
+    // -goals: forwards, attackers
+    // -keyPasses: creative attacking midfielders, wingers
+    // -successfulDribbles: dribblers (wingers, attacking mids)
+    const sortOrders = [
+      { order: "-tackles", label: "tackles" },
+      { order: "-accuratePasses", label: "passes" },
+      { order: "-goals", label: "goals" },
+      { order: "-keyPasses", label: "keyPasses" },
+      { order: "-successfulDribbles", label: "dribbles" },
+    ];
+    for (const so of sortOrders) {
+      let pageCount = 0;
+      for (let page = 1; page <= 5; page++) {
+        try {
+          const offset = (page - 1) * 100;
+          const d = await sofaGet(`/unique-tournament/${MLS_TOURNAMENT}/season/${sofaSeasonId}/statistics?limit=100&offset=${offset}&order=${so.order}&accumulation=total&fields=${fields}`);
+          if (!d.results?.length) break;
+          for (const r of d.results) {
+            const name = r.player?.name;
+            if (!name) continue;
+            // Don't overwrite existing data — first sort order wins for each player
+            // But merge in any non-zero values from subsequent fetches
+            if (!sofaStats[name]) {
+              sofaStats[name] = {
+                tackles: r.tackles || 0,
+                interceptions: r.interceptions || 0,
+                aerialsWon: r.aerialDuelsWon || 0,
+                dribbles: r.successfulDribbles || 0,
+                accuratePasses: r.accuratePasses || 0,
+                keyPasses: r.keyPasses || 0,
+                groundDuelsWon: r.groundDuelsWon || 0,
+                blockedShots: r.blockedShots || 0,
+                totalDuelsWon: r.totalDuelsWon || 0,
+                finalThirdPasses: r.accurateFinalThirdPasses || 0,
+                ballRecovery: r.ballRecovery || 0,
+                possWonAttThird: r.possessionWonAttThird || 0,
+                bigChancesCreated: r.bigChancesCreated || 0,
+                totalPasses: r.totalPasses || 0,
+                longBalls: r.accurateLongBalls || 0,
+                possessionLost: r.possessionLost || 0,
+                dispossessed: r.dispossessed || 0,
+              };
+            } else {
+              // Merge: take max value (some endpoints return more complete data)
+              const s = sofaStats[name];
+              s.tackles = Math.max(s.tackles, r.tackles || 0);
+              s.interceptions = Math.max(s.interceptions, r.interceptions || 0);
+              s.aerialsWon = Math.max(s.aerialsWon, r.aerialDuelsWon || 0);
+              s.dribbles = Math.max(s.dribbles, r.successfulDribbles || 0);
+              s.keyPasses = Math.max(s.keyPasses, r.keyPasses || 0);
+              s.bigChancesCreated = Math.max(s.bigChancesCreated, r.bigChancesCreated || 0);
+              s.finalThirdPasses = Math.max(s.finalThirdPasses, r.accurateFinalThirdPasses || 0);
+              s.ballRecovery = Math.max(s.ballRecovery, r.ballRecovery || 0);
+            }
+            pageCount++;
+          }
+          if (d.results.length < 100) break;
+          await sleep(800);
+        } catch(e) { console.error(`          ⚠️ ${so.label} page ${page}:`, e.message); break; }
+      }
+      process.stdout.write(`          ${so.label}: ${Object.keys(sofaStats).length} total\r`);
+    }
+    console.log(`          ✅ ${Object.keys(sofaStats).length} players with stats (multi-sort merged)`);
+
+    // Fetch market values from individual player profiles
+    console.log("  [Sofa] Fetching market values (this takes a few minutes)...");
+    // sofaValues declared above
+    const playerIds = Object.values(sofaStats).length ? [] : [];
+    // Collect all player IDs we saw
+    // Re-fetch page 1 to get IDs
+    try {
+      const allIds = [];
+      for (let pg = 1; pg <= 7; pg++) {
+        const offset = (pg - 1) * 100;
+        const dd = await sofaGet(`/unique-tournament/${MLS_TOURNAMENT}/season/${sofaSeasonId}/statistics?limit=100&offset=${offset}&order=-tackles&accumulation=total&fields=tackles`);
+        if (!dd.results?.length) break;
+        for (const r of dd.results) { if (r.player?.id) allIds.push({ id: r.player.id, name: r.player.name }); }
+        if (dd.results.length < 100) break;
+        await sleep(500);
+      }
+      console.log(`          Found ${allIds.length} player IDs to look up`);
+      let mvCount = 0;
+      for (let i = 0; i < allIds.length; i++) {
+        try {
+          const pd = await sofaGet(`/player/${allIds[i].id}`);
+          const mv = pd.player?.proposedMarketValueRaw?.value || pd.player?.proposedMarketValue || 0;
+          if (mv > 0) { sofaValues[allIds[i].name] = mv; mvCount++; }
+        } catch {}
+        if (i % 50 === 0 && i > 0) process.stdout.write(`          ${i}/${allIds.length} (${mvCount} values)\r`);
+        await sleep(300); // Respectful rate
+      }
+      console.log(`          ✅ ${mvCount} players with market values`);
+    
+    // Fetch player images from Sofascore
+    console.log("  [Sofa] Fetching player images...");
+    // sofaImages declared above
+    let imgCount = 0;
+    for (const p of allIds) {
+      // Sofascore serves images at a predictable URL pattern
+      sofaImages[p.name] = `https://api.sofascore.com/api/v1/player/${p.id}/image`;
+      sofaPlayerIds[p.name] = p.id;
+      imgCount++;
+    }
+    console.log(`          ✅ ${imgCount} player image URLs mapped`);
+    } catch(e) { console.error("          ❌ Market values:", e.message); }
   }
-  // Empty Sofascore stubs so any residual references resolve harmlessly.
-  const sofaStats = {}, sofaValues = {}, sofaImages = {}, sofaPlayerIds = {};
 
   // ═══════════════════════════════════════════════════════════════════════
   // MERGE ALL THREE SOURCES
@@ -299,6 +407,10 @@ async function main() {
     process.exit(1);
   }
 
+  const sofaWorking = Object.keys(sofaStats).length >= 50;
+  if (!sofaWorking) {
+    console.log(`  ⚠️  Sofascore returned only ${Object.keys(sofaStats).length} players — preserving existing values for tackles/dribbles/etc.`);
+  }
 
   let merged=0, partial=0, skipped=0, unavailable=0;
   for (const rp of mlsRoster) {                              // [A.2] iterate MLS roster, not ESPN
@@ -314,15 +426,10 @@ async function main() {
     const sofaImg = typeof sofaImages !== 'undefined' ? (find(rp.name, sofaImages) || null) : null;
     const sofaId = typeof sofaPlayerIds !== 'undefined' ? (find(rp.name, sofaPlayerIds) || null) : null;
 
-    // [MLS STATS] official Opta stats, joined by sportecId (no name matching)
-    const sid = rp._mls && rp._mls.sportecId ? rp._mls.sportecId : null;
-    const ms = (sid && mlsStats[sid]) || {};
-    const hasMLS = !!(ms.normalized_player_minutes);
-
     const hasESPN = (e.games || 0) > 0;
     const hasASA = !!xg.mins;
-    const hasSofa = hasMLS;   // MLS now supplies the defensive/creative stats
-    const mins = e.mins || xg.mins || ms.normalized_player_minutes || 0;
+    const hasSofa = !!sofa.tackles || !!sofa.interceptions || !!sofa.dribbles;
+    const mins = e.mins || xg.mins || 0;
 
     // [A.2 LAYER 1] Every MLS-rostered player is included. Players with stats
     // are 'available' (graded, leaderboards-eligible). Players without stats
@@ -331,7 +438,7 @@ async function main() {
     // assets.
     const available = (hasESPN || hasASA || hasSofa) && mins >= 1;
 
-    const sources = [hasESPN && "ESPN", hasASA && "ASA", hasMLS && "MLS"].filter(Boolean);
+    const sources = [hasESPN && "ESPN", hasASA && "ASA", hasSofa && "Sofa"].filter(Boolean);
     if (!available) unavailable++;
     else if (sources.length >= 2) merged++;
     else partial++;
@@ -353,6 +460,7 @@ async function main() {
       jersey:         _m.jerseyNumber || null,
       sportecId:      _m.sportecId || null,
       optaId:         _m.optaId || null,
+      available: available,
       // ESPN
       g: e.goals || xg.goals || 0,
       as: e.assists || xg.assists || 0,
@@ -375,57 +483,18 @@ async function main() {
       gdf: Math.round((ga.interrupting || 0) * 100) / 100,
       gi: Math.round((ga.receiving || 0) * 100) / 100,
       totalGA: Math.round((ga.total || 0) * 100) / 100,
-      // ── [MLS STATS] Official MLS (Opta), joined by sportecId ──
-      tk: 0,                                                 // no outfield tackle count in feed
-      intc: ms.defensive_clearances || 0,                   // defensive-volume proxy (clearances)
-      arl: ms.tackling_games_air_won || 0,                  // aerial duels won
-      arlLost: ms.tackling_games_air_lost || 0,
-      arlPct: (ms.tackling_games_air_sum > 0) ? Math.round(100 * (ms.tackling_games_air_won || 0) / ms.tackling_games_air_sum) : 0,
-      clr: ms.defensive_clearances || 0,
-      prs: ms.adv_player_pressure_count || 0,               // pressures applied
-      presR: ms.adv_pressure_resistance_ratio != null ? Math.round(ms.adv_pressure_resistance_ratio * 100) / 100 : 0,
-      esc: ms.adv_escape_rate != null ? Math.round(ms.adv_escape_rate * 100) / 100 : 0,
-      // Creativity / chances
-      sca: ms.assists_shot_at_goal || 0,                    // key passes (shot-creating passes)
-      chc: ms.chances || 0,                                 // chance involvement
-      gop: ms.goal_opportunities || 0,
-      // Passing / progression
-      prgp: ms.adv_difficult_passes || 0,
-      prgc: ms.nutmegs || 0,                                // placeholder (step 4 adds ASA dribbling g+)
-      ftp: ms.adv_difficult_passes || 0,
-      dfp: ms.adv_difficult_passes || 0,
-      passPerf: ms.adv_passing_performance != null ? Math.round(ms.adv_passing_performance * 10) / 10 : 0,
-      drb: ms.nutmegs || 0,                                 // placeholder (no take-on count in feed)
-      // Official xG + new analytics
-      oxg: Math.round((ms.xG || 0) * 100) / 100,            // official Opta xG
-      xge: ms.xG_efficiency != null ? Math.round(ms.xG_efficiency * 100) / 100 : 0,
-      // Physical / flair
-      dist: ms.distance_covered ? Math.round(ms.distance_covered / 1000) : 0,  // km
-      spd: ms.maximum_speed ? Math.round(ms.maximum_speed * 10) / 10 : 0,
-      nut: ms.nutmegs || 0,
-      flSuf: ms.fouls_suffered || 0,
-      // GK — real data (fixes GK grading; supersedes patch-gk-* workarounds)
-      sv: ms.goalkeeper_saves || 0,
-      cs: ms.clean_sheets || 0,
-      ga_conceded: ms.goals_conceded || 0,
-      xsv: ms.adv_x_saves != null ? Math.round(ms.adv_x_saves * 10) / 10 : 0,
-      gkEff: ms.adv_keeper_efficiency != null ? Math.round(ms.adv_keeper_efficiency * 10) / 10 : 0,
-      // [GK ENGINE] field names the app's sophisticated GK grading expects
-      gkEfficiency: ms.adv_keeper_efficiency != null ? Math.round(ms.adv_keeper_efficiency * 10) / 10 : 0,
-      gkSavesMLS: ms.goalkeeper_saves || 0,
-      mlsPressures: ms.adv_player_pressure_count || 0,
-      mlsDifficultPasses: ms.adv_difficult_passes || 0,
-      mlsPassingPerformance: ms.adv_passing_performance != null ? Math.round(ms.adv_passing_performance * 10) / 10 : 0,
-      mlsDifficultPassesPct: ms.adv_difficult_passes_successful_ratio != null ? Math.round(ms.adv_difficult_passes_successful_ratio * 100) / 100 : 0,
-      mlsPassesPct: (ms.passes_sum > 0) ? Math.round(100 * (ms.passes_successful_sum || 0) / ms.passes_sum) : 0,
-      mlsIntCorner: ms.interceptions_corner || 0,
-      mlsIntHeld: ms.interceptions_held || 0,
-      mlsIntCross: ms.interceptions_cross || 0,
-      mlsIntFisted: ms.interceptions_fisted || 0,
-      mlsAerialsWon: ms.tackling_games_air_won || 0,
-      mlsAerialsTotal: ms.tackling_games_air_sum || 0,
-      // Market value — no MLS equivalent; preserve last-known (salary is the live anchor)
-      mv: ex.mv || 0,
+      // Sofascore (with fallback to existing cache if Sofa returns nothing)
+      tk: (sofa.tackles || (sofaOK ? 0 : ex.tk)) || 0,
+      intc: (sofa.interceptions || (sofaOK ? 0 : ex.intc)) || 0,
+      arl: (sofa.aerialsWon || (sofaOK ? 0 : ex.arl)) || 0,
+      drb: (sofa.dribbles || (sofaOK ? 0 : ex.drb)) || 0,
+      prs: (sofa.ballRecovery || (sofaOK ? 0 : ex.prs)) || 0,
+      // Derived / unavailable (with fallback)
+      sca: (sofa.bigChancesCreated || (sofaOK ? 0 : ex.sca)) || 0,
+      prgp: (sofa.finalThirdPasses || (sofaOK ? 0 : ex.prgp)) || 0,
+      prgc: (sofa.dribbles || (sofaOK ? 0 : ex.prgc)) || 0,
+      ftp: (sofa.finalThirdPasses || (sofaOK ? 0 : ex.ftp)) || 0,
+      mv: mvVal || ex.mv || 0,
       // Meta
       salary: sal.guaranteed || sal.base || 0,
       headshot: rp.headshot || sofaImg || null,
@@ -523,11 +592,10 @@ async function main() {
 
   // Auto-backup if data quality is good
   try {
-    // [BACKUP GATE: MLS] key on stats the MLS Opta feed actually provides
-    const aer = output.players.filter(p => (p.arl || 0) > 0 || (p.clr || 0) > 0).length;
-    const oxg = output.players.filter(p => (p.oxg || 0) > 0).length;
+    const tk = output.players.filter(p => p.tk > 0).length;
+    const drb = output.players.filter(p => p.drb > 0).length;
     const xg = output.players.filter(p => p.xg > 0).length;
-    if (aer >= 200 && xg >= 50) {
+    if (tk >= 100 && drb >= 50 && xg >= 50) {
       const backupDir = path.join(__dirname, "data", "backups"); // [PATHFIX] backups stay out of public/
       if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
       const ts = new Date().toISOString().replace(/[:.]/g, "-").substring(0, 19);
@@ -535,9 +603,9 @@ async function main() {
       // Keep last 10 backups
       const backups = fs.readdirSync(backupDir).filter(f => f.startsWith("mls-cache-")).sort().reverse();
       for (const f of backups.slice(10)) fs.unlinkSync(path.join(backupDir, f));
-      console.log(`  💾 Backup saved (aerials:${aer} oxg:${oxg} xg:${xg})`);
+      console.log(`  💾 Backup saved (tk:${tk} drb:${drb} xg:${xg})`);
     } else {
-      console.log(`  ⚠️  Skipped backup — data quality low (aerials:${aer} oxg:${oxg} xg:${xg})`);
+      console.log(`  ⚠️  Skipped backup — data quality low (tk:${tk} drb:${drb} xg:${xg})`);
     }
   } catch(e) { console.log(`  Backup error: ${e.message}`); }
   const mb = (Buffer.byteLength(json) / 1048576).toFixed(2);
@@ -557,10 +625,7 @@ async function main() {
   console.log(`  ─────────────────────────────────────`);
   console.log(`  ESPN     Goals/Assists/Shots/Fouls/Cards/Saves`);
   console.log(`  ASA      xG: ${withXG} · G+: ${withGA} · Pass%: ${withPass}`);
-  const withAer = output.players.filter(p => (p.arl||0) > 0 || (p.clr||0) > 0).length;
-  const withOxg = output.players.filter(p => (p.oxg||0) > 0).length;
-  const withSv = output.players.filter(p => (p.sv||0) > 0).length;
-  console.log(`  MLS Opta  Aerials/Clearances: ${withAer} · Official xG: ${withOxg} · GK saves: ${withSv}`);
+  console.log(`  Sofascore Tackles: ${withTkl} · Market Values: ${withMV} · Interceptions/Duels/Dribbles`);
   console.log(`  ─────────────────────────────────────`);
   // Data quality check
   const noASA = output.players.filter(p => p.g >= 2 && p.xg === 0);
@@ -581,9 +646,8 @@ async function main() {
   if (totalPlayers < 600) issues.push(`Only ${totalPlayers} players (expected 600+)`);
   if (output.standings.length < 28) issues.push(`Only ${output.standings.length} teams (expected 30)`);
   if (withXG < 300) issues.push(`Only ${withXG} players with xG (expected 400+) — ASA may have failed`);
-  // [MLS STATS] assert official Opta coverage instead of Sofascore tackles/MV.
-  const withMlsStats = output.players.filter(p => (p.arl||0) > 0 || (p.clr||0) > 0 || (p.oxg||0) > 0 || (p.sv||0) > 0).length;
-  if (withMlsStats < 200) issues.push(`Only ${withMlsStats} players with MLS Opta stats (expected 400+) — stats-cache.json stale or fetch-mls-stats failed`);
+  if (withTkl < 200) issues.push(`Only ${withTkl} players with tackles (expected 400+) — Sofascore likely blocked`);
+  if (withMV < 200) issues.push(`Only ${withMV} players with market values (expected 400+)`);
 
   if (issues.length > 0) {
     console.log(`\n  🚨 DATA QUALITY ISSUES DETECTED:`);
