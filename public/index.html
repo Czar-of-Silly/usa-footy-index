@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-06-03T00:38:28 -->
+<!-- built: 2026-06-03T01:05:45 -->
 </head>
 <body>
   <div id="root"></div>
@@ -1706,8 +1706,8 @@ function PlayerModal({
     l: "Assists",
     k: "assists"
   }, {
-    l: "Tackles",
-    k: "tackles"
+    l: "Clearances",
+    k: "clearances"
   }, {
     l: "Key Passes",
     k: "keyPasses"
@@ -2226,7 +2226,7 @@ function PlayerModal({
       letterSpacing: .5,
       opacity: .8
     }
-  }, gl(p.attack)))), bar("Goals", p.goals, 20, true, "goals"), bar("Assists", p.assists, 15, true, "assists"), bar("xG", p.xGoals, 2.5, false), bar("xA", p.xAssists, 2.5, false), bar("Shots", p.shots || 0, 60, false), bar("On Target", p.shotsOnTarget || 0, 30, false)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, gl(p.attack)))), bar("Goals", p.goals, 20, true, "goals"), bar("Assists", p.assists, 15, true, "assists"), bar("xG", p.xGoals, 2.5, false), bar("xA", p.xAssists, 2.5, false), bar("Shots", p.shots || 0, 60, false), bar("On Target", p.shotsOnTarget || 0, 30, false), bar("Official xG", p.officialXg || 0, 12, false)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       justifyContent: "space-between",
@@ -2257,7 +2257,7 @@ function PlayerModal({
       letterSpacing: .5,
       opacity: .8
     }
-  }, gl(p.creativity)))), bar("Key Passes", p.keyPasses || 0, 50, true, "keyPasses"), bar("Shot-Creating", p.sca || 0, 70, true, "sca"), bar("xA", p.xAssists, 10, false)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, gl(p.creativity)))), bar("Key Passes", p.keyPasses || 0, 50, true, "keyPasses"), bar("Chances", p.chances || 0, 60, true, "chances"), bar("xA", p.xAssists, 10, false)), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       justifyContent: "space-between",
@@ -2337,7 +2337,7 @@ function PlayerModal({
       letterSpacing: .5,
       opacity: .8
     }
-  }, gl(p.defense)))), bar("Tackles", p.tackles || 0, 40, true, "tackles"), bar("Pressures", p.pressures || 0, 300, true, "pressures"), bar("Interceptions", p.interceptions || 0, 40, true, "interceptions"), bar("Aerials Won", p.aerials || 0, 50, false, "aerials"), bar("Fouls", p.fouls || 0, 25, false), /*#__PURE__*/React.createElement("div", {
+  }, gl(p.defense)))), bar("Clearances", p.clearances || 0, 80, true, "clearances"), bar("Pressures", p.pressures || 0, 300, true, "pressures"), bar("Aerial Win %", p.aerialPct || 0, 100, true, "aerialPct"), bar("Aerials Won", p.aerials || 0, 50, false, "aerials"), bar("Fouls", p.fouls || 0, 25, false), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 12,
@@ -2787,7 +2787,7 @@ function PlayerModal({
       fontFamily: T.sans,
       fontStyle: "italic"
     }
-  }, "Stats via ESPN, ASA, Sofascore \xB7 USA Footy Index"), /*#__PURE__*/React.createElement("div", {
+  }, "Stats via ESPN, ASA, MLS Official \xB7 USA Footy Index"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8
@@ -3126,7 +3126,7 @@ function PlayerModal({
       x.fillStyle = MUTE;
       x.font = "9px Inter,sans-serif";
       x.textAlign = "center";
-      x.fillText("Data: ESPN · American Soccer Analysis · Sofascore", W / 2, H - 20);
+      x.fillText("Data: ESPN · American Soccer Analysis · MLS Official (Opta)", W / 2, H - 20);
       x.textAlign = "left";
       const link = document.createElement("a");
       link.download = `${p.name.replace(/\s+/g, "-").toLowerCase()}-ufi-card.png`;
@@ -4555,24 +4555,24 @@ function MLSAnalytics() {
     desc: "The composite score is role-aware. A defender's Overall rewards defensive excellence; a forward's rewards attacking output. Sub-grades are universal (everyone is ranked the same way on Attack, Passing, etc.) but the Overall reflects what matters for each position."
   }, {
     name: "Attack",
-    weight: "35% xG/90 + 25% Key Passes/90 + 25% Big Chances/90 + 15% xA/90",
-    desc: "Measures goal threat and chance involvement. Uses expected metrics to capture quality of chances created and taken, not just raw output."
+    weight: "/*STEP5*/40% Official xG/90 + 20% ASA xG/90 + 25% Chances/90 + 15% xA/90",
+    desc: "Goal threat and chance involvement, anchored by official Opta expected goals blended with ASA's independent model, plus chance volume and expected assists. Two xG models reduce single-model noise."
   }, {
     name: "Passing",
-    weight: "30% Completion % + 30% Final Third Passes/90 + 25% Key Passes/90 + 15% Pass G+",
-    desc: "Goes beyond completion rate. Progressive passes reward players who advance the ball into dangerous areas, not just sideways recyclers."
+    weight: "30% Completion % + 20% Passing vs Expected + 20% Difficult Passes/90 + 15% Pass G+ + 15% Key Passes/90",
+    desc: "Beyond completion rate: rewards passers who beat the expected-completion model and complete difficult, line-breaking passes — not sideways recyclers."
   }, {
     name: "Defense",
-    weight: "25% Defensive G+ + 25% Ball Recovery/90 + 25% Interceptions/90 + 25% Aerials/90",
-    desc: "Captures both active defending (pressures, interceptions) and overall defensive value added. Aerial dominance matters for set pieces and crosses."
+    weight: "30% Defensive G+ + 25% Pressures/90 + 25% Clearances/90 + 20% Aerials Won/90",
+    desc: "Combines defensive value added (Goals Added) with active defending — pressures applied, clearances, and aerial dominance for set pieces and crosses."
   }, {
     name: "Creativity",
-    weight: "35% Key Passes/90 + 35% Big Chances Created/90 + 30% xA/90",
-    desc: "Specifically isolates playmaking ability. A player can score low on Attack but high on Creativity if they're creating for others rather than finishing."
+    weight: "45% Key Passes/90 + 30% xA/90 + 25% Chances/90",
+    desc: "Isolates playmaking: passes that set up shots, expected assists, and overall chance involvement. A player can rate low on Attack but high here by creating for others."
   }, {
     name: "Carrying",
-    weight: "50% Successful Dribbles/90 + 30% Final Third Passes/90 + 20% Carry Risk",
-    desc: "Ball progression through carrying. Rewards players who beat defenders and drive the ball forward, breaking defensive lines with the ball at their feet."
+    weight: "50% Dribbling G+ + 30% Escape Rate + 10% Nutmegs/90 + 10% Difficult Passes/90",
+    desc: "Ball progression with the feet, measured by ASA dribbling Goals Added (the value a carry adds), how often a player escapes pressure, and a touch of flair. MLS event data has no raw take-on count, so we grade carrying value rather than raw dribble attempts."
   }].map(cat => /*#__PURE__*/React.createElement("div", {
     key: cat.name,
     style: {
@@ -4718,7 +4718,7 @@ function MLSAnalytics() {
       lineHeight: 1.7,
       marginBottom: 10
     }
-  }, "Goalkeepers are graded on a completely separate system, compared only to other GKs. The six categories are remapped to GK-specific skills:"), /*#__PURE__*/React.createElement("div", {
+  }, "Goalkeepers are graded on a completely separate system, compared only to other GKs, now powered by official MLS save-quality data (expected saves). The categories are remapped to GK-specific skills:"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -4726,19 +4726,19 @@ function MLSAnalytics() {
     }
   }, [{
     name: "Shot-Stopping",
-    desc: "Saves/90 (60%) + Clean Sheet Rate (40%)"
+    desc: "Saves Above Expected (50%) + Saves/90 (30%) + Clean Sheet Rate (20%)"
   }, {
     name: "Distribution",
-    desc: "Pass Completion (50%) + Progressive Passes/90 (50%)"
+    desc: "Passing vs Expected (50%) + Pass Completion (25%) + Difficult Pass % (25%)"
   }, {
     name: "Command",
-    desc: "Ball Recovery/90 (40%) + Aerials/90 (40%) + GA/90 inverted (20%)"
+    desc: "Claims & Catches/90 (50%) + Aerial Win % (30%) + GA/90 inverted (20%)"
   }, {
     name: "Sweeping",
-    desc: "Aerials/90 (50%) + Interceptions/90 (50%)"
+    desc: "Sweeping Actions/90 (70%) + GA/90 inverted (30%)"
   }, {
     name: "Handling",
-    desc: "Clean Sheet Rate (50%) + Saves/90 (50%)"
+    desc: "Saves/90 (60%) + Clean Sheet Rate (40%)"
   }, {
     name: "GK Overall",
     desc: "Shot-Stop 35% + Command 25% + Distribution 20% + Sweep 10% + Handling 10%"
@@ -4789,7 +4789,7 @@ function MLSAnalytics() {
       fontFamily: T.sans,
       lineHeight: 1.7
     }
-  }, "Player data sourced from ESPN (boxscores, rosters, standings), American Soccer Analysis (xG, xA, Goals Added, pass analytics), and Sofascore (tackles, interceptions, duels, dribbles, final third passes, ball recoveries, market values). All grades computed from real, verifiable data."))), /*#__PURE__*/React.createElement("div", {
+  }, "Player data sourced from ESPN (boxscores, rosters, standings), American Soccer Analysis (xG, xA, Goals Added, dribbling, xPass, salaries), and the official MLS statistics feed (Opta \u2014 chances, key passes, aerials, clearances, pressures, distance, and goalkeeping: saves, clean sheets, expected saves). All grades computed from real, verifiable data."))), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "14px 32px",
       borderTop: `1px solid ${T.border}`,
@@ -4978,7 +4978,7 @@ function MLSAnalytics() {
       lineHeight: 1.7,
       marginBottom: 16
     }
-  }, "Every grade is powered by real match data from three independent sources: ESPN (goals, assists, shots, fouls, cards, match logs), American Soccer Analysis (xG, xA, Goals Added, xPass, salaries), and Sofascore (tackles, interceptions, market values, dribbles). Data refreshes daily."), /*#__PURE__*/React.createElement("div", {
+  }, "Every grade is powered by real match data from three independent sources: ESPN (goals, assists, shots, fouls, cards, match logs), American Soccer Analysis (xG, xA, Goals Added, xPass, salaries, dribbling), and the official MLS (Opta) statistics feed (chances, key passes, aerials, clearances, pressures, goalkeeping). Data refreshes on match days."), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr 1fr",
@@ -5406,8 +5406,8 @@ function MLSAnalytics() {
     onSort: toggleSort,
     center: true
   }), !isMobile && /*#__PURE__*/React.createElement(ColHead, {
-    label: "Tkl",
-    sortKey: "tackles",
+    label: "Clr" /*3B2*/,
+    sortKey: "clearances",
     currentSort: sortKey,
     currentDir: sortDir,
     onSort: toggleSort,
@@ -5552,12 +5552,12 @@ function MLSAnalytics() {
       fontSize: 15,
       color: T.ink,
       fontWeight: 600,
-      background: hm(p.tackles, 40),
+      background: hm(p.clearances, 40),
       borderRadius: 3,
       textAlign: "center",
       padding: "2px 0"
     }
-  }, sv(p.tackles)), !isMobile && /*#__PURE__*/React.createElement("div", {
+  }, sv(p.clearances)), !isMobile && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 13,
       color: T.textDim,
@@ -6813,8 +6813,8 @@ function MLSAnalytics() {
       options: [["0", "All"], ["200", "200+"], ["400", "400+"], ["600", "600+"], ["900", "900+"]]
     })), /*#__PURE__*/React.createElement(TopCards, {
       players: defData,
-      metric: p => p.tackles,
-      metricLabel: "TACKLES",
+      metric: p => p.clearances,
+      metricLabel: "CLEARANCES",
       onSelect: setSel
     }), /*#__PURE__*/React.createElement(TableWrap, null, /*#__PURE__*/React.createElement("div", null, (() => {
       const defTbl = isMobile ? "24px 1fr 40px 46px 46px 46px" : "24px 1fr 48px 58px 58px 50px 50px 60px 56px";
@@ -6844,8 +6844,8 @@ function MLSAnalytics() {
         onSort: toggleSort,
         center: true
       }), /*#__PURE__*/React.createElement(ColHead, {
-        label: "Tkl",
-        sortKey: "tackles",
+        label: "Aer%" /*3B2*/,
+        sortKey: "aerialPct",
         currentSort: sortKey,
         currentDir: sortDir,
         onSort: toggleSort,
@@ -6858,8 +6858,8 @@ function MLSAnalytics() {
         onSort: toggleSort,
         center: true
       }), !isMobile && /*#__PURE__*/React.createElement(ColHead, {
-        label: "Int",
-        sortKey: "interceptions",
+        label: "Clr",
+        sortKey: "clearances",
         currentSort: sortKey,
         currentDir: sortDir,
         onSort: toggleSort,
@@ -6951,12 +6951,12 @@ function MLSAnalytics() {
           fontWeight: 700,
           fontSize: isMobile ? 13 : 16,
           color: T.ink,
-          background: hm(p.tackles, 40),
+          background: hm(p.aerialPct, 100),
           borderRadius: 3,
           textAlign: "center",
           padding: "2px 0"
         }
-      }, sv(p.tackles)), /*#__PURE__*/React.createElement("div", {
+      }, p.aerialAtt > 0 ? p.aerialPct + "%" : "—"), /*#__PURE__*/React.createElement("div", {
         style: {
           fontSize: isMobile ? 13 : 15,
           color: T.ink,
@@ -6970,12 +6970,12 @@ function MLSAnalytics() {
         style: {
           fontSize: 14,
           color: T.textDim,
-          background: hm(p.interceptions, 40),
+          background: hm(p.clearances, 40),
           borderRadius: 3,
           textAlign: "center",
           padding: "2px 0"
         }
-      }, sv(p.interceptions)), !isMobile && /*#__PURE__*/React.createElement("div", {
+      }, sv(p.clearances)), !isMobile && /*#__PURE__*/React.createElement("div", {
         style: {
           fontSize: 13,
           color: T.textDim,
@@ -7759,8 +7759,8 @@ function MLSAnalytics() {
       currentDir: rosterDir,
       onSort: toggleRosterSort
     }), /*#__PURE__*/React.createElement(ColHead, {
-      label: "Tkl",
-      sortKey: "tackles",
+      label: "Clr",
+      sortKey: "clearances",
       currentSort: rosterSort,
       currentDir: rosterDir,
       onSort: toggleRosterSort
@@ -7853,7 +7853,7 @@ function MLSAnalytics() {
         color: T.ink,
         fontWeight: 600
       }
-    }, sv(p.tackles)), /*#__PURE__*/React.createElement("div", {
+    }, sv(p.clearances)), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: T.textDim
@@ -8774,7 +8774,7 @@ function MLSAnalytics() {
         fontStyle: "italic",
         textAlign: "center"
       }
-    }, "Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and Sofascore."), (() => {
+    }, "Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and MLS Official (Opta)."), (() => {
       const upcoming = (matchesData || []).filter(m => !m.completed && m.home && m.away);
       if (!upcoming.length) return null;
       const teamPower = {};
@@ -10492,7 +10492,7 @@ function MLSAnalytics() {
       fontFamily: T.sans,
       marginTop: 4
     }
-  }, "Estimated transfer values via Sofascore. Compare market price against on-field grade to find overperformers and undervalued talent.")), /*#__PURE__*/React.createElement("div", {
+  }, "Market values are last-observed estimates; MLS roster economics run on salary (via the MLS Players Association). Compare value against on-field grade to find overperformers and undervalued talent.")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 14,
@@ -12400,7 +12400,7 @@ function MLSAnalytics() {
       lineHeight: 1.6,
       maxWidth: 280
     }
-  }, "Advanced player analytics and composite grading for Major League Soccer. Not affiliated with MLS or its clubs. Data from ESPN, American Soccer Analysis, and Sofascore.")), /*#__PURE__*/React.createElement("div", {
+  }, "Advanced player analytics and composite grading for Major League Soccer. Not affiliated with MLS or its clubs. Data from ESPN, American Soccer Analysis, and the official MLS (Opta) feed.")), /*#__PURE__*/React.createElement("div", {
     className: "resp-footer-cols",
     style: {
       display: "flex",
@@ -12481,7 +12481,7 @@ function MLSAnalytics() {
       fontFamily: T.sans,
       marginBottom: 4
     }
-  }, "Data: ESPN \xB7 ASA \xB7 Sofascore"), /*#__PURE__*/React.createElement("div", {
+  }, "Data: ESPN \xB7 ASA \xB7 MLS Official"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 10,
       color: T.textDim,

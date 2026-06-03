@@ -559,7 +559,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
         <div style={{flex:1}}>
           <div style={{fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:10}}>Percentile Ranks vs All Players</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"6px 16px"}}>
-            {[{l:"Overall",k:"overall"},{l:"Attack",k:"attack"},{l:"Passing",k:"passing"},{l:"Defense",k:"defense"},{l:"Creativity",k:"creativity"},{l:"Carrying",k:"carrying"},{l:"Goals",k:"goals"},{l:"Assists",k:"assists"},{l:"Tackles",k:"tackles"},{l:"Key Passes",k:"keyPasses"},{l:"Dribbles",k:"dribbles"},{l:"Pressures",k:"pressures"}].map(s=>{
+            {[{l:"Overall",k:"overall"},{l:"Attack",k:"attack"},{l:"Passing",k:"passing"},{l:"Defense",k:"defense"},{l:"Creativity",k:"creativity"},{l:"Carrying",k:"carrying"},{l:"Goals",k:"goals"},{l:"Assists",k:"assists"},{l:"Clearances",k:"clearances"},{l:"Key Passes",k:"keyPasses"},{l:"Dribbles",k:"dribbles"},{l:"Pressures",k:"pressures"}].map(s=>{
               const v=pct[s.k];const c=v>=90?"#B68D40":v>=75?T.green:v>=50?T.blue:v>=25?T.textDim:T.red;
               return <div key={s.k} style={{display:"flex",alignItems:"center",gap:6}}>
                 <span style={{fontSize:9,color:T.textDim,width:60,fontFamily:T.sans}}>{s.l}</span>
@@ -678,14 +678,14 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>ATTACKING</span>
             <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.attack)}}>{p.attack} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.attack)}</span></span>
           </div>
-          {bar("Goals",p.goals,20,true,"goals")}{bar("Assists",p.assists,15,true,"assists")}{bar("xG",p.xGoals,2.5,false)}{bar("xA",p.xAssists,2.5,false)}{bar("Shots",p.shots||0,60,false)}{bar("On Target",p.shotsOnTarget||0,30,false)}
+          {bar("Goals",p.goals,20,true,"goals")}{bar("Assists",p.assists,15,true,"assists")}{bar("xG",p.xGoals,2.5,false)}{bar("xA",p.xAssists,2.5,false)}{bar("Shots",p.shots||0,60,false)}{bar("On Target",p.shotsOnTarget||0,30,false)}{bar("Official xG",p.officialXg||0,12,false)}
         </div>
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>CREATIVITY</span>
             <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.creativity)}}>{p.creativity} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.creativity)}</span></span>
           </div>
-          {bar("Key Passes",p.keyPasses||0,50,true,"keyPasses")}{bar("Shot-Creating",p.sca||0,70,true,"sca")}{bar("xA",p.xAssists,10,false)}
+          {bar("Key Passes",p.keyPasses||0,50,true,"keyPasses")}{bar("Chances",p.chances||0,60,true,"chances")}{bar("xA",p.xAssists,10,false)}
         </div>
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
@@ -700,7 +700,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>DEFENSIVE</span>
             <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.defense)}}>{p.defense} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.defense)}</span></span>
           </div>
-          {bar("Tackles",p.tackles||0,40,true,"tackles")}{bar("Pressures",p.pressures||0,300,true,"pressures")}{bar("Interceptions",p.interceptions||0,40,true,"interceptions")}{bar("Aerials Won",p.aerials||0,50,false,"aerials")}{bar("Fouls",p.fouls||0,25,false)}
+          {bar("Clearances",p.clearances||0,80,true,"clearances")}{bar("Pressures",p.pressures||0,300,true,"pressures")}{bar("Aerial Win %",p.aerialPct||0,100,true,"aerialPct")}{bar("Aerials Won",p.aerials||0,50,false,"aerials")}{bar("Fouls",p.fouls||0,25,false)}
           <div style={{display:"flex",gap:12,marginTop:6}}>
             <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:12,borderRadius:1,background:"#E8C94A"}}/><span style={{fontSize:13,color:T.textDim,fontFamily:T.mono,fontWeight:600}}>{sv(p.yellowCards)}</span></div>
             <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:12,borderRadius:1,background:T.red}}/><span style={{fontSize:13,color:T.textDim,fontFamily:T.mono,fontWeight:600}}>{sv(p.redCards)}</span></div>
@@ -784,7 +784,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
       </div>}
 
             <div style={{padding:"12px 28px",borderTop:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic"}}>Stats via ESPN, ASA, Sofascore · USA Footy Index</div>
+        <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic"}}>Stats via ESPN, ASA, MLS Official · USA Footy Index</div>
         <div style={{display:"flex",gap:8}}>
           <button onClick={async()=>{
             const isDark=isDarkMode;const W=720,H=1000;
@@ -867,7 +867,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             x.fillText("MLS Player Analytics & Composite Grades",W/2,banY+82);
             x.textAlign="left";
             // Footer
-            x.fillStyle=INK;x.fillRect(0,H-44,W,44);x.fillStyle=MUTE;x.font="9px Inter,sans-serif";x.textAlign="center";x.fillText("Data: ESPN · American Soccer Analysis · Sofascore",W/2,H-20);x.textAlign="left";
+            x.fillStyle=INK;x.fillRect(0,H-44,W,44);x.fillStyle=MUTE;x.font="9px Inter,sans-serif";x.textAlign="center";x.fillText("Data: ESPN · American Soccer Analysis · MLS Official (Opta)",W/2,H-20);x.textAlign="left";
             const link=document.createElement("a");link.download=`${p.name.replace(/\s+/g,"-").toLowerCase()}-ufi-card.png`;link.href=c.toDataURL("image/png");link.click();
           }} style={{background:"none",border:`1px solid ${T.border}`,color:T.textDim,padding:"7px 16px",borderRadius:4,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.3,transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gold} onMouseLeave={e=>e.currentTarget.style.borderColor=T.border}>↓ Player Card</button>
           {onCompare&&<button onClick={()=>{onCompare(p);onClose();}} disabled={isInCompare} style={{background:isInCompare?"transparent":T.bg,border:`1px solid ${isInCompare?T.borderLt:T.accent}`,color:isInCompare?T.textMute:T.accent,padding:"7px 16px",borderRadius:4,cursor:isInCompare?"default":"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,opacity:isInCompare?.5:1}}>{isInCompare?"In Compare":"+ Compare"}</button>}
@@ -1368,11 +1368,11 @@ function MLSAnalytics(){
             <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:12}}>SIX GRADE CATEGORIES</div>
             {[
               {name:"Overall",weight:"Position-weighted composite — FW: 30% ATT, 25% G+, 20% CRE | MF: 20% G+, 20% PAS, 20% CRE | DF: 30% DEF, 25% G+, 20% PAS",desc:"The composite score is role-aware. A defender's Overall rewards defensive excellence; a forward's rewards attacking output. Sub-grades are universal (everyone is ranked the same way on Attack, Passing, etc.) but the Overall reflects what matters for each position."},
-              {name:"Attack",weight:"35% xG/90 + 25% Key Passes/90 + 25% Big Chances/90 + 15% xA/90",desc:"Measures goal threat and chance involvement. Uses expected metrics to capture quality of chances created and taken, not just raw output."},
-              {name:"Passing",weight:"30% Completion % + 30% Final Third Passes/90 + 25% Key Passes/90 + 15% Pass G+",desc:"Goes beyond completion rate. Progressive passes reward players who advance the ball into dangerous areas, not just sideways recyclers."},
-              {name:"Defense",weight:"25% Defensive G+ + 25% Ball Recovery/90 + 25% Interceptions/90 + 25% Aerials/90",desc:"Captures both active defending (pressures, interceptions) and overall defensive value added. Aerial dominance matters for set pieces and crosses."},
-              {name:"Creativity",weight:"35% Key Passes/90 + 35% Big Chances Created/90 + 30% xA/90",desc:"Specifically isolates playmaking ability. A player can score low on Attack but high on Creativity if they're creating for others rather than finishing."},
-              {name:"Carrying",weight:"50% Successful Dribbles/90 + 30% Final Third Passes/90 + 20% Carry Risk",desc:"Ball progression through carrying. Rewards players who beat defenders and drive the ball forward, breaking defensive lines with the ball at their feet."},
+              {name:"Attack",weight:"/*STEP5*/40% Official xG/90 + 20% ASA xG/90 + 25% Chances/90 + 15% xA/90",desc:"Goal threat and chance involvement, anchored by official Opta expected goals blended with ASA's independent model, plus chance volume and expected assists. Two xG models reduce single-model noise."},
+              {name:"Passing",weight:"30% Completion % + 20% Passing vs Expected + 20% Difficult Passes/90 + 15% Pass G+ + 15% Key Passes/90",desc:"Beyond completion rate: rewards passers who beat the expected-completion model and complete difficult, line-breaking passes — not sideways recyclers."},
+              {name:"Defense",weight:"30% Defensive G+ + 25% Pressures/90 + 25% Clearances/90 + 20% Aerials Won/90",desc:"Combines defensive value added (Goals Added) with active defending — pressures applied, clearances, and aerial dominance for set pieces and crosses."},
+              {name:"Creativity",weight:"45% Key Passes/90 + 30% xA/90 + 25% Chances/90",desc:"Isolates playmaking: passes that set up shots, expected assists, and overall chance involvement. A player can rate low on Attack but high here by creating for others."},
+              {name:"Carrying",weight:"50% Dribbling G+ + 30% Escape Rate + 10% Nutmegs/90 + 10% Difficult Passes/90",desc:"Ball progression with the feet, measured by ASA dribbling Goals Added (the value a carry adds), how often a player escapes pressure, and a touch of flair. MLS event data has no raw take-on count, so we grade carrying value rather than raw dribble attempts."},
             ].map(cat=>(
               <div key={cat.name} style={{marginBottom:16,padding:"14px 18px",background:T.surface,border:`1px solid ${T.borderLt}`,borderRadius:6}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
@@ -1405,15 +1405,15 @@ function MLSAnalytics(){
             <div style={{marginTop:20,padding:"14px 18px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
               <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:8}}>GOALKEEPER GRADING</div>
               <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,lineHeight:1.7,marginBottom:10}}>
-                Goalkeepers are graded on a completely separate system, compared only to other GKs. The six categories are remapped to GK-specific skills:
+                Goalkeepers are graded on a completely separate system, compared only to other GKs, now powered by official MLS save-quality data (expected saves). The categories are remapped to GK-specific skills:
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {[
-                  {name:"Shot-Stopping",desc:"Saves/90 (60%) + Clean Sheet Rate (40%)"},
-                  {name:"Distribution",desc:"Pass Completion (50%) + Progressive Passes/90 (50%)"},
-                  {name:"Command",desc:"Ball Recovery/90 (40%) + Aerials/90 (40%) + GA/90 inverted (20%)"},
-                  {name:"Sweeping",desc:"Aerials/90 (50%) + Interceptions/90 (50%)"},
-                  {name:"Handling",desc:"Clean Sheet Rate (50%) + Saves/90 (50%)"},
+                  {name:"Shot-Stopping",desc:"Saves Above Expected (50%) + Saves/90 (30%) + Clean Sheet Rate (20%)"},
+                  {name:"Distribution",desc:"Passing vs Expected (50%) + Pass Completion (25%) + Difficult Pass % (25%)"},
+                  {name:"Command",desc:"Claims & Catches/90 (50%) + Aerial Win % (30%) + GA/90 inverted (20%)"},
+                  {name:"Sweeping",desc:"Sweeping Actions/90 (70%) + GA/90 inverted (30%)"},
+                  {name:"Handling",desc:"Saves/90 (60%) + Clean Sheet Rate (40%)"},
                   {name:"GK Overall",desc:"Shot-Stop 35% + Command 25% + Distribution 20% + Sweep 10% + Handling 10%"},
                 ].map(cat=>(
                   <div key={cat.name} style={{padding:"8px 12px",background:T.bg,borderRadius:4,border:`1px solid ${T.borderLt}`}}>
@@ -1427,7 +1427,7 @@ function MLSAnalytics(){
             <div style={{marginTop:20,padding:"14px 18px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
               <div style={{fontSize:10,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:8}}>DATA SOURCES</div>
               <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,lineHeight:1.7}}>
-                Player data sourced from ESPN (boxscores, rosters, standings), American Soccer Analysis (xG, xA, Goals Added, pass analytics), and Sofascore (tackles, interceptions, duels, dribbles, final third passes, ball recoveries, market values). All grades computed from real, verifiable data.
+                Player data sourced from ESPN (boxscores, rosters, standings), American Soccer Analysis (xG, xA, Goals Added, dribbling, xPass, salaries), and the official MLS statistics feed (Opta — chances, key passes, aerials, clearances, pressures, distance, and goalkeeping: saves, clean sheets, expected saves). All grades computed from real, verifiable data.
               </div>
             </div>
           </div>
@@ -1473,7 +1473,7 @@ function MLSAnalytics(){
 
             <div style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:10}}>DATA SOURCES</div>
             <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,lineHeight:1.7,marginBottom:16}}>
-              Every grade is powered by real match data from three independent sources: ESPN (goals, assists, shots, fouls, cards, match logs), American Soccer Analysis (xG, xA, Goals Added, xPass, salaries), and Sofascore (tackles, interceptions, market values, dribbles). Data refreshes daily.
+              Every grade is powered by real match data from three independent sources: ESPN (goals, assists, shots, fouls, cards, match logs), American Soccer Analysis (xG, xA, Goals Added, xPass, salaries, dribbling), and the official MLS (Opta) statistics feed (chances, key passes, aerials, clearances, pressures, goalkeeping). Data refreshes on match days.
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:20}}>
@@ -1568,7 +1568,7 @@ function MLSAnalytics(){
               <ColHead label="A" sortKey="assists" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
               {!isMobile&&<ColHead label="xG/90" sortKey="xg90" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}
               {!isMobile&&<ColHead label="Pass%" sortKey="passComp" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}
-              {!isMobile&&<ColHead label="Tkl" sortKey="tackles" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}
+              {!isMobile&&<ColHead label="Clr"/*3B2*/ sortKey="clearances" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}
               {!isMobile&&<div style={{textAlign:"center"}}>Sh/SoT</div>}
               {!isMobile&&<ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}
               <ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
@@ -1582,7 +1582,7 @@ function MLSAnalytics(){
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.assists,15),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.assists}</div>
               {!isMobile&&<div style={{fontSize:12,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.xg90}</div>}
               {!isMobile&&<div style={{fontSize:14,color:T.textDim,fontFamily:T.mono,background:hm(+p.passComp,100),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.passComp}%</div>}
-              {!isMobile&&<div style={{fontSize:15,color:T.ink,fontWeight:600,background:hm(p.tackles,40),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.tackles)}</div>}
+              {!isMobile&&<div style={{fontSize:15,color:T.ink,fontWeight:600,background:hm(p.clearances,40),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.clearances)}</div>}
               {!isMobile&&<div style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{p.shots!=null?`${p.shots}/${p.shotsOnTarget}`:"—"}</div>}
               {!isMobile&&<div style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{sv(p.fouls)}</div>}
               <div style={{fontSize:isMobile?11:14,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,background:hm(Math.abs(+p.totalGA),5),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>
@@ -1930,17 +1930,17 @@ function MLSAnalytics(){
             <Select label="Team" value={teamFilter} onChange={setTeamFilter} width={200} options={teamOpts}/>
             <Select label="Min. Mins" value={String(minMins)} onChange={v=>setMinMins(Number(v))} width={100} options={[["0","All"],["200","200+"],["400","400+"],["600","600+"],["900","900+"]]}/>
           </div>
-          <TopCards players={defData} metric={p=>p.tackles} metricLabel="TACKLES" onSelect={setSel}/>
+          <TopCards players={defData} metric={p=>p.clearances} metricLabel="CLEARANCES" onSelect={setSel}/>
           <TableWrap><div>
             {(()=>{const defTbl=isMobile?"24px 1fr 40px 46px 46px 46px":"24px 1fr 48px 58px 58px 50px 50px 60px 56px";return <>
-            <div style={{display:"grid",gridTemplateColumns:defTbl,padding:isMobile?"8px 10px":"10px 14px",background:T.card,fontSize:isMobile?9:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Def" sortKey="defense" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Tkl" sortKey="tackles" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Prs" sortKey="pressures" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<ColHead label="Int" sortKey="interceptions" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<div style={{textAlign:"center"}}>YC/RC</div>}<ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>
+            <div style={{display:"grid",gridTemplateColumns:defTbl,padding:isMobile?"8px 10px":"10px 14px",background:T.card,fontSize:isMobile?9:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Def" sortKey="defense" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Aer%"/*3B2*/ sortKey="aerialPct" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Prs" sortKey="pressures" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<ColHead label="Clr" sortKey="clearances" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<div style={{textAlign:"center"}}>YC/RC</div>}<ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>
             {defData.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:defTbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer"}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
               <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><Badge grade={p.defense} size={isMobile?"sm":"md"}/></div>
-              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.tackles,40),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.tackles)}</div>
+              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.aerialPct,100),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.aerialAtt>0?p.aerialPct+"%":"—"}</div>
               <div style={{fontSize:isMobile?13:15,color:T.ink,fontWeight:600,background:hm(p.pressures,300),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.pressures)}</div>
-              {!isMobile&&<div style={{fontSize:14,color:T.textDim,background:hm(p.interceptions,40),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.interceptions)}</div>}
+              {!isMobile&&<div style={{fontSize:14,color:T.textDim,background:hm(p.clearances,40),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{sv(p.clearances)}</div>}
               {!isMobile&&<div style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{sv(p.fouls)}</div>}
               {!isMobile&&<div style={{display:"flex",gap:4,justifyContent:"center",alignItems:"center"}}><div style={{width:8,height:10,borderRadius:1,background:"#E8C94A"}}/><span style={{fontSize:12}}>{sv(p.yellowCards)}</span><div style={{width:8,height:10,borderRadius:1,background:T.red}}/><span style={{fontSize:12}}>{sv(p.redCards)}</span></div>}
               <div style={{fontSize:isMobile?11:14,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,textAlign:"center"}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>
@@ -2074,7 +2074,7 @@ function MLSAnalytics(){
                       <ColHead label="G" sortKey="goals" currentSort={rosterSort} currentDir={rosterDir} onSort={toggleRosterSort}/>
                       <ColHead label="A" sortKey="assists" currentSort={rosterSort} currentDir={rosterDir} onSort={toggleRosterSort}/>
                       <ColHead label="Pass%" sortKey="passComp" currentSort={rosterSort} currentDir={rosterDir} onSort={toggleRosterSort}/>
-                      <ColHead label="Tkl" sortKey="tackles" currentSort={rosterSort} currentDir={rosterDir} onSort={toggleRosterSort}/>
+                      <ColHead label="Clr" sortKey="clearances" currentSort={rosterSort} currentDir={rosterDir} onSort={toggleRosterSort}/>
                       <ColHead label="Fls" sortKey="fouls" currentSort={rosterSort} currentDir={rosterDir} onSort={toggleRosterSort}/>
                       <ColHead label="G+" sortKey="totalGA" currentSort={rosterSort} currentDir={rosterDir} onSort={toggleRosterSort}/>
                       <div>Value</div>
@@ -2090,7 +2090,7 @@ function MLSAnalytics(){
                         <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink}}>{p.goals}</div>
                         <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink}}>{p.assists}</div>
                         <div style={{fontSize:12,color:T.textDim,fontFamily:T.mono}}>{p.passComp}%</div>
-                        <div style={{fontSize:10,color:T.ink,fontWeight:600}}>{sv(p.tackles)}</div>
+                        <div style={{fontSize:10,color:T.ink,fontWeight:600}}>{sv(p.clearances)}</div>
                         <div style={{fontSize:12,color:T.textDim}}>{sv(p.fouls)}</div>
                         <div style={{fontSize:10,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>
                         <div style={{fontSize:10,color:vc(p.marketValue),fontFamily:T.serif,fontWeight:600}}>{fv(p.marketValue)}</div>
@@ -2302,7 +2302,7 @@ function MLSAnalytics(){
             {!isMobile&&<div style={{textAlign:"right"}}>{t.topRated&&<div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"3px 10px",background:T.card,borderRadius:4,border:`1px solid ${T.borderLt}`,cursor:"pointer"}} onClick={()=>setSel(t.topRated)}><span style={{fontSize:11,fontFamily:T.serif,fontWeight:600,color:T.ink}}>{t.topRated.name}</span><Badge grade={t.topRated.overall} size="sm"/></div>}</div>}
           </div>;})}
           </>})()} </div>
-          <div style={{marginTop:16,fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic",textAlign:"center"}}>Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and Sofascore.</div>
+          <div style={{marginTop:16,fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic",textAlign:"center"}}>Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and MLS Official (Opta).</div>
 
           {/* ── FIXTURE DIFFICULTY ── */}
           {(()=>{
@@ -2768,7 +2768,7 @@ function MLSAnalytics(){
         {!loading&&tab==="valuations"&&<div style={{animation:"fadeUp .4s ease"}}>
           <div style={{marginBottom:14}}>
             <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Market Valuations</div>
-            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Estimated transfer values via Sofascore. Compare market price against on-field grade to find overperformers and undervalued talent.</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Market values are last-observed estimates; MLS roster economics run on salary (via the MLS Players Association). Compare value against on-field grade to find overperformers and undervalued talent.</div>
           </div>
           <div style={{display:"flex",gap:14,marginBottom:20,flexWrap:"wrap"}}>
             <Select label="Position" value={posFilter} onChange={setPosFilter} width={130} options={["All","Forward","Midfielder","Defender","GK"]}/>
@@ -3225,7 +3225,7 @@ function MLSAnalytics(){
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:20}}>
             <div>
               <Logo size={36} dark={dark}/>
-              <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,marginTop:8,lineHeight:1.6,maxWidth:280}}>Advanced player analytics and composite grading for Major League Soccer. Not affiliated with MLS or its clubs. Data from ESPN, American Soccer Analysis, and Sofascore.</div>
+              <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans,marginTop:8,lineHeight:1.6,maxWidth:280}}>Advanced player analytics and composite grading for Major League Soccer. Not affiliated with MLS or its clubs. Data from ESPN, American Soccer Analysis, and the official MLS (Opta) feed.</div>
             </div>
             <div className="resp-footer-cols" style={{display:"flex",gap:32}}>
               <div>
@@ -3240,7 +3240,7 @@ function MLSAnalytics(){
               <div>
                 <div style={{fontSize:8,color:T.textMute,fontWeight:700,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:8}}>Info</div>
                 <div style={{fontSize:10,color:T.accent,fontFamily:T.sans,marginBottom:4,cursor:"pointer"}} onClick={()=>setShowAbout(true)}>About</div>
-                <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4}}>Data: ESPN · ASA · Sofascore</div>
+                <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4}}>Data: ESPN · ASA · MLS Official</div>
                 <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,marginBottom:4}}>Season: {season}</div>
                 <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>v10</div>
               </div>

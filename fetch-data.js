@@ -74,7 +74,7 @@ function norm(a){return TEAM_MAP[a?.toUpperCase()]||TEAM_MAP[a]||(a||"").toUpper
 
 async function main() {
   console.log("\n  USA Footy Index — Data Fetcher v4");
-  console.log("  ESPN + ASA + Sofascore — ALL REAL DATA");
+  console.log("  ESPN + ASA + MLS Official (Opta) — ALL REAL DATA");
   console.log("  ═══════════════════════════════════════\n");
   const output = { generated: new Date().toISOString(), season: CY, players: [], standings: [], matches: [], dataSources: [] };
 
@@ -570,8 +570,8 @@ async function main() {
   }
   console.log(`  ASA directory: ${Object.keys(asaNames).length} names | xG data: ${Object.keys(asaXG).length} | G+ data: ${Object.keys(asaGA).length} | Pass data: ${Object.keys(asaPass).length}`);
   console.log(`  ASA      Salaries: ${withSalary}`);
-  console.log(`  Still unavailable (StatsBomb exclusive):`);
-  console.log(`    Progressive Passes, Progressive Carries, SCA, Pressures (using real proxies instead)`);
+  console.log(`  Now sourced from official MLS (Opta):`);
+  console.log(`    chances, key passes, aerials, clearances, pressures, GK save quality`);
   console.log(`  Season: ${CY} · ${output.generated}\n`);
 
   // ─── DATA QUALITY ASSERTIONS ───
