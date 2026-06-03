@@ -169,7 +169,7 @@ function computeGrades(ps){
   // league-wide. Overall stays position-weighted + position-rescaled (pass 2).
   const ofs=ps.filter(p=>!p.isGK);
   const mk=(arr,k)=>arr.map(p=>p[k]||0);
-  const ofXg=mk(ofs,"xg90"),ofXa=mk(ofs,"xa90"),ofGa=mk(ofs,"tga"),ofDf=mk(ofs,"dga"),ofPc=mk(ofs,"pc"),ofPg=mk(ofs,"pga"),ofKp=mk(ofs,"kp90"),ofSca=mk(ofs,"sca90"),ofFtp=mk(ofs,"ftp90"),ofPrs=mk(ofs,"prs90"),ofIntc=mk(ofs,"intc90"),ofArl=mk(ofs,"arl90"),ofDrb=mk(ofs,"drb90"),ofPrgc=mk(ofs,"prgc90"),ofOxg=mk(ofs,"oxg90"),ofChc=mk(ofs,"chc90"),ofGdr=mk(ofs,"gdrV"),ofEsc=mk(ofs,"escV"),ofPresR=mk(ofs,"presRV"),ofPassPerf=mk(ofs,"passPerfV");
+  const ofXg=mk(ofs,"xg90"),ofXa=mk(ofs,"xa90"),ofGa=mk(ofs,"tga"),ofDf=mk(ofs,"dga"),ofPc=mk(ofs,"pc"),ofPg=mk(ofs,"pga"),ofKp=mk(ofs,"kp90"),ofSca=mk(ofs,"sca90"),ofFtp=mk(ofs,"ftp90"),ofPrs=mk(ofs,"prs90"),ofIntc=mk(ofs,"intc90"),ofArl=mk(ofs,"arl90"),ofDrb=mk(ofs,"drb90"),ofPrgc=mk(ofs,"prgc90");
 
   // Single outfield composite collector (sub-grades ranked league-wide pass 2;
   // overall ranked within position pass 2)
@@ -217,11 +217,11 @@ function computeGrades(ps){
       const isDF=pos==="Defender"||pos==="DF"||pos==="DEF";
 
       // Sub-grades: universal (ranked against all outfielders)
-      const att=pct(ofOxg,p.oxg90)*.40+pct(ofXg,p.xg90)*.20+pct(ofChc,p.chc90)*.25+pct(ofXa,p.xa90)*.15;
-      const pas=pct(ofPc,p.pc)*.30+pct(ofPassPerf,p.passPerfV)*.20+pct(ofPg,p.pga)*.15+pct(ofFtp,p.ftp90)*.20+pct(ofKp,p.kp90)*.15;
-      const def=pct(ofDf,p.dga)*.30+pct(ofPrs,p.prs90)*.25+pct(ofIntc,p.intc90)*.25+pct(ofArl,p.arl90)*.20;
-      const cre=pct(ofKp,p.kp90)*.45+pct(ofXa,p.xa90)*.30+pct(ofChc,p.chc90)*.25;
-      const car=pct(ofGdr,p.gdrV)*.50+pct(ofEsc,p.escV)*.30+pct(ofDrb,p.drb90)*.10+pct(ofFtp,p.ftp90)*.10;
+      const att=pct(ofXg,p.xg90)*.35+pct(ofXa,p.xa90)*.15+pct(ofKp,p.kp90)*.25+pct(ofSca,p.sca90)*.25;
+      const pas=pct(ofPc,p.pc)*.30+pct(ofPg,p.pga)*.15+pct(ofFtp,p.ftp90)*.30+pct(ofKp,p.kp90)*.25;
+      const def=pct(ofDf,p.dga)*.25+pct(ofPrs,p.prs90)*.25+pct(ofIntc,p.intc90)*.25+pct(ofArl,p.arl90)*.25;
+      const cre=pct(ofKp,p.kp90)*.35+pct(ofSca,p.sca90)*.35+pct(ofXa,p.xa90)*.30;
+      const car=pct(ofDrb,p.drb90)*.50+pct(ofFtp,p.ftp90)*.30+pct(ofPrgc,p.prgc90)*.20;
       const gaP=pct(ofGa,p.tga);
 
       // Position-weighted Overall (weights unchanged)
@@ -985,7 +985,7 @@ function MLSAnalytics(){
         prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null,
       }));
       setLoadProgress(85);
-      const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,/*STEP4*/oxg90:(r.oxg||0)/p90,chc90:(r.chc||0)/p90,gdrV:(r.gdr||0),escV:(r.esc||0),presRV:(r.presR||0),passPerfV:(r.passPerf||0),
+      const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,
         // GK-specific
         isGK:(r.p==="GK"||r.p==="Goalkeeper"),pos:r.p,sv90:(r.sv||0)/p90,csRate:games>0?(r.cs||0)/games:0,gaCon90:games>0?(r.gaCon||0)/p90:0,gkEff90:games>0?(r.gkEfficiency||0)/games:0,svMls90:(r.gkSavesMLS||0)/p90,mlsPrs90:(r.mlsPressures||0)/p90,dpas90:(r.mlsDifficultPasses||0)/p90,passPerf90:games>0?(r.mlsPassingPerformance||0)/games:0,dpasPct:(r.mlsDifficultPassesPct||0),passesPctMls:(r.mlsPassesPct||r.pc||0),claim90:((r.mlsIntCorner||0)+(r.mlsIntHeld||0))/p90,sweep90:((r.mlsIntCross||0)+(r.mlsIntFisted||0))/p90,aerWonRate:(r.mlsAerialsTotal>0?(r.mlsAerialsWon||0)/r.mlsAerialsTotal:0),
         raw:r};});
