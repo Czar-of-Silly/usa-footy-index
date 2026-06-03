@@ -316,6 +316,18 @@ const sv = v => v==null?"—":v;
 const hm=(val,max,inv)=>{if(val==null||max===0)return"transparent";const n=Math.min(1,Math.max(0,(inv?1-val/max:val/max)));const a=n*.12;return T.ink?`rgba(0,0,0,${a})`:`rgba(255,255,255,${a})`;};
 
 // ─── COMPONENTS ──────────────────────────────────────────────────────────────
+/*TRADE-MACHINE*/
+// ── MLS Trade Machine rules engine (Path A: slot + budget-charge compliance) ──
+// 2026 constants. [V]=verified Feb 2026, [C]=confirm. UPDATE EACH FEBRUARY.
+const TM_RULES={MAX_SALARY_BUDGET_CHARGE:803125,MIDSEASON_DP_CHARGE:401563,TAM_CEILING:1803125,SENIOR_SALARY_BUDGET:5950000,GAM_ALLOTMENT:3280000,DISCRETIONARY_TAM:2125000,MAX_DP:3,MAX_U22:3,MAX_INTERNATIONAL:8,SENIOR_ROSTER_MAX:20,TOTAL_ROSTER_MAX:30};
+const tmNum=v=>(typeof v==="number"&&isFinite(v)?v:0);
+function tmCounts(p){if(p.isLoanedOut)return false;const c=p.rosterCategory||"";return c==="Senior"||c.indexOf("Supplemental")===0;}
+function tmSenior(p){return !p.isLoanedOut&&(p.rosterCategory||"")==="Senior";}
+function tmCharge(p,K){return p.isDP?K.MAX_SALARY_BUDGET_CHARGE:tmNum(p.salary);}
+function tmSummarize(roster,K){K=K||TM_RULES;const cc=roster.filter(tmCounts),sr=roster.filter(tmSenior);const s={size:cc.length,seniorSize:sr.length,offRoster:roster.length-cc.length,dp:0,u22:0,intl:0,hg:0,budgetCharge:0,missingSalary:0,totalGrade:0,gradedCount:0};for(const p of cc){if(p.isDP)s.dp++;if(p.isU22)s.u22++;if(p.isInternational)s.intl++;if(p.isHomegrown)s.hg++;if(typeof p.overall==="number"){s.totalGrade+=p.overall;s.gradedCount++;}}for(const p of sr){const sal=tmNum(p.salary);if(!p.isDP&&sal===0)s.missingSalary++;s.budgetCharge+=tmCharge(p,K);}s.avgGrade=s.gradedCount?+(s.totalGrade/s.gradedCount).toFixed(1):0;return s;}
+function tmCheck(after,prev,K){K=K||TM_RULES;const violations=[],warnings=[];if(after.dp>K.MAX_DP){if(prev.dp>K.MAX_DP&&after.dp>=prev.dp)warnings.push("Already shows "+prev.dp+" DPs in source data (MLS max "+K.MAX_DP+"; likely a roster-feed quirk). Trade doesn't reduce it.");else violations.push(after.dp+" Designated Players \u2014 exceeds max of "+K.MAX_DP+". Buy one down with GAM/TAM or include them in the trade.");}if(after.u22>K.MAX_U22)warnings.push(after.u22+" U22 Initiative players (typical max "+K.MAX_U22+") \u2014 verify against the club's declared model.");if(after.intl>K.MAX_INTERNATIONAL)warnings.push(after.intl+" international players \u2014 over "+K.MAX_INTERNATIONAL+" slots; needs extra (tradeable) international spots.");if(after.size>K.TOTAL_ROSTER_MAX)violations.push(after.size+" players \u2014 exceeds roster limit of "+K.TOTAL_ROSTER_MAX+".");const over=after.budgetCharge-K.SENIOR_SALARY_BUDGET;if(after.missingSalary>0)warnings.push("Budget approximate: "+after.missingSalary+" senior player(s) missing salary data.");if(over>0){const alloc=K.GAM_ALLOTMENT+K.DISCRETIONARY_TAM;if(over>alloc)violations.push("Budget charge $"+(after.budgetCharge/1e6).toFixed(2)+"M is $"+(over/1e6).toFixed(2)+"M over budget \u2014 beyond even full GAM+TAM ($"+(alloc/1e6).toFixed(2)+"M).");else warnings.push("Budget charge $"+(over/1e6).toFixed(2)+"M over \u2014 legal only if the club holds that much GAM/TAM (live balances not tracked).");}return{violations,warnings};}
+function tmEvaluate(o){const K=o.K||TM_RULES;const idOf=p=>p.id||p.sportecId||p.name;const oa=new Set(o.outA.map(idOf)),ob=new Set(o.outB.map(idOf));const afterA=o.rosterA.filter(p=>!oa.has(idOf(p))).concat(o.outB);const afterB=o.rosterB.filter(p=>!ob.has(idOf(p))).concat(o.outA);const bA=tmSummarize(o.rosterA,K),aA=tmSummarize(afterA,K),bB=tmSummarize(o.rosterB,K),aB=tmSummarize(afterB,K);const cA=tmCheck(aA,bA,K),cB=tmCheck(aB,bB,K);const sum=(arr,f)=>arr.reduce((t,p)=>t+f(p),0);const gO=sum(o.outA,p=>tmNum(p.overall)),gI=sum(o.outB,p=>tmNum(p.overall));const sO=sum(o.outA,p=>tmNum(p.salary)),sI=sum(o.outB,p=>tmNum(p.salary));const fairness={gradeDelta:+(gI-gO).toFixed(1),salaryDelta:sI-sO,verdict:Math.abs(gI-gO)<=8?"balanced":(gI>gO?"favors "+(o.nameA||"Team A"):"favors "+(o.nameB||"Team B"))};return{legal:cA.violations.length===0&&cB.violations.length===0,teamA:{before:bA,after:aA,constants:K,violations:cA.violations,warnings:cA.warnings},teamB:{before:bB,after:aB,constants:K,violations:cB.violations,warnings:cB.warnings},fairness};}
+
 function TeamBadge({abbr,size=20,logo}){
   if(logo)return <img src={logo} alt={abbr} style={{width:size,height:size,objectFit:"contain",flexShrink:0}} onError={e=>{e.target.onerror=null;e.target.style.display="none"}}/>;
   const t=tcm[abbr];
@@ -927,6 +939,7 @@ function MLSAnalytics(){
   const[srDir,setSrDir]=useState("desc");
   const[srView,setSrView]=useState("table");
   const[srMinMins,setSrMinMins]=useState(0);
+  const[trA,setTrA]=useState("");const[trB,setTrB]=useState("");const[trOutA,setTrOutA]=useState([]);const[trOutB,setTrOutB]=useState([]);
   const[histData,setHistData]=useState({}); // {2024:{name->grades}, 2025:{...}, 2026:{...}}
   const[h2hHome,setH2hHome]=useState("");
   const[h2hAway,setH2hAway]=useState("");
@@ -982,6 +995,7 @@ function MLSAnalytics(){
         sal:safe(r.salary,0,20e6,0),
         sv:safe(r.sv,0,200,0),cs:safe(r.cs,0,40,0),gaCon:safe(r.ga_conceded,0,100,0),
         /*GKMLS*/gkEfficiency:safe(r.gkEfficiency,-20,20,0),gkSavesMLS:safe(r.gkSavesMLS,0,200,0),mlsPressures:safe(r.mlsPressures,0,1500,0),mlsDifficultPasses:safe(r.mlsDifficultPasses,0,500,0),mlsPassingPerformance:safe(r.mlsPassingPerformance,-50,50,0),mlsDifficultPassesPct:safe(r.mlsDifficultPassesPct,0,1,0),mlsPassesPct:safe(r.mlsPassesPct,0,100,0),mlsIntCorner:safe(r.mlsIntCorner,0,50,0),mlsIntHeld:safe(r.mlsIntHeld,0,50,0),mlsIntCross:safe(r.mlsIntCross,0,50,0),mlsIntFisted:safe(r.mlsIntFisted,0,50,0),mlsAerialsWon:safe(r.mlsAerialsWon,0,80,0),mlsAerialsTotal:safe(r.mlsAerialsTotal,0,80,0),
+        isDP:!!r.isDP,isU22:!!r.isU22,isIntl:!!r.isInternational,isHG:!!r.isHomegrown,isLoaned:!!r.isLoanedOut,rosterCat:r.rosterCategory||null,sportecId:r.sportecId||null,
         prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null,
       }));
       setLoadProgress(85);
@@ -992,7 +1006,7 @@ function MLSAnalytics(){
       const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players from pools
       setLoadProgress(95);
       const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:+(r.oxg||0),chances:r.chc||0,goalOpps:r.gop||0,aerialPct:r.arlPct||0,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:r.clr||0,pressureRes:+(r.presR||0),escapeRate:+(r.esc||0),distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:+(r.oxg||0),chances:r.chc||0,goalOpps:r.gop||0,aerialPct:r.arlPct||0,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:r.clr||0,pressureRes:+(r.presR||0),escapeRate:+(r.esc||0),distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}
@@ -1271,7 +1285,7 @@ function MLSAnalytics(){
     });
   },[enrichedTeams]);
 
-  const TABS=[{id:"players",l:"Player Grades"},{id:"season",l:"Season Rating"},{id:"defense",l:"Defense"},{id:"passing",l:"Passing"},{id:"teams",l:"Teams"},{id:"rankings",l:"Table"},{id:"leaders",l:"Leaders"},{id:"valuations",l:"Values"},{id:"positions",l:"Positional"},{id:"compare",l:"Compare"+(comparePlayers.length?` (${comparePlayers.length})`:"")}];
+  const TABS=[{id:"players",l:"Player Grades"},{id:"season",l:"Season Rating"},{id:"defense",l:"Defense"},{id:"passing",l:"Passing"},{id:"teams",l:"Teams"},{id:"rankings",l:"Table"},{id:"leaders",l:"Leaders"},{id:"valuations",l:"Values"},{id:"positions",l:"Positional"},{id:"compare",l:"Compare"+(comparePlayers.length?` (${comparePlayers.length})`:"")},{id:"trade",l:"Trade Machine"}];
   const tbl=isMobile?"28px 1fr 40px 42px 34px 34px 50px":"34px 1fr 48px 54px 46px 46px 56px 60px 52px 60px 48px 60px";
 
   return (
@@ -3209,6 +3223,82 @@ function MLSAnalytics(){
             </div>}
           </div>;
         })()}
+        {!loading&&tab==="trade"&&(()=>{/*TRADE-V2*/
+          const teamSel=[["","— select club —"],...MLS_TEAMS.map(t=>[t.abbr,t.name])];
+          const nameOf=a=>{const t=MLS_TEAMS.find(x=>x.abbr===a);return t?t.name:a;};
+          const rosterOf=t=>players.filter(p=>p.team===t);
+          const rA=trA?rosterOf(trA):[], rB=trB?rosterOf(trB):[];
+          const result=(trA&&trB&&trA!==trB&&(trOutA.length||trOutB.length))?tmEvaluate({rosterA:rA,rosterB:rB,outA:trOutA,outB:trOutB,nameA:trA,nameB:trB}):null;
+          const PILL={DP:{bg:T.accent,t:"DP"},U22:{bg:T.blue,t:"U22"},INT:{bg:T.gold,t:"INT"}};
+          const pills=p=>[p.isDP&&"DP",p.isU22&&"U22",p.isInternational&&"INT"].filter(Boolean);
+          const Pills=({p})=><span style={{display:"inline-flex",gap:3,marginLeft:6,verticalAlign:"middle"}}>{pills(p).map(k=><span key={k} style={{fontSize:8,fontWeight:800,letterSpacing:.4,color:"#fff",background:PILL[k].bg,borderRadius:3,padding:"1px 4px",fontFamily:T.sans}}>{PILL[k].t}</span>)}</span>;
+          const Face=({p,size})=>(p.localHeadshot||p.headshot)?<img src={p.localHeadshot||p.headshot} alt="" style={{width:size,height:size,borderRadius:"50%",objectFit:"cover",border:`1px solid ${T.border}`,flexShrink:0}} onError={e=>{e.target.style.display="none";}}/>:<TeamBadge abbr={p.team} size={size} logo={p.teamLogo}/>;
+          const Pick=({p,sel,onClick})=>(
+            <div onClick={onClick} style={{display:"flex",alignItems:"center",gap:9,padding:"7px 9px",borderRadius:6,cursor:"pointer",background:sel?T.accent+"1A":"transparent",border:`1px solid ${sel?T.accent:"transparent"}`,marginBottom:3,transition:"all .12s"}}>
+              <Face p={p} size={34}/>
+              <div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:13.5,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}<Pills p={p}/></div><div style={{fontSize:10,color:T.textMute,fontFamily:T.sans,marginTop:1}}>{p.position}{p.salary?" · $"+(p.salary/1e6).toFixed(1)+"M":""}</div></div>
+              <Badge grade={p.overall} size="sm"/>
+            </div>
+          );
+          const listCol=(team,setTeam,roster,out,setOut)=>(
+            <div style={{flex:1,minWidth:240}}>
+              <Select label="Club" value={team} onChange={v=>{setTeam(v);setOut([]);}} options={teamSel} width={210}/>
+              {team&&<div style={{marginTop:8,maxHeight:430,overflowY:"auto",border:`1px solid ${T.borderLt}`,borderRadius:8,padding:7,background:T.card}}>
+                {[...roster].sort((a,b)=>(b.overall||0)-(a.overall||0)).map(p=><Pick key={p.id} p={p} sel={out.some(x=>x.id===p.id)} onClick={()=>setOut(st=>st.some(x=>x.id===p.id)?st.filter(x=>x.id!==p.id):[...st,p])}/>)}
+              </div>}
+            </div>
+          );
+          const moveChip=(p,dir)=>(
+            <div key={p.id} style={{display:"flex",alignItems:"center",gap:7,padding:"5px 8px",background:T.surface,border:`1px solid ${T.borderLt}`,borderRadius:6,marginBottom:5,flexDirection:dir==="right"?"row":"row-reverse"}}>
+              <Face p={p} size={26}/>
+              <div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",textAlign:dir==="right"?"left":"right"}}>{shortName(p.name)}</div></div>
+              <span style={{fontSize:13,color:T.textMute}}>{dir==="right"?"→":"←"}</span>
+              <Badge grade={p.overall} size="sm"/>
+            </div>
+          );
+          const budgetBar=(charge,budget)=>{const pctv=Math.min(100,charge/budget*100);const over=charge>budget;return <div style={{margin:"8px 0 2px"}}><div style={{display:"flex",justifyContent:"space-between",fontSize:11.5,padding:"4px 0"}}><span style={{color:T.textDim,fontFamily:T.sans}}>Budget charge</span><span style={{fontFamily:T.mono,color:over?T.red:T.ink,fontWeight:over?700:500}}>${(charge/1e6).toFixed(2)}M</span></div><div style={{height:8,borderRadius:4,background:T.borderLt,overflow:"hidden"}}><div style={{height:"100%",width:pctv+"%",background:over?T.red:T.green,transition:"width .3s"}}/></div><div style={{fontSize:9,color:T.textMute,fontFamily:T.mono,marginTop:2,textAlign:"right"}}>of ${(budget/1e6).toFixed(2)}M senior budget</div></div>;};
+          const card=(c,name)=>{
+            const K=c.constants;
+            const row=(label,b,a,bad)=><div style={{display:"flex",justifyContent:"space-between",fontSize:11.5,padding:"4px 0",borderBottom:`1px solid ${T.borderLt}`}}><span style={{color:T.textDim,fontFamily:T.sans}}>{label}</span><span style={{fontFamily:T.mono,color:bad?T.red:T.ink,fontWeight:bad?700:500}}>{b} → <b>{a}</b></span></div>;
+            return <div style={{flex:1,minWidth:250,background:T.surface,border:`1px solid ${T.border}`,borderRadius:10,padding:16,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+              <div style={{fontFamily:T.display,fontWeight:700,fontSize:17,color:T.ink,marginBottom:10,display:"flex",alignItems:"center",gap:8}}><TeamBadge abbr={name} size={24} logo={(players.find(p=>p.team===name)||{}).teamLogo}/>{nameOf(name)}</div>
+              {row("Roster size",c.before.size,c.after.size,c.after.size>K.TOTAL_ROSTER_MAX)}
+              {row("Designated Players",c.before.dp,c.after.dp,c.after.dp>K.MAX_DP)}
+              {row("U22 Initiative",c.before.u22,c.after.u22)}
+              {row("Internationals",c.before.intl,c.after.intl,c.after.intl>K.MAX_INTERNATIONAL)}
+              {budgetBar(c.after.budgetCharge,K.SENIOR_SALARY_BUDGET)}
+              {c.violations.map((v,i)=><div key={"v"+i} style={{fontSize:10.5,color:T.red,marginTop:7,lineHeight:1.45,display:"flex",gap:5}}><span>⛔</span><span>{v}</span></div>)}
+              {c.warnings.map((w,i)=><div key={"w"+i} style={{fontSize:10.5,color:T.gold,marginTop:5,lineHeight:1.45,display:"flex",gap:5}}><span>⚠</span><span>{w}</span></div>)}
+            </div>;
+          };
+          return <div style={{animation:"fadeUp .4s ease"}}>
+            <div style={{marginBottom:16}}>
+              <div style={{fontFamily:T.display,fontWeight:700,fontSize:28,color:T.ink,letterSpacing:-.5}}>Trade Machine</div>
+              <div style={{fontSize:12.5,color:T.textMute,fontFamily:T.sans,marginTop:4,maxWidth:680}}>Build a trade between two clubs and test it against MLS roster rules — DP slots, international slots, roster size, and salary-budget charge. Tap players on each side to include them.</div>
+            </div>
+            <div style={{display:"flex",gap:14,flexWrap:"wrap",marginBottom:18,alignItems:"flex-start"}}>
+              {listCol(trA,setTrA,rA,trOutA,setTrOutA)}
+              <div style={{alignSelf:"center",fontFamily:T.display,fontWeight:800,fontSize:24,color:T.textMute,padding:"0 2px"}}>⇄</div>
+              {listCol(trB,setTrB,rB,trOutB,setTrOutB)}
+            </div>
+            {result?<div>
+              <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:12,padding:18,marginBottom:16}}>
+                <div style={{textAlign:"center",fontFamily:T.sans,fontWeight:700,fontSize:10,letterSpacing:2,color:T.textMute,textTransform:"uppercase",marginBottom:14}}>⇄ The Deal</div>
+                <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+                  <div style={{flex:1,minWidth:220}}><div style={{fontSize:10,color:T.textDim,fontWeight:700,letterSpacing:1,marginBottom:8,textTransform:"uppercase"}}>{nameOf(trA)} sends →</div>{trOutA.length?trOutA.map(p=>moveChip(p,"right")):<div style={{fontSize:11,color:T.textMute,fontStyle:"italic"}}>No players selected</div>}</div>
+                  <div style={{flex:1,minWidth:220}}><div style={{fontSize:10,color:T.textDim,fontWeight:700,letterSpacing:1,marginBottom:8,textTransform:"uppercase",textAlign:"right"}}>← {nameOf(trB)} sends</div>{trOutB.length?trOutB.map(p=>moveChip(p,"left")):<div style={{fontSize:11,color:T.textMute,fontStyle:"italic",textAlign:"right"}}>No players selected</div>}</div>
+                </div>
+              </div>
+              <div style={{textAlign:"center",padding:"14px",borderRadius:10,marginBottom:16,background:result.legal?T.green+"18":T.red+"18",border:`2px solid ${result.legal?T.green:T.red}`}}>
+                <div style={{fontFamily:T.display,fontWeight:800,fontSize:22,color:result.legal?T.green:T.red}}>{result.legal?"✓ Trade is Legal":"✗ Trade Not Legal"}</div>
+                <div style={{fontSize:11.5,color:T.textDim,marginTop:5,fontFamily:T.sans}}>Fairness: {result.fairness.verdict} · grade {result.fairness.gradeDelta>=0?"+":""}{result.fairness.gradeDelta} to {nameOf(trA)} · salary {result.fairness.salaryDelta>=0?"+":""}${(result.fairness.salaryDelta/1e6).toFixed(1)}M to {nameOf(trA)}</div>
+              </div>
+              <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>{card(result.teamA,trA)}{card(result.teamB,trB)}</div>
+              <div style={{fontSize:9.5,color:T.textMute,fontStyle:"italic",marginTop:14,lineHeight:1.6,maxWidth:760}}>Slot counts (DP / U22 / International) use official MLS roster data. The salary-budget figure is approximate — some Designated Player salaries are missing from public data, and live GAM/TAM balances aren't tracked — so "legal" reflects slot and roster-size compliance and flags budget overages that would require allocation money. Constants reflect MLS 2026 rules.</div>
+            </div>:<div style={{textAlign:"center",padding:"48px 20px",color:T.textMute,fontSize:13,fontFamily:T.sans}}>{trA&&trB?(trA===trB?"Pick two different clubs.":"Tap players on each side to stage a trade."):"Select two clubs to begin."}</div>}
+          </div>;
+        })()}
+
       </main>
 
       {/* ═══ EMAIL SIGNUP ══════════════════════════════════════════════════ */}
