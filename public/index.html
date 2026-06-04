@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-06-03T02:17:28 -->
+<!-- built: 2026-06-04T00:01:13 -->
 </head>
 <body>
   <div id="root"></div>
@@ -3596,7 +3596,7 @@ function MLSAnalytics() {
           gkEff: safe(r.gkEff, -25, 25, 0),
           headshot: r.headshot || null,
           matchLog: Array.isArray(r.matchLog) ? r.matchLog : [],
-          sal: safe(r.salary, 0, 20e6, 0),
+          sal: safe(r.guaranteedComp || r.baseSalary || r.salary, 0, 40e6, 0),
           sv: safe(r.sv, 0, 200, 0),
           cs: safe(r.cs, 0, 40, 0),
           gaCon: safe(r.ga_conceded, 0, 100, 0),

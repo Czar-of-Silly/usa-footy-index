@@ -89,10 +89,12 @@ const TEAM_ABBR = {
 
 // ─── Name normalization ────────────────────────────────────────────────────
 // Strip accents, lowercase, collapse spaces. Helps fuzzy matching.
-const norm = s => String(s || '')
+const norm = s => String(s || '')/*SALMATCH-V2*/
   .normalize('NFD').replace(/[\u0300-\u036f]/g, '')   // strip diacritics
   .toLowerCase()
-  .replace(/[^a-z\s'-]/g, '')                          // keep letters, spaces, hyphens, apostrophes
+  .replace(/['\u2019]/g, '')                            // drop apostrophes (O'Neill straight + curly)
+  .replace(/-/g, ' ')                                   // hyphens -> space (Heung-min -> heung min)
+  .replace(/[^a-z\s]/g, '')                             // keep letters + spaces only
   .replace(/\s+/g, ' ')
   .trim();
 
@@ -193,6 +195,14 @@ function findSalaryMatch(cachePlayer) {
 
   const free = pool.filter((_, i) => !usedSalaryIds.has(`${teamAbbr}-${i}`));
 
+  // Pass 0: explicit aliases for word-order / abbreviation edge cases
+  const SALARY_ALIAS = { 'son hm': 'heung min son' };
+  const aliasTarget = SALARY_ALIAS[norm(cachePlayer.n)];
+  if (aliasTarget) {
+    const a = free.filter(s => norm(`${s.firstName} ${s.lastName}`) === aliasTarget);
+    if (a.length === 1) return { match: a[0], pass: 1 };
+  }
+
   // Pass 1: exact full-name match (first+last)
   const fullNorm = norm(cachePlayer.n);
   let candidates = free.filter(s => norm(`${s.firstName} ${s.lastName}`) === fullNorm);
@@ -231,6 +241,17 @@ function findSalaryMatch(cachePlayer) {
     const sTokens = norm(`${s.firstName} ${s.lastName}`).split(' ').filter(Boolean);
     const overlap = cnTokens.filter(t => sTokens.includes(t)).length;
     return overlap >= 2;  // require at least 2 shared tokens
+  });
+  if (candidates.length === 1) return { match: candidates[0], pass: 4 };
+  if (candidates.length > 1) {
+    const byPos = candidates.filter(s => posBucket(s.position) === cPosBucket);
+    if (byPos.length === 1) return { match: byPos[0], pass: 4 };
+  }
+
+  // Pass 5: mononym / nickname — a distinctive token (>=4 chars) appears in the salary name
+  candidates = free.filter(s => {
+    const sTokens = norm(`${s.firstName} ${s.lastName}`).split(' ').filter(Boolean);
+    return cnTokens.some(t => t.length >= 4 && sTokens.includes(t));
   });
   if (candidates.length === 1) return { match: candidates[0], pass: 4 };
   if (candidates.length > 1) {
