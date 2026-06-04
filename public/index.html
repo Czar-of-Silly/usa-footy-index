@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-06-04T01:04:09 -->
+<!-- built: 2026-06-04T02:12:26 -->
 </head>
 <body>
   <div id="root"></div>
@@ -586,14 +586,49 @@ const TM_RULES = {
   MAX_SALARY_BUDGET_CHARGE: 803125,
   MIDSEASON_DP_CHARGE: 401563,
   TAM_CEILING: 1803125,
-  SENIOR_SALARY_BUDGET: 5950000,
+  SENIOR_SALARY_BUDGET: 6425000 /*PATHB*/,
   GAM_ALLOTMENT: 3280000,
   DISCRETIONARY_TAM: 2125000,
   MAX_DP: 3,
-  MAX_U22: 3,
+  MAX_U22: 4,
   MAX_INTERNATIONAL: 8,
   SENIOR_ROSTER_MAX: 20,
   TOTAL_ROSTER_MAX: 30
+};
+// Per-club available General Allocation Money (MLS published, as of Jan 20 2026).
+// GAM buys down Salary Budget Charges $1-for-$1. UPDATE from the latest MLS GAM
+// release / Club Roster Profiles when republished (a few times per season).
+const TM_GAM = {
+  ATL: 4586967,
+  ATX: 2549636,
+  CLT: 4472657,
+  CHI: 5077349,
+  CIN: 3391927,
+  COL: 3472551,
+  CLB: 6027022,
+  DAL: 4232945,
+  DC: 4220649,
+  HOU: 6576431,
+  SKC: 4530121,
+  LA: 3313457,
+  LAFC: 4368355,
+  MIA: 6484336,
+  MIN: 7259300,
+  MTL: 6008069,
+  NSH: 3901404,
+  NE: 3301754,
+  NYC: 5451436,
+  ORL: 3518514,
+  PHI: 4744841,
+  POR: 3180000,
+  RSL: 6947461,
+  RBNY: 5284106,
+  SD: 5537108,
+  SJ: 4118024,
+  SEA: 5518053,
+  STL: 6150522,
+  TOR: 5316009,
+  VAN: 5523381
 };
 const tmNum = v => typeof v === "number" && isFinite(v) ? v : 0;
 function tmCounts(p) {
@@ -642,7 +677,7 @@ function tmSummarize(roster, K) {
   s.avgGrade = s.gradedCount ? +(s.totalGrade / s.gradedCount).toFixed(1) : 0;
   return s;
 }
-function tmCheck(after, prev, K) {
+function tmCheck(after, prev, K, gam) {
   K = K || TM_RULES;
   const violations = [],
     warnings = [];
@@ -655,8 +690,13 @@ function tmCheck(after, prev, K) {
   const over = after.budgetCharge - K.SENIOR_SALARY_BUDGET;
   if (after.missingSalary > 0) warnings.push("Budget approximate: " + after.missingSalary + " senior player(s) missing salary data.");
   if (over > 0) {
-    const alloc = K.GAM_ALLOTMENT + K.DISCRETIONARY_TAM;
-    if (over > alloc) violations.push("Budget charge $" + (after.budgetCharge / 1e6).toFixed(2) + "M is $" + (over / 1e6).toFixed(2) + "M over budget \u2014 beyond even full GAM+TAM ($" + (alloc / 1e6).toFixed(2) + "M).");else warnings.push("Budget charge $" + (over / 1e6).toFixed(2) + "M over \u2014 legal only if the club holds that much GAM/TAM (live balances not tracked).");
+    const haveGam = typeof gam === "number";
+    const pool = haveGam ? gam : K.GAM_ALLOTMENT + K.DISCRETIONARY_TAM;
+    if (over > pool) {
+      violations.push("Charge $" + (after.budgetCharge / 1e6).toFixed(2) + "M is $" + (over / 1e6).toFixed(2) + "M over the $" + (K.SENIOR_SALARY_BUDGET / 1e6).toFixed(2) + "M budget \u2014 more than the club's " + (haveGam ? "$" + (pool / 1e6).toFixed(2) + "M available GAM" : "allocation money") + " can buy down.");
+    } else {
+      warnings.push("$" + (over / 1e6).toFixed(2) + "M over budget \u2014 covered by buying down with the club's " + (haveGam ? "$" + (pool / 1e6).toFixed(2) + "M available GAM (leaves $" + ((pool - over) / 1e6).toFixed(2) + "M)" : "GAM/TAM") + ".");
+    }
   }
   return {
     violations,
@@ -674,8 +714,8 @@ function tmEvaluate(o) {
     aA = tmSummarize(afterA, K),
     bB = tmSummarize(o.rosterB, K),
     aB = tmSummarize(afterB, K);
-  const cA = tmCheck(aA, bA, K),
-    cB = tmCheck(aB, bB, K);
+  const cA = tmCheck(aA, bA, K, TM_GAM[o.nameA]),
+    cB = tmCheck(aB, bB, K, TM_GAM[o.nameB]);
   const sum = (arr, f) => arr.reduce((t, p) => t + f(p), 0);
   const gO = sum(o.outA, p => tmNum(p.overall)),
     gI = sum(o.outB, p => tmNum(p.overall));
@@ -12866,7 +12906,23 @@ function MLSAnalytics() {
         abbr: name,
         size: 24,
         logo: (players.find(p => p.team === name) || {}).teamLogo
-      }), nameOf(name)), row("Roster size", c.before.size, c.after.size, c.after.size > K.TOTAL_ROSTER_MAX), row("Designated Players", c.before.dp, c.after.dp, c.after.dp > K.MAX_DP), row("U22 Initiative", c.before.u22, c.after.u22), row("Internationals", c.before.intl, c.after.intl, c.after.intl > K.MAX_INTERNATIONAL), budgetBar(c.after.budgetCharge, K.SENIOR_SALARY_BUDGET), c.violations.map((v, i) => /*#__PURE__*/React.createElement("div", {
+      }), nameOf(name)), row("Roster size", c.before.size, c.after.size, c.after.size > K.TOTAL_ROSTER_MAX), row("Designated Players", c.before.dp, c.after.dp, c.after.dp > K.MAX_DP), row("U22 Initiative", c.before.u22, c.after.u22), row("Internationals", c.before.intl, c.after.intl, c.after.intl > K.MAX_INTERNATIONAL), budgetBar(c.after.budgetCharge, K.SENIOR_SALARY_BUDGET), /*#__PURE__*/React.createElement("div", {
+        style: {
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: 11,
+          padding: "3px 0",
+          color: T.textDim
+        }
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontFamily: T.sans
+        }
+      }, "GAM available"), /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontFamily: T.mono
+        }
+      }, TM_GAM[name] != null ? "$" + (TM_GAM[name] / 1e6).toFixed(2) + "M" : "\u2014")), c.violations.map((v, i) => /*#__PURE__*/React.createElement("div", {
         key: "v" + i,
         style: {
           fontSize: 10.5,
