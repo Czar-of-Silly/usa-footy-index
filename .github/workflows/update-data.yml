@@ -64,4 +64,3 @@ jobs:
         with:
           commit_message: "Auto-update MLS data (rosters + Opta stats + salaries)"
           file_pattern: "public/data/*.json"
-          push_options: "--force-with-lease"
