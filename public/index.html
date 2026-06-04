@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-06-04T00:01:13 -->
+<!-- built: 2026-06-04T00:11:18 -->
 </head>
 <body>
   <div id="root"></div>
@@ -762,10 +762,46 @@ function TeamBadge({
 }
 function Badge({
   grade,
-  size = "sm"
+  size = "sm",
+  rated = true
 }) {
+  /*NR*/
   const fs = size === "lg" ? 36 : size === "md" ? 17 : 14;
   const pad = size === "lg" ? "12px 20px" : size === "md" ? "4px 10px" : "2px 7px";
+  if (rated === false || grade == null) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "inline-flex",
+        flexDirection: "column",
+        alignItems: "center",
+        background: T.borderLt,
+        border: `1.5px solid ${T.textMute}30`,
+        borderRadius: size === "lg" ? 10 : 5,
+        padding: pad,
+        minWidth: size === "lg" ? 72 : size === "md" ? 36 : 34
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: T.textMute,
+        fontWeight: 700,
+        fontSize: size === "lg" ? 20 : fs,
+        fontFamily: T.serif,
+        letterSpacing: 0,
+        lineHeight: 1
+      }
+    }, "NR"), size === "lg" && /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: T.textMute,
+        fontSize: 7,
+        fontWeight: 600,
+        letterSpacing: 1,
+        opacity: .8,
+        marginTop: 2,
+        fontFamily: T.sans,
+        textTransform: "uppercase"
+      }
+    }, "Not Rated"));
+  }
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "inline-flex",
@@ -1360,6 +1396,7 @@ function TopCards({
     }
   }, metricLabel)), /*#__PURE__*/React.createElement(Badge, {
     grade: p.overall,
+    rated: p.rated,
     size: "md"
   })))));
 }
@@ -1560,6 +1597,7 @@ function PlayerModal({
     }
   }, "|"), /*#__PURE__*/React.createElement("span", null, p.mins?.toLocaleString(), " min"))), /*#__PURE__*/React.createElement(Badge, {
     grade: p.overall,
+    rated: p.rated,
     size: "lg"
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2889,6 +2927,7 @@ function PlayerModal({
     }
   }, sp.team), /*#__PURE__*/React.createElement(Badge, {
     grade: sp.overall,
+    rated: sp.rated,
     size: "sm"
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3412,6 +3451,7 @@ function PlayerSearch({
     }
   }, p.position, " \xB7 ", p.teamName)), /*#__PURE__*/React.createElement(Badge, {
     grade: p.overall,
+    rated: p.rated,
     size: "sm"
   })))));
 }
@@ -3757,6 +3797,7 @@ function MLSAnalytics() {
             isLoanedOut: !!r.isLoaned,
             rosterCategory: r.rosterCat,
             sportecId: r.sportecId,
+            rated: (r.m || 0) > 0,
             prevTeam: r.prevTeam || null,
             localHeadshot: r.localHeadshot || null
           };
@@ -5469,6 +5510,7 @@ function MLSAnalytics() {
     }
   }, best.position, " \xB7 ", best.teamName)), /*#__PURE__*/React.createElement(Badge, {
     grade: best.overall,
+    rated: best.rated,
     size: "lg"
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5646,6 +5688,7 @@ function MLSAnalytics() {
     }
   }, /*#__PURE__*/React.createElement(Badge, {
     grade: p.overall,
+    rated: p.rated,
     size: isMobile ? "sm" : "md"
   })), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -7767,6 +7810,7 @@ function MLSAnalytics() {
       }
     }, t.topRated.name)), /*#__PURE__*/React.createElement(Badge, {
       grade: t.topRated.overall,
+      rated: t.topRated.rated,
       size: "sm"
     })), t.topScorer && t.topScorer.id !== t.topRated?.id && /*#__PURE__*/React.createElement("div", {
       style: {
@@ -7966,6 +8010,7 @@ function MLSAnalytics() {
       }
     }, p.position))), /*#__PURE__*/React.createElement(Badge, {
       grade: p.overall,
+      rated: p.rated,
       size: "sm"
     }), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -8909,6 +8954,7 @@ function MLSAnalytics() {
           }
         }, t.topRated.name), /*#__PURE__*/React.createElement(Badge, {
           grade: t.topRated.overall,
+          rated: t.topRated.rated,
           size: "sm"
         }))));
       }));
@@ -9558,6 +9604,7 @@ function MLSAnalytics() {
       }
     }, parseFloat(p[cat.k]) || 0), /*#__PURE__*/React.createElement(Badge, {
       grade: p.overall,
+      rated: p.rated,
       size: "sm"
     })))))), leadersView === "bestxi" && xi.length >= 11 && /*#__PURE__*/React.createElement("div", {
       style: {
@@ -10799,6 +10846,7 @@ function MLSAnalytics() {
     }
   }, /*#__PURE__*/React.createElement(Badge, {
     grade: p.overall,
+    rated: p.rated,
     size: isMobile ? "sm" : "md"
   })), !isMobile && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -11479,6 +11527,7 @@ function MLSAnalytics() {
       }
     }, p.team, " \xB7 ", p.goals, "G ", p.assists, "A \xB7 ", p.mins, " min")), /*#__PURE__*/React.createElement(Badge, {
       grade: p.overall,
+      rated: p.rated,
       size: "sm"
     }))), (pe.pos === "Forward" || pe.pos === "Midfielder") && pe.topScorers[0]?.goals > 0 && /*#__PURE__*/React.createElement("div", {
       style: {
@@ -11890,6 +11939,7 @@ function MLSAnalytics() {
         }
       }, p.age, "y"), /*#__PURE__*/React.createElement(Badge, {
         grade: p.overall,
+        rated: p.rated,
         size: "sm"
       })))))));
     })());
@@ -12034,6 +12084,7 @@ function MLSAnalytics() {
         }
       }, p.position, " \xB7 ", p.team)), /*#__PURE__*/React.createElement(Badge, {
         grade: p.overall,
+        rated: p.rated,
         size: "sm"
       })))));
     };
@@ -12600,6 +12651,7 @@ function MLSAnalytics() {
       }
     }, p.position, p.salary ? " · $" + (p.salary / 1e6).toFixed(1) + "M" : "")), /*#__PURE__*/React.createElement(Badge, {
       grade: p.overall,
+      rated: p.rated,
       size: "sm"
     }));
     const listCol = (team, setTeam, roster, out, setOut) => /*#__PURE__*/React.createElement("div", {
@@ -12671,6 +12723,7 @@ function MLSAnalytics() {
       }
     }, dir === "right" ? "→" : "←"), /*#__PURE__*/React.createElement(Badge, {
       grade: p.overall,
+      rated: p.rated,
       size: "sm"
     }));
     const budgetBar = (charge, budget) => {

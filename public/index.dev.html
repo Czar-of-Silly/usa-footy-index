@@ -335,9 +335,15 @@ function TeamBadge({abbr,size=20,logo}){
   return <div style={{width:size,height:size,borderRadius:3,background:`linear-gradient(135deg,${t.c1},${t.c2})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*.28,fontWeight:700,color:"#fff",fontFamily:T.sans,letterSpacing:-.3,textShadow:"0 1px 2px rgba(0,0,0,.4)",flexShrink:0}}>{abbr.slice(0,3)}</div>;
 }
 
-function Badge({grade,size="sm"}){
+function Badge({grade,size="sm",rated=true}){/*NR*/
   const fs=size==="lg"?36:size==="md"?17:14;
   const pad=size==="lg"?"12px 20px":size==="md"?"4px 10px":"2px 7px";
+  if(rated===false||grade==null){
+    return <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center",background:T.borderLt,border:`1.5px solid ${T.textMute}30`,borderRadius:size==="lg"?10:5,padding:pad,minWidth:size==="lg"?72:size==="md"?36:34}}>
+      <span style={{color:T.textMute,fontWeight:700,fontSize:size==="lg"?20:fs,fontFamily:T.serif,letterSpacing:0,lineHeight:1}}>NR</span>
+      {size==="lg"&&<span style={{color:T.textMute,fontSize:7,fontWeight:600,letterSpacing:1,opacity:.8,marginTop:2,fontFamily:T.sans,textTransform:"uppercase"}}>Not Rated</span>}
+    </div>;
+  }
   return <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center",background:gb(grade),border:`1.5px solid ${gc(grade)}30`,borderRadius:size==="lg"?10:5,padding:pad,minWidth:size==="lg"?72:size==="md"?36:34}}>
     <span style={{color:gc(grade),fontWeight:700,fontSize:fs,fontFamily:T.serif,letterSpacing:-.5,lineHeight:1}}>{grade}</span>
     {size==="lg"&&<span style={{color:gc(grade),fontSize:7,fontWeight:600,letterSpacing:1,opacity:.8,marginTop:2,fontFamily:T.sans,textTransform:"uppercase"}}>{gl(grade)}</span>}
@@ -483,7 +489,7 @@ function TopCards({players,metric,metricLabel,onSelect}){
         </div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
           <div><div style={{fontFamily:T.display,fontWeight:700,fontSize:30,color:T.ink,lineHeight:1}}>{metric(p)}</div><div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1.5,marginTop:3,fontFamily:T.sans}}>{metricLabel}</div></div>
-          <Badge grade={p.overall} size="md"/>
+          <Badge grade={p.overall} rated={p.rated} size="md"/>
         </div>
       </div>
     ))}
@@ -526,7 +532,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
               <span style={{color:T.border}}>|</span><span>{p.mins?.toLocaleString()} min</span>
             </div>
           </div>
-          <Badge grade={p.overall} size="lg"/>
+          <Badge grade={p.overall} rated={p.rated} size="lg"/>
         </div>
       </div>
 
@@ -788,7 +794,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
               {(sp.localHeadshot||sp.headshot)?<img src={sp.localHeadshot||sp.headshot} alt={sp.name} style={{width:36,height:36,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.borderLt}`,margin:"0 auto 6px",display:"block"}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={sp.team} size={28} logo={sp.teamLogo}/>}
               <div style={{fontFamily:T.serif,fontWeight:600,fontSize:11,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{sp.name.split(" ").slice(-1)[0]}</div>
               <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans,marginTop:2}}>{sp.team}</div>
-              <Badge grade={sp.overall} size="sm"/>
+              <Badge grade={sp.overall} rated={sp.rated} size="sm"/>
               <div style={{fontSize:8,color:T.green,fontFamily:T.mono,fontWeight:700,marginTop:4}}>{sp.similarity}% match</div>
             </div>
           ))}
@@ -901,7 +907,7 @@ function PlayerSearch({players,onSelect}){
     <input value={q} onChange={e=>{setQ(e.target.value);setOpen(true);}} placeholder="Search players..." onFocus={()=>setOpen(true)} style={{width:"100%",padding:"8px 12px",background:T.surface,border:`1px solid ${T.border}`,borderRadius:4,color:T.text,fontSize:13,fontFamily:T.sans,outline:"none"}}/>
     {open&&res.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,background:T.surface,border:`1px solid ${T.border}`,borderTop:"none",borderBottomLeftRadius:6,borderBottomRightRadius:6,zIndex:500,maxHeight:320,overflowY:"auto",boxShadow:"0 12px 32px rgba(0,0,0,.12)"}}>
       {res.map((p,i)=><div key={p.id} onClick={()=>{onSelect(p);setQ("");setOpen(false);}} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderTop:i?`1px solid ${T.borderLt}`:"none",cursor:"pointer",transition:"background .1s"}} onMouseEnter={e=>e.currentTarget.style.background=T.card} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-        <TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",color:T.ink}}>{p.name}</div><div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.teamName}</div></div><Badge grade={p.overall} size="sm"/>
+        <TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",color:T.ink}}>{p.name}</div><div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.teamName}</div></div><Badge grade={p.overall} rated={p.rated} size="sm"/>
       </div>)}
     </div>}
   </div>;
@@ -1006,7 +1012,7 @@ function MLSAnalytics(){
       const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players from pools
       setLoadProgress(95);
       const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:+(r.oxg||0),chances:r.chc||0,goalOpps:r.gop||0,aerialPct:r.arlPct||0,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:r.clr||0,pressureRes:+(r.presR||0),escapeRate:+(r.esc||0),distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:+(r.oxg||0),chances:r.chc||0,goalOpps:r.gop||0,aerialPct:r.arlPct||0,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:r.clr||0,pressureRes:+(r.presR||0),escapeRate:+(r.esc||0),distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}
@@ -1564,7 +1570,7 @@ function MLSAnalytics(){
               <div style={{fontFamily:T.display,fontWeight:700,fontSize:32,color:T.ink,letterSpacing:-.5,lineHeight:1}}>{best.name}</div>
               <div style={{fontSize:12,color:T.textDim,marginTop:4,fontFamily:T.sans}}>{best.position} · {best.teamName}</div>
             </div>
-            <Badge grade={best.overall} size="lg"/>
+            <Badge grade={best.overall} rated={best.rated} size="lg"/>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"4px 18px"}}>
               <StatChip label="G/A" value={`${best.goals}/${best.assists}`} color={T.ink}/>
               <StatChip label="xG" value={best.xGoals} color={T.textDim}/>
@@ -1590,7 +1596,7 @@ function MLSAnalytics(){
             {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
               <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0,flex:1}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div>{!isMobile&&p.matchLog?.length>=2&&<MiniSparkline matchLog={p.matchLog} w={48} h={16}/>}</div>
-              <div style={{textAlign:"center"}}><Badge grade={p.overall} size={isMobile?"sm":"md"}/></div>
+              <div style={{textAlign:"center"}}><Badge grade={p.overall} rated={p.rated} size={isMobile?"sm":"md"}/></div>
               <div style={{fontSize:isMobile?11:13,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono,fontWeight:500}}>{p.age||"—"}</div>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.goals,20),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.goals}</div>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.assists,15),borderRadius:3,textAlign:"center",padding:"2px 0"}}>{p.assists}</div>
@@ -2063,7 +2069,7 @@ function MLSAnalytics(){
                     {t.topRated&&<div style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"8px 12px",background:T.bg,borderRadius:4,border:`1px solid ${T.borderLt}`,cursor:"pointer"}} onClick={e=>{e.stopPropagation();setSel(t.topRated);}}>
                       <div style={{width:4,height:24,borderRadius:2,background:gc(t.topRated.overall)}}/>
                       <div style={{flex:1}}><div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans}}>TOP RATED</div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:13,color:T.ink}}>{t.topRated.name}</div></div>
-                      <Badge grade={t.topRated.overall} size="sm"/>
+                      <Badge grade={t.topRated.overall} rated={t.topRated.rated} size="sm"/>
                     </div>}
                     {t.topScorer&&t.topScorer.id!==t.topRated?.id&&<div style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"8px 12px",background:T.bg,borderRadius:4,border:`1px solid ${T.borderLt}`,cursor:"pointer"}} onClick={e=>{e.stopPropagation();setSel(t.topScorer);}}>
                       <div style={{width:4,height:24,borderRadius:2,background:T.accent}}/>
@@ -2099,7 +2105,7 @@ function MLSAnalytics(){
                           <div style={{width:4,height:4,borderRadius:"50%",background:gc(p.overall),flexShrink:0}}/>
                           <div><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink}}>{p.name}</div><div style={{fontSize:8,color:T.textMute}}>{p.position}</div></div>
                         </div>
-                        <Badge grade={p.overall} size="sm"/>
+                        <Badge grade={p.overall} rated={p.rated} size="sm"/>
                         <div style={{fontSize:12,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.age||"—"}</div>
                         <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink}}>{p.goals}</div>
                         <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink}}>{p.assists}</div>
@@ -2313,7 +2319,7 @@ function MLSAnalytics(){
             {!isMobile&&<div style={{textAlign:"center",fontFamily:T.serif,fontWeight:700,fontSize:14,color:gc(t.attack)}}>{t.attack}</div>}
             {!isMobile&&<div style={{textAlign:"center",fontFamily:T.serif,fontWeight:700,fontSize:14,color:gc(t.passing)}}>{t.passing}</div>}
             {!isMobile&&<div style={{textAlign:"center",fontFamily:T.serif,fontWeight:700,fontSize:14,color:gc(t.defense)}}>{t.defense}</div>}
-            {!isMobile&&<div style={{textAlign:"right"}}>{t.topRated&&<div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"3px 10px",background:T.card,borderRadius:4,border:`1px solid ${T.borderLt}`,cursor:"pointer"}} onClick={()=>setSel(t.topRated)}><span style={{fontSize:11,fontFamily:T.serif,fontWeight:600,color:T.ink}}>{t.topRated.name}</span><Badge grade={t.topRated.overall} size="sm"/></div>}</div>}
+            {!isMobile&&<div style={{textAlign:"right"}}>{t.topRated&&<div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"3px 10px",background:T.card,borderRadius:4,border:`1px solid ${T.borderLt}`,cursor:"pointer"}} onClick={()=>setSel(t.topRated)}><span style={{fontSize:11,fontFamily:T.serif,fontWeight:600,color:T.ink}}>{t.topRated.name}</span><Badge grade={t.topRated.overall} rated={t.topRated.rated} size="sm"/></div>}</div>}
           </div>;})}
           </>})()} </div>
           <div style={{marginTop:16,fontSize:9,color:T.textMute,fontFamily:T.sans,fontStyle:"italic",textAlign:"center"}}>Ranked by MLS standings points. Grades from real stats via ESPN, ASA, and MLS Official (Opta).</div>
@@ -2510,7 +2516,7 @@ function MLSAnalytics(){
                       <div style={{fontSize:8,color:T.textMute}}>{p.position} · {p.team}</div>
                     </div>
                     <div style={{fontFamily:T.serif,fontWeight:700,fontSize:18,color:i===0?T.ink:T.textDim}}>{parseFloat(p[cat.k])||0}</div>
-                    <Badge grade={p.overall} size="sm"/>
+                    <Badge grade={p.overall} rated={p.rated} size="sm"/>
                   </div>
                 ))}
               </div>
@@ -2795,7 +2801,7 @@ function MLSAnalytics(){
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
               <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><span style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?12:15,color:vc(p.marketValue)}}>{fv(p.marketValue)}</span></div>
-              <div style={{textAlign:"center"}}><Badge grade={p.overall} size={isMobile?"sm":"md"}/></div>
+              <div style={{textAlign:"center"}}><Badge grade={p.overall} rated={p.rated} size={isMobile?"sm":"md"}/></div>
               {!isMobile&&<div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,textAlign:"center"}}>{p.goals}</div>}
               {!isMobile&&<div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,textAlign:"center"}}>{p.assists}</div>}
               {!isMobile&&<div style={{fontSize:13,color:T.textDim,fontFamily:T.mono,fontWeight:600,textAlign:"center"}}>{p.mins?.toLocaleString()}</div>}
@@ -2981,7 +2987,7 @@ function MLSAnalytics(){
                         <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
                         <div style={{fontSize:8,color:T.textDim,fontFamily:T.sans}}>{p.team} · {p.goals}G {p.assists}A · {p.mins} min</div>
                       </div>
-                      <Badge grade={p.overall} size="sm"/>
+                      <Badge grade={p.overall} rated={p.rated} size="sm"/>
                     </div>
                   ))}
 
@@ -3074,7 +3080,7 @@ function MLSAnalytics(){
                         <TeamBadge abbr={p.team} size={20} logo={p.teamLogo}/>
                         <div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:11,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div></div>
                         <span style={{fontSize:9,color:T.textDim,fontFamily:T.mono}}>{p.age}y</span>
-                        <Badge grade={p.overall} size="sm"/>
+                        <Badge grade={p.overall} rated={p.rated} size="sm"/>
                       </div>
                     ))}
                   </div>
@@ -3110,7 +3116,7 @@ function MLSAnalytics(){
               <input value={pq} onChange={e=>setPq(e.target.value)} placeholder="Search to add player..." style={{width:"100%",padding:"14px 14px",background:T.surface,border:`1px solid ${T.border}`,borderRadius:6,color:T.text,fontSize:12,fontFamily:T.sans,outline:"none"}}/>
               {pRes.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,background:T.surface,border:`1px solid ${T.border}`,borderTop:"none",borderBottomLeftRadius:6,borderBottomRightRadius:6,zIndex:50,boxShadow:"0 8px 24px rgba(0,0,0,.1)",maxHeight:240,overflowY:"auto"}}>
                 {pRes.map((p,i)=><div key={p.id} onClick={()=>{addCompare(p);setPq("");}} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderTop:i?`1px solid ${T.borderLt}`:"none",cursor:"pointer",transition:"background .1s"}} onMouseEnter={e=>e.currentTarget.style.background=T.card} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                  <TeamBadge abbr={p.team} size={18} logo={p.teamLogo}/><div style={{flex:1}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink}}>{p.name}</div><div style={{fontSize:14,color:T.textDim}}>{p.position} · {p.team}</div></div><Badge grade={p.overall} size="sm"/>
+                  <TeamBadge abbr={p.team} size={18} logo={p.teamLogo}/><div style={{flex:1}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink}}>{p.name}</div><div style={{fontSize:14,color:T.textDim}}>{p.position} · {p.team}</div></div><Badge grade={p.overall} rated={p.rated} size="sm"/>
                 </div>)}
               </div>}
             </div>;
@@ -3237,7 +3243,7 @@ function MLSAnalytics(){
             <div onClick={onClick} style={{display:"flex",alignItems:"center",gap:9,padding:"7px 9px",borderRadius:6,cursor:"pointer",background:sel?T.accent+"1A":"transparent",border:`1px solid ${sel?T.accent:"transparent"}`,marginBottom:3,transition:"all .12s"}}>
               <Face p={p} size={34}/>
               <div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:13.5,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}<Pills p={p}/></div><div style={{fontSize:10,color:T.textMute,fontFamily:T.sans,marginTop:1}}>{p.position}{p.salary?" · $"+(p.salary/1e6).toFixed(1)+"M":""}</div></div>
-              <Badge grade={p.overall} size="sm"/>
+              <Badge grade={p.overall} rated={p.rated} size="sm"/>
             </div>
           );
           const listCol=(team,setTeam,roster,out,setOut)=>(
@@ -3253,7 +3259,7 @@ function MLSAnalytics(){
               <Face p={p} size={26}/>
               <div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",textAlign:dir==="right"?"left":"right"}}>{shortName(p.name)}</div></div>
               <span style={{fontSize:13,color:T.textMute}}>{dir==="right"?"→":"←"}</span>
-              <Badge grade={p.overall} size="sm"/>
+              <Badge grade={p.overall} rated={p.rated} size="sm"/>
             </div>
           );
           const budgetBar=(charge,budget)=>{const pctv=Math.min(100,charge/budget*100);const over=charge>budget;return <div style={{margin:"8px 0 2px"}}><div style={{display:"flex",justifyContent:"space-between",fontSize:11.5,padding:"4px 0"}}><span style={{color:T.textDim,fontFamily:T.sans}}>Budget charge</span><span style={{fontFamily:T.mono,color:over?T.red:T.ink,fontWeight:over?700:500}}>${(charge/1e6).toFixed(2)}M</span></div><div style={{height:8,borderRadius:4,background:T.borderLt,overflow:"hidden"}}><div style={{height:"100%",width:pctv+"%",background:over?T.red:T.green,transition:"width .3s"}}/></div><div style={{fontSize:9,color:T.textMute,fontFamily:T.mono,marginTop:2,textAlign:"right"}}>of ${(budget/1e6).toFixed(2)}M senior budget</div></div>;};
