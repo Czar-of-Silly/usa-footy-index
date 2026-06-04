@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-06-04T02:44:09 -->
+<!-- built: 2026-06-04T02:57:40 -->
 </head>
 <body>
   <div id="root"></div>
@@ -595,40 +595,40 @@ const TM_RULES = {
   SENIOR_ROSTER_MAX: 20,
   TOTAL_ROSTER_MAX: 30
 };
-// Per-club available General Allocation Money (MLS published, as of Jan 20 2026).
+// Per-club available General Allocation Money (MLS published, as of Feb 20 2026, post Roster Compliance).
 // GAM buys down Salary Budget Charges $1-for-$1. UPDATE from the latest MLS GAM
 // release / Club Roster Profiles when republished (a few times per season).
 const TM_GAM = {
-  ATL: 4586967,
-  ATX: 2549636,
-  CLT: 4472657,
-  CHI: 5077349,
-  CIN: 3391927,
-  COL: 3472551,
-  CLB: 6027022,
-  DAL: 4232945,
-  DC: 4220649,
-  HOU: 6576431,
-  SKC: 4530121,
-  LA: 3313457,
-  LAFC: 4368355,
-  MIA: 6484336,
-  MIN: 7259300,
-  MTL: 6008069,
-  NSH: 3901404,
-  NE: 3301754,
-  NYC: 5451436,
-  ORL: 3518514,
-  PHI: 4744841,
-  POR: 3180000,
-  RSL: 6947461,
-  RBNY: 5284106,
-  SD: 5537108,
-  SJ: 4118024,
-  SEA: 5518053,
-  STL: 6150522,
-  TOR: 5316009,
-  VAN: 5523381
+  ATL: 344356,
+  ATX: 412817,
+  CLT: 75994,
+  CHI: 1003353,
+  CIN: 361337,
+  COL: 5007225,
+  CLB: 952447,
+  DAL: 1576731,
+  DC: 2137599,
+  HOU: 2310805,
+  SKC: 6380121,
+  LA: 0,
+  LAFC: 249749,
+  MIA: 17361,
+  MIN: 4157930,
+  MTL: 3247472,
+  NSH: 1581229,
+  NE: 1162968,
+  NYC: 2637519,
+  ORL: 655360,
+  PHI: 4393417,
+  POR: 4788001,
+  RSL: 4435148,
+  RBNY: 189830,
+  SD: 4211327,
+  SJ: 4725751,
+  SEA: 243090,
+  STL: 2227157,
+  TOR: 3078603,
+  VAN: 20945
 };
 const tmNum = v => typeof v === "number" && isFinite(v) ? v : 0;
 function tmCounts(p) {
@@ -640,7 +640,7 @@ function tmSenior(p) {
   return !p.isLoanedOut && (p.rosterCategory || "") === "Senior";
 }
 function tmCharge(p, K) {
-  return p.isDP ? K.MAX_SALARY_BUDGET_CHARGE : tmNum(p.salary);
+  return p.isDP ? K.MAX_SALARY_BUDGET_CHARGE : Math.min(tmNum(p.salary), K.MAX_SALARY_BUDGET_CHARGE); /*TAMNET*/
 }
 function tmSummarize(roster, K) {
   K = K || TM_RULES;
@@ -13265,7 +13265,7 @@ function MLSAnalytics() {
         lineHeight: 1.6,
         maxWidth: 760
       }
-    }, "Slot counts (DP / U22 / International) use official MLS roster data. The salary-budget figure is approximate \u2014 some Designated Player salaries are missing from public data, and live GAM/TAM balances aren't tracked \u2014 so \"legal\" reflects slot and roster-size compliance and flags budget overages that would require allocation money. Constants reflect MLS 2026 rules.")) : /*#__PURE__*/React.createElement("div", {
+    }, "Slot counts (DP / U22 / International) use official MLS roster data. The salary-budget figure is approximate \u2014 TAM-band charges are netted to the max budget charge (assuming TAM covers them), some Designated Player salaries are missing from public data, and only GAM balances are tracked \u2014 so \"legal\" reflects slot/roster compliance plus GAM buy-down of any remaining overage. Constants reflect MLS 2026 rules.")) : /*#__PURE__*/React.createElement("div", {
       style: {
         textAlign: "center",
         padding: "48px 20px",
