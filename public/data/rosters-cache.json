@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-04T00:23:36.562Z",
+  "generated": "2026-06-04T00:30:45.385Z",
   "source": "MLS Digital API",
   "sourceUrl": "https://dapi.mlssoccer.com/v2/content/en-us/players",
   "teamCount": 30,
@@ -13820,7 +13820,7 @@
           "jerseyNumber": "7",
           "position": "midfield",
           "height": 180,
-          "weight": 0,
+          "weight": 70,
           "footedness": "Right",
           "dateOfBirth": "1994-05-24",
           "age": 32,
@@ -13842,7 +13842,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/e9oditnux7hphap5cumn",
           "slug": "rodrigo-de-paul",
-          "lastUpdated": "2026-05-30T23:09:25.789Z"
+          "lastUpdated": "2026-06-03T17:55:19.537Z"
         },
         {
           "sportecId": "MLS-OBJ-000161",
@@ -14067,7 +14067,7 @@
           "lastUpdated": "2026-05-30T23:09:24.001Z"
         },
         {
-          "sportecId": "MLS-OBJ-000528",
+          "sportecId": "MLS-OBJ-000CD2",
           "optaId": 39336,
           "clubSportecId": "MLS-CLU-000008",
           "clubOptaId": 14880,
@@ -14078,13 +14078,13 @@
           "displayName": "Luis Suárez",
           "jerseyNumber": "9",
           "position": "offense",
-          "height": 175,
-          "weight": 72,
+          "height": 185,
+          "weight": 74,
           "footedness": "Right",
-          "dateOfBirth": "1987-01-24",
-          "age": 39,
-          "cityOfBirth": "Salto",
-          "countryOfBirth": "Uruguay",
+          "dateOfBirth": "1997-12-02",
+          "age": 28,
+          "cityOfBirth": "Santa Marta",
+          "countryOfBirth": "Colombia",
           "rosterCategory": "Senior",
           "isSenior": true,
           "isActiveMLSPlayer": true,
@@ -14101,7 +14101,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/uy0zk64l0vch1msngg9y",
           "slug": "luis-suarez",
-          "lastUpdated": "2026-05-30T23:09:24.697Z"
+          "lastUpdated": "2026-06-03T17:55:52.625Z"
         }
       ]
     },
@@ -46457,7 +46457,7 @@
       "jerseyNumber": "7",
       "position": "midfield",
       "height": 180,
-      "weight": 0,
+      "weight": 70,
       "footedness": "Right",
       "dateOfBirth": "1994-05-24",
       "age": 32,
@@ -46479,7 +46479,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/e9oditnux7hphap5cumn",
       "slug": "rodrigo-de-paul",
-      "lastUpdated": "2026-05-30T23:09:25.789Z"
+      "lastUpdated": "2026-06-03T17:55:19.537Z"
     },
     {
       "sportecId": "MLS-OBJ-000161",
@@ -46704,7 +46704,7 @@
       "lastUpdated": "2026-05-30T23:09:24.001Z"
     },
     {
-      "sportecId": "MLS-OBJ-000528",
+      "sportecId": "MLS-OBJ-000CD2",
       "optaId": 39336,
       "clubSportecId": "MLS-CLU-000008",
       "clubOptaId": 14880,
@@ -46715,13 +46715,13 @@
       "displayName": "Luis Suárez",
       "jerseyNumber": "9",
       "position": "offense",
-      "height": 175,
-      "weight": 72,
+      "height": 185,
+      "weight": 74,
       "footedness": "Right",
-      "dateOfBirth": "1987-01-24",
-      "age": 39,
-      "cityOfBirth": "Salto",
-      "countryOfBirth": "Uruguay",
+      "dateOfBirth": "1997-12-02",
+      "age": 28,
+      "cityOfBirth": "Santa Marta",
+      "countryOfBirth": "Colombia",
       "rosterCategory": "Senior",
       "isSenior": true,
       "isActiveMLSPlayer": true,
@@ -46738,7 +46738,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/uy0zk64l0vch1msngg9y",
       "slug": "luis-suarez",
-      "lastUpdated": "2026-05-30T23:09:24.697Z"
+      "lastUpdated": "2026-06-03T17:55:52.625Z"
     },
     {
       "sportecId": "MLS-OBJ-000CK8",
