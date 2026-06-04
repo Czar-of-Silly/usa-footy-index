@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-06-04T02:12:26 -->
+<!-- built: 2026-06-04T02:44:09 -->
 </head>
 <body>
   <div id="root"></div>
@@ -752,6 +752,18 @@ function tmPos(p) {
   if (z.includes('mid')) return 'M';
   return 'F';
 }
+function tmScoreSet(gOut, sOut, outPos, set) {
+  /*MULTI*/
+  const num = tmNum;
+  const gC = set.reduce((t, p) => t + num(p.overall), 0),
+    sC = set.reduce((t, p) => t + num(p.salary), 0);
+  const gDiff = Math.abs(gOut - gC),
+    sDiff = Math.abs(sOut - sC) / Math.max(sOut, sC, 500000);
+  const gScore = Math.max(0, 1 - gDiff / 25),
+    sScore = Math.max(0, 1 - sDiff);
+  const posBonus = set.some(p => outPos.has(tmPos(p))) ? 5 : 0;
+  return Math.round((gScore * 0.6 + sScore * 0.4) * 95 + posBonus);
+}
 function tmSuggestReturns(o) {
   /*TRADE-SUGGEST*/
   const K = o.K || TM_RULES,
@@ -761,29 +773,36 @@ function tmSuggestReturns(o) {
   const outPos = new Set(o.outA.map(tmPos));
   const exIds = new Set([...(o.exclude || []), ...o.outA].map(p => p.id));
   const cands = o.rosterB.filter(p => p.rated && tmCounts(p) && !exIds.has(p.id));
-  const scored = cands.map(p => {
-    const gDiff = Math.abs(gOut - num(p.overall));
-    const sDiff = Math.abs(sOut - num(p.salary)) / Math.max(sOut, num(p.salary), 500000);
-    const gScore = Math.max(0, 1 - gDiff / 25),
-      sScore = Math.max(0, 1 - sDiff);
-    const posBonus = outPos.has(tmPos(p)) ? 5 : 0;
-    return {
-      p,
-      score: Math.round((gScore * 0.6 + sScore * 0.4) * 95 + posBonus)
-    };
-  }).sort((a, b) => b.score - a.score).slice(0, 5);
-  return scored.map(x => {
+  const single = cands.map(p => ({
+    set: [p],
+    score: tmScoreSet(gOut, sOut, outPos, [p])
+  })).sort((a, b) => b.score - a.score).slice(0, 5);
+  let entries = single;
+  // Fallback: best single is a weak match -> search 2-player packages from the top pool
+  if (single.length && single[0].score < 60) {
+    const top = cands.slice().sort((a, b) => num(b.overall) - num(a.overall)).slice(0, 15);
+    let best = null;
+    for (let i = 0; i < top.length; i++) for (let j = i + 1; j < top.length; j++) {
+      const sc = tmScoreSet(gOut, sOut, outPos, [top[i], top[j]]);
+      if (!best || sc > best.score) best = {
+        set: [top[i], top[j]],
+        score: sc
+      };
+    }
+    if (best && best.score > single[0].score) entries = [best, ...single.slice(0, 4)];
+  }
+  return entries.map(e => {
     const ev = tmEvaluate({
       rosterA: o.rosterA,
       rosterB: o.rosterB,
       outA: o.outA,
-      outB: [x.p],
+      outB: e.set,
       nameA: o.nameA,
       nameB: o.nameB
     });
     return {
-      player: x.p,
-      score: x.score,
+      players: e.set,
+      score: e.score,
       legal: ev.legal
     };
   });
@@ -13038,89 +13057,109 @@ function MLSAnalytics() {
           marginBottom: 8,
           paddingLeft: 4
         }
-      }, "Closest value matches \\u2014 tap to add to the return"), sugs.map((sg, i) => /*#__PURE__*/React.createElement("div", {
-        key: sg.player.id,
-        onClick: () => setTrOutB(st => st.some(x => x.id === sg.player.id) ? st : [...st, sg.player]),
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "8px 9px",
-          borderRadius: 7,
-          cursor: "pointer",
-          background: "transparent",
-          borderBottom: i < sugs.length - 1 ? `1px solid ${T.borderLt}` : "none"
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontFamily: T.serif,
-          fontWeight: 700,
-          fontSize: 14,
-          color: T.textMute,
-          minWidth: 16
-        }
-      }, i + 1), /*#__PURE__*/React.createElement(Face, {
-        p: sg.player,
-        size: 30
-      }), /*#__PURE__*/React.createElement("div", {
-        style: {
-          flex: 1,
-          minWidth: 0
-        }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontFamily: T.serif,
-          fontWeight: 600,
-          fontSize: 13.5,
-          color: T.ink,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis"
-        }
-      }, shortName(sg.player.name), /*#__PURE__*/React.createElement(Pills, {
-        p: sg.player
-      })), /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontSize: 10,
-          color: T.textMute,
-          fontFamily: T.sans,
-          marginTop: 1
-        }
-      }, sg.player.position, sg.player.salary ? " \u00b7 $" + (sg.player.salary / 1e6).toFixed(1) + "M" : "")), /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 9,
-          fontWeight: 700,
-          padding: "2px 7px",
-          borderRadius: 10,
-          color: sg.legal ? T.green : T.red,
-          background: (sg.legal ? T.green : T.red) + "18",
-          fontFamily: T.sans
-        }
-      }, sg.legal ? "LEGAL" : "OVER CAP"), /*#__PURE__*/React.createElement("div", {
-        style: {
-          textAlign: "center",
-          minWidth: 42
-        }
-      }, /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontFamily: T.display,
-          fontWeight: 800,
-          fontSize: 16,
-          color: sg.score >= 70 ? T.green : sg.score >= 45 ? T.gold : T.textMute,
-          lineHeight: 1
-        }
-      }, sg.score), /*#__PURE__*/React.createElement("div", {
-        style: {
-          fontSize: 7,
-          color: T.textMute,
-          letterSpacing: .5,
-          fontFamily: T.sans
-        }
-      }, "FAIRNESS")), /*#__PURE__*/React.createElement(Badge, {
-        grade: sg.player.overall,
-        rated: sg.player.rated,
-        size: "sm"
-      }))));
+      }, "Closest value matches \u2014 tap to add to the return"), sugs.map((sg, i) => {
+        const isPkg = sg.players.length > 1;
+        const add = () => setTrOutB(st => {
+          const ids = new Set(st.map(x => x.id));
+          return [...st, ...sg.players.filter(p => !ids.has(p.id))];
+        });
+        return /*#__PURE__*/React.createElement("div", {
+          key: sg.players.map(p => p.id).join("-"),
+          onClick: add,
+          style: {
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "8px 9px",
+            borderRadius: 7,
+            cursor: "pointer",
+            background: isPkg ? T.accent + "0C" : "transparent",
+            borderBottom: i < sugs.length - 1 ? `1px solid ${T.borderLt}` : "none"
+          }
+        }, /*#__PURE__*/React.createElement("span", {
+          style: {
+            fontFamily: T.serif,
+            fontWeight: 700,
+            fontSize: 14,
+            color: T.textMute,
+            minWidth: 16
+          }
+        }, i + 1), isPkg ? /*#__PURE__*/React.createElement("div", {
+          style: {
+            display: "flex"
+          }
+        }, sg.players.map((p, k) => /*#__PURE__*/React.createElement("div", {
+          key: p.id,
+          style: {
+            marginLeft: k ? -9 : 0,
+            zIndex: 9 - k
+          }
+        }, /*#__PURE__*/React.createElement(Face, {
+          p: p,
+          size: 28
+        })))) : /*#__PURE__*/React.createElement(Face, {
+          p: sg.players[0],
+          size: 30
+        }), /*#__PURE__*/React.createElement("div", {
+          style: {
+            flex: 1,
+            minWidth: 0
+          }
+        }, /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.serif,
+            fontWeight: 600,
+            fontSize: 13.5,
+            color: T.ink,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis"
+          }
+        }, sg.players.map(p => shortName(p.name)).join(" + "), !isPkg && /*#__PURE__*/React.createElement(Pills, {
+          p: sg.players[0]
+        })), /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontSize: 10,
+            color: T.textMute,
+            fontFamily: T.sans,
+            marginTop: 1
+          }
+        }, isPkg ? "2-player package · $" + (sg.players.reduce((t, p) => t + (p.salary || 0), 0) / 1e6).toFixed(1) + "M" : sg.players[0].position + (sg.players[0].salary ? " · $" + (sg.players[0].salary / 1e6).toFixed(1) + "M" : ""))), /*#__PURE__*/React.createElement("span", {
+          style: {
+            fontSize: 9,
+            fontWeight: 700,
+            padding: "2px 7px",
+            borderRadius: 10,
+            color: sg.legal ? T.green : T.red,
+            background: (sg.legal ? T.green : T.red) + "18",
+            fontFamily: T.sans
+          }
+        }, sg.legal ? "LEGAL" : "OVER CAP"), /*#__PURE__*/React.createElement("div", {
+          style: {
+            textAlign: "center",
+            minWidth: 42
+          }
+        }, /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontFamily: T.display,
+            fontWeight: 800,
+            fontSize: 16,
+            color: sg.score >= 70 ? T.green : sg.score >= 45 ? T.gold : T.textMute,
+            lineHeight: 1
+          }
+        }, sg.score), /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontSize: 7,
+            color: T.textMute,
+            letterSpacing: .5,
+            fontFamily: T.sans
+          }
+        }, "FAIRNESS")), !isPkg && /*#__PURE__*/React.createElement(Badge, {
+          grade: sg.players[0].overall,
+          rated: sg.players[0].rated,
+          size: "sm"
+        }));
+      }));
     })()), result ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
         background: T.card,
