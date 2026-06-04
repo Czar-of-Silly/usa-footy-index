@@ -328,6 +328,27 @@ function tmSummarize(roster,K){K=K||TM_RULES;const cc=roster.filter(tmCounts),sr
 function tmCheck(after,prev,K){K=K||TM_RULES;const violations=[],warnings=[];if(after.dp>K.MAX_DP){if(prev.dp>K.MAX_DP&&after.dp>=prev.dp)warnings.push("Already shows "+prev.dp+" DPs in source data (MLS max "+K.MAX_DP+"; likely a roster-feed quirk). Trade doesn't reduce it.");else violations.push(after.dp+" Designated Players \u2014 exceeds max of "+K.MAX_DP+". Buy one down with GAM/TAM or include them in the trade.");}if(after.u22>K.MAX_U22)warnings.push(after.u22+" U22 Initiative players (typical max "+K.MAX_U22+") \u2014 verify against the club's declared model.");if(after.intl>K.MAX_INTERNATIONAL)warnings.push(after.intl+" international players \u2014 over "+K.MAX_INTERNATIONAL+" slots; needs extra (tradeable) international spots.");if(after.size>K.TOTAL_ROSTER_MAX)violations.push(after.size+" players \u2014 exceeds roster limit of "+K.TOTAL_ROSTER_MAX+".");const over=after.budgetCharge-K.SENIOR_SALARY_BUDGET;if(after.missingSalary>0)warnings.push("Budget approximate: "+after.missingSalary+" senior player(s) missing salary data.");if(over>0){const alloc=K.GAM_ALLOTMENT+K.DISCRETIONARY_TAM;if(over>alloc)violations.push("Budget charge $"+(after.budgetCharge/1e6).toFixed(2)+"M is $"+(over/1e6).toFixed(2)+"M over budget \u2014 beyond even full GAM+TAM ($"+(alloc/1e6).toFixed(2)+"M).");else warnings.push("Budget charge $"+(over/1e6).toFixed(2)+"M over \u2014 legal only if the club holds that much GAM/TAM (live balances not tracked).");}return{violations,warnings};}
 function tmEvaluate(o){const K=o.K||TM_RULES;const idOf=p=>p.id||p.sportecId||p.name;const oa=new Set(o.outA.map(idOf)),ob=new Set(o.outB.map(idOf));const afterA=o.rosterA.filter(p=>!oa.has(idOf(p))).concat(o.outB);const afterB=o.rosterB.filter(p=>!ob.has(idOf(p))).concat(o.outA);const bA=tmSummarize(o.rosterA,K),aA=tmSummarize(afterA,K),bB=tmSummarize(o.rosterB,K),aB=tmSummarize(afterB,K);const cA=tmCheck(aA,bA,K),cB=tmCheck(aB,bB,K);const sum=(arr,f)=>arr.reduce((t,p)=>t+f(p),0);const gO=sum(o.outA,p=>tmNum(p.overall)),gI=sum(o.outB,p=>tmNum(p.overall));const sO=sum(o.outA,p=>tmNum(p.salary)),sI=sum(o.outB,p=>tmNum(p.salary));const fairness={gradeDelta:+(gI-gO).toFixed(1),salaryDelta:sI-sO,verdict:Math.abs(gI-gO)<=8?"balanced":(gI>gO?"favors "+(o.nameA||"Team A"):"favors "+(o.nameB||"Team B"))};return{legal:cA.violations.length===0&&cB.violations.length===0,teamA:{before:bA,after:aA,constants:K,violations:cA.violations,warnings:cA.warnings},teamB:{before:bB,after:aB,constants:K,violations:cB.violations,warnings:cB.warnings},fairness};}
 
+function tmPos(p){const z=String(p.position||'').toLowerCase();if(z.includes('keep')||z==='gk')return 'GK';if(z.includes('back')||z.includes('def'))return 'D';if(z.includes('mid'))return 'M';return 'F';}
+function tmSuggestReturns(o){/*TRADE-SUGGEST*/
+  const K=o.K||TM_RULES, num=tmNum;
+  const gOut=o.outA.reduce((t,p)=>t+num(p.overall),0);
+  const sOut=o.outA.reduce((t,p)=>t+num(p.salary),0);
+  const outPos=new Set(o.outA.map(tmPos));
+  const exIds=new Set([...(o.exclude||[]),...o.outA].map(p=>p.id));
+  const cands=o.rosterB.filter(p=>p.rated&&tmCounts(p)&&!exIds.has(p.id));
+  const scored=cands.map(p=>{
+    const gDiff=Math.abs(gOut-num(p.overall));
+    const sDiff=Math.abs(sOut-num(p.salary))/Math.max(sOut,num(p.salary),500000);
+    const gScore=Math.max(0,1-gDiff/25), sScore=Math.max(0,1-sDiff);
+    const posBonus=outPos.has(tmPos(p))?5:0;
+    return {p,score:Math.round((gScore*0.6+sScore*0.4)*95+posBonus)};
+  }).sort((a,b)=>b.score-a.score).slice(0,5);
+  return scored.map(x=>{
+    const ev=tmEvaluate({rosterA:o.rosterA,rosterB:o.rosterB,outA:o.outA,outB:[x.p],nameA:o.nameA,nameB:o.nameB});
+    return {player:x.p,score:x.score,legal:ev.legal};
+  });
+}
+
 function TeamBadge({abbr,size=20,logo}){
   if(logo)return <img src={logo} alt={abbr} style={{width:size,height:size,objectFit:"contain",flexShrink:0}} onError={e=>{e.target.onerror=null;e.target.style.display="none"}}/>;
   const t=tcm[abbr];
@@ -945,7 +966,7 @@ function MLSAnalytics(){
   const[srDir,setSrDir]=useState("desc");
   const[srView,setSrView]=useState("table");
   const[srMinMins,setSrMinMins]=useState(0);
-  const[trA,setTrA]=useState("");const[trB,setTrB]=useState("");const[trOutA,setTrOutA]=useState([]);const[trOutB,setTrOutB]=useState([]);
+  const[trA,setTrA]=useState("");const[trB,setTrB]=useState("");const[trOutA,setTrOutA]=useState([]);const[trOutB,setTrOutB]=useState([]);const[trSug,setTrSug]=useState(false);
   const[histData,setHistData]=useState({}); // {2024:{name->grades}, 2025:{...}, 2026:{...}}
   const[h2hHome,setH2hHome]=useState("");
   const[h2hAway,setH2hAway]=useState("");
@@ -3287,6 +3308,24 @@ function MLSAnalytics(){
               <div style={{alignSelf:"center",fontFamily:T.display,fontWeight:800,fontSize:24,color:T.textMute,padding:"0 2px"}}>⇄</div>
               {listCol(trB,setTrB,rB,trOutB,setTrOutB)}
             </div>
+            {trA&&trB&&trA!==trB&&trOutA.length>0&&<div style={{marginBottom:18}}>
+              <button onClick={()=>setTrSug(v=>!v)} style={{fontFamily:T.sans,fontWeight:700,fontSize:12,letterSpacing:.5,color:trSug?T.bg:T.accent,background:trSug?T.accent:"transparent",border:`1.5px solid ${T.accent}`,borderRadius:8,padding:"9px 16px",cursor:"pointer"}}>{trSug?"Hide suggestions":"\u2728 Suggest a fair return from "+nameOf(trB)}</button>
+              {trSug&&(()=>{
+                const sugs=tmSuggestReturns({rosterA:rA,rosterB:rB,outA:trOutA,exclude:trOutB,nameA:trA,nameB:trB});
+                if(!sugs.length)return <div style={{marginTop:10,fontSize:12,color:T.textMute,fontStyle:"italic"}}>No comparable rated players available on {nameOf(trB)}.</div>;
+                return <div style={{marginTop:10,background:T.card,border:`1px solid ${T.border}`,borderRadius:10,padding:10}}>
+                  <div style={{fontSize:9,fontWeight:700,letterSpacing:1.5,color:T.textMute,textTransform:"uppercase",marginBottom:8,paddingLeft:4}}>Closest value matches \u2014 tap to add to the return</div>
+                  {sugs.map((sg,i)=><div key={sg.player.id} onClick={()=>setTrOutB(st=>st.some(x=>x.id===sg.player.id)?st:[...st,sg.player])} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 9px",borderRadius:7,cursor:"pointer",background:"transparent",borderBottom:i<sugs.length-1?`1px solid ${T.borderLt}`:"none"}}>
+                    <span style={{fontFamily:T.serif,fontWeight:700,fontSize:14,color:T.textMute,minWidth:16}}>{i+1}</span>
+                    <Face p={sg.player} size={30}/>
+                    <div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:13.5,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(sg.player.name)}<Pills p={sg.player}/></div><div style={{fontSize:10,color:T.textMute,fontFamily:T.sans,marginTop:1}}>{sg.player.position}{sg.player.salary?" \u00b7 $"+(sg.player.salary/1e6).toFixed(1)+"M":""}</div></div>
+                    <span style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:10,color:sg.legal?T.green:T.red,background:(sg.legal?T.green:T.red)+"18",fontFamily:T.sans}}>{sg.legal?"LEGAL":"OVER CAP"}</span>
+                    <div style={{textAlign:"center",minWidth:42}}><div style={{fontFamily:T.display,fontWeight:800,fontSize:16,color:sg.score>=70?T.green:sg.score>=45?T.gold:T.textMute,lineHeight:1}}>{sg.score}</div><div style={{fontSize:7,color:T.textMute,letterSpacing:.5,fontFamily:T.sans}}>FAIRNESS</div></div>
+                    <Badge grade={sg.player.overall} rated={sg.player.rated} size="sm"/>
+                  </div>)}
+                </div>;
+              })()}
+            </div>}
             {result?<div>
               <div style={{background:T.card,border:`1px solid ${T.border}`,borderRadius:12,padding:18,marginBottom:16}}>
                 <div style={{textAlign:"center",fontFamily:T.sans,fontWeight:700,fontSize:10,letterSpacing:2,color:T.textMute,textTransform:"uppercase",marginBottom:14}}>⇄ The Deal</div>
