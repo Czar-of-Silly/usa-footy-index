@@ -4,3 +4,7 @@ node_modules/
 .DS_Store
 patch*.js
 *.bak
+
+# local backups & merge artifacts
+*.bak
+public/data/*.pre-merge.json
