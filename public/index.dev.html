@@ -168,11 +168,12 @@ function computeGrades(ps){
   // Sub-grades rank against ALL outfielders, so "90 Defense" = elite defender
   // league-wide. Overall stays position-weighted + position-rescaled (pass 2).
   const ofs=ps.filter(p=>!p.isGK);
-  const mk=(arr,k)=>arr.map(p=>p[k]||0);
-  const ofXg=mk(ofs,"xg90"),ofXa=mk(ofs,"xa90"),ofGa=mk(ofs,"tga"),ofDf=mk(ofs,"dga"),ofPc=mk(ofs,"pc"),ofPg=mk(ofs,"pga"),ofKp=mk(ofs,"kp90"),ofSca=mk(ofs,"sca90"),ofFtp=mk(ofs,"ftp90"),ofPrs=mk(ofs,"prs90"),ofIntc=mk(ofs,"intc90"),ofArl=mk(ofs,"arl90"),ofDrb=mk(ofs,"drb90"),ofPrgc=mk(ofs,"prgc90"),ofOxg=mk(ofs,"oxg90"),ofChc=mk(ofs,"chc90"),ofGdr=mk(ofs,"gdrV"),ofEsc=mk(ofs,"escV"),ofPresR=mk(ofs,"presRV"),ofPassPerf=mk(ofs,"passPerfV");
+  const mk=(arr,k)=>arr.map(p=>p[k]).filter(x=>typeof x==="number"&&x!==0);/*GRADEFULL*/
+  const ofXg=mk(ofs,"xg90"),ofXa=mk(ofs,"xa90"),ofGa=mk(ofs,"tga"),ofDf=mk(ofs,"dga"),ofPc=mk(ofs,"pc"),ofPg=mk(ofs,"pga"),ofKp=mk(ofs,"kp90"),ofSca=mk(ofs,"sca90"),ofFtp=mk(ofs,"ftp90"),ofPrs=mk(ofs,"prs90"),ofIntc=mk(ofs,"intc90"),ofArl=mk(ofs,"arl90"),ofDrb=mk(ofs,"drb90"),ofPrgc=mk(ofs,"prgc90"),ofOxg=mk(ofs,"oxg90"),ofChc=mk(ofs,"chc90"),ofGdr=mk(ofs,"gdrV"),ofEsc=mk(ofs,"escV"),ofPresR=mk(ofs,"presRV"),ofPassPerf=mk(ofs,"passPerfV"),ofClr=mk(ofs,"clr90"),ofFls=mk(ofs,"flSuf90"),ofArlPct=mk(ofs,"arlPctV");
 
   // Single outfield composite collector (sub-grades ranked league-wide pass 2;
   // overall ranked within position pass 2)
+  const __mn=new Map();const mn=(a)=>{if(!__mn.has(a))__mn.set(a,a.length?a.reduce((t,x)=>t+x,0)/a.length:0);return __mn.get(a);};const K90S=8;
   const ofComposites=[];
 
   // GK composites collected first (pass 1), then rank-rescaled (pass 2)
@@ -215,14 +216,15 @@ function computeGrades(ps){
       const pos=p.pos||"Midfielder";
       const isFW=pos==="Forward"||pos==="FW";
       const isDF=pos==="Defender"||pos==="DF"||pos==="DEF";
+      const n90s=p.n90s||6.7;const S=(pool,val)=>pct(pool,((val||0)*n90s+mn(pool)*K90S)/(n90s+K90S));
 
       // Sub-grades: universal (ranked against all outfielders)
-      const att=pct(ofOxg,p.oxg90)*.40+pct(ofXg,p.xg90)*.20+pct(ofChc,p.chc90)*.25+pct(ofXa,p.xa90)*.15;
-      const pas=pct(ofPc,p.pc)*.30+pct(ofPassPerf,p.passPerfV)*.20+pct(ofPg,p.pga)*.15+pct(ofFtp,p.ftp90)*.20+pct(ofKp,p.kp90)*.15;
-      const def=pct(ofDf,p.dga)*.30+pct(ofPrs,p.prs90)*.25+pct(ofIntc,p.intc90)*.25+pct(ofArl,p.arl90)*.20;
-      const cre=pct(ofKp,p.kp90)*.45+pct(ofXa,p.xa90)*.30+pct(ofChc,p.chc90)*.25;
-      const car=pct(ofGdr,p.gdrV)*.50+pct(ofEsc,p.escV)*.30+pct(ofDrb,p.drb90)*.10+pct(ofFtp,p.ftp90)*.10;
-      const gaP=pct(ofGa,p.tga);
+      const att=S(ofOxg,p.oxg90)*.40+S(ofXg,p.xg90)*.20+S(ofChc,p.chc90)*.25+S(ofXa,p.xa90)*.15;
+      const pas=S(ofPc,p.pc)*.25+S(ofPassPerf,p.passPerfV)*.20+S(ofPg,p.pga)*.15+S(ofFtp,p.ftp90)*.15+S(ofKp,p.kp90)*.15+S(ofPresR,p.presRV)*.10;
+      const def=S(ofDf,p.dga)*.25+S(ofPrs,p.prs90)*.20+S(ofIntc,p.intc90)*.15+S(ofArl,p.arl90)*.15+S(ofClr,p.clr90)*.15+S(ofArlPct,p.arlPctV)*.10;/*GRADEENGINE*/
+      const cre=S(ofKp,p.kp90)*.40+S(ofXa,p.xa90)*.25+S(ofChc,p.chc90)*.20+S(ofSca,p.sca90)*.15;
+      const car=S(ofGdr,p.gdrV)*.35+S(ofEsc,p.escV)*.20+S(ofPrgc,p.prgc90)*.15+S(ofDrb,p.drb90)*.10+S(ofFtp,p.ftp90)*.10+S(ofFls,p.flSuf90)*.10;
+      const gaP=S(ofGa,p.tga);
 
       // Position-weighted Overall (weights unchanged)
       let ov;
@@ -243,6 +245,8 @@ function computeGrades(ps){
   // Convert each GK's composite + sub-grades to rank within GK pool, then
   // map rank percentile to grade scale targeting top=95, median=75, bottom=40.
   // Math: 40 + pow(rankPct, 1.5) * 59 — ceiling 99
+  const OV_REF=0.85,GRADE_EXP=0.9;/*OVANCHOR*/
+  const grOf=(v,ceil)=>{const cc=ceil||99;return Math.max(0,Math.min(cc,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/OV_REF)),GRADE_EXP)*cc)));};
   if(gkComposites.length>=3){
     const rankToGrade=(rankPct)=>Math.round(42+Math.pow(Math.max(0,Math.min(1,rankPct)),1.5)*57);
     const buildRanks=(key)=>{
@@ -259,12 +263,12 @@ function computeGrades(ps){
     const hndRanks=buildRanks('handling');
     for(const g of gkComposites){
       o[g.id]={
-        overall:rankToGrade(ovRanks[g.id]),
-        attack:rankToGrade(ssRanks[g.id]),
-        passing:rankToGrade(distRanks[g.id]),
-        defense:rankToGrade(cmdRanks[g.id]),
-        creativity:rankToGrade(swpRanks[g.id]),
-        carrying:rankToGrade(hndRanks[g.id]),
+        overall:grOf(g.ov,95),
+        attack:grOf(g.shotStop,99),
+        passing:grOf(g.dist,99),
+        defense:grOf(g.command,99),
+        creativity:grOf(g.sweep,99),
+        carrying:grOf(g.handling,99),
         isGK:true
       };
     }
@@ -273,6 +277,8 @@ function computeGrades(ps){
   // ── OUTFIELD PASS 2 [OPT1] ──
   // Sub-grades ranked LEAGUE-WIDE (all outfielders); Overall ranked WITHIN
   // position (so each position can top out near 99).
+  const OV_CEIL={FW:99,MF:97,DF:94};
+  const ovGradeOf2=(rp,ceil)=>Math.round(42+Math.pow(Math.max(0,Math.min(1,rp)),1.5)*(((ceil||97))-42));
   const rankToGradeOf=(rp)=>Math.round(42+Math.pow(Math.max(0,Math.min(1,rp)),1.5)*57);
   if(ofComposites.length>=3){
     const buildRanks=(arr,key)=>{
@@ -292,12 +298,12 @@ function computeGrades(ps){
     }
     for(const c of ofComposites){
       o[c.id]={
-        overall:rankToGradeOf(ovR[c.id]!=null?ovR[c.id]:0.5),
-        attack:rankToGradeOf(attR[c.id]),
-        passing:rankToGradeOf(pasR[c.id]),
-        defense:rankToGradeOf(defR[c.id]),
-        creativity:rankToGradeOf(creR[c.id]),
-        carrying:rankToGradeOf(carR[c.id])
+        overall:grOf(c.ov,OV_CEIL[c.pos]||97),
+        attack:grOf(c.att,99),
+        passing:grOf(c.pas,99),
+        defense:grOf(c.def,99),
+        creativity:grOf(c.cre,99),
+        carrying:grOf(c.car,99)
       };
     }
   }
@@ -1043,7 +1049,7 @@ function MLSAnalytics(){
         prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null,
       }));
       setLoadProgress(85);
-      const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,/*STEP4*/oxg90:(r.oxg||0)/p90,chc90:(r.chc||0)/p90,gdrV:(r.gdr||0),escV:(r.esc||0),presRV:(r.presR||0),passPerfV:(r.passPerf||0),
+      const inter=validated.map((r,i)=>{const id="p"+i,m=r.m||600,p90=m/90;const games=Math.max(1,Math.round(m/90));return{id,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,/*STEP4*/oxg90:(r.oxg||0)/p90,chc90:(r.chc||0)/p90,clr90:(r.clr||0)/p90,flSuf90:(r.flSuf||0)/p90,arlPctV:(r.arlPct||0),n90s:m/90,gdrV:(r.gdr||0),escV:(r.esc||0),presRV:(r.presR||0),passPerfV:(r.passPerf||0),
         // GK-specific
         isGK:(r.p==="GK"||r.p==="Goalkeeper"),pos:r.p,sv90:(r.sv||0)/p90,csRate:games>0?(r.cs||0)/games:0,gaCon90:games>0?(r.gaCon||0)/p90:0,gkEff90:games>0?(r.gkEfficiency||0)/games:0,svMls90:(r.gkSavesMLS||0)/p90,mlsPrs90:(r.mlsPressures||0)/p90,dpas90:(r.mlsDifficultPasses||0)/p90,passPerf90:games>0?(r.mlsPassingPerformance||0)/games:0,dpasPct:(r.mlsDifficultPassesPct||0),passesPctMls:(r.mlsPassesPct||r.pc||0),claim90:((r.mlsIntCorner||0)+(r.mlsIntHeld||0))/p90,sweep90:((r.mlsIntCross||0)+(r.mlsIntFisted||0))/p90,aerWonRate:(r.mlsAerialsTotal>0?(r.mlsAerialsWon||0)/r.mlsAerialsTotal:0),
         raw:r};});
@@ -1082,7 +1088,7 @@ function MLSAnalytics(){
             prs:safe(r.prs,0,500,0),intc:safe(r.intc,0,60,0),arl:safe(r.arl,0,80,0),
             drb:safe(r.drb,0,80,0),prgc:safe(r.prgc,0,100,0),
           }));
-          const inter=validated.map((r,i)=>{const m=r.m||600,p90=m/90;return{id:"h"+i,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,raw:r};});
+          const inter=validated.map((r,i)=>{const m=r.m||600,p90=m/90;return{id:"h"+i,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,clr90:(r.clr||0)/p90,flSuf90:(r.flSuf||0)/p90,arlPctV:(r.arlPct||0),n90s:(r.m||600)/90,raw:r};});
           const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players
           const byName={};
           inter.forEach(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};
@@ -1427,10 +1433,10 @@ function MLSAnalytics(){
             {[
               {name:"Overall",weight:"Position-weighted composite — FW: 30% ATT, 25% G+, 20% CRE | MF: 20% G+, 20% PAS, 20% CRE | DF: 30% DEF, 25% G+, 20% PAS",desc:"The composite score is role-aware. A defender's Overall rewards defensive excellence; a forward's rewards attacking output. Sub-grades are universal (everyone is ranked the same way on Attack, Passing, etc.) but the Overall reflects what matters for each position."},
               {name:"Attack",weight:"/*STEP5*/40% Official xG/90 + 20% ASA xG/90 + 25% Chances/90 + 15% xA/90",desc:"Goal threat and chance involvement, anchored by official Opta expected goals blended with ASA's independent model, plus chance volume and expected assists. Two xG models reduce single-model noise."},
-              {name:"Passing",weight:"30% Completion % + 20% Passing vs Expected + 20% Difficult Passes/90 + 15% Pass G+ + 15% Key Passes/90",desc:"Beyond completion rate: rewards passers who beat the expected-completion model and complete difficult, line-breaking passes — not sideways recyclers."},
-              {name:"Defense",weight:"30% Defensive G+ + 25% Pressures/90 + 25% Clearances/90 + 20% Aerials Won/90",desc:"Combines defensive value added (Goals Added) with active defending — pressures applied, clearances, and aerial dominance for set pieces and crosses."},
-              {name:"Creativity",weight:"45% Key Passes/90 + 30% xA/90 + 25% Chances/90",desc:"Isolates playmaking: passes that set up shots, expected assists, and overall chance involvement. A player can rate low on Attack but high here by creating for others."},
-              {name:"Carrying",weight:"50% Dribbling G+ + 30% Escape Rate + 10% Nutmegs/90 + 10% Difficult Passes/90",desc:"Ball progression with the feet, measured by ASA dribbling Goals Added (the value a carry adds), how often a player escapes pressure, and a touch of flair. MLS event data has no raw take-on count, so we grade carrying value rather than raw dribble attempts."},
+              {name:"Passing",weight:"25% Completion % + 20% Passing vs Expected + 15% Difficult Passes/90 + 15% Pass G+ + 15% Key Passes/90 + 10% Pressure Resistance",desc:"Beyond completion rate: rewards passers who beat the expected-completion model and complete difficult, line-breaking passes — not sideways recyclers."},
+              {name:"Defense",weight:"25% Defensive G+ + 20% Pressures/90 + 15% Interceptions/90 + 15% Aerials Won/90 + 15% Clearances/90 + 10% Aerial Win %",desc:"Combines defensive value added (Goals Added) with active defending — pressures applied, clearances, and aerial dominance for set pieces and crosses."},
+              {name:"Creativity",weight:"40% Key Passes/90 + 25% xA/90 + 20% Chances/90 + 15% Shot-Creating Actions/90",desc:"Isolates playmaking: passes that set up shots, expected assists, and overall chance involvement. A player can rate low on Attack but high here by creating for others."},
+              {name:"Carrying",weight:"35% Dribbling G+ + 20% Escape Rate + 15% Progressive Carries/90 + 10% Dribbles/90 + 10% Difficult Passes/90 + 10% Fouls Drawn/90",desc:"Ball progression with the feet, measured by ASA dribbling Goals Added (the value a carry adds), how often a player escapes pressure, and a touch of flair. MLS event data has no raw take-on count, so we grade carrying value rather than raw dribble attempts."},
             ].map(cat=>(
               <div key={cat.name} style={{marginBottom:16,padding:"14px 18px",background:T.surface,border:`1px solid ${T.borderLt}`,borderRadius:6}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
