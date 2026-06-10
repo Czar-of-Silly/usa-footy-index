@@ -255,7 +255,7 @@ function computeGrades(ps){
   const OV_REF=0.85,GRADE_EXP=0.9;/*OVANCHOR*/
   const POS_REF={FW:0.85,MF:0.82,DF:0.76,GK:0.72};/*POSREF*/
   const grOf=(v,ceil)=>{const cc=ceil||99;return Math.max(0,Math.min(cc,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/OV_REF)),GRADE_EXP)*cc)));};
-  const grOfP=(v,pos)=>{const ref=POS_REF[pos]||OV_REF;return Math.max(0,Math.min(99,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/ref)),GRADE_EXP)*99)));};/*NOCAP*/
+  const grOfP=(v,pos)=>{const ref=POS_REF[pos]||OV_REF;return Math.max(0,Math.min(99,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/ref)),GRADE_EXP)*990)/10));};/*NOCAP*//*DEC*/
   if(gkComposites.length>=3){
     const rankToGrade=(rankPct)=>Math.round(42+Math.pow(Math.max(0,Math.min(1,rankPct)),1.5)*57);
     const buildRanks=(key)=>{
@@ -398,7 +398,7 @@ function Badge({grade,size="sm",rated=true}){/*NR*/
     </div>;
   }
   return <div style={{display:"inline-flex",flexDirection:"column",alignItems:"center",background:gb(grade),border:`1.5px solid ${gc(grade)}30`,borderRadius:size==="lg"?10:5,padding:pad,minWidth:size==="lg"?72:size==="md"?36:34}}>
-    <span style={{color:gc(grade),fontWeight:700,fontSize:fs,fontFamily:T.serif,letterSpacing:-.5,lineHeight:1}}>{grade}</span>
+    <span style={{color:gc(grade),fontWeight:700,fontSize:fs,fontFamily:T.serif,letterSpacing:-.5,lineHeight:1}}>{size==="lg"?(+grade).toFixed(1):Math.round(grade)}</span>
     {size==="lg"&&<span style={{color:gc(grade),fontSize:7,fontWeight:600,letterSpacing:1,opacity:.8,marginTop:2,fontFamily:T.sans,textTransform:"uppercase"}}>{gl(grade)}</span>}
   </div>;
 }
@@ -732,7 +732,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>OVERVIEW</span>
-            <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.overall)}}>{p.overall} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.overall)}</span></span>
+            <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.overall)}}>{(+p.overall).toFixed(1)} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.overall)}</span></span>
           </div>
           {[["Saves",p.saves||0],["Clean Sheets",p.cleanSheets||0],["Goals Against",p.goalsConceded||0],["Games",Math.round((p.mins||0)/90)],["Minutes",p.mins?.toLocaleString()],["Value",<span style={{color:vc(p.marketValue),fontWeight:600}}>{fv(p.marketValue)}</span>],["Salary",<span style={{fontWeight:600}}>{p.salary?`$${(p.salary/1000).toFixed(0)}K`:"—"}</span>]].map(([l,v])=>(
             <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
@@ -787,7 +787,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>OVERVIEW</span>
-            <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.overall)}}>{p.overall} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.overall)}</span></span>
+            <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.overall)}}>{(+p.overall).toFixed(1)} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.overall)}</span></span>
           </div>
           {[["Goals Added",<span style={{color:+p.totalGA>=0?T.green:T.red,fontWeight:700}}>{+p.totalGA>=0?"+":""}{p.totalGA}</span>],["xG/90",p.xg90],["xA/90",p.xa90],["Height",p.heightCm?`${Math.floor(p.heightCm/2.54/12)}'${Math.round(p.heightCm/2.54%12)}" (${p.heightCm}cm)`:"—"],["Weight",p.weightKg?`${Math.round(p.weightKg*2.205)} lbs (${p.weightKg}kg)`:"—"],["Value",<span style={{color:vc(p.marketValue),fontWeight:600}}>{fv(p.marketValue)}</span>],["Salary",<span style={{fontWeight:600}}>{p.salary?`$${(p.salary/1000).toFixed(0)}K`:"—"}</span>],["Minutes",p.mins?.toLocaleString()]].map(([l,v])=>(
             <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
@@ -884,7 +884,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             const ovX=W-130,ovY=78;
             x.fillStyle=`${gcC(p.overall)}18`;x.beginPath();x.roundRect(ovX,ovY,90,80,8);x.fill();
             x.strokeStyle=gcC(p.overall);x.lineWidth=2;x.beginPath();x.roundRect(ovX,ovY,90,80,8);x.stroke();
-            x.fillStyle=gcC(p.overall);x.font="bold 38px 'Source Serif 4',Georgia,serif";x.textAlign="center";x.fillText(p.overall,ovX+45,ovY+48);
+            x.fillStyle=gcC(p.overall);x.font="bold 38px 'Source Serif 4',Georgia,serif";x.textAlign="center";x.fillText(Math.round(p.overall),ovX+45,ovY+48);
             x.font="bold 9px Inter,sans-serif";x.fillText(glC(p.overall),ovX+45,ovY+66);x.textAlign="left";
             x.fillStyle=BORDER;x.fillRect(30,178,W-60,1);
             const cats=[{l:"ATT",v:p.attack},{l:"PAS",v:p.passing},{l:"DEF",v:p.defense},{l:"CRE",v:p.creativity},{l:"CAR",v:p.carrying}];
@@ -919,7 +919,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             x.fillStyle=BORDER;x.fillRect(30,simY2,W-60,1);
             if(similarPlayers&&similarPlayers.length>0){
               x.fillStyle=MUTE;x.font="bold 9px Inter,sans-serif";x.fillText("SIMILAR PLAYERS",30,simY2+24);
-              similarPlayers.slice(0,3).forEach((sp,i)=>{const sy=simY2+42+i*22;x.fillStyle=INK;x.font="bold 12px Inter,sans-serif";x.fillText(sp.name,30,sy);x.fillStyle=DIM;x.font="11px Inter,sans-serif";x.fillText(`${sp.position} · ${sp.team}`,200,sy);x.fillStyle=gcC(sp.overall);x.font="bold 12px 'Source Serif 4',Georgia,serif";x.textAlign="right";x.fillText(sp.overall,W-30,sy);x.textAlign="left";});
+              similarPlayers.slice(0,3).forEach((sp,i)=>{const sy=simY2+42+i*22;x.fillStyle=INK;x.font="bold 12px Inter,sans-serif";x.fillText(sp.name,30,sy);x.fillStyle=DIM;x.font="11px Inter,sans-serif";x.fillText(`${sp.position} · ${sp.team}`,200,sy);x.fillStyle=gcC(sp.overall);x.font="bold 12px 'Source Serif 4',Georgia,serif";x.textAlign="right";x.fillText(Math.round(sp.overall),W-30,sy);x.textAlign="left";});
             }
             // Banner
             const banY=H-130;
@@ -2204,7 +2204,7 @@ function MLSAnalytics(){
                 const aWin=pA.overall>pB.overall;
                 return <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",background:T.card,borderRadius:6,border:`1px solid ${T.borderLt}`}}>
                   <div style={{flex:1,textAlign:"right"}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:aWin?T.ink:T.textDim}}>{pA.name.split(" ").slice(-1)[0]}</div><div style={{fontSize:8,color:T.textMute}}>{pA.position}</div></div>
-                  <div style={{display:"flex",alignItems:"center",gap:4}}><span style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:gc(pA.overall)}}>{pA.overall}</span><span style={{fontSize:9,color:T.textMute}}>vs</span><span style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:gc(pB.overall)}}>{pB.overall}</span></div>
+                  <div style={{display:"flex",alignItems:"center",gap:4}}><span style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:gc(pA.overall)}}>{Math.round(pA.overall)}</span><span style={{fontSize:9,color:T.textMute}}>vs</span><span style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:gc(pB.overall)}}>{Math.round(pB.overall)}</span></div>
                   <div style={{flex:1}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:!aWin?T.ink:T.textDim}}>{pB.name.split(" ").slice(-1)[0]}</div><div style={{fontSize:8,color:T.textMute}}>{pB.position}</div></div>
                 </div>;
               };
@@ -2878,7 +2878,7 @@ function MLSAnalytics(){
                 </div>
                 <div style={{textAlign:"right",minWidth:70}}>
                   <div style={{fontFamily:T.mono,fontWeight:700,fontSize:13,color:isBargain?T.green:T.red}}>{p.efficiency} pts/$M</div>
-                  <div style={{fontSize:8,color:T.textMute}}>{fv(p.marketValue)} · {p.overall} grd</div>
+                  <div style={{fontSize:8,color:T.textMute}}>{fv(p.marketValue)} · {Math.round(p.overall)} grd</div>
                 </div>
               </div>
             );

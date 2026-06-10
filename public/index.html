@@ -77,7 +77,7 @@
     body{margin:0;padding:0}
   </style>
 <!-- v20260411-fix -->
-<!-- built: 2026-06-10T01:24:40 -->
+<!-- built: 2026-06-10T01:42:30 -->
 </head>
 <body>
   <div id="root"></div>
@@ -522,8 +522,8 @@ function computeGrades(ps) {
   };
   const grOfP = (v, pos) => {
     const ref = POS_REF[pos] || OV_REF;
-    return Math.max(0, Math.min(99, Math.round(Math.pow(Math.max(0, Math.min(1, (v || 0) / ref)), GRADE_EXP) * 99)));
-  }; /*NOCAP*/
+    return Math.max(0, Math.min(99, Math.round(Math.pow(Math.max(0, Math.min(1, (v || 0) / ref)), GRADE_EXP) * 990) / 10));
+  }; /*NOCAP*/ /*DEC*/
   if (gkComposites.length >= 3) {
     const rankToGrade = rankPct => Math.round(42 + Math.pow(Math.max(0, Math.min(1, rankPct)), 1.5) * 57);
     const buildRanks = key => {
@@ -967,7 +967,7 @@ function Badge({
       letterSpacing: -.5,
       lineHeight: 1
     }
-  }, grade), size === "lg" && /*#__PURE__*/React.createElement("span", {
+  }, size === "lg" ? (+grade).toFixed(1) : Math.round(grade)), size === "lg" && /*#__PURE__*/React.createElement("span", {
     style: {
       color: gc(grade),
       fontSize: 7,
@@ -2459,7 +2459,7 @@ function PlayerModal({
       fontSize: 15,
       color: gc(p.overall)
     }
-  }, p.overall, " ", /*#__PURE__*/React.createElement("span", {
+  }, (+p.overall).toFixed(1), " ", /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 9,
       fontWeight: 600,
@@ -2747,7 +2747,7 @@ function PlayerModal({
       fontSize: 15,
       color: gc(p.overall)
     }
-  }, p.overall, " ", /*#__PURE__*/React.createElement("span", {
+  }, (+p.overall).toFixed(1), " ", /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 9,
       fontWeight: 600,
@@ -3213,7 +3213,7 @@ function PlayerModal({
       x.fillStyle = gcC(p.overall);
       x.font = "bold 38px 'Source Serif 4',Georgia,serif";
       x.textAlign = "center";
-      x.fillText(p.overall, ovX + 45, ovY + 48);
+      x.fillText(Math.round(p.overall), ovX + 45, ovY + 48);
       x.font = "bold 9px Inter,sans-serif";
       x.fillText(glC(p.overall), ovX + 45, ovY + 66);
       x.textAlign = "left";
@@ -3401,7 +3401,7 @@ function PlayerModal({
           x.fillStyle = gcC(sp.overall);
           x.font = "bold 12px 'Source Serif 4',Georgia,serif";
           x.textAlign = "right";
-          x.fillText(sp.overall, W - 30, sy);
+          x.fillText(Math.round(sp.overall), W - 30, sy);
           x.textAlign = "left";
         });
       }
@@ -8347,7 +8347,7 @@ function MLSAnalytics() {
           fontSize: 16,
           color: gc(pA.overall)
         }
-      }, pA.overall), /*#__PURE__*/React.createElement("span", {
+      }, Math.round(pA.overall)), /*#__PURE__*/React.createElement("span", {
         style: {
           fontSize: 9,
           color: T.textMute
@@ -8359,7 +8359,7 @@ function MLSAnalytics() {
           fontSize: 16,
           color: gc(pB.overall)
         }
-      }, pB.overall)), /*#__PURE__*/React.createElement("div", {
+      }, Math.round(pB.overall))), /*#__PURE__*/React.createElement("div", {
         style: {
           flex: 1
         }
@@ -11098,7 +11098,7 @@ function MLSAnalytics() {
         fontSize: 8,
         color: T.textMute
       }
-    }, fv(p.marketValue), " \xB7 ", p.overall, " grd")));
+    }, fv(p.marketValue), " \xB7 ", Math.round(p.overall), " grd")));
     return /*#__PURE__*/React.createElement("div", {
       style: {
         marginTop: 24
