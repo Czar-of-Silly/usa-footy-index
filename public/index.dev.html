@@ -133,6 +133,12 @@ const T = {...LIGHT};
 
 // Grade engine
 function pct(a,v){const s=[...a].sort((x,y)=>x-y);return s.filter(x=>x<v).length/Math.max(s.length,1);}
+function normPos(x){const t=String(x||"").toLowerCase().trim();/*POSNORM*/
+  if(t==="gk"||t==="g"||t.includes("goal")||t.includes("keep"))return"Goalkeeper";
+  if(t==="df"||t==="d"||t==="def"||t.includes("defen")||t.includes("back"))return"Defender";
+  if(t==="fw"||t==="f"||t==="st"||t.includes("off")||t.includes("forw")||t.includes("atta")||t.includes("strik")||t.includes("wing"))return"Forward";
+  if(t==="mf"||t==="m"||t.includes("mid"))return"Midfielder";
+  return"Midfielder";}
 function toG(p){return Math.round(42+Math.max(0,Math.min(1,p))*57);}
 function computeGrades(ps){
   if(!ps.length)return{};
@@ -247,7 +253,9 @@ function computeGrades(ps){
   // map rank percentile to grade scale targeting top=95, median=75, bottom=40.
   // Math: 40 + pow(rankPct, 1.5) * 59 — ceiling 99
   const OV_REF=0.85,GRADE_EXP=0.9;/*OVANCHOR*/
+  const POS_REF={FW:0.85,MF:0.82,DF:0.76,GK:0.72};/*POSREF*/
   const grOf=(v,ceil)=>{const cc=ceil||99;return Math.max(0,Math.min(cc,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/OV_REF)),GRADE_EXP)*cc)));};
+  const grOfP=(v,pos)=>{const ref=POS_REF[pos]||OV_REF;return Math.max(0,Math.min(99,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/ref)),GRADE_EXP)*99)));};/*NOCAP*/
   if(gkComposites.length>=3){
     const rankToGrade=(rankPct)=>Math.round(42+Math.pow(Math.max(0,Math.min(1,rankPct)),1.5)*57);
     const buildRanks=(key)=>{
@@ -264,7 +272,7 @@ function computeGrades(ps){
     const hndRanks=buildRanks('handling');
     for(const g of gkComposites){
       o[g.id]={
-        overall:grOf(g.ov,95),
+        overall:grOfP(g.ov,"GK",95),
         attack:grOf(g.shotStop,99),
         passing:grOf(g.dist,99),
         defense:grOf(g.command,99),
@@ -299,7 +307,7 @@ function computeGrades(ps){
     }
     for(const c of ofComposites){
       o[c.id]={
-        overall:grOf(c.ov,OV_CEIL[c.pos]||97),
+        overall:grOfP(c.ov,c.pos,OV_CEIL[c.pos]||97),
         attack:grOf(c.att,99),
         passing:grOf(c.pas,99),
         defense:grOf(c.def,99),
@@ -1037,7 +1045,7 @@ function MLSAnalytics(){
       // Validate + sanitize each raw player object
       const safe=(v,min,max,def)=>{const n=Number(v);return isNaN(n)?def:Math.max(min,Math.min(max,n));};
       const validated=allRaw.filter(r=>r&&r.n&&r.t&&typeof r.n==="string").map(r=>({
-        n:String(r.n).slice(0,40),t:String(r.t).slice(0,5),p:String(r.p||"MF"),a:safe(r.a,15,45,25),ht:safe(r.ht,155,205,null),wt:safe(r.wt,55,110,null),
+        n:String(r.n).slice(0,40),t:String(r.t).slice(0,5),p:normPos(r.p),a:safe(r.a,15,45,25),ht:safe(r.ht,155,205,null),wt:safe(r.wt,55,110,null),
         m:safe(r.m,0,3000,600),g:safe(r.g,0,40,0),as:safe(r.as,0,30,0),xg:safe(r.xg,0,20,0),xa:safe(r.xa,0,15,0),
         pp:safe(r.pp,30,99,75),xpp:safe(r.xpp,30,99,75),gs:safe(r.gs,-3,5,0),gp:safe(r.gp,-3,5,0),gdr:safe(r.gdr,-3,5,0),gdf:safe(r.gdf,-3,5,0),gi:safe(r.gi,-3,5,0),
         mv:safe(r.mv,0,50e6,500000),tk:safe(r.tk,0,80,0),sh:safe(r.sh,0,120,0),so:safe(r.so,0,60,0),fl:safe(r.fl,0,50,0),yc:safe(r.yc,0,15,0),rc:safe(r.rc,0,3,0),
@@ -1079,7 +1087,7 @@ function MLSAnalytics(){
           if(!raw.length)continue;
           // Process grades for this season
           const validated=raw.filter(r=>r&&r.n&&r.t).map(r=>({
-            n:String(r.n).slice(0,40),t:String(r.t).slice(0,5),p:String(r.p||"MF"),
+            n:String(r.n).slice(0,40),t:String(r.t).slice(0,5),p:normPos(r.p),
             m:safe(r.m,0,3000,600),g:safe(r.g,0,40,0),as:safe(r.as,0,30,0),
             xg:safe(r.xg,0,20,0),xa:safe(r.xa,0,15,0),
             pp:safe(r.pp,30,99,75),xpp:safe(r.xpp,30,99,75),
