@@ -185,27 +185,28 @@ function computeGrades(ps){
       // ── GK GRADING ──
       // Shot-Stopping (mapped to "attack"): saves/90 60%, clean sheet rate 40%
       const hasGkEff=(p.gkEff90||0)!==0&&gksWithMls.length>=3;
+      const n90sG=p.n90s||6.7;const Sg=(pool,val)=>pct(pool,((val||0)*n90sG+mn(pool)*K90S)/(n90sG+K90S));/*GKREGRESS*/
       // Shot-Stopping: Save Quality is the gold-standard GK metric (PFF/FotMob use it)
       const shotStop=hasGkEff
-        ?pct(gkEffPool,p.gkEff90)*.50+pct(gkSvMlsPool,p.svMls90)*.30+pct(gkCs,p.csRate)*.20
-        :pct(gkSv,p.sv90)*.60+pct(gkCs,p.csRate)*.40;
+        ?Sg(gkEffPool,p.gkEff90)*.50+Sg(gkSvMlsPool,p.svMls90)*.30+Sg(gkCs,p.csRate)*.20
+        :Sg(gkSv,p.sv90)*.60+Sg(gkCs,p.csRate)*.40;
       // Distribution (mapped to "passing"): pass completion 50%, progressive passes/90 50%
       const dist=hasGkEff
-        ?pct(gkPassPerfPool,p.passPerf90)*.50+pct(gkPassesPctPool,p.passesPctMls)*.25+pct(gkDpasPctPool,p.dpasPct)*.25
-        :pct(gkPc,p.pc)*.50+pct(gkPrgp,p.prgp90)*.50;
+        ?Sg(gkPassPerfPool,p.passPerf90)*.50+Sg(gkPassesPctPool,p.passesPctMls)*.25+Sg(gkDpasPctPool,p.dpasPct)*.25
+        :Sg(gkPc,p.pc)*.50+Sg(gkPrgp,p.prgp90)*.50;
       // Command (mapped to "defense"): ball recovery/90 40%, aerials/90 40%, goals conceded/90 inverted 20%
-      const gcInv=gkGa.length>1?1-pct(gkGa,p.gaCon90):0.5; // lower GA = better
+      const gcInv=gkGa.length>1?1-Sg(gkGa,p.gaCon90):0.5; // lower GA = better (minutes-regressed)
       const command=hasGkEff
-        ?pct(gkClaimPool,p.claim90)*.50+pct(gkAerRatePool,p.aerWonRate)*.30+gcInv*.20
-        :pct(gkPrs,p.prs90)*.40+pct(gkArl,p.arl90)*.40+gcInv*.20;
+        ?Sg(gkClaimPool,p.claim90)*.50+Sg(gkAerRatePool,p.aerWonRate)*.30+gcInv*.20
+        :Sg(gkPrs,p.prs90)*.40+Sg(gkArl,p.arl90)*.40+gcInv*.20;
       // Sweeping (mapped to "creativity"): aerials/90 50%, interceptions/90 50%
       const sweep=hasGkEff
-        ?pct(gkSweepMlsPool,p.sweep90)*.70+gcInv*.30
-        :pct(gkArl,p.arl90)*.50+pct(v("intc90"),p.intc90)*.50;
+        ?Sg(gkSweepMlsPool,p.sweep90)*.70+gcInv*.30
+        :Sg(gkArl,p.arl90)*.50+Sg(v("intc90"),p.intc90)*.50;
       // Handling (mapped to "carrying"): clean sheet rate 50%, saves/90 50%
       const handling=hasGkEff
-        ?pct(gkCs,p.csRate)*.40+pct(gkSvMlsPool,p.svMls90)*.60
-        :pct(gkCs,p.csRate)*.50+pct(gkSv,p.sv90)*.50;
+        ?Sg(gkCs,p.csRate)*.40+Sg(gkSvMlsPool,p.svMls90)*.60
+        :Sg(gkCs,p.csRate)*.50+Sg(gkSv,p.sv90)*.50;
       // GK Overall: shot-stopping 35%, command 25%, distribution 20%, sweeping 10%, handling 10%
       const gkOv=shotStop*.35+command*.25+dist*.20+sweep*.10+handling*.10;
       gkComposites.push({id:p.id,ov:gkOv,shotStop,dist,command,sweep,handling});
