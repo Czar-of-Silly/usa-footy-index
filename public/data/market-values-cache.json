@@ -1,0 +1,1864 @@
+{
+ "asOf": "2026-06-10",
+ "source": "dcaribou/transfermarkt-datasets (Kaggle)",
+ "eurToUsd": 1.1,
+ "count": 232,
+ "entries": [
+  {
+   "name": "Óscar Ustari",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Hugo Lloris",
+   "club": "Los Angeles Football Club",
+   "mvEur": 1200000,
+   "mvUsd": 1320000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Lionel Messi",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 35000000,
+   "mvUsd": 38500000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Maxi Moralez",
+   "club": "New York City Football Club",
+   "mvEur": 200000,
+   "mvUsd": 220000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Marco Reus",
+   "club": "Los Angeles Galaxy",
+   "mvEur": 5000000,
+   "mvUsd": 5500000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Kei Kamara",
+   "club": "Football Club Cincinnati",
+   "mvEur": 100000,
+   "mvUsd": 110000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Albert Rusnák",
+   "club": "Seattle Sounders FC",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Luis Suárez",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Eric-Maxim Choupo-Moting",
+   "club": "Red Bull New York",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Erik Sviatchenko",
+   "club": "Houston Dynamo",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Christian Benteke",
+   "club": "D.C. United",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2027-06-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Thomas Müller",
+   "club": "Vancouver Whitecaps FC",
+   "mvEur": 5000000,
+   "mvUsd": 5500000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Roman Bürki",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Sergio Busquets",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 3500000,
+   "mvUsd": 3850000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Jordi Alba",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Bruno Wilson",
+   "club": "San Jose Earthquakes",
+   "mvEur": 900000,
+   "mvUsd": 990000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Maya Yoshida",
+   "club": "Los Angeles Galaxy",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "James Rodríguez",
+   "club": "Minnesota United FC",
+   "mvEur": 6000000,
+   "mvUsd": 6600000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ashley Westwood",
+   "club": "Charlotte Football Club",
+   "mvEur": 850000,
+   "mvUsd": 935000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Heung-min Son",
+   "club": "Los Angeles Football Club",
+   "mvEur": 17000000,
+   "mvUsd": 18700000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Rafael Cabral",
+   "club": "Real Salt Lake",
+   "mvEur": 550000,
+   "mvUsd": 605000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Emil Forsberg",
+   "club": "Red Bull New York",
+   "mvEur": 5000000,
+   "mvUsd": 5500000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Alejandro Bedoya",
+   "club": "Philadelphia Union",
+   "mvEur": 250000,
+   "mvUsd": 275000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Héctor Herrera",
+   "club": "Houston Dynamo",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Carles Gil",
+   "club": "New England Revolution",
+   "mvEur": 5000000,
+   "mvUsd": 5500000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Jonathan Bond",
+   "club": "Houston Dynamo",
+   "mvEur": 800000,
+   "mvUsd": 880000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Gastón Brugman",
+   "club": "Nashville SC",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Tim Ream",
+   "club": "Charlotte Football Club",
+   "mvEur": 800000,
+   "mvUsd": 880000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Andy Nájar",
+   "club": "Nashville SC",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Wilfried Zaha",
+   "club": "Charlotte Football Club",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Hany Mukhtar",
+   "club": "Nashville SC",
+   "mvEur": 12000000,
+   "mvUsd": 13200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Erik Thommy",
+   "club": "Los Angeles Galaxy",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2027-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Dario Zuparic",
+   "club": "Portland Timbers",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Nemanja Radoja",
+   "club": "Sporting Kansas City",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Timo Werner",
+   "club": "San Jose Earthquakes",
+   "mvEur": 17000000,
+   "mvUsd": 18700000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Rudy Camacho",
+   "club": "Columbus Crew",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Robin Lod",
+   "club": "Chicago Fire Soccer Club",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Brad Smith",
+   "club": "Football Club Cincinnati",
+   "mvEur": 850000,
+   "mvUsd": 935000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Sebastian Lletget",
+   "club": "FC Dallas",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-11-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Tim Leibold",
+   "club": "Sporting Kansas City",
+   "mvEur": 1000000,
+   "mvUsd": 1100000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Yuya Kubo",
+   "club": "Football Club Cincinnati",
+   "mvEur": 400000,
+   "mvUsd": 440000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Timo Baumgartl",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Marcel Hartel",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 2800000,
+   "mvUsd": 3080000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ryan Gauld",
+   "club": "Vancouver Whitecaps FC",
+   "mvEur": 7000000,
+   "mvUsd": 7700000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Harry Toffolo",
+   "club": "Charlotte Football Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Tyler Boyd",
+   "club": "Los Angeles Football Club",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Steven Moreira",
+   "club": "Columbus Crew",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Cedric Teuchert",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Sebastian Schonlau",
+   "club": "Vancouver Whitecaps FC",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "André Gomes",
+   "club": "Columbus Crew",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2027-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Joaquín Fernández",
+   "club": "Sporting Kansas City",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Zack Steffen",
+   "club": "Colorado Rapids",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Mikkel Desler",
+   "club": "Austin FC",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Wilder Cartagena",
+   "club": "Orlando City Soccer Club",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Stian Gregersen",
+   "club": "Atlanta United Football Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Denis Bouanga",
+   "club": "Los Angeles Football Club",
+   "mvEur": 8000000,
+   "mvUsd": 8800000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Christian Ramirez",
+   "club": "Austin FC",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Silvan Hefti",
+   "club": "D.C. United",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2027-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Stijn Spierings",
+   "club": "Real Salt Lake",
+   "mvEur": 1200000,
+   "mvUsd": 1320000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ethan Horvath",
+   "club": "Red Bull New York",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2027-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Oleksandr Svatok",
+   "club": "Austin FC",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Matt Miazga",
+   "club": "Football Club Cincinnati",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Anton Salétros",
+   "club": "Chicago Fire Soccer Club",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Saba Lobjanidze",
+   "club": "Atlanta United Football Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Andreas Maxsø",
+   "club": "Colorado Rapids",
+   "mvEur": 1200000,
+   "mvUsd": 1320000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Rob Holding",
+   "club": "Colorado Rapids",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Aleksey Miranchuk",
+   "club": "Atlanta United Football Club",
+   "mvEur": 10000000,
+   "mvUsd": 11000000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Rodrigo De Paul",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 15000000,
+   "mvUsd": 16500000,
+   "contractExpiry": "2029-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "DeAndre Yedlin",
+   "club": "Real Salt Lake",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Jeppe Tverskov",
+   "club": "San Diego Football Club",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Eduard Löwen",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Jamal Thiaré",
+   "club": "Columbus Crew",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Pep Biel",
+   "club": "Charlotte Football Club",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Sergi Palencia",
+   "club": "Los Angeles Football Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Marcus Ingvartsen",
+   "club": "San Diego Football Club",
+   "mvEur": 6500000,
+   "mvUsd": 7150000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Philip Zinckernagel",
+   "club": "Chicago Fire Soccer Club",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Miguel Almirón",
+   "club": "Atlanta United Football Club",
+   "mvEur": 9000000,
+   "mvUsd": 9900000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Manu García",
+   "club": "Sporting Kansas City",
+   "mvEur": 3500000,
+   "mvUsd": 3850000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Rominigue Kouamé",
+   "club": "Chicago Fire Soccer Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Cristian Espinoza",
+   "club": "Nashville SC",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ryan Kent",
+   "club": "Seattle Sounders FC",
+   "mvEur": 3500000,
+   "mvUsd": 3850000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Jonathan Rodríguez",
+   "club": "Portland Timbers",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Sergio Reguilón",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 12000000,
+   "mvUsd": 13200000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Sam Adekugbe",
+   "club": "Vancouver Whitecaps FC",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Jonathan Bamba",
+   "club": "Chicago Fire Soccer Club",
+   "mvEur": 9000000,
+   "mvUsd": 9900000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Adrián Marín",
+   "club": "Orlando City Soccer Club",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ezequiel Ponce",
+   "club": "Houston Dynamo",
+   "mvEur": 5000000,
+   "mvUsd": 5500000,
+   "contractExpiry": "2027-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Randall Leal",
+   "club": "D.C. United",
+   "mvEur": 3500000,
+   "mvUsd": 3850000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Timothy Tillman",
+   "club": "Los Angeles Football Club",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Lewis Morgan",
+   "club": "San Diego Football Club",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Bryan Acosta",
+   "club": "Nashville SC",
+   "mvEur": 1200000,
+   "mvUsd": 1320000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Myrto Uzuni",
+   "club": "Austin FC",
+   "mvEur": 8000000,
+   "mvUsd": 8800000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Diadié Samassékou",
+   "club": "Houston Dynamo",
+   "mvEur": 1000000,
+   "mvUsd": 1100000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Luca de la Torre",
+   "club": "Charlotte Football Club",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Hirving Lozano",
+   "club": "San Diego Football Club",
+   "mvEur": 8000000,
+   "mvUsd": 8800000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Diego Rossi",
+   "club": "Columbus Crew",
+   "mvEur": 7000000,
+   "mvUsd": 7700000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Tristan Muyumba",
+   "club": "Atlanta United Football Club",
+   "mvEur": 1000000,
+   "mvUsd": 1100000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Hannes Wolf",
+   "club": "New York City Football Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ondrej Lingr",
+   "club": "Houston Dynamo",
+   "mvEur": 3500000,
+   "mvUsd": 3850000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Besard Šabović",
+   "club": "Austin FC",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Andrés Cubas",
+   "club": "Vancouver Whitecaps FC",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Evander",
+   "club": "Football Club Cincinnati",
+   "mvEur": 8000000,
+   "mvUsd": 8800000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Alexandros Katranis",
+   "club": "Real Salt Lake",
+   "mvEur": 650000,
+   "mvUsd": 715000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Riqui Puig",
+   "club": "Los Angeles Galaxy",
+   "mvEur": 12000000,
+   "mvUsd": 13200000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Shapi Suleymanov",
+   "club": "Sporting Kansas City",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Shaq Moore",
+   "club": "FC Dallas",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Dejan Joveljić",
+   "club": "Sporting Kansas City",
+   "mvEur": 3500000,
+   "mvUsd": 3850000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Connor Ronan",
+   "club": "Colorado Rapids",
+   "mvEur": 1000000,
+   "mvUsd": 1100000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Anders Dreyer",
+   "club": "San Diego Football Club",
+   "mvEur": 15000000,
+   "mvUsd": 16500000,
+   "contractExpiry": "2029-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Yevgen Cheberko",
+   "club": "Columbus Crew",
+   "mvEur": 1000000,
+   "mvUsd": 1100000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Kyle Duncan",
+   "club": "Minnesota United FC",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Djibril Diani",
+   "club": "Charlotte Football Club",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Khiry Shelton",
+   "club": "Sporting Kansas City",
+   "mvEur": 700000,
+   "mvUsd": 770000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Matt Polster",
+   "club": "New England Revolution",
+   "mvEur": 800000,
+   "mvUsd": 880000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Giacomo Vrioni",
+   "club": "Club de Foot Montréal",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Malte Amundsen",
+   "club": "Columbus Crew",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Obinna Nwobodo",
+   "club": "Football Club Cincinnati",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Chris Durkin",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Brady Scott",
+   "club": "Los Angeles Galaxy",
+   "mvEur": 125000,
+   "mvUsd": 137500,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Sergio Córdova",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "David Schnegg",
+   "club": "Charlotte Football Club",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Emmanuel Sabbi",
+   "club": "Vancouver Whitecaps FC",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Vítor Costa",
+   "club": "San Jose Earthquakes",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Aiden O'Neill",
+   "club": "New York City Football Club",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Petar Musa",
+   "club": "FC Dallas",
+   "mvEur": 8000000,
+   "mvUsd": 8800000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Samuel Shashoua",
+   "club": "Minnesota United FC",
+   "mvEur": 1000000,
+   "mvUsd": 1100000,
+   "contractExpiry": "2026-11-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Emmanuel Latte Lath",
+   "club": "Atlanta United Football Club",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Josh Sargent",
+   "club": "Toronto FC",
+   "mvEur": 12000000,
+   "mvUsd": 13200000,
+   "contractExpiry": "2031-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Marco Pašalić",
+   "club": "Orlando City Soccer Club",
+   "mvEur": 350000,
+   "mvUsd": 385000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Sam Surridge",
+   "club": "Nashville SC",
+   "mvEur": 5500000,
+   "mvUsd": 6050000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Kye Rowles",
+   "club": "D.C. United",
+   "mvEur": 1200000,
+   "mvUsd": 1320000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Strahinja Tanasijević",
+   "club": "New York City Football Club",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Mamadou Fofana",
+   "club": "New England Revolution",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Japhet Sery Larsen",
+   "club": "Philadelphia Union",
+   "mvEur": 900000,
+   "mvUsd": 990000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Brendan Hines-Ike",
+   "club": "Austin FC",
+   "mvEur": 700000,
+   "mvUsd": 770000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Hugo Cuypers",
+   "club": "Chicago Fire Soccer Club",
+   "mvEur": 10000000,
+   "mvUsd": 11000000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Wessam Abou Ali",
+   "club": "Columbus Crew",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Joaquín Pereyra",
+   "club": "Minnesota United FC",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Matt Turner",
+   "club": "New England Revolution",
+   "mvEur": 7000000,
+   "mvUsd": 7700000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Tomas Ostrák",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ronald Hernández",
+   "club": "Atlanta United Football Club",
+   "mvEur": 450000,
+   "mvUsd": 495000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Teenage Hadebe",
+   "club": "Football Club Cincinnati",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Mateusz Bogusz",
+   "club": "Houston Dynamo",
+   "mvEur": 1200000,
+   "mvUsd": 1320000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ronaldo Vieira",
+   "club": "San Jose Earthquakes",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ryan Porteous",
+   "club": "Los Angeles Football Club",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Juan Manuel Sanabria",
+   "club": "Real Salt Lake",
+   "mvEur": 7000000,
+   "mvUsd": 7700000,
+   "contractExpiry": "2030-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "André Franco",
+   "club": "Chicago Fire Soccer Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Enea Mihaj",
+   "club": "Atlanta United Football Club",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "José Cifuentes",
+   "club": "Toronto FC",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Keaton Parks",
+   "club": "New York City Football Club",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Robert Voloder",
+   "club": "Red Bull New York",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Sébastian Breza",
+   "club": "Club de Foot Montréal",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Christian Koffi",
+   "club": "Nashville SC",
+   "mvEur": 150000,
+   "mvUsd": 165000,
+   "contractExpiry": "2026-11-30",
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Juan Berrocal",
+   "club": "Atlanta United Football Club",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Indiana Vassilev",
+   "club": "Philadelphia Union",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Steven Alzate",
+   "club": "Atlanta United Football Club",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2030-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Reggie Cannon",
+   "club": "Colorado Rapids",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Logan Ndenbe",
+   "club": "Sporting Kansas City",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Kévin Denkey",
+   "club": "Football Club Cincinnati",
+   "mvEur": 14000000,
+   "mvUsd": 15400000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ian Harkes",
+   "club": "San Jose Earthquakes",
+   "mvEur": 450000,
+   "mvUsd": 495000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Matty Longstaff",
+   "club": "Club de Foot Montréal",
+   "mvEur": 900000,
+   "mvUsd": 990000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Djordje Mihailovic",
+   "club": "Toronto FC",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Osaze Urhoghide",
+   "club": "FC Dallas",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Iván Angulo",
+   "club": "Orlando City Soccer Club",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "João Klauss",
+   "club": "Los Angeles Galaxy",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Kristoffer Velde",
+   "club": "Portland Timbers",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Alex Mighten",
+   "club": "San Diego Football Club",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Amine Bassi",
+   "club": "Houston Dynamo",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": null,
+   "lastSeason": "2024"
+  },
+  {
+   "name": "Dylan Chambost",
+   "club": "Columbus Crew",
+   "mvEur": 700000,
+   "mvUsd": 770000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Lukas Engel",
+   "club": "Real Salt Lake",
+   "mvEur": 2200000,
+   "mvUsd": 2420000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Stephen Eustaquio",
+   "club": "Los Angeles Football Club",
+   "mvEur": 11000000,
+   "mvUsd": 12100000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Liel Abada",
+   "club": "Charlotte Football Club",
+   "mvEur": 7000000,
+   "mvUsd": 7700000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Zorhan Bassong",
+   "club": "Sporting Kansas City",
+   "mvEur": 250000,
+   "mvUsd": 275000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Joseph Paintsil",
+   "club": "Los Angeles Galaxy",
+   "mvEur": 9500000,
+   "mvUsd": 10450000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Sam Vines",
+   "club": "Houston Dynamo",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Christian Cappis",
+   "club": "FC Dallas",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Louis Munteanu",
+   "club": "D.C. United",
+   "mvEur": 1400000,
+   "mvUsd": 1540000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Chris Mueller",
+   "club": "Chicago Fire Soccer Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Jon Gallagher",
+   "club": "Austin FC",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Pedro Amador",
+   "club": "Atlanta United Football Club",
+   "mvEur": 700000,
+   "mvUsd": 770000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Theo Corbeanu",
+   "club": "Toronto FC",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Cheikh Sabaly",
+   "club": "Vancouver Whitecaps FC",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Zane Monlouis",
+   "club": "Toronto FC",
+   "mvEur": 400000,
+   "mvUsd": 440000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Kelvin Yeboah",
+   "club": "Minnesota United FC",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Alhassan Yusuf",
+   "club": "New England Revolution",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Cole Bassett",
+   "club": "Portland Timbers",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Leonardo Campana",
+   "club": "New England Revolution",
+   "mvEur": 3500000,
+   "mvUsd": 3850000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Iván Jaime",
+   "club": "Club de Foot Montréal",
+   "mvEur": 5000000,
+   "mvUsd": 5500000,
+   "contractExpiry": "2026-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Griffin Yow",
+   "club": "New England Revolution",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Peglow",
+   "club": "D.C. United",
+   "mvEur": 1500000,
+   "mvUsd": 1650000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Danley Jean Jacques",
+   "club": "Philadelphia Union",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Milan Iloski",
+   "club": "Philadelphia Union",
+   "mvEur": 3000000,
+   "mvUsd": 3300000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Brayan Vera",
+   "club": "Club de Foot Montréal",
+   "mvEur": 1000000,
+   "mvUsd": 1100000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Louicius Deedson",
+   "club": "FC Dallas",
+   "mvEur": 1200000,
+   "mvUsd": 1320000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Brayan Ceballos",
+   "club": "New England Revolution",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Osaze De Rosario",
+   "club": "Seattle Sounders FC",
+   "mvEur": 250000,
+   "mvUsd": 275000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Maxwell Woledzi",
+   "club": "Nashville SC",
+   "mvEur": 400000,
+   "mvUsd": 440000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Lasse Berg Johnsen",
+   "club": "Sporting Kansas City",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Capita",
+   "club": "Sporting Kansas City",
+   "mvEur": 250000,
+   "mvUsd": 275000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Victor Loturi",
+   "club": "Club de Foot Montréal",
+   "mvEur": 800000,
+   "mvUsd": 880000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Darius Johnson",
+   "club": "San Jose Earthquakes",
+   "mvEur": 275000,
+   "mvUsd": 302500,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Fabian Mrozek",
+   "club": "Football Club Cincinnati",
+   "mvEur": 200000,
+   "mvUsd": 220000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Morgan Guilavogui",
+   "club": "Real Salt Lake",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Cameron Harper",
+   "club": "Red Bull New York",
+   "mvEur": 600000,
+   "mvUsd": 660000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ivan Losenko",
+   "club": "Club de Foot Montréal",
+   "mvEur": 300000,
+   "mvUsd": 330000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Hamzat Ojediran",
+   "club": "Colorado Rapids",
+   "mvEur": 1000000,
+   "mvUsd": 1100000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "David Da Costa",
+   "club": "Portland Timbers",
+   "mvEur": 6000000,
+   "mvUsd": 6600000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Nicolás Fernández Mercau",
+   "club": "New York City Football Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2029-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Matheus Pereira",
+   "club": "Toronto FC",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Caden Clark",
+   "club": "D.C. United",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Juan Mina",
+   "club": "Red Bull New York",
+   "mvEur": 200000,
+   "mvUsd": 220000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Zach Booth",
+   "club": "Real Salt Lake",
+   "mvEur": 500000,
+   "mvUsd": 550000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Brian Schwake",
+   "club": "Nashville SC",
+   "mvEur": 250000,
+   "mvUsd": 275000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Alejandro Alvarado",
+   "club": "San Diego Football Club",
+   "mvEur": 150000,
+   "mvUsd": 165000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Paxten Aaronson",
+   "club": "Colorado Rapids",
+   "mvEur": 7000000,
+   "mvUsd": 7700000,
+   "contractExpiry": "2030-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Justin Che",
+   "club": "Red Bull New York",
+   "mvEur": 700000,
+   "mvUsd": 770000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Antony",
+   "club": "Portland Timbers",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Telasco Segovia",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 4500000,
+   "mvUsd": 4950000,
+   "contractExpiry": "2029-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Agustín Anello",
+   "club": "Philadelphia Union",
+   "mvEur": 450000,
+   "mvUsd": 495000,
+   "contractExpiry": "2029-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Tadeo Allende",
+   "club": "Club Internacional de Fútbol Miami",
+   "mvEur": 4000000,
+   "mvUsd": 4400000,
+   "contractExpiry": "2030-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Willy Kumado",
+   "club": "San Diego Football Club",
+   "mvEur": 1200000,
+   "mvUsd": 1320000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Jules-Anthony Vilsaint",
+   "club": "Toronto FC",
+   "mvEur": 100000,
+   "mvUsd": 110000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Kevin Kelsy",
+   "club": "Portland Timbers",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Mamadou Mbacke",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 2000000,
+   "mvUsd": 2200000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Nectarios Triantis",
+   "club": "Minnesota United FC",
+   "mvEur": 2500000,
+   "mvUsd": 2750000,
+   "contractExpiry": "2029-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Artem Smolyakov",
+   "club": "Los Angeles Football Club",
+   "mvEur": 1800000,
+   "mvUsd": 1980000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Dante Polvara",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 400000,
+   "mvUsd": 440000,
+   "contractExpiry": "2028-06-30",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Igor Jesus",
+   "club": "Los Angeles Football Club",
+   "mvEur": 3500000,
+   "mvUsd": 3850000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Duran Ferree",
+   "club": "San Diego Football Club",
+   "mvEur": 150000,
+   "mvUsd": 165000,
+   "contractExpiry": "2027-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Ali Fadal",
+   "club": "Colorado Rapids",
+   "mvEur": 100000,
+   "mvUsd": 110000,
+   "contractExpiry": "2026-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Fallou Fall",
+   "club": "St. Louis City Soccer Club",
+   "mvEur": 100000,
+   "mvUsd": 110000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  },
+  {
+   "name": "Gennadiy Synchuk",
+   "club": "Club de Foot Montréal",
+   "mvEur": 10000,
+   "mvUsd": 11000,
+   "contractExpiry": "2028-12-31",
+   "lastSeason": "2025"
+  }
+ ]
+}
