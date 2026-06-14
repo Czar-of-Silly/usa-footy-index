@@ -1,9 +1,9 @@
 {
-  "generated": "2026-06-13T12:25:28.806Z",
+  "generated": "2026-06-14T12:59:32.805Z",
   "source": "MLS Digital API",
   "sourceUrl": "https://dapi.mlssoccer.com/v2/content/en-us/players",
   "teamCount": 30,
-  "playerCount": 923,
+  "playerCount": 922,
   "teams": {
     "MLS-CLU-00000A": {
       "sportecId": "MLS-CLU-00000A",
@@ -2334,7 +2334,7 @@
           "lastName": "Agyemang",
           "knownName": "Morrison",
           "displayName": "Morrison",
-          "jerseyNumber": "64",
+          "jerseyNumber": "44",
           "position": "defense",
           "height": 192,
           "weight": 0,
@@ -2359,7 +2359,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ywi3lxkfmpsjnfrsgil4",
           "slug": "morrison-agyemang",
-          "lastUpdated": "2026-06-06T22:25:15.198Z"
+          "lastUpdated": "2026-06-14T00:04:49.629Z"
         },
         {
           "sportecId": "MLS-OBJ-000C5W",
@@ -3185,7 +3185,7 @@
           "lastName": "Kessler",
           "knownName": null,
           "displayName": "Henry Kessler",
-          "jerseyNumber": "5",
+          "jerseyNumber": "22",
           "position": "defense",
           "height": 193,
           "weight": 84,
@@ -3210,7 +3210,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mqio2qxc7qj7prwehqqp",
           "slug": "henry-kessler",
-          "lastUpdated": "2026-06-06T22:25:42.626Z"
+          "lastUpdated": "2026-06-14T00:04:46.804Z"
         },
         {
           "sportecId": "MLS-OBJ-0000D0",
@@ -6871,7 +6871,7 @@
       "optaId": 454,
       "name": "Columbus Crew",
       "abbr": "CLB",
-      "playerCount": 32,
+      "playerCount": 31,
       "players": [
         {
           "sportecId": "MLS-OBJ-00084Z",
@@ -7253,8 +7253,8 @@
           "lastName": "Presthus",
           "knownName": null,
           "displayName": "Owen Presthus",
-          "jerseyNumber": "0",
-          "position": "defense",
+          "jerseyNumber": "45",
+          "position": "midfield",
           "height": 0,
           "weight": 0,
           "footedness": null,
@@ -7278,7 +7278,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/r2wc96twamtnglueqofh",
           "slug": "owen-presthus",
-          "lastUpdated": "2026-06-06T22:23:58.587Z"
+          "lastUpdated": "2026-06-14T00:04:10.425Z"
         },
         {
           "sportecId": "MLS-OBJ-0003FW",
@@ -7353,43 +7353,6 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mfdh2rzxspyz86nihzgb",
           "slug": "jamal-thiare",
           "lastUpdated": "2026-06-05T14:39:33.379Z"
-        },
-        {
-          "sportecId": "MLS-OBJ-0002OA",
-          "optaId": 230635,
-          "clubSportecId": "MLS-CLU-00000E",
-          "clubOptaId": 454,
-          "clubAbbr": "CLB",
-          "firstName": "Yevhen",
-          "lastName": "Cheberko",
-          "knownName": null,
-          "displayName": "Yevhen Cheberko",
-          "jerseyNumber": "21",
-          "position": "defense",
-          "height": 184,
-          "weight": 66,
-          "footedness": "Left",
-          "dateOfBirth": "1998-01-23",
-          "age": 28,
-          "cityOfBirth": "Melitopol",
-          "countryOfBirth": "Ukraine",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ebcxoy1vurtbk7aqvpmd",
-          "slug": "yevhen-cheberko",
-          "lastUpdated": "2026-06-05T14:39:32.51Z"
         },
         {
           "sportecId": "MLS-OBJ-0001B9",
@@ -7921,13 +7884,13 @@
           "displayName": "Diego Rossi",
           "jerseyNumber": "10",
           "position": "offense",
-          "height": 0,
-          "weight": 0,
+          "height": 170,
+          "weight": 65,
           "footedness": "Right",
-          "dateOfBirth": "2005-05-19",
-          "age": 21,
-          "cityOfBirth": "New York City, NY",
-          "countryOfBirth": "USA",
+          "dateOfBirth": "1998-03-05",
+          "age": 28,
+          "cityOfBirth": "Montevideo",
+          "countryOfBirth": "Uruguay",
           "rosterCategory": "Senior",
           "isSenior": true,
           "isActiveMLSPlayer": true,
@@ -7944,7 +7907,44 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pvtgsaiityntxe2d8t1b",
           "slug": "diego-rossi",
-          "lastUpdated": "2026-06-12T00:09:47.395Z"
+          "lastUpdated": "2026-06-14T00:04:09.506Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-00005M",
+          "optaId": 109275,
+          "clubSportecId": "MLS-CLU-00000E",
+          "clubOptaId": 454,
+          "clubAbbr": "CLB",
+          "firstName": "Evan",
+          "lastName": "Bush",
+          "knownName": null,
+          "displayName": "Evan Bush",
+          "jerseyNumber": "24",
+          "position": "goalkeeper",
+          "height": 186,
+          "weight": 85,
+          "footedness": null,
+          "dateOfBirth": "1986-03-06",
+          "age": 40,
+          "cityOfBirth": "Concord Township, OH",
+          "countryOfBirth": "USA",
+          "rosterCategory": "Supplemental Slots 21-24",
+          "isSenior": false,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ycyym64gcy3u2z2jt4ce",
+          "slug": "evan-bush",
+          "lastUpdated": "2026-06-05T14:39:24.973Z"
         },
         {
           "sportecId": "MLS-OBJ-00006A",
@@ -8019,43 +8019,6 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xqxodbconjieltzkybrj",
           "slug": "andre-gomes",
           "lastUpdated": "2026-06-05T14:39:39.838Z"
-        },
-        {
-          "sportecId": "MLS-OBJ-00005M",
-          "optaId": 109275,
-          "clubSportecId": "MLS-CLU-00000E",
-          "clubOptaId": 454,
-          "clubAbbr": "CLB",
-          "firstName": "Evan",
-          "lastName": "Bush",
-          "knownName": null,
-          "displayName": "Evan Bush",
-          "jerseyNumber": "24",
-          "position": "goalkeeper",
-          "height": 186,
-          "weight": 85,
-          "footedness": null,
-          "dateOfBirth": "1986-03-06",
-          "age": 40,
-          "cityOfBirth": "Concord Township, OH",
-          "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 21-24",
-          "isSenior": false,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ycyym64gcy3u2z2jt4ce",
-          "slug": "evan-bush",
-          "lastUpdated": "2026-06-05T14:39:24.973Z"
         }
       ]
     },
@@ -17250,7 +17213,7 @@
           "lastName": "Brunet",
           "knownName": "Charles Brunet",
           "displayName": "Charles-Emile Brunet",
-          "jerseyNumber": "6",
+          "jerseyNumber": "12",
           "position": "midfield",
           "height": 173,
           "weight": 66,
@@ -17275,7 +17238,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/lh6ywtyltjmom5nil3yg",
           "slug": "charles-brunet",
-          "lastUpdated": "2026-06-06T22:25:40.176Z"
+          "lastUpdated": "2026-06-14T00:03:45.114Z"
         },
         {
           "sportecId": "MLS-OBJ-000CGI",
@@ -17547,7 +17510,7 @@
           "knownName": null,
           "displayName": "Isaiah Jones",
           "jerseyNumber": "47",
-          "position": "defense",
+          "position": "midfield",
           "height": 175,
           "weight": 74,
           "footedness": null,
@@ -17571,7 +17534,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/l2xkod6qtwsx9ruaan7u",
           "slug": "isaiah-jones",
-          "lastUpdated": "2026-06-06T22:26:31.785Z"
+          "lastUpdated": "2026-06-14T00:03:42.781Z"
         },
         {
           "sportecId": "MLS-OBJ-0003DI",
@@ -17657,7 +17620,7 @@
           "lastName": "LeFlore",
           "knownName": null,
           "displayName": "Isaiah LeFlore",
-          "jerseyNumber": "12",
+          "jerseyNumber": "19",
           "position": "defense",
           "height": 173,
           "weight": 72,
@@ -17682,7 +17645,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gqkuuu3o3pyv9ecciqaf",
           "slug": "isaiah-leflore",
-          "lastUpdated": "2026-06-06T22:25:10.415Z"
+          "lastUpdated": "2026-06-14T00:03:40.583Z"
         },
         {
           "sportecId": "MLS-OBJ-0001EW",
@@ -17694,7 +17657,7 @@
           "lastName": "Mohammed",
           "knownName": "Shakur Mohammed",
           "displayName": "Abdul Shakur Mohammed",
-          "jerseyNumber": "23",
+          "jerseyNumber": "14",
           "position": "offense",
           "height": 178,
           "weight": 72,
@@ -17719,7 +17682,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zijrsfydjc0ff4t1tmay",
           "slug": "abdul-shakur-mohammed",
-          "lastUpdated": "2026-06-06T22:25:14.194Z"
+          "lastUpdated": "2026-06-14T00:03:41.876Z"
         },
         {
           "sportecId": "MLS-OBJ-0006T8",
@@ -17731,7 +17694,7 @@
           "lastName": "Corcoran",
           "knownName": "Matthew Corcoran",
           "displayName": "Matthew Corcoran",
-          "jerseyNumber": "18",
+          "jerseyNumber": "16",
           "position": "midfield",
           "height": 183,
           "weight": 77,
@@ -17756,7 +17719,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ph12ef4yggnyoqrmxqen",
           "slug": "matthew-corcoran",
-          "lastUpdated": "2026-06-06T22:25:38.846Z"
+          "lastUpdated": "2026-06-14T00:03:43.721Z"
         },
         {
           "sportecId": "MLS-OBJ-0001CR",
@@ -17768,7 +17731,7 @@
           "lastName": "Knight",
           "knownName": "Jordan Knight",
           "displayName": "Jordan Knight",
-          "jerseyNumber": "17",
+          "jerseyNumber": "23",
           "position": "defense",
           "height": 191,
           "weight": 77,
@@ -17793,7 +17756,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gmmqdwq82ou8zhlwtyez",
           "slug": "jordan-knight",
-          "lastUpdated": "2026-06-06T22:25:11.315Z"
+          "lastUpdated": "2026-06-14T00:03:41.229Z"
         },
         {
           "sportecId": "MLS-OBJ-00009D",
@@ -17916,7 +17879,7 @@
           "lastName": "Williams",
           "knownName": "Thomas Williams",
           "displayName": "Thomas Williams",
-          "jerseyNumber": "68",
+          "jerseyNumber": "21",
           "position": "defense",
           "height": 191,
           "weight": 77,
@@ -17941,7 +17904,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/crsce2kg7msnnk4gbz0q",
           "slug": "thomas-williams-x7014",
-          "lastUpdated": "2026-06-10T23:10:46.406Z"
+          "lastUpdated": "2026-06-14T00:03:39.704Z"
         },
         {
           "sportecId": "MLS-OBJ-0000MH",
@@ -19359,43 +19322,6 @@
           "lastUpdated": "2026-06-05T14:41:18.048Z"
         },
         {
-          "sportecId": "MLS-OBJ-00001L",
-          "optaId": 95284,
-          "clubSportecId": "MLS-CLU-00000N",
-          "clubOptaId": 928,
-          "clubAbbr": "NE",
-          "firstName": "Diego",
-          "lastName": "Fagúndez",
-          "knownName": null,
-          "displayName": "Diego Fagúndez",
-          "jerseyNumber": "77",
-          "position": "midfield",
-          "height": 173,
-          "weight": 68,
-          "footedness": null,
-          "dateOfBirth": "1995-02-14",
-          "age": 31,
-          "cityOfBirth": "Montevideo",
-          "countryOfBirth": "Uruguay",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zyz2e944v4ne1pag3dhd",
-          "slug": "diego-fagundez",
-          "lastUpdated": "2026-06-05T14:41:14.288Z"
-        },
-        {
           "sportecId": "MLS-OBJ-0000EY",
           "optaId": 151940,
           "clubSportecId": "MLS-CLU-00000N",
@@ -19431,6 +19357,43 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nstfkrarnd0xvabmjney",
           "slug": "andrew-farrell",
           "lastUpdated": "2026-06-05T14:41:16.915Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-00001L",
+          "optaId": 95284,
+          "clubSportecId": "MLS-CLU-00000N",
+          "clubOptaId": 928,
+          "clubAbbr": "NE",
+          "firstName": "Diego",
+          "lastName": "Fagúndez",
+          "knownName": null,
+          "displayName": "Diego Fagúndez",
+          "jerseyNumber": "77",
+          "position": "midfield",
+          "height": 173,
+          "weight": 68,
+          "footedness": null,
+          "dateOfBirth": "1995-02-14",
+          "age": 31,
+          "cityOfBirth": "Montevideo",
+          "countryOfBirth": "Uruguay",
+          "rosterCategory": "Senior",
+          "isSenior": true,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zyz2e944v4ne1pag3dhd",
+          "slug": "diego-fagundez",
+          "lastUpdated": "2026-06-05T14:41:14.288Z"
         }
       ]
     },
@@ -23955,7 +23918,7 @@
           "lastName": "Bender",
           "knownName": "Ben Bender",
           "displayName": "Ben Bender",
-          "jerseyNumber": "0",
+          "jerseyNumber": "16",
           "position": "midfield",
           "height": 183,
           "weight": 75,
@@ -23980,7 +23943,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/hqmlrhvq11ekb4jshikv",
           "slug": "benjamin-bender",
-          "lastUpdated": "2026-06-06T22:23:10.887Z"
+          "lastUpdated": "2026-06-14T00:03:02.596Z"
         },
         {
           "sportecId": "MLS-OBJ-0000IU",
@@ -25564,7 +25527,7 @@
           "lastName": "Piol",
           "knownName": null,
           "displayName": "Ariath Piol",
-          "jerseyNumber": "23",
+          "jerseyNumber": "19",
           "position": "offense",
           "height": 176,
           "weight": 0,
@@ -25589,7 +25552,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/aklanjousexykbafpdnj",
           "slug": "ariath-piol",
-          "lastUpdated": "2026-06-06T22:23:34.16Z"
+          "lastUpdated": "2026-06-14T00:05:25.006Z"
         },
         {
           "sportecId": "MLS-OBJ-000359",
@@ -25972,7 +25935,7 @@
           "knownName": null,
           "displayName": "Zavier Gozo",
           "jerseyNumber": "72",
-          "position": "offense",
+          "position": "midfield",
           "height": 180,
           "weight": 70,
           "footedness": null,
@@ -25996,7 +25959,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fobk8egaxvp3zq5k3bpm",
           "slug": "zavier-gozo",
-          "lastUpdated": "2026-06-06T22:23:22.456Z"
+          "lastUpdated": "2026-06-14T00:05:21.833Z"
         },
         {
           "sportecId": "MLS-OBJ-0002OE",
@@ -26046,7 +26009,7 @@
           "knownName": null,
           "displayName": "Owen Anderson",
           "jerseyNumber": "30",
-          "position": "offense",
+          "position": "midfield",
           "height": 180,
           "weight": 82,
           "footedness": null,
@@ -26070,7 +26033,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qdsgyp0rzfata0cszkox",
           "slug": "owen-anderson",
-          "lastUpdated": "2026-06-06T22:23:27.927Z"
+          "lastUpdated": "2026-06-14T00:05:22.723Z"
         },
         {
           "sportecId": "MLS-OBJ-00022L",
@@ -28283,7 +28246,7 @@
           "lastName": "Crockford",
           "knownName": null,
           "displayName": "Nathan Crockford",
-          "jerseyNumber": "30",
+          "jerseyNumber": "22",
           "position": "goalkeeper",
           "height": 0,
           "weight": 0,
@@ -28308,7 +28271,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zxzfzjjb1iiaedy2kyas",
           "slug": "nathan-crockford",
-          "lastUpdated": "2026-06-06T22:24:49.08Z"
+          "lastUpdated": "2026-06-14T00:05:17.62Z"
         },
         {
           "sportecId": "MLS-OBJ-00025F",
@@ -30520,7 +30483,7 @@
           "lastName": "Afrifa",
           "knownName": null,
           "displayName": "Stephen Afrifa",
-          "jerseyNumber": "30",
+          "jerseyNumber": "17",
           "position": "offense",
           "height": 180,
           "weight": 68,
@@ -30545,7 +30508,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/brdafj08dx8clyboi2jn",
           "slug": "stephen-afrifa",
-          "lastUpdated": "2026-06-06T22:23:02.012Z"
+          "lastUpdated": "2026-06-14T00:04:22.256Z"
         },
         {
           "sportecId": "MLS-OBJ-0002IE",
@@ -31158,7 +31121,7 @@
           "lastName": "Henry",
           "knownName": "Malik Henry",
           "displayName": "Malik Henry",
-          "jerseyNumber": "77",
+          "jerseyNumber": "78",
           "position": "midfield",
           "height": 0,
           "weight": 0,
@@ -31183,7 +31146,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/eek1nwxlti9tshsazjsg",
           "slug": "malik-henry",
-          "lastUpdated": "2026-06-06T22:23:30.966Z"
+          "lastUpdated": "2026-06-14T00:04:56.504Z"
         },
         {
           "sportecId": "MLS-OBJ-000830",
@@ -31380,7 +31343,7 @@
           "lastName": "Vilsaint",
           "knownName": null,
           "displayName": "Jules-Anthony Vilsaint",
-          "jerseyNumber": "0",
+          "jerseyNumber": "99",
           "position": "offense",
           "height": 190,
           "weight": 0,
@@ -31405,7 +31368,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/b66gc6zcexdkoba9nsyy",
           "slug": "jules-anthony-vilsaint",
-          "lastUpdated": "2026-06-06T22:23:45.257Z"
+          "lastUpdated": "2026-06-14T00:04:54.939Z"
         },
         {
           "sportecId": "MLS-OBJ-0001BX",
@@ -31454,7 +31417,7 @@
           "lastName": "Cimermancic",
           "knownName": null,
           "displayName": "Markus Cimermancic",
-          "jerseyNumber": "0",
+          "jerseyNumber": "71",
           "position": "midfield",
           "height": 0,
           "weight": 0,
@@ -31479,7 +31442,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fogkofmheymydfowp7ef",
           "slug": "markus-cimermancic",
-          "lastUpdated": "2026-06-06T22:23:29.062Z"
+          "lastUpdated": "2026-06-14T00:04:54.089Z"
         },
         {
           "sportecId": "MLS-OBJ-0002EE",
@@ -31528,7 +31491,7 @@
           "lastName": "Pearlman",
           "knownName": null,
           "displayName": "Adam  Pearlman",
-          "jerseyNumber": "0",
+          "jerseyNumber": "16",
           "position": "defense",
           "height": 0,
           "weight": 0,
@@ -31553,7 +31516,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pavlqacemsl4h6ffblj5",
           "slug": "adam-pearlman",
-          "lastUpdated": "2026-06-11T23:52:37.511Z"
+          "lastUpdated": "2026-06-14T00:04:53.218Z"
         },
         {
           "sportecId": "MLS-OBJ-0001E0",
@@ -31676,7 +31639,7 @@
           "lastName": "Gavran",
           "knownName": null,
           "displayName": "Luka Gavran",
-          "jerseyNumber": "0",
+          "jerseyNumber": "1",
           "position": "goalkeeper",
           "height": 198,
           "weight": 91,
@@ -31701,7 +31664,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zh7laarbtsf5uyvikz0t",
           "slug": "luka-gavran",
-          "lastUpdated": "2026-06-06T22:23:44.163Z"
+          "lastUpdated": "2026-06-14T00:04:52.32Z"
         },
         {
           "sportecId": "MLS-OBJ-00078F",
@@ -36730,7 +36693,7 @@
       "lastName": "Agyemang",
       "knownName": "Morrison",
       "displayName": "Morrison",
-      "jerseyNumber": "64",
+      "jerseyNumber": "44",
       "position": "defense",
       "height": 192,
       "weight": 0,
@@ -36755,7 +36718,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ywi3lxkfmpsjnfrsgil4",
       "slug": "morrison-agyemang",
-      "lastUpdated": "2026-06-06T22:25:15.198Z"
+      "lastUpdated": "2026-06-14T00:04:49.629Z"
     },
     {
       "sportecId": "MLS-OBJ-000C5W",
@@ -37581,7 +37544,7 @@
       "lastName": "Kessler",
       "knownName": null,
       "displayName": "Henry Kessler",
-      "jerseyNumber": "5",
+      "jerseyNumber": "22",
       "position": "defense",
       "height": 193,
       "weight": 84,
@@ -37606,7 +37569,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mqio2qxc7qj7prwehqqp",
       "slug": "henry-kessler",
-      "lastUpdated": "2026-06-06T22:25:42.626Z"
+      "lastUpdated": "2026-06-14T00:04:46.804Z"
     },
     {
       "sportecId": "MLS-OBJ-0000D0",
@@ -41613,8 +41576,8 @@
       "lastName": "Presthus",
       "knownName": null,
       "displayName": "Owen Presthus",
-      "jerseyNumber": "0",
-      "position": "defense",
+      "jerseyNumber": "45",
+      "position": "midfield",
       "height": 0,
       "weight": 0,
       "footedness": null,
@@ -41638,7 +41601,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/r2wc96twamtnglueqofh",
       "slug": "owen-presthus",
-      "lastUpdated": "2026-06-06T22:23:58.587Z"
+      "lastUpdated": "2026-06-14T00:04:10.425Z"
     },
     {
       "sportecId": "MLS-OBJ-0003FW",
@@ -41713,43 +41676,6 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mfdh2rzxspyz86nihzgb",
       "slug": "jamal-thiare",
       "lastUpdated": "2026-06-05T14:39:33.379Z"
-    },
-    {
-      "sportecId": "MLS-OBJ-0002OA",
-      "optaId": 230635,
-      "clubSportecId": "MLS-CLU-00000E",
-      "clubOptaId": 454,
-      "clubAbbr": "CLB",
-      "firstName": "Yevhen",
-      "lastName": "Cheberko",
-      "knownName": null,
-      "displayName": "Yevhen Cheberko",
-      "jerseyNumber": "21",
-      "position": "defense",
-      "height": 184,
-      "weight": 66,
-      "footedness": "Left",
-      "dateOfBirth": "1998-01-23",
-      "age": 28,
-      "cityOfBirth": "Melitopol",
-      "countryOfBirth": "Ukraine",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ebcxoy1vurtbk7aqvpmd",
-      "slug": "yevhen-cheberko",
-      "lastUpdated": "2026-06-05T14:39:32.51Z"
     },
     {
       "sportecId": "MLS-OBJ-0001B9",
@@ -42281,13 +42207,13 @@
       "displayName": "Diego Rossi",
       "jerseyNumber": "10",
       "position": "offense",
-      "height": 0,
-      "weight": 0,
+      "height": 170,
+      "weight": 65,
       "footedness": "Right",
-      "dateOfBirth": "2005-05-19",
-      "age": 21,
-      "cityOfBirth": "New York City, NY",
-      "countryOfBirth": "USA",
+      "dateOfBirth": "1998-03-05",
+      "age": 28,
+      "cityOfBirth": "Montevideo",
+      "countryOfBirth": "Uruguay",
       "rosterCategory": "Senior",
       "isSenior": true,
       "isActiveMLSPlayer": true,
@@ -42304,7 +42230,44 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pvtgsaiityntxe2d8t1b",
       "slug": "diego-rossi",
-      "lastUpdated": "2026-06-12T00:09:47.395Z"
+      "lastUpdated": "2026-06-14T00:04:09.506Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-00005M",
+      "optaId": 109275,
+      "clubSportecId": "MLS-CLU-00000E",
+      "clubOptaId": 454,
+      "clubAbbr": "CLB",
+      "firstName": "Evan",
+      "lastName": "Bush",
+      "knownName": null,
+      "displayName": "Evan Bush",
+      "jerseyNumber": "24",
+      "position": "goalkeeper",
+      "height": 186,
+      "weight": 85,
+      "footedness": null,
+      "dateOfBirth": "1986-03-06",
+      "age": 40,
+      "cityOfBirth": "Concord Township, OH",
+      "countryOfBirth": "USA",
+      "rosterCategory": "Supplemental Slots 21-24",
+      "isSenior": false,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ycyym64gcy3u2z2jt4ce",
+      "slug": "evan-bush",
+      "lastUpdated": "2026-06-05T14:39:24.973Z"
     },
     {
       "sportecId": "MLS-OBJ-00006A",
@@ -42379,43 +42342,6 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xqxodbconjieltzkybrj",
       "slug": "andre-gomes",
       "lastUpdated": "2026-06-05T14:39:39.838Z"
-    },
-    {
-      "sportecId": "MLS-OBJ-00005M",
-      "optaId": 109275,
-      "clubSportecId": "MLS-CLU-00000E",
-      "clubOptaId": 454,
-      "clubAbbr": "CLB",
-      "firstName": "Evan",
-      "lastName": "Bush",
-      "knownName": null,
-      "displayName": "Evan Bush",
-      "jerseyNumber": "24",
-      "position": "goalkeeper",
-      "height": 186,
-      "weight": 85,
-      "footedness": null,
-      "dateOfBirth": "1986-03-06",
-      "age": 40,
-      "cityOfBirth": "Concord Township, OH",
-      "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 21-24",
-      "isSenior": false,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ycyym64gcy3u2z2jt4ce",
-      "slug": "evan-bush",
-      "lastUpdated": "2026-06-05T14:39:24.973Z"
     },
     {
       "sportecId": "MLS-OBJ-000CUX",
@@ -51529,7 +51455,7 @@
       "lastName": "Brunet",
       "knownName": "Charles Brunet",
       "displayName": "Charles-Emile Brunet",
-      "jerseyNumber": "6",
+      "jerseyNumber": "12",
       "position": "midfield",
       "height": 173,
       "weight": 66,
@@ -51554,7 +51480,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/lh6ywtyltjmom5nil3yg",
       "slug": "charles-brunet",
-      "lastUpdated": "2026-06-06T22:25:40.176Z"
+      "lastUpdated": "2026-06-14T00:03:45.114Z"
     },
     {
       "sportecId": "MLS-OBJ-000CGI",
@@ -51826,7 +51752,7 @@
       "knownName": null,
       "displayName": "Isaiah Jones",
       "jerseyNumber": "47",
-      "position": "defense",
+      "position": "midfield",
       "height": 175,
       "weight": 74,
       "footedness": null,
@@ -51850,7 +51776,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/l2xkod6qtwsx9ruaan7u",
       "slug": "isaiah-jones",
-      "lastUpdated": "2026-06-06T22:26:31.785Z"
+      "lastUpdated": "2026-06-14T00:03:42.781Z"
     },
     {
       "sportecId": "MLS-OBJ-0003DI",
@@ -51936,7 +51862,7 @@
       "lastName": "LeFlore",
       "knownName": null,
       "displayName": "Isaiah LeFlore",
-      "jerseyNumber": "12",
+      "jerseyNumber": "19",
       "position": "defense",
       "height": 173,
       "weight": 72,
@@ -51961,7 +51887,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gqkuuu3o3pyv9ecciqaf",
       "slug": "isaiah-leflore",
-      "lastUpdated": "2026-06-06T22:25:10.415Z"
+      "lastUpdated": "2026-06-14T00:03:40.583Z"
     },
     {
       "sportecId": "MLS-OBJ-0001EW",
@@ -51973,7 +51899,7 @@
       "lastName": "Mohammed",
       "knownName": "Shakur Mohammed",
       "displayName": "Abdul Shakur Mohammed",
-      "jerseyNumber": "23",
+      "jerseyNumber": "14",
       "position": "offense",
       "height": 178,
       "weight": 72,
@@ -51998,7 +51924,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zijrsfydjc0ff4t1tmay",
       "slug": "abdul-shakur-mohammed",
-      "lastUpdated": "2026-06-06T22:25:14.194Z"
+      "lastUpdated": "2026-06-14T00:03:41.876Z"
     },
     {
       "sportecId": "MLS-OBJ-0006T8",
@@ -52010,7 +51936,7 @@
       "lastName": "Corcoran",
       "knownName": "Matthew Corcoran",
       "displayName": "Matthew Corcoran",
-      "jerseyNumber": "18",
+      "jerseyNumber": "16",
       "position": "midfield",
       "height": 183,
       "weight": 77,
@@ -52035,7 +51961,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ph12ef4yggnyoqrmxqen",
       "slug": "matthew-corcoran",
-      "lastUpdated": "2026-06-06T22:25:38.846Z"
+      "lastUpdated": "2026-06-14T00:03:43.721Z"
     },
     {
       "sportecId": "MLS-OBJ-0001CR",
@@ -52047,7 +51973,7 @@
       "lastName": "Knight",
       "knownName": "Jordan Knight",
       "displayName": "Jordan Knight",
-      "jerseyNumber": "17",
+      "jerseyNumber": "23",
       "position": "defense",
       "height": 191,
       "weight": 77,
@@ -52072,7 +51998,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gmmqdwq82ou8zhlwtyez",
       "slug": "jordan-knight",
-      "lastUpdated": "2026-06-06T22:25:11.315Z"
+      "lastUpdated": "2026-06-14T00:03:41.229Z"
     },
     {
       "sportecId": "MLS-OBJ-00009D",
@@ -52195,7 +52121,7 @@
       "lastName": "Williams",
       "knownName": "Thomas Williams",
       "displayName": "Thomas Williams",
-      "jerseyNumber": "68",
+      "jerseyNumber": "21",
       "position": "defense",
       "height": 191,
       "weight": 77,
@@ -52220,7 +52146,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/crsce2kg7msnnk4gbz0q",
       "slug": "thomas-williams-x7014",
-      "lastUpdated": "2026-06-10T23:10:46.406Z"
+      "lastUpdated": "2026-06-14T00:03:39.704Z"
     },
     {
       "sportecId": "MLS-OBJ-0000MH",
@@ -53629,43 +53555,6 @@
       "lastUpdated": "2026-06-05T14:41:18.048Z"
     },
     {
-      "sportecId": "MLS-OBJ-00001L",
-      "optaId": 95284,
-      "clubSportecId": "MLS-CLU-00000N",
-      "clubOptaId": 928,
-      "clubAbbr": "NE",
-      "firstName": "Diego",
-      "lastName": "Fagúndez",
-      "knownName": null,
-      "displayName": "Diego Fagúndez",
-      "jerseyNumber": "77",
-      "position": "midfield",
-      "height": 173,
-      "weight": 68,
-      "footedness": null,
-      "dateOfBirth": "1995-02-14",
-      "age": 31,
-      "cityOfBirth": "Montevideo",
-      "countryOfBirth": "Uruguay",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zyz2e944v4ne1pag3dhd",
-      "slug": "diego-fagundez",
-      "lastUpdated": "2026-06-05T14:41:14.288Z"
-    },
-    {
       "sportecId": "MLS-OBJ-0000EY",
       "optaId": 151940,
       "clubSportecId": "MLS-CLU-00000N",
@@ -53701,6 +53590,43 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nstfkrarnd0xvabmjney",
       "slug": "andrew-farrell",
       "lastUpdated": "2026-06-05T14:41:16.915Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-00001L",
+      "optaId": 95284,
+      "clubSportecId": "MLS-CLU-00000N",
+      "clubOptaId": 928,
+      "clubAbbr": "NE",
+      "firstName": "Diego",
+      "lastName": "Fagúndez",
+      "knownName": null,
+      "displayName": "Diego Fagúndez",
+      "jerseyNumber": "77",
+      "position": "midfield",
+      "height": 173,
+      "weight": 68,
+      "footedness": null,
+      "dateOfBirth": "1995-02-14",
+      "age": 31,
+      "cityOfBirth": "Montevideo",
+      "countryOfBirth": "Uruguay",
+      "rosterCategory": "Senior",
+      "isSenior": true,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zyz2e944v4ne1pag3dhd",
+      "slug": "diego-fagundez",
+      "lastUpdated": "2026-06-05T14:41:14.288Z"
     },
     {
       "sportecId": "MLS-OBJ-000CTG",
@@ -58189,7 +58115,7 @@
       "lastName": "Bender",
       "knownName": "Ben Bender",
       "displayName": "Ben Bender",
-      "jerseyNumber": "0",
+      "jerseyNumber": "16",
       "position": "midfield",
       "height": 183,
       "weight": 75,
@@ -58214,7 +58140,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/hqmlrhvq11ekb4jshikv",
       "slug": "benjamin-bender",
-      "lastUpdated": "2026-06-06T22:23:10.887Z"
+      "lastUpdated": "2026-06-14T00:03:02.596Z"
     },
     {
       "sportecId": "MLS-OBJ-0000IU",
@@ -59780,7 +59706,7 @@
       "lastName": "Piol",
       "knownName": null,
       "displayName": "Ariath Piol",
-      "jerseyNumber": "23",
+      "jerseyNumber": "19",
       "position": "offense",
       "height": 176,
       "weight": 0,
@@ -59805,7 +59731,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/aklanjousexykbafpdnj",
       "slug": "ariath-piol",
-      "lastUpdated": "2026-06-06T22:23:34.16Z"
+      "lastUpdated": "2026-06-14T00:05:25.006Z"
     },
     {
       "sportecId": "MLS-OBJ-000359",
@@ -60188,7 +60114,7 @@
       "knownName": null,
       "displayName": "Zavier Gozo",
       "jerseyNumber": "72",
-      "position": "offense",
+      "position": "midfield",
       "height": 180,
       "weight": 70,
       "footedness": null,
@@ -60212,7 +60138,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fobk8egaxvp3zq5k3bpm",
       "slug": "zavier-gozo",
-      "lastUpdated": "2026-06-06T22:23:22.456Z"
+      "lastUpdated": "2026-06-14T00:05:21.833Z"
     },
     {
       "sportecId": "MLS-OBJ-0002OE",
@@ -60262,7 +60188,7 @@
       "knownName": null,
       "displayName": "Owen Anderson",
       "jerseyNumber": "30",
-      "position": "offense",
+      "position": "midfield",
       "height": 180,
       "weight": 82,
       "footedness": null,
@@ -60286,7 +60212,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qdsgyp0rzfata0cszkox",
       "slug": "owen-anderson",
-      "lastUpdated": "2026-06-06T22:23:27.927Z"
+      "lastUpdated": "2026-06-14T00:05:22.723Z"
     },
     {
       "sportecId": "MLS-OBJ-00022L",
@@ -62481,7 +62407,7 @@
       "lastName": "Crockford",
       "knownName": null,
       "displayName": "Nathan Crockford",
-      "jerseyNumber": "30",
+      "jerseyNumber": "22",
       "position": "goalkeeper",
       "height": 0,
       "weight": 0,
@@ -62506,7 +62432,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zxzfzjjb1iiaedy2kyas",
       "slug": "nathan-crockford",
-      "lastUpdated": "2026-06-06T22:24:49.08Z"
+      "lastUpdated": "2026-06-14T00:05:17.62Z"
     },
     {
       "sportecId": "MLS-OBJ-00025F",
@@ -64700,7 +64626,7 @@
       "lastName": "Afrifa",
       "knownName": null,
       "displayName": "Stephen Afrifa",
-      "jerseyNumber": "30",
+      "jerseyNumber": "17",
       "position": "offense",
       "height": 180,
       "weight": 68,
@@ -64725,7 +64651,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/brdafj08dx8clyboi2jn",
       "slug": "stephen-afrifa",
-      "lastUpdated": "2026-06-06T22:23:02.012Z"
+      "lastUpdated": "2026-06-14T00:04:22.256Z"
     },
     {
       "sportecId": "MLS-OBJ-0002IE",
@@ -65329,7 +65255,7 @@
       "lastName": "Henry",
       "knownName": "Malik Henry",
       "displayName": "Malik Henry",
-      "jerseyNumber": "77",
+      "jerseyNumber": "78",
       "position": "midfield",
       "height": 0,
       "weight": 0,
@@ -65354,7 +65280,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/eek1nwxlti9tshsazjsg",
       "slug": "malik-henry",
-      "lastUpdated": "2026-06-06T22:23:30.966Z"
+      "lastUpdated": "2026-06-14T00:04:56.504Z"
     },
     {
       "sportecId": "MLS-OBJ-000830",
@@ -65551,7 +65477,7 @@
       "lastName": "Vilsaint",
       "knownName": null,
       "displayName": "Jules-Anthony Vilsaint",
-      "jerseyNumber": "0",
+      "jerseyNumber": "99",
       "position": "offense",
       "height": 190,
       "weight": 0,
@@ -65576,7 +65502,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/b66gc6zcexdkoba9nsyy",
       "slug": "jules-anthony-vilsaint",
-      "lastUpdated": "2026-06-06T22:23:45.257Z"
+      "lastUpdated": "2026-06-14T00:04:54.939Z"
     },
     {
       "sportecId": "MLS-OBJ-0001BX",
@@ -65625,7 +65551,7 @@
       "lastName": "Cimermancic",
       "knownName": null,
       "displayName": "Markus Cimermancic",
-      "jerseyNumber": "0",
+      "jerseyNumber": "71",
       "position": "midfield",
       "height": 0,
       "weight": 0,
@@ -65650,7 +65576,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fogkofmheymydfowp7ef",
       "slug": "markus-cimermancic",
-      "lastUpdated": "2026-06-06T22:23:29.062Z"
+      "lastUpdated": "2026-06-14T00:04:54.089Z"
     },
     {
       "sportecId": "MLS-OBJ-0002EE",
@@ -65699,7 +65625,7 @@
       "lastName": "Pearlman",
       "knownName": null,
       "displayName": "Adam  Pearlman",
-      "jerseyNumber": "0",
+      "jerseyNumber": "16",
       "position": "defense",
       "height": 0,
       "weight": 0,
@@ -65724,7 +65650,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pavlqacemsl4h6ffblj5",
       "slug": "adam-pearlman",
-      "lastUpdated": "2026-06-11T23:52:37.511Z"
+      "lastUpdated": "2026-06-14T00:04:53.218Z"
     },
     {
       "sportecId": "MLS-OBJ-0001E0",
@@ -65847,7 +65773,7 @@
       "lastName": "Gavran",
       "knownName": null,
       "displayName": "Luka Gavran",
-      "jerseyNumber": "0",
+      "jerseyNumber": "1",
       "position": "goalkeeper",
       "height": 198,
       "weight": 91,
@@ -65872,7 +65798,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zh7laarbtsf5uyvikz0t",
       "slug": "luka-gavran",
-      "lastUpdated": "2026-06-06T22:23:44.163Z"
+      "lastUpdated": "2026-06-14T00:04:52.32Z"
     },
     {
       "sportecId": "MLS-OBJ-00078F",
