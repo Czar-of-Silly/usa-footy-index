@@ -3202,7 +3202,7 @@ function MLSAnalytics(){
             const avgCar=Math.round(d.players.reduce((s,p)=>s+p.carrying,0)/n);
             return{pos,count:d.players.length,avg,top,bot,avgAge,avgMV,top5,topScorers,goals:d.goals,assists:d.assists,tackles:d.tackles,elite,great,above,average,poor,grades:d.grades,avgAtt,avgPas,avgDef,avgCre,avgCar};
           });
-          const posIcons={Forward:"⚽",Midfielder:"🎯",Defender:"🛡",Goalkeeper:"🧤"};
+          const posAbbr={Forward:"FWD",Midfielder:"MID",Defender:"DEF",Goalkeeper:"GK"};
           const totalPlayers=players.length;
 
           return <div style={{animation:"fadeUp .4s ease"}}>
@@ -3215,7 +3215,7 @@ function MLSAnalytics(){
           <div className="resp-grid4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
             {posEntries.map(pe=>(
               <div key={pe.pos} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,padding:"16px 14px",textAlign:"center"}}>
-                <div style={{fontSize:20,marginBottom:4}}>{posIcons[pe.pos]}</div>
+                <div style={{display:"inline-block",fontFamily:T.mono,fontSize:10,fontWeight:700,letterSpacing:1,color:T.textDim,borderWidth:1,borderStyle:"solid",borderColor:T.border,borderRadius:0,padding:"3px 7px",marginBottom:8}}>{posAbbr[pe.pos]}</div>
                 <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>{pe.pos}s</div>
                 <div style={{fontFamily:T.display,fontWeight:700,fontSize:28,color:gc(pe.avg),lineHeight:1,marginTop:6}}>{pe.avg}</div>
                 <div style={{fontSize:8,color:gc(pe.avg),fontWeight:600,letterSpacing:.8,marginTop:2}}>{gl(pe.avg)} AVG</div>
@@ -3231,7 +3231,7 @@ function MLSAnalytics(){
                 {/* Card header */}
                 <div style={{padding:"18px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div style={{display:"flex",alignItems:"center",gap:12}}>
-                    <span style={{fontSize:24}}>{posIcons[pe.pos]}</span>
+                    <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minWidth:40,height:40,fontFamily:T.mono,fontSize:11,fontWeight:700,letterSpacing:.5,color:T.bg,background:T.ink,borderRadius:0}}>{posAbbr[pe.pos]}</span>
                     <div>
                       <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink}}>{pe.pos}s</div>
                       <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{pe.count} players · {pe.goals} goals · {pe.assists} assists · {pe.tackles} tackles</div>
@@ -3379,10 +3379,10 @@ function MLSAnalytics(){
 
               {/* Spotlight lists */}
               <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginTop:16}}>
-                {[{title:"Young Stars (U23)",icon:"🌟",color:T.green,list:u23Elite},{title:"Peak Years (23-29)",icon:"🔥",color:T.gold,list:peakElite},{title:"Elite Veterans (30+)",icon:"🎖",color:T.blue,list:veteranElite}].map(cat=>(
+                {[{title:"Young Stars (U23)",color:T.green,list:u23Elite},{title:"Peak Years (23-29)",color:T.gold,list:peakElite},{title:"Elite Veterans (30+)",color:T.blue,list:veteranElite}].map(cat=>(
                   <div key={cat.title}>
                     <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-                      <span style={{fontSize:14}}>{cat.icon}</span>
+                      <span style={{width:9,height:9,background:cat.color,display:"inline-block",flexShrink:0}}></span>
                       <span style={{fontSize:10,fontFamily:T.sans,fontWeight:700,color:cat.color,letterSpacing:.5}}>{cat.title}</span>
                     </div>
                     {cat.list.length===0&&<div style={{fontSize:10,color:T.textMute,fontStyle:"italic",padding:8}}>None qualify</div>}
