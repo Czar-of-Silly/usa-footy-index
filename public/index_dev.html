@@ -77,7 +77,7 @@
   <style>
     body{margin:0;padding:0}
   </style>
-<!-- v20260619-legibility-anim -->
+<!-- v20260411-fix -->
 </head>
 <body>
   <div id="root"></div>
@@ -359,7 +359,6 @@ if((astB.gam||0)>0&&typeof baseGamB==="number"&&astB.gam>baseGamB)cB.violations.
 const gv=(gI-gO)+(gamDelta+picksDelta*100000)/250000;
 const fairness={gradeDelta:+(gI-gO).toFixed(1),salaryDelta:sI-sO,gamDelta,picksDelta,verdict:Math.abs(gv)<=8?"balanced":(gv>0?"favors "+(o.nameA||"Team A"):"favors "+(o.nameB||"Team B"))};return{legal:cA.violations.length===0&&cB.violations.length===0,teamA:{before:bA,after:aA,constants:K,violations:cA.violations,warnings:cA.warnings,intlMax:cA.intlMax},teamB:{before:bB,after:aB,constants:K,violations:cB.violations,warnings:cB.warnings,intlMax:cB.intlMax},fairness};}
 
-function PosGlyph({pos,h=28,line,dot}){const L=line||T.ink,D=dot||T.accent,W=Math.round(h*40/56),cy=({Forward:11,Midfielder:28,Defender:41,Goalkeeper:49}[pos]||28);return <svg width={W} height={h} viewBox="0 0 40 56" role="img" aria-label={pos+" position"} style={{display:"block",flexShrink:0}}><g fill="none" stroke={L} strokeWidth={1.6} opacity={0.6}><rect x="3" y="3" width="34" height="50" rx="2"/><line x1="3" y1="28" x2="37" y2="28"/><circle cx="20" cy="28" r="5"/><rect x="12" y="3" width="16" height="8"/><rect x="12" y="45" width="16" height="8"/></g><circle cx="20" cy={cy} r="4.5" fill={D}/></svg>;}
 function tmPos(p){const z=String(p.position||'').toLowerCase();if(z.includes('keep')||z==='gk')return 'GK';if(z.includes('back')||z.includes('def'))return 'D';if(z.includes('mid'))return 'M';return 'F';}
 function tmScoreSet(gOut,sOut,outPos,set){/*MULTI*/
   const num=tmNum;
@@ -395,7 +394,7 @@ function tmSuggestReturns(o){/*TRADE-SUGGEST*/
 }
 
 function TeamBadge({abbr,size=20,logo}){
-  if(logo)return <img src={logo} alt={abbr} style={{width:size,height:size,objectFit:"contain",flexShrink:0,mixBlendMode:"multiply",filter:"sepia(.3) saturate(.85) contrast(1.05)"}} onError={e=>{e.target.onerror=null;e.target.style.display="none"}}/>;
+  if(logo)return <img src={logo} alt={abbr} style={{width:size,height:size,objectFit:"contain",flexShrink:0}} onError={e=>{e.target.onerror=null;e.target.style.display="none"}}/>;
   const t=tcm[abbr];
   if(!t)return <div style={{width:size,height:size,borderRadius:0,background:"#ccc",display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*.3,fontWeight:800,color:"#888",fontFamily:T.sans,flexShrink:0}}>{(abbr||"?").slice(0,3)}</div>;
   return <div style={{width:size,height:size,borderRadius:0,background:`linear-gradient(135deg,${t.c1},${t.c2})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*.28,fontWeight:700,color:"#fff",fontFamily:T.sans,letterSpacing:-.3,textShadow:"0 1px 2px rgba(0,0,0,.4)",flexShrink:0}}>{abbr.slice(0,3)}</div>;
@@ -1034,50 +1033,6 @@ function MLSAnalytics(){
   // Mobile detection
   const[isMobile,setIsMobile]=useState(()=>typeof window!=="undefined"&&window.matchMedia("(max-width:768px)").matches);
   useEffect(()=>{const mq=window.matchMedia("(max-width:768px)");setIsMobile(mq.matches);const h=e=>setIsMobile(e.matches);mq.addEventListener("change",h);return()=>mq.removeEventListener("change",h);},[]);
-  // Bulletproof wire scroll: drive it in JS so it works on every browser/OS,
-  // independent of CSS keyframe quirks. Pauses on hover.
-  useEffect(()=>{
-    let raf, x=0, paused=false, last=performance.now();
-    const tick=(now)=>{
-      const el=document.querySelector(".wire-inner");
-      if(el){
-        el.style.animation="none"; // disable CSS anim, we drive it
-        const dt=Math.min(64, now-last); last=now;
-        if(!paused){ x-=dt*0.035; const half=el.scrollWidth/2; if(half>0 && -x>=half) x+=half; el.style.transform=`translateX(${x}px)`; }
-      } else { last=now; }
-      raf=requestAnimationFrame(tick);
-    };
-    const over=()=>paused=true, out=()=>paused=false;
-    const track=()=>document.querySelector(".wire-track");
-    const t=track(); if(t){ t.addEventListener("mouseenter",over); t.addEventListener("mouseleave",out); }
-    raf=requestAnimationFrame(tick);
-
-    // Stamp strike: JS-driven so it always fires
-    const stamp=document.querySelector(".stamp-strike");
-    if(stamp){
-      stamp.style.opacity="0";
-      stamp.style.transform="rotate(-2deg) scale(1.7)";
-      stamp.style.transition="none";
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        stamp.style.transition="opacity .18s ease, transform .42s cubic-bezier(.2,1.6,.35,1)";
-        stamp.style.opacity="1";
-        stamp.style.transform="rotate(-7deg) scale(1)";
-      }));
-    }
-
-    // Section rules draw themselves L->R via scaleX on a ::after stand-in
-    const rules=[...document.querySelectorAll(".sec-rule")];
-    rules.forEach((r,i)=>{
-      const bar=document.createElement("span");
-      bar.style.cssText="position:absolute;left:0;bottom:-3px;height:3px;width:100%;background:"+getComputedStyle(r).borderBottomColor+";transform:scaleX(0);transform-origin:left center;transition:transform .7s cubic-bezier(.65,0,.35,1)";
-      r.style.borderBottomColor="transparent";
-      r.appendChild(bar);
-      setTimeout(()=>{bar.style.transform="scaleX(1)";}, 200+i*120);
-    });
-
-    return ()=>{ cancelAnimationFrame(raf); const tt=track(); if(tt){ tt.removeEventListener("mouseenter",over); tt.removeEventListener("mouseleave",out);} };
-  },[tab,players]);
-
   const shortName=(name)=>{if(!name||!isMobile)return name;const parts=name.trim().split(/\s+/);if(parts.length<2)return name;return parts[0][0]+". "+parts.slice(1).join(" ");};
 
 
@@ -1421,7 +1376,8 @@ function MLSAnalytics(){
         @keyframes wireScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
         .wire-track:hover .wire-inner{animation-play-state:paused}
         @keyframes stampStrike{0%{opacity:0;transform:rotate(-2deg) scale(1.7);filter:blur(1.5px)}62%{opacity:1;transform:rotate(-8deg) scale(.96);filter:blur(0)}100%{opacity:1;transform:rotate(-7deg) scale(1)}}
-        .stamp-strike{opacity:1;animation:stampStrike .5s cubic-bezier(.2,1.6,.35,1) .2s both}
+        .stamp-strike{animation:stampStrike .45s cubic-bezier(.2,1.6,.35,1) both .25s}
+        @media (prefers-reduced-motion: reduce){.wire-inner{animation:none !important}.stamp-strike{animation:none !important;opacity:1 !important}}
         *{box-sizing:border-box;margin:0;padding:0}
         @keyframes modalIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
         @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -1607,14 +1563,14 @@ function MLSAnalytics(){
             <div style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:10}}>WHAT MAKES US DIFFERENT</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:24}}>
               {[
-                {title:"Composite Grades",desc:"Six-category grading system (42-99) that distills complex stats into a single, comparable score per player."},
-                {title:"Full Transparency",desc:"Every grade weight is published. No black boxes — you can see exactly why a player scored what they did."},
-                {title:"Per-90 Normalization",desc:"Stats are adjusted per 90 minutes played, so a 2,000-minute starter and a 600-minute rotation player can be fairly compared."},
-                {title:"Percentile Context",desc:"Raw numbers mean nothing without context. We show where every stat ranks against the entire league."},
+                {icon:"📊",title:"Composite Grades",desc:"Six-category grading system (42-99) that distills complex stats into a single, comparable score per player."},
+                {icon:"🔍",title:"Full Transparency",desc:"Every grade weight is published. No black boxes — you can see exactly why a player scored what they did."},
+                {icon:"⚖️",title:"Per-90 Normalization",desc:"Stats are adjusted per 90 minutes played, so a 2,000-minute starter and a 600-minute rotation player can be fairly compared."},
+                {icon:"📈",title:"Percentile Context",desc:"Raw numbers mean nothing without context. We show where every stat ranks against the entire league."},
               ].map(f=>(
                 <div key={f.title} style={{padding:"14px 16px",background:T.surface,border:`1px solid ${T.borderLt}`,borderRadius:0}}>
                   <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                    
+                    <span style={{fontSize:16}}>{f.icon}</span>
                     <span style={{fontFamily:T.serif,fontWeight:700,fontSize:13,color:T.ink}}>{f.title}</span>
                   </div>
                   <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans,lineHeight:1.6}}>{f.desc}</div>
@@ -1692,8 +1648,9 @@ function MLSAnalytics(){
           const leadTeam=(enrichedTeams||[]).find(t=>t.count>0)||enrichedTeams[0];
           const completed=[...matchesData].filter(m=>m.completed).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,8);
           const rateGame=(m)=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));};
-          const movers=graded.filter(p=>p.matchLog&&p.matchLog.length>=2).map(p=>{
-            const rs=p.matchLog.map(rateGame);const rec=rs.slice(-2),pri=rs.slice(0,-2).length?rs.slice(0,-2):rs.slice(0,1);
+          const movers=graded.filter(p=>p.matchLog&&p.matchLog.length>=3).map(p=>{
+            const rs=p.matchLog.map(rateGame);const rec=rs.slice(-2),pri=rs.slice(0,-2);
+            if(!pri.length)return null;
             const d=(rec.reduce((a,b)=>a+b,0)/rec.length)-(pri.reduce((a,b)=>a+b,0)/pri.length);
             return Object.assign({},p,{delta:+d.toFixed(1)});
           }).filter(Boolean);
@@ -1701,23 +1658,19 @@ function MLSAnalytics(){
           const faller=[...movers].sort((a,b)=>a.delta-b.delta)[0];
           const tname=(ab)=>{const t=MLS_TEAMS.find(x=>x.abbr===ab);return t?t.name:ab;};
           const wireItems=[
-            ...completed.slice(0,5).map(m=>`${m.home} ${m.homeScore||0}\u2013${m.awayScore||0} ${m.away} \u00b7 FINAL`),
-            ...sortedG.slice(0,5).map(p=>`${(p.name||"").toUpperCase()} ${p.overall}`),
-            riser&&riser.delta>0?`\u25b2 RISING: ${(riser.name||"").toUpperCase()} +${riser.delta}`:null,
-            faller&&faller.delta<0?`\u25bc FALLING: ${(faller.name||"").toUpperCase()} ${faller.delta}`:null,
-            leadTeam?`TOP CLUB: ${tname(leadTeam.abbr).toUpperCase()} ${leadTeam.overall}`:null,
-            graded.length?`${graded.length} PLAYERS GRADED`:null,
-            (()=>{const tg=[...graded].sort((a,b)=>(b.goals||0)-(a.goals||0))[0];return tg&&tg.goals?`GOLDEN BOOT: ${(tg.name||"").toUpperCase()} ${tg.goals}G`:null;})(),
-            (()=>{const ta=[...graded].sort((a,b)=>(b.assists||0)-(a.assists||0))[0];return ta&&ta.assists?`ASSISTS: ${(ta.name||"").toUpperCase()} ${ta.assists}`:null;})(),
+            ...completed.slice(0,6).map(m=>`${m.home} ${m.homeScore||0}\u2013${m.awayScore||0} ${m.away} \u00b7 FINAL`),
+            topPlayer?`TOP GRADE: ${topPlayer.overall} ${(topPlayer.name||"").toUpperCase()}`:null,
+            riser&&riser.delta>0?`MOVER \u25b2${riser.delta} ${(riser.name||"").toUpperCase()}`:null,
+            faller&&faller.delta<0?`FALLER \u25bc${Math.abs(faller.delta)} ${(faller.name||"").toUpperCase()}`:null,
           ].filter(Boolean);
           const wireStr=wireItems.join("  \u00b7\u00b7\u2014  ");
-          const kicker={fontFamily:T.mono,fontSize:11.5,letterSpacing:"0.18em",textTransform:"uppercase",color:T.accent,fontWeight:700};
+          const kicker={fontFamily:T.mono,fontSize:10,letterSpacing:"0.2em",textTransform:"uppercase",color:T.accent,fontWeight:700};
           const storyCard=(kick,title,body,onClick,meta)=>(
             <div key={kick} onClick={onClick} style={{padding:"16px 0",borderBottom:`1px solid ${T.borderLt}`,cursor:onClick?"pointer":"default"}}>
               <div style={kicker}>{kick}</div>
               <div style={{fontFamily:T.display,fontWeight:700,fontSize:19,lineHeight:1.2,margin:"7px 0",color:T.ink}}>{title}</div>
-              <div style={{fontFamily:T.serif,fontSize:14.5,color:T.text,lineHeight:1.55}}>{body}</div>
-              {meta&&<div style={{fontFamily:T.mono,fontSize:10.5,letterSpacing:"0.1em",textTransform:"uppercase",color:T.textDim,fontWeight:600,marginTop:8}}>{meta}</div>}
+              <div style={{fontFamily:T.serif,fontSize:13.5,color:T.textDim,lineHeight:1.5}}>{body}</div>
+              {meta&&<div style={{fontFamily:T.mono,fontSize:9.5,letterSpacing:"0.12em",textTransform:"uppercase",color:T.textMute,marginTop:8}}>{meta}</div>}
             </div>);
           return <div style={{maxWidth:1200,margin:"0 auto",padding:"0 24px",animation:"fadeUp .4s ease"}}>
             {wireItems.length>0&&<div style={{display:"flex",alignItems:"center",overflow:"hidden",border:`1px solid ${T.border}`,borderTop:"none",marginBottom:28,background:T.surface}}>
@@ -1738,9 +1691,9 @@ function MLSAnalytics(){
                   {leadArticle?leadArticle.dek:`A minutes-weighted team grade of ${leadTeam.overall} (built on ${leadTeam.count} graded players) puts ${leadTeam.abbr} first in the composite rankings this week.`}
                 </div>
                 {leadArticle&&leadArticle.body&&<div style={{fontFamily:T.serif,fontSize:15,color:T.text,lineHeight:1.6,marginBottom:18}}>{leadArticle.body}</div>}
-                <div style={{fontFamily:T.mono,fontSize:10.5,letterSpacing:"0.12em",textTransform:"uppercase",color:T.textDim,fontWeight:600,marginBottom:18}}>By the Index {"\u00b7"} Auto-generated from live data</div>
+                <div style={{fontFamily:T.mono,fontSize:10,letterSpacing:"0.14em",textTransform:"uppercase",color:T.textMute,marginBottom:18}}>By the Index {"\u00b7"} Auto-generated from live data</div>
                 <div style={{display:"flex",borderTop:`1px solid ${T.ink}`,borderBottom:`1px solid ${T.borderLt}`}}>
-                  {[[leadTeam.overall,"Team Grade"],[(leadTeam.formDelta!=null?(leadTeam.formDelta>0?"+":"")+leadTeam.formDelta:"\u2014"),"Form \u0394 5GM"],["#1","Power Rank"]].map(([v,l],i)=>(
+                  {[[leadTeam.overall,"Team Grade"],[leadTeam.totalGoals,"Goals"],["#1","Index Rank"]].map(([v,l],i)=>(
                     <div key={l} style={{flex:1,padding:"10px 14px",borderRight:i<2?`1px solid ${T.borderLt}`:"none"}}>
                       <div style={{fontFamily:T.mono,fontSize:22,fontWeight:700,color:T.blue}}>{v}</div>
                       <div style={{fontFamily:T.mono,fontSize:8.5,letterSpacing:"0.16em",textTransform:"uppercase",color:T.textMute,marginTop:4}}>{l}</div>
@@ -1749,7 +1702,7 @@ function MLSAnalytics(){
                 <button onClick={()=>setTab("teams")} style={{marginTop:20,background:T.ink,color:T.bg,border:"none",padding:"12px 24px",fontFamily:T.mono,fontWeight:700,fontSize:11,letterSpacing:"0.16em",textTransform:"uppercase",cursor:"pointer"}}>Read the Numbers {"\u2192"}</button>
               </div>
               {topPlayer&&<div style={{position:"relative",justifySelf:isMobile?"center":"end",width:"100%",maxWidth:330}}>
-                <div className="stamp-strike" style={{position:"absolute",top:16,right:-10,zIndex:3,fontFamily:T.mono,fontWeight:700,color:T.accent,border:`3px solid ${T.accent}`,padding:"7px 13px 5px",textAlign:"center",background:"rgba(225,205,172,.85)"}}>
+                <div className="stamp-strike" style={{position:"absolute",top:16,right:-10,zIndex:3,fontFamily:T.mono,fontWeight:700,color:T.accent,border:`3px solid ${T.accent}`,padding:"7px 13px 5px",textAlign:"center",background:"rgba(225,205,172,.85)",opacity:0}}>
                   <span style={{fontSize:30,letterSpacing:"-0.02em",display:"block"}}>{topPlayer.overall}</span>
                   <span style={{fontSize:8,letterSpacing:"0.24em",display:"block",marginTop:3}}>INDEX GRADE</span>
                 </div>
@@ -1763,44 +1716,9 @@ function MLSAnalytics(){
                 </div>
               </div>}
             </div>}
-            {graded.length>=3&&(()=>{
-              const top3=sortedG.slice(0,3);
-              const leaders=[
-                {l:"Top Grade",p:sortedG[0],v:sortedG[0]&&sortedG[0].overall},
-                {l:"Most Goals",p:[...graded].sort((a,b)=>(b.goals||0)-(a.goals||0))[0],v:(()=>{const x=[...graded].sort((a,b)=>(b.goals||0)-(a.goals||0))[0];return x&&x.goals;})()},
-                {l:"Most Assists",p:[...graded].sort((a,b)=>(b.assists||0)-(a.assists||0))[0],v:(()=>{const x=[...graded].sort((a,b)=>(b.assists||0)-(a.assists||0))[0];return x&&x.assists;})()},
-                {l:"Top xG",p:[...graded].sort((a,b)=>(parseFloat(b.xGoals)||0)-(parseFloat(a.xGoals)||0))[0],v:(()=>{const x=[...graded].sort((a,b)=>(parseFloat(b.xGoals)||0)-(parseFloat(a.xGoals)||0))[0];return x&&x.xGoals;})()},
-              ].filter(x=>x.p&&x.v);
-              return <div style={{padding:"34px 0 8px"}}>
-                <div className="sec-rule" style={{position:"relative",display:"flex",justifyContent:"space-between",alignItems:"baseline",borderBottom:`3px solid ${T.ink}`,paddingBottom:7,marginBottom:18}}>
-                  <span style={{fontFamily:T.display,fontWeight:700,fontSize:21,color:T.ink}}>Top of the Index</span>
-                  <span onClick={()=>setTab("players")} style={{fontFamily:T.mono,fontSize:10,letterSpacing:"0.16em",textTransform:"uppercase",color:T.accent,fontWeight:700,cursor:"pointer"}}>All Grades {"\u2192"}</span>
-                </div>
-                <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:24,marginBottom:30}}>
-                  {top3.map((p,i)=>(
-                    <div key={p.id} onClick={()=>setSel(p)} style={{cursor:"pointer",border:`1px solid ${T.border}`,padding:16,display:"flex",gap:14,alignItems:"center",background:T.surface}}>
-                      <div style={{fontFamily:T.display,fontWeight:900,fontSize:34,color:T.borderLt,lineHeight:1,minWidth:30}}>{i+1}</div>
-                      {(p.localHeadshot||p.headshot)?<img src={p.localHeadshot||p.headshot} alt={p.name} style={{width:54,height:54,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.ink}`,filter:"grayscale(.6) sepia(.3)"}}/>:null}
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink,lineHeight:1.1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
-                        <div style={{fontFamily:T.mono,fontSize:9.5,letterSpacing:"0.1em",textTransform:"uppercase",color:T.textDim,marginTop:3}}>{p.position} {"\u00b7"} {tname(p.team)}</div>
-                      </div>
-                      <div style={{fontFamily:T.mono,fontWeight:700,fontSize:24,color:T.blue}}>{p.overall}</div>
-                    </div>))}
-                </div>
-                <div style={{display:"flex",flexWrap:"wrap",borderTop:`1px solid ${T.ink}`,borderBottom:`1px solid ${T.borderLt}`}}>
-                  {leaders.map((x,i)=>(
-                    <div key={x.l} onClick={()=>setSel(x.p)} style={{flex:"1 1 0",minWidth:150,cursor:"pointer",padding:"12px 16px",borderRight:i<leaders.length-1?`1px solid ${T.borderLt}`:"none"}}>
-                      <div style={{fontFamily:T.mono,fontSize:9.5,letterSpacing:"0.14em",textTransform:"uppercase",color:T.accent,fontWeight:700}}>{x.l}</div>
-                      <div style={{fontFamily:T.display,fontWeight:700,fontSize:15,color:T.ink,marginTop:5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{x.p.name}</div>
-                      <div style={{fontFamily:T.mono,fontSize:18,fontWeight:700,color:T.blue,marginTop:2}}>{x.v}</div>
-                    </div>))}
-                </div>
-              </div>;
-            })()}
             <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"2fr 1fr",gap:isMobile?28:48,padding:"30px 0 40px"}}>
               <div>
-                <div className="sec-rule" style={{position:"relative",display:"flex",justifyContent:"space-between",alignItems:"baseline",borderBottom:`3px solid ${T.ink}`,paddingBottom:7,marginBottom:6}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",borderBottom:`3px solid ${T.ink}`,paddingBottom:7,marginBottom:6}}>
                   <span style={{fontFamily:T.display,fontWeight:700,fontSize:21,color:T.ink}}>What Changed This Week</span>
                   <span onClick={()=>{setTab("leaders");setLeadersView("movers");}} style={{fontFamily:T.mono,fontSize:10,letterSpacing:"0.16em",textTransform:"uppercase",color:T.accent,fontWeight:700,cursor:"pointer"}}>All Movers {"\u2192"}</span>
                 </div>
@@ -1813,45 +1731,17 @@ function MLSAnalytics(){
                 </div>
               </div>
               <div>
-                <div className="sec-rule" style={{position:"relative",display:"flex",justifyContent:"space-between",alignItems:"baseline",borderBottom:`3px solid ${T.ink}`,paddingBottom:7,marginBottom:4}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",borderBottom:`3px solid ${T.ink}`,paddingBottom:7,marginBottom:4}}>
                   <span style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>Power Rankings</span>
                   <span onClick={()=>setTab("teams")} style={{fontFamily:T.mono,fontSize:10,letterSpacing:"0.16em",textTransform:"uppercase",color:T.accent,fontWeight:700,cursor:"pointer"}}>Full 30 {"\u2192"}</span>
                 </div>
-                {enrichedTeams.slice(0,5).map((t,i)=>{
-                  const dlt=t.rankDelta||0;
-                  return <div key={t.abbr} onClick={()=>setTab("teams")} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 0",borderBottom:`1px dotted ${T.borderLt}`,fontFamily:T.mono,fontSize:12.5,cursor:"pointer"}}>
-                    <span style={{width:16,color:T.textMute,fontSize:11}}>{i+1}</span>
-                    <TeamBadge abbr={t.abbr} size={16} logo={teamLogos[t.abbr]}/>
+                {enrichedTeams.slice(0,8).map((t,i)=>(
+                  <div key={t.abbr} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:`1px dotted ${T.borderLt}`,fontFamily:T.mono,fontSize:12.5}}>
+                    <span style={{width:20,color:T.textMute,fontSize:11}}>{i+1}</span>
                     <span style={{flex:1,fontWeight:500,color:T.text}}>{t.name}</span>
-                    {dlt!==0&&<span style={{fontSize:10,color:dlt>0?"#5E6B33":T.red}}>{dlt>0?"\u25b2":"\u25bc"}{Math.abs(dlt)}</span>}
                     <span style={{fontWeight:700,color:T.blue}}>{t.overall}</span>
-                  </div>;
-                })}
-                <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12.5,color:T.textDim,marginTop:12,marginBottom:34,lineHeight:1.5}}>Minutes-weighted composite team grades. Every player counted.</div>
-                {(()=>{
-                  const fw=[...graded].filter(p=>p.position==="FW").sort((a,b)=>b.overall-a.overall)[0]||sortedG[0];
-                  const gk=[...graded].filter(p=>(p.saves||0)>0).sort((a,b)=>(b.saves||0)-(a.saves||0))[0];
-                  const bargain=[...graded].filter(p=>p.marketValue>0).map(p=>({p,r:p.overall/(p.marketValue/1e6)})).sort((a,b)=>b.r-a.r)[0];
-                  const bigMover=riser;
-                  const lines=[
-                    fw?["Top Grade (FW)",fw.overall,()=>setSel(fw)]:null,
-                    gk?["Top Shot Stopper",gk.saves+" SV",()=>setSel(gk)]:null,
-                    bargain?["Best Bargain",bargain.r.toFixed(1)+"\u00d7",()=>setSel(bargain.p)]:null,
-                    bigMover&&bigMover.delta>0?["Biggest Mover","+"+bigMover.delta,()=>setSel(bigMover)]:null,
-                  ].filter(Boolean);
-                  if(!lines.length)return null;
-                  return <div>
-                    <div className="sec-rule" style={{position:"relative",borderBottom:`3px solid ${T.ink}`,paddingBottom:7,marginBottom:4}}>
-                      <span style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>The Stat Line</span>
-                    </div>
-                    {lines.map((l,i)=>(
-                      <div key={i} onClick={l[2]} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:`1px dotted ${T.borderLt}`,fontFamily:T.mono,fontSize:12.5,cursor:"pointer"}}>
-                        <span style={{color:T.text}}>{l[0]}</span>
-                        <span style={{fontWeight:700,color:T.blue}}>{l[1]}</span>
-                      </div>))}
-                    <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12.5,color:T.textDim,marginTop:12,lineHeight:1.5}}>Each line links into the analytics. The front page is the door, not the house.</div>
-                  </div>;
-                })()}
+                  </div>))}
+                <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12.5,color:T.textDim,marginTop:12,lineHeight:1.5}}>Minutes-weighted composite team grades. Every player counted.</div>
               </div>
             </div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,padding:"6px 0 34px",color:T.textDim,fontFamily:T.fell,fontSize:14,letterSpacing:"0.3em"}}>
@@ -3203,7 +3093,7 @@ function MLSAnalytics(){
             const avgCar=Math.round(d.players.reduce((s,p)=>s+p.carrying,0)/n);
             return{pos,count:d.players.length,avg,top,bot,avgAge,avgMV,top5,topScorers,goals:d.goals,assists:d.assists,tackles:d.tackles,elite,great,above,average,poor,grades:d.grades,avgAtt,avgPas,avgDef,avgCre,avgCar};
           });
-          const posAbbr={Forward:"FWD",Midfielder:"MID",Defender:"DEF",Goalkeeper:"GK"};
+          const posIcons={Forward:"⚽",Midfielder:"🎯",Defender:"🛡",Goalkeeper:"🧤"};
           const totalPlayers=players.length;
 
           return <div style={{animation:"fadeUp .4s ease"}}>
@@ -3216,7 +3106,7 @@ function MLSAnalytics(){
           <div className="resp-grid4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
             {posEntries.map(pe=>(
               <div key={pe.pos} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,padding:"16px 14px",textAlign:"center"}}>
-                <div style={{display:"flex",justifyContent:"center",marginBottom:8}}><PosGlyph pos={pe.pos} h={30}/></div>
+                <div style={{fontSize:20,marginBottom:4}}>{posIcons[pe.pos]}</div>
                 <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>{pe.pos}s</div>
                 <div style={{fontFamily:T.display,fontWeight:700,fontSize:28,color:gc(pe.avg),lineHeight:1,marginTop:6}}>{pe.avg}</div>
                 <div style={{fontSize:8,color:gc(pe.avg),fontWeight:600,letterSpacing:.8,marginTop:2}}>{gl(pe.avg)} AVG</div>
@@ -3232,7 +3122,7 @@ function MLSAnalytics(){
                 {/* Card header */}
                 <div style={{padding:"18px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div style={{display:"flex",alignItems:"center",gap:12}}>
-                    <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minWidth:40,height:40,fontFamily:T.mono,fontSize:11,fontWeight:700,letterSpacing:.5,color:T.bg,background:T.ink,borderRadius:0}}><PosGlyph pos={pe.pos} h={30} line={T.bg} dot={T.accent}/></span>
+                    <span style={{fontSize:24}}>{posIcons[pe.pos]}</span>
                     <div>
                       <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink}}>{pe.pos}s</div>
                       <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{pe.count} players · {pe.goals} goals · {pe.assists} assists · {pe.tackles} tackles</div>
@@ -3380,10 +3270,10 @@ function MLSAnalytics(){
 
               {/* Spotlight lists */}
               <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginTop:16}}>
-                {[{title:"Young Stars (U23)",color:T.green,list:u23Elite},{title:"Peak Years (23-29)",color:T.gold,list:peakElite},{title:"Elite Veterans (30+)",color:T.blue,list:veteranElite}].map(cat=>(
+                {[{title:"Young Stars (U23)",icon:"🌟",color:T.green,list:u23Elite},{title:"Peak Years (23-29)",icon:"🔥",color:T.gold,list:peakElite},{title:"Elite Veterans (30+)",icon:"🎖",color:T.blue,list:veteranElite}].map(cat=>(
                   <div key={cat.title}>
                     <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-                      <span style={{width:9,height:9,background:cat.color,display:"inline-block",flexShrink:0}}></span>
+                      <span style={{fontSize:14}}>{cat.icon}</span>
                       <span style={{fontSize:10,fontFamily:T.sans,fontWeight:700,color:cat.color,letterSpacing:.5}}>{cat.title}</span>
                     </div>
                     {cat.list.length===0&&<div style={{fontSize:10,color:T.textMute,fontStyle:"italic",padding:8}}>None qualify</div>}
