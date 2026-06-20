@@ -3232,7 +3232,7 @@ function MLSAnalytics(){
                 {/* Card header */}
                 <div style={{padding:"18px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div style={{display:"flex",alignItems:"center",gap:12}}>
-                    <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minWidth:40,height:40,fontFamily:T.mono,fontSize:11,fontWeight:700,letterSpacing:.5,color:T.bg,background:T.ink,borderRadius:0}}><PosGlyph pos={pe.pos} h={30} line={T.bg} dot={T.accent}/></span>
+                    <PosGlyph pos={pe.pos} h={30}/>
                     <div>
                       <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink}}>{pe.pos}s</div>
                       <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{pe.count} players · {pe.goals} goals · {pe.assists} assists · {pe.tackles} tackles</div>
