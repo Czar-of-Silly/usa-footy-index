@@ -122,9 +122,9 @@ async function main() {
     try{const d=await get(`${ESPN_WEB}/summary?event=${gid}`);
     if(Array.isArray(d?.rosters))for(const tr of d.rosters)for(const e of(tr?.roster||[])){
       const n=e?.athlete?.displayName;if(!n||!e.stats)continue;
-      if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,games:0};
+      if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,games:0,matchLog:[]};
       espn[n].games++;espn[n].mins+=(e.starter?90:e.subbedIn?30:90);
-      for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;break;case"goalAssists":espn[n].assists+=v;break;case"totalShots":espn[n].shots+=v;break;case"shotsOnTarget":espn[n].sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;break;case"yellowCards":espn[n].yc+=v;break;case"redCards":espn[n].rc+=v;break;case"saves":espn[n].saves+=v;break;}}
+      for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;break;case"goalAssists":espn[n].assists+=v;break;case"totalShots":espn[n].shots+=v;break;case"shotsOnTarget":espn[n].sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;break;case"yellowCards":espn[n].yc+=v;break;case"redCards":espn[n].rc+=v;break;case"saves":espn[n].saves+=v;break;}}{const _c=d?.header?.competitions?.[0],_cs=_c?.competitors||[];let _hs=0,_as=0;for(const _q of _cs){if(_q.homeAway==="home")_hs=+(_q.score||0);else _as=+(_q.score||0);}const _gs={};for(const _s of e.stats)_gs[_s.name]=_s.value||0;const _other=d.rosters.find(x=>x!==tr);if(espn[n].matchLog)espn[n].matchLog.push({date:_c?.date||null,opp:_other?.team?.abbreviation||"",ha:tr?.homeAway==="home"?"H":"A",mins:(e.starter?90:e.subbedIn?30:90),g:_gs.totalGoals||0,a:_gs.goalAssists||0,sh:_gs.totalShots||0,sot:_gs.shotsOnTarget||0,fl:_gs.foulsCommitted||0,yc:_gs.yellowCards||0,rc:_gs.redCards||0,hs:_hs,as:_as});}
     }}catch{}bd++;if(bd%10===0)process.stdout.write(`          ${bd}/${gameIds.length}\r`);await sleep(120);
   }
   console.log(`          ✅ ${Object.keys(espn).length} players from ${gameIds.length} games`);
@@ -354,6 +354,7 @@ async function main() {
       sportecId:      _m.sportecId || null,
       optaId:         _m.optaId || null,
       // ESPN
+      matchLog: Array.isArray(e.matchLog) ? e.matchLog.slice().sort((x,y)=>String(x.date||"").localeCompare(String(y.date||""))) : [],
       g: e.goals || xg.goals || 0,
       as: e.assists || xg.assists || 0,
       sh: e.shots || xg.shots || 0,
