@@ -2812,8 +2812,7 @@ function MLSAnalytics(){
           {leadersView==="overview"&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:14}}>
             {leaders.map(cat=>(
               <div key={cat.k} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,overflow:"hidden"}}>
-                <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",alignItems:"center",gap:10}}>
-                  <span style={{fontSize:20}}>{cat.icon}</span>
+                <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,borderLeft:`3px solid ${T.accent}`,display:"flex",alignItems:"center",gap:10}}>
                   <div style={{flex:1}}>
                     <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>{cat.l}</div>
                     <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>{cat.desc}</div>
@@ -2847,22 +2846,22 @@ function MLSAnalytics(){
                 <div style={{fontSize:8,color:T.textMute,fontWeight:600,letterSpacing:.8}}>AVG GRADE</div>
               </div>
             </div>
-            <div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden",borderRadius:"0 0 8px 8px"}}>
-              <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:0}}/>
-              <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
-              <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
-              <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
-              <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
-              <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
+            <div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`repeating-linear-gradient(180deg,${T.bg} 0,${T.bg} 7%,${T.card} 7%,${T.card} 14%)`,overflow:"hidden",borderRadius:"0 0 8px 8px"}}>
+              <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(35,31,25,.30)",borderRadius:0}}/>
+              <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(35,31,25,.28)"}}/>
+              <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(35,31,25,.22)",borderRadius:"50%"}}/>
+              <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(35,31,25,.30)",borderRadius:"50%"}}/>
+              <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(35,31,25,.22)",borderTop:"none"}}/>
+              <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(35,31,25,.22)",borderBottom:"none"}}/>
               {xi.map(s=>(
                 <div key={s.slot} className="pitch-dot" onClick={()=>setSel(s.p)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
-                  <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,.55)",border:`3px solid ${gc(s.p.overall)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
-                    <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.p.overall}</span>
+                  <div style={{width:52,height:52,borderRadius:"50%",background:T.surface,border:`3px solid ${gc(s.p.overall)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
+                    <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:T.ink}}>{s.p.overall}</span>
                   </div>
-                  <div style={{marginTop:4,padding:"2px 8px",background:"rgba(0,0,0,.5)",borderRadius:0,display:"inline-block",backdropFilter:"blur(4px)"}}>
-                    <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:"#fff",whiteSpace:"nowrap",letterSpacing:.3}}>{s.p.name.split(" ").slice(-1)[0]}</div>
+                  <div style={{marginTop:4,padding:"2px 8px",background:T.ink,borderRadius:0,display:"inline-block"}}>
+                    <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:T.bg,whiteSpace:"nowrap",letterSpacing:.3}}>{s.p.name.split(" ").slice(-1)[0]}</div>
                   </div>
-                  <div style={{fontSize:9,color:"rgba(255,255,255,.8)",fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.p.team}</div>
+                  <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.p.team}</div>
                 </div>
               ))}
             </div>
@@ -2937,25 +2936,25 @@ function MLSAnalytics(){
                   <button onClick={()=>setTotwWeek(Math.min(weeks.length,weekIdx+2))} disabled={weekIdx>=weeks.length-1} style={{background:"none",border:`1px solid ${weekIdx>=weeks.length-1?T.borderLt:T.border}`,borderRadius:0,color:weekIdx>=weeks.length-1?T.textMute:T.ink,width:28,height:28,cursor:weekIdx>=weeks.length-1?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>›</button>
                 </div>
               </div>
-              {totwXi.length>=8&&<div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`linear-gradient(180deg,${dark?"#1a3a1a":"#4a8c3f"} 0%,${dark?"#1d4020":"#5a9c4f"} 100%)`,overflow:"hidden"}}>
-                <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(255,255,255,.3)",borderRadius:0}}/>
-                <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(255,255,255,.2)"}}/>
-                <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(255,255,255,.15)",borderRadius:"50%"}}/>
-                <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(255,255,255,.3)",borderRadius:"50%"}}/>
-                <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderTop:"none"}}/>
-                <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(255,255,255,.15)",borderBottom:"none"}}/>
+              {totwXi.length>=8&&<div className="resp-pitch" style={{position:"relative",width:"100%",paddingBottom:"62%",background:`repeating-linear-gradient(180deg,${T.bg} 0,${T.bg} 7%,${T.card} 7%,${T.card} 14%)`,overflow:"hidden"}}>
+                <div style={{position:"absolute",inset:"4%",border:"2px solid rgba(35,31,25,.30)",borderRadius:0}}/>
+                <div style={{position:"absolute",left:"4%",right:"4%",top:"50%",height:0,borderTop:"2px solid rgba(35,31,25,.28)"}}/>
+                <div style={{position:"absolute",left:"50%",top:"50%",width:80,height:80,marginLeft:-40,marginTop:-40,border:"2px solid rgba(35,31,25,.22)",borderRadius:"50%"}}/>
+                <div style={{position:"absolute",left:"50%",top:"50%",width:6,height:6,marginLeft:-3,marginTop:-3,background:"rgba(35,31,25,.30)",borderRadius:"50%"}}/>
+                <div style={{position:"absolute",left:"30%",right:"30%",top:"4%",height:"16%",border:"2px solid rgba(35,31,25,.22)",borderTop:"none"}}/>
+                <div style={{position:"absolute",left:"30%",right:"30%",bottom:"4%",height:"16%",border:"2px solid rgba(35,31,25,.22)",borderBottom:"none"}}/>
                 <div style={{position:"absolute",bottom:10,right:14,padding:"4px 14px",background:"rgba(0,0,0,.5)",borderRadius:0,zIndex:3,backdropFilter:"blur(4px)"}}>
                   <span style={{fontFamily:T.sans,fontWeight:700,fontSize:10,color:"#fff"}}>MW{weekIdx+1} · AVG {totwAvg}</span>
                 </div>
                 {totwXi.map(s=>(
                   <div key={s.slot} className="pitch-dot" onClick={()=>setSel(s.l.player)} style={{position:"absolute",left:`${s.x}%`,top:`${s.y}%`,transform:"translate(-50%,-50%)",textAlign:"center",cursor:"pointer",zIndex:2,transition:"transform .15s"}} onMouseEnter={e=>e.currentTarget.style.transform="translate(-50%,-50%) scale(1.08)"} onMouseLeave={e=>e.currentTarget.style.transform="translate(-50%,-50%)"}>
-                    <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(0,0,0,.55)",border:`3px solid ${gc(s.l.rating)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
-                      <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.5)"}}>{s.l.rating}</span>
+                    <div style={{width:52,height:52,borderRadius:"50%",background:T.surface,border:`3px solid ${gc(s.l.rating)}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 3px 12px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.1)"}}>
+                      <span style={{fontFamily:T.serif,fontWeight:700,fontSize:20,color:T.ink}}>{s.l.rating}</span>
                     </div>
-                    <div style={{marginTop:4,padding:"2px 8px",background:"rgba(0,0,0,.5)",borderRadius:0,display:"inline-block",backdropFilter:"blur(4px)"}}>
+                    <div style={{marginTop:4,padding:"2px 8px",background:T.ink,borderRadius:0,display:"inline-block"}}>
                       <div style={{fontFamily:T.sans,fontWeight:700,fontSize:12,color:"#fff",whiteSpace:"nowrap"}}>{s.l.player.name.split(" ").slice(-1)[0]}</div>
                     </div>
-                    <div style={{fontSize:9,color:"rgba(255,255,255,.8)",fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.l.player.team}{s.l.g>0?` · ${s.l.g}G`:""}{s.l.a>0?` · ${s.l.a}A`:""}</div>
+                    <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans,fontWeight:600,marginTop:1}}>{s.l.player.team}{s.l.g>0?` · ${s.l.g}G`:""}{s.l.a>0?` · ${s.l.a}A`:""}</div>
                   </div>
                 ))}
               </div>}
