@@ -1,9 +1,9 @@
 {
-  "generated": "2026-06-20T12:26:03.724Z",
+  "generated": "2026-06-28T12:17:08.454Z",
   "source": "MLS Digital API",
   "sourceUrl": "https://dapi.mlssoccer.com/v2/content/en-us/players",
   "teamCount": 30,
-  "playerCount": 920,
+  "playerCount": 922,
   "teams": {
     "MLS-CLU-00000A": {
       "sportecId": "MLS-CLU-00000A",
@@ -438,8 +438,8 @@
           "age": 32,
           "cityOfBirth": "New York City, NY",
           "countryOfBirth": "USA",
-          "rosterCategory": "Senior",
-          "isSenior": true,
+          "rosterCategory": "Supplemental Slots 21-24",
+          "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -454,7 +454,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/d4c1h41dejbbpsk5nnig",
           "slug": "cayman-togashi",
-          "lastUpdated": "2026-05-29T22:05:15.177Z"
+          "lastUpdated": "2026-06-24T17:47:57.225Z"
         },
         {
           "sportecId": "MLS-OBJ-0007SK",
@@ -956,7 +956,7 @@
           "age": 21,
           "cityOfBirth": "Atlanta, GA",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 25-28",
+          "rosterCategory": "Supplemental Slots 21-24",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
@@ -972,7 +972,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vcikksfe6r1di3sbecur",
           "slug": "luke-brennan",
-          "lastUpdated": "2026-05-29T22:05:03.779Z"
+          "lastUpdated": "2026-06-24T17:45:32.676Z"
         },
         {
           "sportecId": "MLS-OBJ-0001IV",
@@ -1000,16 +1000,16 @@
           "onLoan": false,
           "isLoanedOut": false,
           "playerStatus_1": null,
-          "playerCategory_1": "International",
+          "playerCategory_1": null,
           "playerCategory_2": null,
           "isDP": false,
           "isU22": false,
           "isHomegrown": false,
-          "isInternational": true,
+          "isInternational": false,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/brqjfabvc9k4cicslm2w",
           "slug": "ronald-hernandez",
-          "lastUpdated": "2026-06-12T00:15:52.751Z"
+          "lastUpdated": "2026-06-24T17:44:41.954Z"
         },
         {
           "sportecId": "MLS-OBJ-00000M",
@@ -1203,7 +1203,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/goyquzcomrbrcjrk5pr6",
           "slug": "mateja-djordjevic",
-          "lastUpdated": "2026-06-05T14:37:21.86Z"
+          "lastUpdated": "2026-06-26T16:17:46.918Z"
         },
         {
           "sportecId": "MLS-OBJ-00081I",
@@ -1240,7 +1240,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/n51ao2aoczp45sc2pfqo",
           "slug": "riley-thomas",
-          "lastUpdated": "2026-05-29T22:01:31.613Z"
+          "lastUpdated": "2026-06-26T14:26:35.236Z"
         },
         {
           "sportecId": "MLS-OBJ-00081D",
@@ -1277,7 +1277,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wtameqwtqe84lptdla6f",
           "slug": "nicolas-dubersarsky",
-          "lastUpdated": "2026-06-05T14:37:20.691Z"
+          "lastUpdated": "2026-06-26T15:37:47.531Z"
         },
         {
           "sportecId": "MLS-OBJ-0007XG",
@@ -1314,7 +1314,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/cqjdybbbgckqspuyxwc4",
           "slug": "myrto-uzuni",
-          "lastUpdated": "2026-06-05T14:37:19.812Z"
+          "lastUpdated": "2026-06-26T15:05:08.123Z"
         },
         {
           "sportecId": "MLS-OBJ-0007WG",
@@ -1351,7 +1351,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/p7s5cjagc2broposq3mv",
           "slug": "besard-sabovic",
-          "lastUpdated": "2026-06-05T14:37:19.088Z"
+          "lastUpdated": "2026-06-26T15:15:26.099Z"
         },
         {
           "sportecId": "MLS-OBJ-0007I5",
@@ -1388,7 +1388,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/rj0cfdwfzbcd3nfvpxsl",
           "slug": "oleksandr-svatok",
-          "lastUpdated": "2026-06-05T14:37:18.386Z"
+          "lastUpdated": "2026-06-26T14:34:06.402Z"
         },
         {
           "sportecId": "MLS-OBJ-00077Q",
@@ -1425,7 +1425,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/eeo3jawypuyg74zao5qp",
           "slug": "mikkel-desler",
-          "lastUpdated": "2026-06-05T14:37:17.723Z"
+          "lastUpdated": "2026-06-26T14:28:30.738Z"
         },
         {
           "sportecId": "MLS-OBJ-0002DO",
@@ -1462,7 +1462,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/hkyluxtwut1swdxzaemu",
           "slug": "ervin-torres",
-          "lastUpdated": "2026-05-29T22:01:28.962Z"
+          "lastUpdated": "2026-06-26T16:25:05.525Z"
         },
         {
           "sportecId": "MLS-OBJ-000534",
@@ -1499,7 +1499,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qwmrdqykret694cblckx",
           "slug": "guilherme-biro",
-          "lastUpdated": "2026-06-05T14:37:16.885Z"
+          "lastUpdated": "2026-06-26T15:59:08.931Z"
         },
         {
           "sportecId": "MLS-OBJ-00023R",
@@ -1536,7 +1536,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dfnky6ylk8u2mkimhwng",
           "slug": "micah-burton",
-          "lastUpdated": "2026-05-29T22:01:28.103Z"
+          "lastUpdated": "2026-06-26T16:09:30.995Z"
         },
         {
           "sportecId": "MLS-OBJ-0001GL",
@@ -1554,7 +1554,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2003-06-23",
-          "age": 22,
+          "age": 23,
           "cityOfBirth": "Santa Rosa",
           "countryOfBirth": "USA",
           "rosterCategory": null,
@@ -1631,8 +1631,8 @@
           "age": 22,
           "cityOfBirth": "San Jose, CA",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 25-28",
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -1647,7 +1647,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/uiou4obyw0quqlw04qcu",
           "slug": "cj-fodrey",
-          "lastUpdated": "2026-05-29T22:03:12.666Z"
+          "lastUpdated": "2026-06-26T15:35:27.553Z"
         },
         {
           "sportecId": "MLS-OBJ-000016",
@@ -1684,7 +1684,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/b8ybmqhskll7zfl1qrkl",
           "slug": "damian-las",
-          "lastUpdated": "2026-05-29T22:01:23.257Z"
+          "lastUpdated": "2026-06-26T15:13:31.766Z"
         },
         {
           "sportecId": "MLS-OBJ-0000HZ",
@@ -1721,7 +1721,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ecqnn56dbbchuodl6c6s",
           "slug": "facundo-torres",
-          "lastUpdated": "2026-06-05T14:37:14.533Z"
+          "lastUpdated": "2026-06-26T15:09:14.602Z"
         },
         {
           "sportecId": "MLS-OBJ-00001P",
@@ -1758,7 +1758,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/c4dqbfodop3d8wyttjac",
           "slug": "owen-wolff",
-          "lastUpdated": "2026-06-05T14:37:09.765Z"
+          "lastUpdated": "2026-06-26T16:14:57.205Z"
         },
         {
           "sportecId": "MLS-OBJ-0000DH",
@@ -1795,7 +1795,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ecpq2cl5f1goccmdredi",
           "slug": "joseph-rosales",
-          "lastUpdated": "2026-06-05T14:37:13.623Z"
+          "lastUpdated": "2026-06-26T16:02:03.995Z"
         },
         {
           "sportecId": "MLS-OBJ-0000F3",
@@ -1832,7 +1832,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/flvjjtfhmppdhx0kpz1b",
           "slug": "jon-bell",
-          "lastUpdated": "2026-06-10T23:08:48.002Z"
+          "lastUpdated": "2026-06-26T15:19:24.276Z"
         },
         {
           "sportecId": "MLS-OBJ-00001E",
@@ -1869,7 +1869,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/x3lvqxpujkli3ryjcq0j",
           "slug": "zan-kolmanic",
-          "lastUpdated": "2026-06-05T14:37:08.224Z"
+          "lastUpdated": "2026-06-26T15:49:41.775Z"
         },
         {
           "sportecId": "MLS-OBJ-00001I",
@@ -1906,7 +1906,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/jghvnhuezbhz9xg8zbwb",
           "slug": "daniel-pereira",
-          "lastUpdated": "2026-06-05T14:37:09.018Z"
+          "lastUpdated": "2026-06-26T14:58:40.238Z"
         },
         {
           "sportecId": "MLS-OBJ-0000OB",
@@ -1980,7 +1980,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/x8hwlaysm69sqn7agq6d",
           "slug": "jon-gallagher",
-          "lastUpdated": "2026-06-05T14:37:07.382Z"
+          "lastUpdated": "2026-06-26T15:32:20.769Z"
         },
         {
           "sportecId": "MLS-OBJ-0000CI",
@@ -2017,7 +2017,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/a4yfiuyeod169zeqemfd",
           "slug": "ilie-sanchez",
-          "lastUpdated": "2026-06-05T14:37:12.853Z"
+          "lastUpdated": "2026-06-26T14:38:19.789Z"
         },
         {
           "sportecId": "MLS-OBJ-0000UJ",
@@ -2038,8 +2038,8 @@
           "age": 35,
           "cityOfBirth": "Garden Grove, CA",
           "countryOfBirth": "USA",
-          "rosterCategory": "Senior",
-          "isSenior": true,
+          "rosterCategory": "Supplemental Slots 21-24",
+          "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -2054,7 +2054,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/w0fxsg9l5strllmpbm8t",
           "slug": "christian-ramirez",
-          "lastUpdated": "2026-06-05T14:37:15.61Z"
+          "lastUpdated": "2026-06-26T15:46:44.517Z"
         },
         {
           "sportecId": "MLS-OBJ-00008C",
@@ -2091,7 +2091,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fgi04b5diny2wgzmyqmk",
           "slug": "brandon-vazquez",
-          "lastUpdated": "2026-06-05T14:37:11.313Z"
+          "lastUpdated": "2026-06-26T15:02:19.382Z"
         },
         {
           "sportecId": "MLS-OBJ-00006O",
@@ -2128,7 +2128,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ytsgovcpcwd4fwdwls6x",
           "slug": "brendan-hines-ike",
-          "lastUpdated": "2026-06-05T14:37:10.525Z"
+          "lastUpdated": "2026-06-26T14:30:54.011Z"
         },
         {
           "sportecId": "MLS-OBJ-000015",
@@ -2165,7 +2165,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vawv4o5zhrxxyonfeaxa",
           "slug": "brad-stuver",
-          "lastUpdated": "2026-06-05T14:37:06.525Z"
+          "lastUpdated": "2026-06-26T14:25:40.648Z"
         }
       ]
     },
@@ -3154,7 +3154,7 @@
           "weight": 84,
           "footedness": null,
           "dateOfBirth": "1998-06-25",
-          "age": 27,
+          "age": 28,
           "cityOfBirth": "New York City, NY",
           "countryOfBirth": "USA",
           "rosterCategory": "Senior",
@@ -3718,7 +3718,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2009-06-22",
-          "age": 16,
+          "age": 17,
           "cityOfBirth": "unknown",
           "countryOfBirth": "Canada",
           "rosterCategory": "Senior",
@@ -4507,23 +4507,23 @@
           "age": 22,
           "cityOfBirth": "Wrocław",
           "countryOfBirth": "Poland",
-          "rosterCategory": null,
+          "rosterCategory": "Supplemental Slots 21-24",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
           "isLoanedOut": false,
           "playerStatus_1": null,
-          "playerCategory_1": null,
+          "playerCategory_1": "International",
           "playerCategory_2": null,
           "isDP": false,
           "isU22": false,
           "isHomegrown": false,
-          "isInternational": false,
+          "isInternational": true,
           "isGenAdidas": false,
           "headshot": null,
           "slug": "fabian-mrozek",
-          "lastUpdated": "2026-05-29T21:57:39.314Z"
+          "lastUpdated": "2026-06-24T18:02:54.083Z"
         },
         {
           "sportecId": "MLS-OBJ-000CCM",
@@ -4589,15 +4589,15 @@
           "isLoanedOut": false,
           "playerStatus_1": null,
           "playerCategory_1": "Homegrown",
-          "playerCategory_2": null,
+          "playerCategory_2": "International",
           "isDP": false,
           "isU22": false,
           "isHomegrown": true,
-          "isInternational": false,
+          "isInternational": true,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wakchuhncevdy9mibj9n",
           "slug": "felix-samson",
-          "lastUpdated": "2026-05-29T21:57:37.547Z"
+          "lastUpdated": "2026-06-24T17:57:21.554Z"
         },
         {
           "sportecId": "MLS-OBJ-000C6Q",
@@ -4662,16 +4662,16 @@
           "onLoan": false,
           "isLoanedOut": false,
           "playerStatus_1": null,
-          "playerCategory_1": null,
+          "playerCategory_1": "International",
           "playerCategory_2": null,
           "isDP": false,
           "isU22": false,
           "isHomegrown": false,
-          "isInternational": false,
+          "isInternational": true,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dnqcddorrili0gpcqeyb",
           "slug": "ayoub-jabbari",
-          "lastUpdated": "2026-05-30T23:09:17.033Z"
+          "lastUpdated": "2026-06-24T18:01:40.098Z"
         },
         {
           "sportecId": "MLS-OBJ-000BVX",
@@ -4729,23 +4729,23 @@
           "age": 17,
           "cityOfBirth": "Allentown, PA",
           "countryOfBirth": "USA",
-          "rosterCategory": null,
+          "rosterCategory": "Supplemental Slots 25-28",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
           "isLoanedOut": false,
           "playerStatus_1": null,
-          "playerCategory_1": null,
+          "playerCategory_1": "Homegrown",
           "playerCategory_2": null,
           "isDP": false,
           "isU22": false,
-          "isHomegrown": false,
+          "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/y8musytegsye99qwxbao",
           "slug": "andrei-chirila",
-          "lastUpdated": "2026-05-29T21:57:30.709Z"
+          "lastUpdated": "2026-06-24T18:06:06.399Z"
         },
         {
           "sportecId": "MLS-OBJ-00082K",
@@ -4922,15 +4922,15 @@
           "isLoanedOut": false,
           "playerStatus_1": null,
           "playerCategory_1": "Designated Player",
-          "playerCategory_2": null,
+          "playerCategory_2": "International",
           "isDP": true,
           "isU22": false,
           "isHomegrown": false,
-          "isInternational": false,
+          "isInternational": true,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vg6wncbjinh7mlwn1b48",
           "slug": "kevin-denkey",
-          "lastUpdated": "2026-05-30T23:09:15.535Z"
+          "lastUpdated": "2026-06-24T18:00:41.038Z"
         },
         {
           "sportecId": "MLS-OBJ-0005NO",
@@ -4987,7 +4987,7 @@
           "age": 24,
           "cityOfBirth": "unknown",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 21-24",
+          "rosterCategory": "Supplemental Slots 25-28",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
@@ -5003,7 +5003,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/x6azw0vvr1eg1p2ortc5",
           "slug": "brian-schaefer",
-          "lastUpdated": "2026-05-29T21:57:34.905Z"
+          "lastUpdated": "2026-06-24T18:09:02.064Z"
         },
         {
           "sportecId": "MLS-OBJ-0005JH",
@@ -5132,7 +5132,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2007-06-24",
-          "age": 18,
+          "age": 19,
           "cityOfBirth": "unknown",
           "countryOfBirth": "USA",
           "rosterCategory": "Supplemental Slots 29-30",
@@ -5141,7 +5141,7 @@
           "isEligible": true,
           "onLoan": false,
           "isLoanedOut": false,
-          "playerStatus_1": "Unavailable",
+          "playerStatus_1": null,
           "playerCategory_1": "Homegrown",
           "playerCategory_2": null,
           "isDP": false,
@@ -5151,7 +5151,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zvq8qwnhyhw05gf7qvvp",
           "slug": "stiven-jimenez",
-          "lastUpdated": "2026-05-29T21:57:18.878Z"
+          "lastUpdated": "2026-06-24T18:08:17.986Z"
         },
         {
           "sportecId": "MLS-OBJ-0001IC",
@@ -5209,7 +5209,7 @@
           "age": 20,
           "cityOfBirth": "Bowie, MD",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 21-24",
+          "rosterCategory": "Supplemental Slots 25-28",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
@@ -5225,7 +5225,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vyzbwhy4qfymdnewgol5",
           "slug": "kristian-fletcher",
-          "lastUpdated": "2026-05-30T23:09:08.477Z"
+          "lastUpdated": "2026-06-24T18:07:32.861Z"
         },
         {
           "sportecId": "MLS-OBJ-000081",
@@ -5283,23 +5283,23 @@
           "age": 22,
           "cityOfBirth": "unknown",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 25-28",
+          "rosterCategory": "Supplemental Slots 21-24",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
           "isLoanedOut": true,
           "playerStatus_1": "Loaned Out",
-          "playerCategory_1": null,
+          "playerCategory_1": "Homegrown",
           "playerCategory_2": null,
           "isDP": false,
           "isU22": false,
-          "isHomegrown": false,
+          "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/og4rtqlqvdhtluolir1f",
           "slug": "paul-walters",
-          "lastUpdated": "2026-06-12T00:11:44.589Z"
+          "lastUpdated": "2026-06-24T18:05:17.098Z"
         },
         {
           "sportecId": "MLS-OBJ-00015G",
@@ -5320,7 +5320,7 @@
           "age": 21,
           "cityOfBirth": "Boca Raton, FL",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 31",
+          "rosterCategory": "Supplemental Slots 21-24",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
@@ -5336,7 +5336,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qzfpr9spd1gfvfsb6nrd",
           "slug": "gerardo-valenzuela",
-          "lastUpdated": "2026-05-30T23:09:12.637Z"
+          "lastUpdated": "2026-06-24T18:03:36.52Z"
         },
         {
           "sportecId": "MLS-OBJ-00007M",
@@ -5357,8 +5357,8 @@
           "age": 25,
           "cityOfBirth": "Naperville, IL",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 21-24",
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -5373,7 +5373,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/cyxvtzj4vmbdyxaimkpd",
           "slug": "roman-celentano-x4766",
-          "lastUpdated": "2026-06-10T23:01:43.641Z"
+          "lastUpdated": "2026-06-24T18:00:05.442Z"
         },
         {
           "sportecId": "MLS-OBJ-00009J",
@@ -5400,17 +5400,17 @@
           "isEligible": true,
           "onLoan": false,
           "isLoanedOut": false,
-          "playerStatus_1": "Injured List",
-          "playerCategory_1": "Designated Player",
-          "playerCategory_2": "International",
-          "isDP": true,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
           "isU22": false,
           "isHomegrown": false,
-          "isInternational": true,
+          "isInternational": false,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ociqewmma7iwwlburxqw",
           "slug": "teenage-hadebe",
-          "lastUpdated": "2026-05-30T23:09:08.621Z"
+          "lastUpdated": "2026-06-24T18:01:15.299Z"
         },
         {
           "sportecId": "MLS-OBJ-00000C",
@@ -5468,8 +5468,8 @@
           "age": 29,
           "cityOfBirth": "Yaoundé",
           "countryOfBirth": "Cameroon",
-          "rosterCategory": "Supplemental Slots 21-24",
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -5484,7 +5484,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ldjywsfni7urorekioun",
           "slug": "tah-brian-anunga",
-          "lastUpdated": "2026-06-10T23:08:09.351Z"
+          "lastUpdated": "2026-06-24T17:58:18.747Z"
         },
         {
           "sportecId": "MLS-OBJ-0000HO",
@@ -5542,8 +5542,8 @@
           "age": 30,
           "cityOfBirth": "St. Louis, MO",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 21-24",
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -5558,7 +5558,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/rappearcvtdtu8nieevp",
           "slug": "tom-barlow",
-          "lastUpdated": "2026-05-30T23:09:11.3Z"
+          "lastUpdated": "2026-06-24T17:59:19.78Z"
         },
         {
           "sportecId": "MLS-OBJ-00007P",
@@ -5579,23 +5579,23 @@
           "age": 30,
           "cityOfBirth": "South River, NJ",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 21-24",
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
           "isLoanedOut": false,
           "playerStatus_1": null,
-          "playerCategory_1": null,
+          "playerCategory_1": "Homegrown",
           "playerCategory_2": null,
           "isDP": false,
           "isU22": false,
-          "isHomegrown": false,
+          "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fphyyspndgd18w9u1ztf",
           "slug": "evan-louro",
-          "lastUpdated": "2026-06-10T23:02:04.793Z"
+          "lastUpdated": "2026-06-24T18:02:10.209Z"
         },
         {
           "sportecId": "MLS-OBJ-00007R",
@@ -8640,8 +8640,8 @@
           "age": 25,
           "cityOfBirth": "Plano, TX",
           "countryOfBirth": "USA",
-          "rosterCategory": null,
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -8656,7 +8656,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/py0nahzuvu9vrooln3vv",
           "slug": "michael-collodi",
-          "lastUpdated": "2026-06-05T14:37:04.981Z"
+          "lastUpdated": "2026-06-24T18:14:41.912Z"
         },
         {
           "sportecId": "MLS-OBJ-0005DD",
@@ -9266,7 +9266,7 @@
           "weight": 80,
           "footedness": "Right",
           "dateOfBirth": "2001-06-27",
-          "age": 24,
+          "age": 25,
           "cityOfBirth": "LaSalle, QC",
           "countryOfBirth": "Canada",
           "rosterCategory": "Senior",
@@ -10015,7 +10015,7 @@
           "weight": 80,
           "footedness": "Left",
           "dateOfBirth": "1998-06-24",
-          "age": 27,
+          "age": 28,
           "cityOfBirth": "Kiama",
           "countryOfBirth": "Australia",
           "rosterCategory": "Senior",
@@ -12386,43 +12386,6 @@
           "lastUpdated": "2026-06-10T23:14:06.715Z"
         },
         {
-          "sportecId": "MLS-OBJ-0000GT",
-          "optaId": 163541,
-          "clubSportecId": "MLS-CLU-000001",
-          "clubOptaId": 11690,
-          "clubAbbr": "LAFC",
-          "firstName": "Aaron",
-          "lastName": "Long",
-          "knownName": "Aaron Long",
-          "displayName": "Aaron Long",
-          "jerseyNumber": "33",
-          "position": "defense",
-          "height": 186,
-          "weight": 79,
-          "footedness": "Right",
-          "dateOfBirth": "1992-10-12",
-          "age": 33,
-          "cityOfBirth": "Oak Hills, CA",
-          "countryOfBirth": "USA",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mpzcfmzxklqgm44egrhc",
-          "slug": "aaron-long",
-          "lastUpdated": "2026-05-29T17:07:55.979Z"
-        },
-        {
           "sportecId": "MLS-OBJ-0000BN",
           "optaId": 114579,
           "clubSportecId": "MLS-CLU-000001",
@@ -12497,43 +12460,6 @@
           "lastUpdated": "2026-05-29T17:07:50.967Z"
         },
         {
-          "sportecId": "MLS-OBJ-000581",
-          "optaId": 37915,
-          "clubSportecId": "MLS-CLU-000001",
-          "clubOptaId": 11690,
-          "clubAbbr": "LAFC",
-          "firstName": "Hugo",
-          "lastName": "Lloris",
-          "knownName": "Hugo Lloris",
-          "displayName": "Hugo Lloris",
-          "jerseyNumber": "1",
-          "position": "goalkeeper",
-          "height": 188,
-          "weight": 0,
-          "footedness": "Left",
-          "dateOfBirth": "1986-12-26",
-          "age": 39,
-          "cityOfBirth": "Nice",
-          "countryOfBirth": "France",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/kxfie3h0fcx780y9tttu",
-          "slug": "hugo-lloris",
-          "lastUpdated": "2026-05-29T17:08:08.17Z"
-        },
-        {
           "sportecId": "MLS-OBJ-000C5Q",
           "optaId": 85971,
           "clubSportecId": "MLS-CLU-000001",
@@ -12569,6 +12495,80 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/acxrghhjb3iomgvlismq",
           "slug": "son-heung-min",
           "lastUpdated": "2026-06-10T23:15:45.794Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-0000GT",
+          "optaId": 163541,
+          "clubSportecId": "MLS-CLU-000001",
+          "clubOptaId": 11690,
+          "clubAbbr": "LAFC",
+          "firstName": "Aaron",
+          "lastName": "Long",
+          "knownName": "Aaron Long",
+          "displayName": "Aaron Long",
+          "jerseyNumber": "33",
+          "position": "defense",
+          "height": 186,
+          "weight": 79,
+          "footedness": "Right",
+          "dateOfBirth": "1992-10-12",
+          "age": 33,
+          "cityOfBirth": "Oak Hills, CA",
+          "countryOfBirth": "USA",
+          "rosterCategory": "Senior",
+          "isSenior": true,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mpzcfmzxklqgm44egrhc",
+          "slug": "aaron-long",
+          "lastUpdated": "2026-05-29T17:07:55.979Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-000581",
+          "optaId": 37915,
+          "clubSportecId": "MLS-CLU-000001",
+          "clubOptaId": 11690,
+          "clubAbbr": "LAFC",
+          "firstName": "Hugo",
+          "lastName": "Lloris",
+          "knownName": "Hugo Lloris",
+          "displayName": "Hugo Lloris",
+          "jerseyNumber": "1",
+          "position": "goalkeeper",
+          "height": 188,
+          "weight": 0,
+          "footedness": "Left",
+          "dateOfBirth": "1986-12-26",
+          "age": 39,
+          "cityOfBirth": "Nice",
+          "countryOfBirth": "France",
+          "rosterCategory": "Senior",
+          "isSenior": true,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/kxfie3h0fcx780y9tttu",
+          "slug": "hugo-lloris",
+          "lastUpdated": "2026-05-29T17:08:08.17Z"
         }
       ]
     },
@@ -12891,7 +12891,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2007-06-21",
-          "age": 18,
+          "age": 19,
           "cityOfBirth": "Fullerton, CA",
           "countryOfBirth": "USA",
           "rosterCategory": "Supplemental Slots 25-28",
@@ -14676,7 +14676,7 @@
           "weight": 67,
           "footedness": "Left",
           "dateOfBirth": "1987-06-24",
-          "age": 38,
+          "age": 39,
           "cityOfBirth": "Rosario",
           "countryOfBirth": "Argentina",
           "rosterCategory": "Senior",
@@ -15166,7 +15166,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2000-06-27",
-          "age": 25,
+          "age": 26,
           "cityOfBirth": "Ružomberok",
           "countryOfBirth": "Slovakia",
           "rosterCategory": "Senior",
@@ -16621,7 +16621,7 @@
           "age": 25,
           "cityOfBirth": "Calgary, AB",
           "countryOfBirth": "Canada",
-          "rosterCategory": "Supplemental Slots 29-30",
+          "rosterCategory": "Supplemental Slots 21-24",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
@@ -16637,7 +16637,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nth2yg8xpbzbqtgq35su",
           "slug": "victor-loturi",
-          "lastUpdated": "2026-06-05T14:36:58.871Z"
+          "lastUpdated": "2026-06-24T17:52:30.562Z"
         },
         {
           "sportecId": "MLS-OBJ-0006Z8",
@@ -16695,23 +16695,23 @@
           "age": 26,
           "cityOfBirth": "North York, ON",
           "countryOfBirth": "Canada",
-          "rosterCategory": "Supplemental Slots 25-28",
+          "rosterCategory": "Supplemental Slots 21-24",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
-          "isLoanedOut": true,
-          "playerStatus_1": "Loaned Out",
-          "playerCategory_1": "Homegrown",
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
           "playerCategory_2": null,
           "isDP": false,
           "isU22": false,
-          "isHomegrown": true,
+          "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/hrqozqsdcd4alnjxmdtv",
           "slug": "luca-petrasso",
-          "lastUpdated": "2026-06-05T14:36:22.792Z"
+          "lastUpdated": "2026-06-24T17:53:05.226Z"
         },
         {
           "sportecId": "MLS-OBJ-00001Z",
@@ -16769,8 +16769,8 @@
           "age": 24,
           "cityOfBirth": "Sandy, UT",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 25-28",
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -16785,7 +16785,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/frcdrfgrqyfmgr5vkpz9",
           "slug": "bode-hidalgo",
-          "lastUpdated": "2026-06-11T23:02:34.027Z"
+          "lastUpdated": "2026-06-24T17:51:42.22Z"
         },
         {
           "sportecId": "MLS-OBJ-0000IZ",
@@ -16811,8 +16811,8 @@
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
-          "isLoanedOut": true,
-          "playerStatus_1": "Loaned Out",
+          "isLoanedOut": false,
+          "playerStatus_1": null,
           "playerCategory_1": "Homegrown",
           "playerCategory_2": null,
           "isDP": false,
@@ -16822,7 +16822,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ty1t9iol5l9of4veo5p6",
           "slug": "brandan-craig",
-          "lastUpdated": "2026-06-10T23:14:02.832Z"
+          "lastUpdated": "2026-06-24T17:55:11.506Z"
         },
         {
           "sportecId": "MLS-OBJ-00002R",
@@ -16917,8 +16917,8 @@
           "age": 22,
           "cityOfBirth": "Decatur, GA",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 29-30",
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -16933,7 +16933,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/o4gvhvwrgr6rxcjr53ui",
           "slug": "efrain-morales",
-          "lastUpdated": "2026-06-12T00:03:32.296Z"
+          "lastUpdated": "2026-06-24T17:52:06.256Z"
         },
         {
           "sportecId": "MLS-OBJ-0000CT",
@@ -17028,8 +17028,8 @@
           "age": 31,
           "cityOfBirth": "Mexico City",
           "countryOfBirth": "Mexico",
-          "rosterCategory": "Senior",
-          "isSenior": true,
+          "rosterCategory": "Supplemental Slots 21-24",
+          "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -17044,7 +17044,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/knrmdn2pqio2btdqcma3",
           "slug": "daniel-rios",
-          "lastUpdated": "2026-02-20T02:54:36.656Z"
+          "lastUpdated": "2026-06-24T17:53:37.855Z"
         },
         {
           "sportecId": "MLS-OBJ-0000GW",
@@ -19226,7 +19226,7 @@
           "weight": 84,
           "footedness": "Right",
           "dateOfBirth": "1994-06-24",
-          "age": 31,
+          "age": 32,
           "cityOfBirth": "Park Ridge, NJ",
           "countryOfBirth": "USA",
           "rosterCategory": "Senior",
@@ -19420,7 +19420,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2003-06-21",
-          "age": 22,
+          "age": 23,
           "cityOfBirth": "Okinawa",
           "countryOfBirth": "Japan",
           "rosterCategory": "Supplemental Slots 29-30",
@@ -20242,8 +20242,8 @@
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
-          "isLoanedOut": true,
-          "playerStatus_1": "Loaned Out",
+          "isLoanedOut": false,
+          "playerStatus_1": null,
           "playerCategory_1": null,
           "playerCategory_2": null,
           "isDP": false,
@@ -20253,7 +20253,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xqzpyfa4mtyqkrg5gkz9",
           "slug": "mitja-ilenic",
-          "lastUpdated": "2026-06-05T14:37:27.692Z"
+          "lastUpdated": "2026-06-24T21:40:50.089Z"
         },
         {
           "sportecId": "MLS-OBJ-0001B2",
@@ -20456,7 +20456,7 @@
           "weight": 70,
           "footedness": null,
           "dateOfBirth": "2002-06-26",
-          "age": 23,
+          "age": 24,
           "cityOfBirth": "Rio de Janeiro",
           "countryOfBirth": "Brazil",
           "rosterCategory": "Senior",
@@ -22694,7 +22694,7 @@
           "weight": 69,
           "footedness": "Right",
           "dateOfBirth": "2000-06-27",
-          "age": 25,
+          "age": 26,
           "cityOfBirth": "Itaugua",
           "countryOfBirth": "Paraguay",
           "rosterCategory": "Senior",
@@ -23295,7 +23295,7 @@
           "weight": 76,
           "footedness": null,
           "dateOfBirth": "2009-06-24",
-          "age": 16,
+          "age": 17,
           "cityOfBirth": "Sterling Heights, MI",
           "countryOfBirth": "USA",
           "rosterCategory": null,
@@ -25681,7 +25681,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2007-06-28",
-          "age": 18,
+          "age": 19,
           "cityOfBirth": "Irvine, CA",
           "countryOfBirth": "USA",
           "rosterCategory": null,
@@ -26541,7 +26541,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2000-06-21",
-          "age": 25,
+          "age": 26,
           "cityOfBirth": "Pleasantville, NY",
           "countryOfBirth": "USA",
           "rosterCategory": "Senior",
@@ -28733,7 +28733,7 @@
           "weight": 75,
           "footedness": "Right",
           "dateOfBirth": "1997-06-24",
-          "age": 28,
+          "age": 29,
           "cityOfBirth": "Lansing, MI",
           "countryOfBirth": "USA",
           "rosterCategory": "Senior",
@@ -29111,7 +29111,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2002-06-27",
-          "age": 23,
+          "age": 24,
           "cityOfBirth": "Berkley, CA",
           "countryOfBirth": "USA",
           "rosterCategory": "Supplemental Slots 29-30",
@@ -29740,7 +29740,7 @@
           "weight": 79,
           "footedness": "Left",
           "dateOfBirth": "1997-06-23",
-          "age": 28,
+          "age": 29,
           "cityOfBirth": "Douala",
           "countryOfBirth": "Cameroon",
           "rosterCategory": "Senior",
@@ -29953,8 +29953,82 @@
       "optaId": 421,
       "name": "Sporting Kansas City",
       "abbr": "SKC",
-      "playerCount": 24,
+      "playerCount": 26,
       "players": [
+        {
+          "sportecId": "MLS-OBJ-000F2V",
+          "optaId": 512607,
+          "clubSportecId": "MLS-CLU-00000K",
+          "clubOptaId": 421,
+          "clubAbbr": "SKC",
+          "firstName": "Or",
+          "lastName": "Blorian",
+          "knownName": null,
+          "displayName": "Or Blorian",
+          "jerseyNumber": null,
+          "position": "defense",
+          "height": 188,
+          "weight": 82,
+          "footedness": null,
+          "dateOfBirth": "2000-03-07",
+          "age": 26,
+          "cityOfBirth": "Petah Tikva",
+          "countryOfBirth": "Israel",
+          "rosterCategory": null,
+          "isSenior": false,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": null,
+          "slug": "or-blorian",
+          "lastUpdated": "2026-06-26T17:40:49.148Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-000EIE",
+          "optaId": 210354,
+          "clubSportecId": "MLS-CLU-00000K",
+          "clubOptaId": 421,
+          "clubAbbr": "SKC",
+          "firstName": "Emir",
+          "lastName": "Karić",
+          "knownName": null,
+          "displayName": "Emir Karić",
+          "jerseyNumber": null,
+          "position": "defense",
+          "height": 183,
+          "weight": 73,
+          "footedness": null,
+          "dateOfBirth": "1997-06-09",
+          "age": 29,
+          "cityOfBirth": "Linz",
+          "countryOfBirth": "Austria",
+          "rosterCategory": null,
+          "isSenior": false,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": null,
+          "slug": "emir-karic",
+          "lastUpdated": "2026-06-26T17:41:17.054Z"
+        },
         {
           "sportecId": "MLS-OBJ-000DBS",
           "optaId": 315207272,
@@ -30082,7 +30156,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2006-06-27",
-          "age": 19,
+          "age": 20,
           "cityOfBirth": "Kumasi",
           "countryOfBirth": "Ghana",
           "rosterCategory": "Supplemental Slots 25-28",
@@ -33669,8 +33743,8 @@
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
+          "isLoanedOut": true,
+          "playerStatus_1": "Loaned Out",
           "playerCategory_1": "Homegrown",
           "playerCategory_2": null,
           "isDP": false,
@@ -33680,7 +33754,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ziifqhk6ie5fdawjyrgo",
           "slug": "anisse-saidi",
-          "lastUpdated": "2026-06-03T16:01:08.903Z"
+          "lastUpdated": "2026-06-22T14:03:32.214Z"
         },
         {
           "sportecId": "MLS-OBJ-000583",
@@ -34741,8 +34815,8 @@
       "age": 32,
       "cityOfBirth": "New York City, NY",
       "countryOfBirth": "USA",
-      "rosterCategory": "Senior",
-      "isSenior": true,
+      "rosterCategory": "Supplemental Slots 21-24",
+      "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -34757,7 +34831,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/d4c1h41dejbbpsk5nnig",
       "slug": "cayman-togashi",
-      "lastUpdated": "2026-05-29T22:05:15.177Z"
+      "lastUpdated": "2026-06-24T17:47:57.225Z"
     },
     {
       "sportecId": "MLS-OBJ-0007SK",
@@ -35259,7 +35333,7 @@
       "age": 21,
       "cityOfBirth": "Atlanta, GA",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 25-28",
+      "rosterCategory": "Supplemental Slots 21-24",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
@@ -35275,7 +35349,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vcikksfe6r1di3sbecur",
       "slug": "luke-brennan",
-      "lastUpdated": "2026-05-29T22:05:03.779Z"
+      "lastUpdated": "2026-06-24T17:45:32.676Z"
     },
     {
       "sportecId": "MLS-OBJ-0001IV",
@@ -35303,16 +35377,16 @@
       "onLoan": false,
       "isLoanedOut": false,
       "playerStatus_1": null,
-      "playerCategory_1": "International",
+      "playerCategory_1": null,
       "playerCategory_2": null,
       "isDP": false,
       "isU22": false,
       "isHomegrown": false,
-      "isInternational": true,
+      "isInternational": false,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/brqjfabvc9k4cicslm2w",
       "slug": "ronald-hernandez",
-      "lastUpdated": "2026-06-12T00:15:52.751Z"
+      "lastUpdated": "2026-06-24T17:44:41.954Z"
     },
     {
       "sportecId": "MLS-OBJ-00000M",
@@ -35497,7 +35571,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/goyquzcomrbrcjrk5pr6",
       "slug": "mateja-djordjevic",
-      "lastUpdated": "2026-06-05T14:37:21.86Z"
+      "lastUpdated": "2026-06-26T16:17:46.918Z"
     },
     {
       "sportecId": "MLS-OBJ-00081I",
@@ -35534,7 +35608,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/n51ao2aoczp45sc2pfqo",
       "slug": "riley-thomas",
-      "lastUpdated": "2026-05-29T22:01:31.613Z"
+      "lastUpdated": "2026-06-26T14:26:35.236Z"
     },
     {
       "sportecId": "MLS-OBJ-00081D",
@@ -35571,7 +35645,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wtameqwtqe84lptdla6f",
       "slug": "nicolas-dubersarsky",
-      "lastUpdated": "2026-06-05T14:37:20.691Z"
+      "lastUpdated": "2026-06-26T15:37:47.531Z"
     },
     {
       "sportecId": "MLS-OBJ-0007XG",
@@ -35608,7 +35682,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/cqjdybbbgckqspuyxwc4",
       "slug": "myrto-uzuni",
-      "lastUpdated": "2026-06-05T14:37:19.812Z"
+      "lastUpdated": "2026-06-26T15:05:08.123Z"
     },
     {
       "sportecId": "MLS-OBJ-0007WG",
@@ -35645,7 +35719,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/p7s5cjagc2broposq3mv",
       "slug": "besard-sabovic",
-      "lastUpdated": "2026-06-05T14:37:19.088Z"
+      "lastUpdated": "2026-06-26T15:15:26.099Z"
     },
     {
       "sportecId": "MLS-OBJ-0007I5",
@@ -35682,7 +35756,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/rj0cfdwfzbcd3nfvpxsl",
       "slug": "oleksandr-svatok",
-      "lastUpdated": "2026-06-05T14:37:18.386Z"
+      "lastUpdated": "2026-06-26T14:34:06.402Z"
     },
     {
       "sportecId": "MLS-OBJ-00077Q",
@@ -35719,7 +35793,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/eeo3jawypuyg74zao5qp",
       "slug": "mikkel-desler",
-      "lastUpdated": "2026-06-05T14:37:17.723Z"
+      "lastUpdated": "2026-06-26T14:28:30.738Z"
     },
     {
       "sportecId": "MLS-OBJ-0002DO",
@@ -35756,7 +35830,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/hkyluxtwut1swdxzaemu",
       "slug": "ervin-torres",
-      "lastUpdated": "2026-05-29T22:01:28.962Z"
+      "lastUpdated": "2026-06-26T16:25:05.525Z"
     },
     {
       "sportecId": "MLS-OBJ-000534",
@@ -35793,7 +35867,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qwmrdqykret694cblckx",
       "slug": "guilherme-biro",
-      "lastUpdated": "2026-06-05T14:37:16.885Z"
+      "lastUpdated": "2026-06-26T15:59:08.931Z"
     },
     {
       "sportecId": "MLS-OBJ-00023R",
@@ -35830,7 +35904,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dfnky6ylk8u2mkimhwng",
       "slug": "micah-burton",
-      "lastUpdated": "2026-05-29T22:01:28.103Z"
+      "lastUpdated": "2026-06-26T16:09:30.995Z"
     },
     {
       "sportecId": "MLS-OBJ-0001GL",
@@ -35848,7 +35922,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2003-06-23",
-      "age": 22,
+      "age": 23,
       "cityOfBirth": "Santa Rosa",
       "countryOfBirth": "USA",
       "rosterCategory": null,
@@ -35925,8 +35999,8 @@
       "age": 22,
       "cityOfBirth": "San Jose, CA",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 25-28",
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -35941,7 +36015,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/uiou4obyw0quqlw04qcu",
       "slug": "cj-fodrey",
-      "lastUpdated": "2026-05-29T22:03:12.666Z"
+      "lastUpdated": "2026-06-26T15:35:27.553Z"
     },
     {
       "sportecId": "MLS-OBJ-000016",
@@ -35978,7 +36052,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/b8ybmqhskll7zfl1qrkl",
       "slug": "damian-las",
-      "lastUpdated": "2026-05-29T22:01:23.257Z"
+      "lastUpdated": "2026-06-26T15:13:31.766Z"
     },
     {
       "sportecId": "MLS-OBJ-0000HZ",
@@ -36015,7 +36089,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ecqnn56dbbchuodl6c6s",
       "slug": "facundo-torres",
-      "lastUpdated": "2026-06-05T14:37:14.533Z"
+      "lastUpdated": "2026-06-26T15:09:14.602Z"
     },
     {
       "sportecId": "MLS-OBJ-00001P",
@@ -36052,7 +36126,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/c4dqbfodop3d8wyttjac",
       "slug": "owen-wolff",
-      "lastUpdated": "2026-06-05T14:37:09.765Z"
+      "lastUpdated": "2026-06-26T16:14:57.205Z"
     },
     {
       "sportecId": "MLS-OBJ-0000DH",
@@ -36089,7 +36163,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ecpq2cl5f1goccmdredi",
       "slug": "joseph-rosales",
-      "lastUpdated": "2026-06-05T14:37:13.623Z"
+      "lastUpdated": "2026-06-26T16:02:03.995Z"
     },
     {
       "sportecId": "MLS-OBJ-0000F3",
@@ -36126,7 +36200,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/flvjjtfhmppdhx0kpz1b",
       "slug": "jon-bell",
-      "lastUpdated": "2026-06-10T23:08:48.002Z"
+      "lastUpdated": "2026-06-26T15:19:24.276Z"
     },
     {
       "sportecId": "MLS-OBJ-00001E",
@@ -36163,7 +36237,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/x3lvqxpujkli3ryjcq0j",
       "slug": "zan-kolmanic",
-      "lastUpdated": "2026-06-05T14:37:08.224Z"
+      "lastUpdated": "2026-06-26T15:49:41.775Z"
     },
     {
       "sportecId": "MLS-OBJ-00001I",
@@ -36200,7 +36274,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/jghvnhuezbhz9xg8zbwb",
       "slug": "daniel-pereira",
-      "lastUpdated": "2026-06-05T14:37:09.018Z"
+      "lastUpdated": "2026-06-26T14:58:40.238Z"
     },
     {
       "sportecId": "MLS-OBJ-0000OB",
@@ -36274,7 +36348,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/x8hwlaysm69sqn7agq6d",
       "slug": "jon-gallagher",
-      "lastUpdated": "2026-06-05T14:37:07.382Z"
+      "lastUpdated": "2026-06-26T15:32:20.769Z"
     },
     {
       "sportecId": "MLS-OBJ-0000CI",
@@ -36311,7 +36385,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/a4yfiuyeod169zeqemfd",
       "slug": "ilie-sanchez",
-      "lastUpdated": "2026-06-05T14:37:12.853Z"
+      "lastUpdated": "2026-06-26T14:38:19.789Z"
     },
     {
       "sportecId": "MLS-OBJ-0000UJ",
@@ -36332,8 +36406,8 @@
       "age": 35,
       "cityOfBirth": "Garden Grove, CA",
       "countryOfBirth": "USA",
-      "rosterCategory": "Senior",
-      "isSenior": true,
+      "rosterCategory": "Supplemental Slots 21-24",
+      "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -36348,7 +36422,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/w0fxsg9l5strllmpbm8t",
       "slug": "christian-ramirez",
-      "lastUpdated": "2026-06-05T14:37:15.61Z"
+      "lastUpdated": "2026-06-26T15:46:44.517Z"
     },
     {
       "sportecId": "MLS-OBJ-00008C",
@@ -36385,7 +36459,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fgi04b5diny2wgzmyqmk",
       "slug": "brandon-vazquez",
-      "lastUpdated": "2026-06-05T14:37:11.313Z"
+      "lastUpdated": "2026-06-26T15:02:19.382Z"
     },
     {
       "sportecId": "MLS-OBJ-00006O",
@@ -36422,7 +36496,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ytsgovcpcwd4fwdwls6x",
       "slug": "brendan-hines-ike",
-      "lastUpdated": "2026-06-05T14:37:10.525Z"
+      "lastUpdated": "2026-06-26T14:30:54.011Z"
     },
     {
       "sportecId": "MLS-OBJ-000015",
@@ -36459,7 +36533,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vawv4o5zhrxxyonfeaxa",
       "slug": "brad-stuver",
-      "lastUpdated": "2026-06-05T14:37:06.525Z"
+      "lastUpdated": "2026-06-26T14:25:40.648Z"
     },
     {
       "sportecId": "MLS-OBJ-000CSN",
@@ -37439,7 +37513,7 @@
       "weight": 84,
       "footedness": null,
       "dateOfBirth": "1998-06-25",
-      "age": 27,
+      "age": 28,
       "cityOfBirth": "New York City, NY",
       "countryOfBirth": "USA",
       "rosterCategory": "Senior",
@@ -37994,7 +38068,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2009-06-22",
-      "age": 16,
+      "age": 17,
       "cityOfBirth": "unknown",
       "countryOfBirth": "Canada",
       "rosterCategory": "Senior",
@@ -38774,23 +38848,23 @@
       "age": 22,
       "cityOfBirth": "Wrocław",
       "countryOfBirth": "Poland",
-      "rosterCategory": null,
+      "rosterCategory": "Supplemental Slots 21-24",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
       "isLoanedOut": false,
       "playerStatus_1": null,
-      "playerCategory_1": null,
+      "playerCategory_1": "International",
       "playerCategory_2": null,
       "isDP": false,
       "isU22": false,
       "isHomegrown": false,
-      "isInternational": false,
+      "isInternational": true,
       "isGenAdidas": false,
       "headshot": null,
       "slug": "fabian-mrozek",
-      "lastUpdated": "2026-05-29T21:57:39.314Z"
+      "lastUpdated": "2026-06-24T18:02:54.083Z"
     },
     {
       "sportecId": "MLS-OBJ-000CCM",
@@ -38856,15 +38930,15 @@
       "isLoanedOut": false,
       "playerStatus_1": null,
       "playerCategory_1": "Homegrown",
-      "playerCategory_2": null,
+      "playerCategory_2": "International",
       "isDP": false,
       "isU22": false,
       "isHomegrown": true,
-      "isInternational": false,
+      "isInternational": true,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wakchuhncevdy9mibj9n",
       "slug": "felix-samson",
-      "lastUpdated": "2026-05-29T21:57:37.547Z"
+      "lastUpdated": "2026-06-24T17:57:21.554Z"
     },
     {
       "sportecId": "MLS-OBJ-000C6Q",
@@ -38929,16 +39003,16 @@
       "onLoan": false,
       "isLoanedOut": false,
       "playerStatus_1": null,
-      "playerCategory_1": null,
+      "playerCategory_1": "International",
       "playerCategory_2": null,
       "isDP": false,
       "isU22": false,
       "isHomegrown": false,
-      "isInternational": false,
+      "isInternational": true,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dnqcddorrili0gpcqeyb",
       "slug": "ayoub-jabbari",
-      "lastUpdated": "2026-05-30T23:09:17.033Z"
+      "lastUpdated": "2026-06-24T18:01:40.098Z"
     },
     {
       "sportecId": "MLS-OBJ-000BVX",
@@ -38996,23 +39070,23 @@
       "age": 17,
       "cityOfBirth": "Allentown, PA",
       "countryOfBirth": "USA",
-      "rosterCategory": null,
+      "rosterCategory": "Supplemental Slots 25-28",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
       "isLoanedOut": false,
       "playerStatus_1": null,
-      "playerCategory_1": null,
+      "playerCategory_1": "Homegrown",
       "playerCategory_2": null,
       "isDP": false,
       "isU22": false,
-      "isHomegrown": false,
+      "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/y8musytegsye99qwxbao",
       "slug": "andrei-chirila",
-      "lastUpdated": "2026-05-29T21:57:30.709Z"
+      "lastUpdated": "2026-06-24T18:06:06.399Z"
     },
     {
       "sportecId": "MLS-OBJ-00082K",
@@ -39189,15 +39263,15 @@
       "isLoanedOut": false,
       "playerStatus_1": null,
       "playerCategory_1": "Designated Player",
-      "playerCategory_2": null,
+      "playerCategory_2": "International",
       "isDP": true,
       "isU22": false,
       "isHomegrown": false,
-      "isInternational": false,
+      "isInternational": true,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vg6wncbjinh7mlwn1b48",
       "slug": "kevin-denkey",
-      "lastUpdated": "2026-05-30T23:09:15.535Z"
+      "lastUpdated": "2026-06-24T18:00:41.038Z"
     },
     {
       "sportecId": "MLS-OBJ-0005NO",
@@ -39254,7 +39328,7 @@
       "age": 24,
       "cityOfBirth": "unknown",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 21-24",
+      "rosterCategory": "Supplemental Slots 25-28",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
@@ -39270,7 +39344,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/x6azw0vvr1eg1p2ortc5",
       "slug": "brian-schaefer",
-      "lastUpdated": "2026-05-29T21:57:34.905Z"
+      "lastUpdated": "2026-06-24T18:09:02.064Z"
     },
     {
       "sportecId": "MLS-OBJ-0005JH",
@@ -39399,7 +39473,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2007-06-24",
-      "age": 18,
+      "age": 19,
       "cityOfBirth": "unknown",
       "countryOfBirth": "USA",
       "rosterCategory": "Supplemental Slots 29-30",
@@ -39408,7 +39482,7 @@
       "isEligible": true,
       "onLoan": false,
       "isLoanedOut": false,
-      "playerStatus_1": "Unavailable",
+      "playerStatus_1": null,
       "playerCategory_1": "Homegrown",
       "playerCategory_2": null,
       "isDP": false,
@@ -39418,7 +39492,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zvq8qwnhyhw05gf7qvvp",
       "slug": "stiven-jimenez",
-      "lastUpdated": "2026-05-29T21:57:18.878Z"
+      "lastUpdated": "2026-06-24T18:08:17.986Z"
     },
     {
       "sportecId": "MLS-OBJ-0001IC",
@@ -39476,7 +39550,7 @@
       "age": 20,
       "cityOfBirth": "Bowie, MD",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 21-24",
+      "rosterCategory": "Supplemental Slots 25-28",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
@@ -39492,7 +39566,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vyzbwhy4qfymdnewgol5",
       "slug": "kristian-fletcher",
-      "lastUpdated": "2026-05-30T23:09:08.477Z"
+      "lastUpdated": "2026-06-24T18:07:32.861Z"
     },
     {
       "sportecId": "MLS-OBJ-000081",
@@ -39550,23 +39624,23 @@
       "age": 22,
       "cityOfBirth": "unknown",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 25-28",
+      "rosterCategory": "Supplemental Slots 21-24",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
       "isLoanedOut": true,
       "playerStatus_1": "Loaned Out",
-      "playerCategory_1": null,
+      "playerCategory_1": "Homegrown",
       "playerCategory_2": null,
       "isDP": false,
       "isU22": false,
-      "isHomegrown": false,
+      "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/og4rtqlqvdhtluolir1f",
       "slug": "paul-walters",
-      "lastUpdated": "2026-06-12T00:11:44.589Z"
+      "lastUpdated": "2026-06-24T18:05:17.098Z"
     },
     {
       "sportecId": "MLS-OBJ-00015G",
@@ -39587,7 +39661,7 @@
       "age": 21,
       "cityOfBirth": "Boca Raton, FL",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 31",
+      "rosterCategory": "Supplemental Slots 21-24",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
@@ -39603,7 +39677,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qzfpr9spd1gfvfsb6nrd",
       "slug": "gerardo-valenzuela",
-      "lastUpdated": "2026-05-30T23:09:12.637Z"
+      "lastUpdated": "2026-06-24T18:03:36.52Z"
     },
     {
       "sportecId": "MLS-OBJ-00007M",
@@ -39624,8 +39698,8 @@
       "age": 25,
       "cityOfBirth": "Naperville, IL",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 21-24",
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -39640,7 +39714,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/cyxvtzj4vmbdyxaimkpd",
       "slug": "roman-celentano-x4766",
-      "lastUpdated": "2026-06-10T23:01:43.641Z"
+      "lastUpdated": "2026-06-24T18:00:05.442Z"
     },
     {
       "sportecId": "MLS-OBJ-00009J",
@@ -39667,17 +39741,17 @@
       "isEligible": true,
       "onLoan": false,
       "isLoanedOut": false,
-      "playerStatus_1": "Injured List",
-      "playerCategory_1": "Designated Player",
-      "playerCategory_2": "International",
-      "isDP": true,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
       "isU22": false,
       "isHomegrown": false,
-      "isInternational": true,
+      "isInternational": false,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ociqewmma7iwwlburxqw",
       "slug": "teenage-hadebe",
-      "lastUpdated": "2026-05-30T23:09:08.621Z"
+      "lastUpdated": "2026-06-24T18:01:15.299Z"
     },
     {
       "sportecId": "MLS-OBJ-00000C",
@@ -39735,8 +39809,8 @@
       "age": 29,
       "cityOfBirth": "Yaoundé",
       "countryOfBirth": "Cameroon",
-      "rosterCategory": "Supplemental Slots 21-24",
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -39751,7 +39825,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ldjywsfni7urorekioun",
       "slug": "tah-brian-anunga",
-      "lastUpdated": "2026-06-10T23:08:09.351Z"
+      "lastUpdated": "2026-06-24T17:58:18.747Z"
     },
     {
       "sportecId": "MLS-OBJ-0000HO",
@@ -39809,8 +39883,8 @@
       "age": 30,
       "cityOfBirth": "St. Louis, MO",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 21-24",
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -39825,7 +39899,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/rappearcvtdtu8nieevp",
       "slug": "tom-barlow",
-      "lastUpdated": "2026-05-30T23:09:11.3Z"
+      "lastUpdated": "2026-06-24T17:59:19.78Z"
     },
     {
       "sportecId": "MLS-OBJ-00007P",
@@ -39846,23 +39920,23 @@
       "age": 30,
       "cityOfBirth": "South River, NJ",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 21-24",
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
       "isLoanedOut": false,
       "playerStatus_1": null,
-      "playerCategory_1": null,
+      "playerCategory_1": "Homegrown",
       "playerCategory_2": null,
       "isDP": false,
       "isU22": false,
-      "isHomegrown": false,
+      "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fphyyspndgd18w9u1ztf",
       "slug": "evan-louro",
-      "lastUpdated": "2026-06-10T23:02:04.793Z"
+      "lastUpdated": "2026-06-24T18:02:10.209Z"
     },
     {
       "sportecId": "MLS-OBJ-00007R",
@@ -42880,8 +42954,8 @@
       "age": 25,
       "cityOfBirth": "Plano, TX",
       "countryOfBirth": "USA",
-      "rosterCategory": null,
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -42896,7 +42970,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/py0nahzuvu9vrooln3vv",
       "slug": "michael-collodi",
-      "lastUpdated": "2026-06-05T14:37:04.981Z"
+      "lastUpdated": "2026-06-24T18:14:41.912Z"
     },
     {
       "sportecId": "MLS-OBJ-0005DD",
@@ -43506,7 +43580,7 @@
       "weight": 80,
       "footedness": "Right",
       "dateOfBirth": "2001-06-27",
-      "age": 24,
+      "age": 25,
       "cityOfBirth": "LaSalle, QC",
       "countryOfBirth": "Canada",
       "rosterCategory": "Senior",
@@ -44246,7 +44320,7 @@
       "weight": 80,
       "footedness": "Left",
       "dateOfBirth": "1998-06-24",
-      "age": 27,
+      "age": 28,
       "cityOfBirth": "Kiama",
       "countryOfBirth": "Australia",
       "rosterCategory": "Senior",
@@ -46599,43 +46673,6 @@
       "lastUpdated": "2026-06-10T23:14:06.715Z"
     },
     {
-      "sportecId": "MLS-OBJ-0000GT",
-      "optaId": 163541,
-      "clubSportecId": "MLS-CLU-000001",
-      "clubOptaId": 11690,
-      "clubAbbr": "LAFC",
-      "firstName": "Aaron",
-      "lastName": "Long",
-      "knownName": "Aaron Long",
-      "displayName": "Aaron Long",
-      "jerseyNumber": "33",
-      "position": "defense",
-      "height": 186,
-      "weight": 79,
-      "footedness": "Right",
-      "dateOfBirth": "1992-10-12",
-      "age": 33,
-      "cityOfBirth": "Oak Hills, CA",
-      "countryOfBirth": "USA",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mpzcfmzxklqgm44egrhc",
-      "slug": "aaron-long",
-      "lastUpdated": "2026-05-29T17:07:55.979Z"
-    },
-    {
       "sportecId": "MLS-OBJ-0000BN",
       "optaId": 114579,
       "clubSportecId": "MLS-CLU-000001",
@@ -46710,43 +46747,6 @@
       "lastUpdated": "2026-05-29T17:07:50.967Z"
     },
     {
-      "sportecId": "MLS-OBJ-000581",
-      "optaId": 37915,
-      "clubSportecId": "MLS-CLU-000001",
-      "clubOptaId": 11690,
-      "clubAbbr": "LAFC",
-      "firstName": "Hugo",
-      "lastName": "Lloris",
-      "knownName": "Hugo Lloris",
-      "displayName": "Hugo Lloris",
-      "jerseyNumber": "1",
-      "position": "goalkeeper",
-      "height": 188,
-      "weight": 0,
-      "footedness": "Left",
-      "dateOfBirth": "1986-12-26",
-      "age": 39,
-      "cityOfBirth": "Nice",
-      "countryOfBirth": "France",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/kxfie3h0fcx780y9tttu",
-      "slug": "hugo-lloris",
-      "lastUpdated": "2026-05-29T17:08:08.17Z"
-    },
-    {
       "sportecId": "MLS-OBJ-000C5Q",
       "optaId": 85971,
       "clubSportecId": "MLS-CLU-000001",
@@ -46782,6 +46782,80 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/acxrghhjb3iomgvlismq",
       "slug": "son-heung-min",
       "lastUpdated": "2026-06-10T23:15:45.794Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-0000GT",
+      "optaId": 163541,
+      "clubSportecId": "MLS-CLU-000001",
+      "clubOptaId": 11690,
+      "clubAbbr": "LAFC",
+      "firstName": "Aaron",
+      "lastName": "Long",
+      "knownName": "Aaron Long",
+      "displayName": "Aaron Long",
+      "jerseyNumber": "33",
+      "position": "defense",
+      "height": 186,
+      "weight": 79,
+      "footedness": "Right",
+      "dateOfBirth": "1992-10-12",
+      "age": 33,
+      "cityOfBirth": "Oak Hills, CA",
+      "countryOfBirth": "USA",
+      "rosterCategory": "Senior",
+      "isSenior": true,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mpzcfmzxklqgm44egrhc",
+      "slug": "aaron-long",
+      "lastUpdated": "2026-05-29T17:07:55.979Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-000581",
+      "optaId": 37915,
+      "clubSportecId": "MLS-CLU-000001",
+      "clubOptaId": 11690,
+      "clubAbbr": "LAFC",
+      "firstName": "Hugo",
+      "lastName": "Lloris",
+      "knownName": "Hugo Lloris",
+      "displayName": "Hugo Lloris",
+      "jerseyNumber": "1",
+      "position": "goalkeeper",
+      "height": 188,
+      "weight": 0,
+      "footedness": "Left",
+      "dateOfBirth": "1986-12-26",
+      "age": 39,
+      "cityOfBirth": "Nice",
+      "countryOfBirth": "France",
+      "rosterCategory": "Senior",
+      "isSenior": true,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/kxfie3h0fcx780y9tttu",
+      "slug": "hugo-lloris",
+      "lastUpdated": "2026-05-29T17:08:08.17Z"
     },
     {
       "sportecId": "MLS-OBJ-00029S",
@@ -47095,7 +47169,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2007-06-21",
-      "age": 18,
+      "age": 19,
       "cityOfBirth": "Fullerton, CA",
       "countryOfBirth": "USA",
       "rosterCategory": "Supplemental Slots 25-28",
@@ -48871,7 +48945,7 @@
       "weight": 67,
       "footedness": "Left",
       "dateOfBirth": "1987-06-24",
-      "age": 38,
+      "age": 39,
       "cityOfBirth": "Rosario",
       "countryOfBirth": "Argentina",
       "rosterCategory": "Senior",
@@ -49352,7 +49426,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2000-06-27",
-      "age": 25,
+      "age": 26,
       "cityOfBirth": "Ružomberok",
       "countryOfBirth": "Slovakia",
       "rosterCategory": "Senior",
@@ -50798,7 +50872,7 @@
       "age": 25,
       "cityOfBirth": "Calgary, AB",
       "countryOfBirth": "Canada",
-      "rosterCategory": "Supplemental Slots 29-30",
+      "rosterCategory": "Supplemental Slots 21-24",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
@@ -50814,7 +50888,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nth2yg8xpbzbqtgq35su",
       "slug": "victor-loturi",
-      "lastUpdated": "2026-06-05T14:36:58.871Z"
+      "lastUpdated": "2026-06-24T17:52:30.562Z"
     },
     {
       "sportecId": "MLS-OBJ-0006Z8",
@@ -50872,23 +50946,23 @@
       "age": 26,
       "cityOfBirth": "North York, ON",
       "countryOfBirth": "Canada",
-      "rosterCategory": "Supplemental Slots 25-28",
+      "rosterCategory": "Supplemental Slots 21-24",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
-      "isLoanedOut": true,
-      "playerStatus_1": "Loaned Out",
-      "playerCategory_1": "Homegrown",
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
       "playerCategory_2": null,
       "isDP": false,
       "isU22": false,
-      "isHomegrown": true,
+      "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/hrqozqsdcd4alnjxmdtv",
       "slug": "luca-petrasso",
-      "lastUpdated": "2026-06-05T14:36:22.792Z"
+      "lastUpdated": "2026-06-24T17:53:05.226Z"
     },
     {
       "sportecId": "MLS-OBJ-00001Z",
@@ -50946,8 +51020,8 @@
       "age": 24,
       "cityOfBirth": "Sandy, UT",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 25-28",
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -50962,7 +51036,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/frcdrfgrqyfmgr5vkpz9",
       "slug": "bode-hidalgo",
-      "lastUpdated": "2026-06-11T23:02:34.027Z"
+      "lastUpdated": "2026-06-24T17:51:42.22Z"
     },
     {
       "sportecId": "MLS-OBJ-0000IZ",
@@ -50988,8 +51062,8 @@
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
-      "isLoanedOut": true,
-      "playerStatus_1": "Loaned Out",
+      "isLoanedOut": false,
+      "playerStatus_1": null,
       "playerCategory_1": "Homegrown",
       "playerCategory_2": null,
       "isDP": false,
@@ -50999,7 +51073,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ty1t9iol5l9of4veo5p6",
       "slug": "brandan-craig",
-      "lastUpdated": "2026-06-10T23:14:02.832Z"
+      "lastUpdated": "2026-06-24T17:55:11.506Z"
     },
     {
       "sportecId": "MLS-OBJ-00002R",
@@ -51094,8 +51168,8 @@
       "age": 22,
       "cityOfBirth": "Decatur, GA",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 29-30",
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -51110,7 +51184,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/o4gvhvwrgr6rxcjr53ui",
       "slug": "efrain-morales",
-      "lastUpdated": "2026-06-12T00:03:32.296Z"
+      "lastUpdated": "2026-06-24T17:52:06.256Z"
     },
     {
       "sportecId": "MLS-OBJ-0000CT",
@@ -51205,8 +51279,8 @@
       "age": 31,
       "cityOfBirth": "Mexico City",
       "countryOfBirth": "Mexico",
-      "rosterCategory": "Senior",
-      "isSenior": true,
+      "rosterCategory": "Supplemental Slots 21-24",
+      "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -51221,7 +51295,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/knrmdn2pqio2btdqcma3",
       "slug": "daniel-rios",
-      "lastUpdated": "2026-02-20T02:54:36.656Z"
+      "lastUpdated": "2026-06-24T17:53:37.855Z"
     },
     {
       "sportecId": "MLS-OBJ-0000GW",
@@ -53385,7 +53459,7 @@
       "weight": 84,
       "footedness": "Right",
       "dateOfBirth": "1994-06-24",
-      "age": 31,
+      "age": 32,
       "cityOfBirth": "Park Ridge, NJ",
       "countryOfBirth": "USA",
       "rosterCategory": "Senior",
@@ -53570,7 +53644,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2003-06-21",
-      "age": 22,
+      "age": 23,
       "cityOfBirth": "Okinawa",
       "countryOfBirth": "Japan",
       "rosterCategory": "Supplemental Slots 29-30",
@@ -54392,8 +54466,8 @@
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
-      "isLoanedOut": true,
-      "playerStatus_1": "Loaned Out",
+      "isLoanedOut": false,
+      "playerStatus_1": null,
       "playerCategory_1": null,
       "playerCategory_2": null,
       "isDP": false,
@@ -54403,7 +54477,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xqzpyfa4mtyqkrg5gkz9",
       "slug": "mitja-ilenic",
-      "lastUpdated": "2026-06-05T14:37:27.692Z"
+      "lastUpdated": "2026-06-24T21:40:50.089Z"
     },
     {
       "sportecId": "MLS-OBJ-0001B2",
@@ -54606,7 +54680,7 @@
       "weight": 70,
       "footedness": null,
       "dateOfBirth": "2002-06-26",
-      "age": 23,
+      "age": 24,
       "cityOfBirth": "Rio de Janeiro",
       "countryOfBirth": "Brazil",
       "rosterCategory": "Senior",
@@ -56826,7 +56900,7 @@
       "weight": 69,
       "footedness": "Right",
       "dateOfBirth": "2000-06-27",
-      "age": 25,
+      "age": 26,
       "cityOfBirth": "Itaugua",
       "countryOfBirth": "Paraguay",
       "rosterCategory": "Senior",
@@ -57418,7 +57492,7 @@
       "weight": 76,
       "footedness": null,
       "dateOfBirth": "2009-06-24",
-      "age": 16,
+      "age": 17,
       "cityOfBirth": "Sterling Heights, MI",
       "countryOfBirth": "USA",
       "rosterCategory": null,
@@ -59786,7 +59860,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2007-06-28",
-      "age": 18,
+      "age": 19,
       "cityOfBirth": "Irvine, CA",
       "countryOfBirth": "USA",
       "rosterCategory": null,
@@ -60637,7 +60711,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2000-06-21",
-      "age": 25,
+      "age": 26,
       "cityOfBirth": "Pleasantville, NY",
       "countryOfBirth": "USA",
       "rosterCategory": "Senior",
@@ -62820,7 +62894,7 @@
       "weight": 75,
       "footedness": "Right",
       "dateOfBirth": "1997-06-24",
-      "age": 28,
+      "age": 29,
       "cityOfBirth": "Lansing, MI",
       "countryOfBirth": "USA",
       "rosterCategory": "Senior",
@@ -63189,7 +63263,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2002-06-27",
-      "age": 23,
+      "age": 24,
       "cityOfBirth": "Berkley, CA",
       "countryOfBirth": "USA",
       "rosterCategory": "Supplemental Slots 29-30",
@@ -63818,7 +63892,7 @@
       "weight": 79,
       "footedness": "Left",
       "dateOfBirth": "1997-06-23",
-      "age": 28,
+      "age": 29,
       "cityOfBirth": "Douala",
       "countryOfBirth": "Cameroon",
       "rosterCategory": "Senior",
@@ -64025,6 +64099,80 @@
       "lastUpdated": "2026-05-30T23:10:23.542Z"
     },
     {
+      "sportecId": "MLS-OBJ-000F2V",
+      "optaId": 512607,
+      "clubSportecId": "MLS-CLU-00000K",
+      "clubOptaId": 421,
+      "clubAbbr": "SKC",
+      "firstName": "Or",
+      "lastName": "Blorian",
+      "knownName": null,
+      "displayName": "Or Blorian",
+      "jerseyNumber": null,
+      "position": "defense",
+      "height": 188,
+      "weight": 82,
+      "footedness": null,
+      "dateOfBirth": "2000-03-07",
+      "age": 26,
+      "cityOfBirth": "Petah Tikva",
+      "countryOfBirth": "Israel",
+      "rosterCategory": null,
+      "isSenior": false,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": null,
+      "slug": "or-blorian",
+      "lastUpdated": "2026-06-26T17:40:49.148Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-000EIE",
+      "optaId": 210354,
+      "clubSportecId": "MLS-CLU-00000K",
+      "clubOptaId": 421,
+      "clubAbbr": "SKC",
+      "firstName": "Emir",
+      "lastName": "Karić",
+      "knownName": null,
+      "displayName": "Emir Karić",
+      "jerseyNumber": null,
+      "position": "defense",
+      "height": 183,
+      "weight": 73,
+      "footedness": null,
+      "dateOfBirth": "1997-06-09",
+      "age": 29,
+      "cityOfBirth": "Linz",
+      "countryOfBirth": "Austria",
+      "rosterCategory": null,
+      "isSenior": false,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": null,
+      "slug": "emir-karic",
+      "lastUpdated": "2026-06-26T17:41:17.054Z"
+    },
+    {
       "sportecId": "MLS-OBJ-000DBS",
       "optaId": 315207272,
       "clubSportecId": "MLS-CLU-00000K",
@@ -64151,7 +64299,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2006-06-27",
-      "age": 19,
+      "age": 20,
       "cityOfBirth": "Kumasi",
       "countryOfBirth": "Ghana",
       "rosterCategory": "Supplemental Slots 25-28",
@@ -67711,8 +67859,8 @@
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
+      "isLoanedOut": true,
+      "playerStatus_1": "Loaned Out",
       "playerCategory_1": "Homegrown",
       "playerCategory_2": null,
       "isDP": false,
@@ -67722,7 +67870,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ziifqhk6ie5fdawjyrgo",
       "slug": "anisse-saidi",
-      "lastUpdated": "2026-06-03T16:01:08.903Z"
+      "lastUpdated": "2026-06-22T14:03:32.214Z"
     },
     {
       "sportecId": "MLS-OBJ-000583",
