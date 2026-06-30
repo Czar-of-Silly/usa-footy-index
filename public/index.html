@@ -1892,7 +1892,7 @@ function MLSAnalytics(){
           </div>}
 
           <TableWrap><div>
-            <div style={{display:"grid",gridTemplateColumns:tbl,padding:isMobile?"8px 10px":"10px 14px",background:T.card,fontSize:isMobile?9:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`1px solid ${T.border}`,fontFamily:T.sans,textTransform:"uppercase"}}>
+            <div style={{display:"grid",gridTemplateColumns:tbl,padding:isMobile?"8px 10px":"10px 14px",background:T.card,fontSize:isMobile?9:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}>
               <div style={{textAlign:"center"}}>#</div><div>Player</div>
               <ColHead label="Grd" sortKey="overall" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
               <ColHead label="Age" sortKey="age" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
@@ -1905,19 +1905,19 @@ function MLSAnalytics(){
               {!isMobile&&<ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}
               <ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
             </div>
-            {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
+            {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,alignItems:"center",padding:isMobile?"12px 10px":"16px 14px",minHeight:isMobile?44:56,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
               <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0,flex:1}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div>{!isMobile&&p.matchLog?.length>=2&&<MiniSparkline matchLog={p.matchLog} w={48} h={16}/>}</div>
-              <div style={{textAlign:"center"}}><Badge grade={p.overall} rated={p.rated} size={isMobile?"sm":"md"}/></div>
+              <div style={{textAlign:"center"}}>{p.rated===false||p.overall==null?<span style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.textMute}}>NR</span>:<span style={{display:"inline-flex",flexDirection:"column",alignItems:"center"}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:isMobile?20:28,color:T.ink,lineHeight:1,letterSpacing:-.5}}>{Math.round(p.overall)}</span><span style={{width:isMobile?20:26,height:3,background:gc(p.overall),marginTop:4,display:"block"}}></span></span>}</div>
               <div style={{fontSize:isMobile?11:13,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono,fontWeight:500}}>{p.age||"—"}</div>
-              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.goals,20),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.goals}</div>
-              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.assists,15),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.assists}</div>
+              <div style={{fontFamily:T.mono,fontWeight:500,fontSize:isMobile?12:14,color:T.textDim,textAlign:"center"}}>{p.goals}</div>
+              <div style={{fontFamily:T.mono,fontWeight:500,fontSize:isMobile?12:14,color:T.textDim,textAlign:"center"}}>{p.assists}</div>
               {!isMobile&&<div style={{fontSize:12,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.xg90}</div>}
-              {!isMobile&&<div style={{fontSize:14,color:T.textDim,fontFamily:T.mono,background:hm(+p.passComp,100),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.passComp}%</div>}
-              {!isMobile&&<div style={{fontSize:15,color:T.ink,fontWeight:600,background:hm(p.clearances,40),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{sv(p.clearances)}</div>}
+              {!isMobile&&<div style={{fontSize:14,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.passComp}%</div>}
+              {!isMobile&&<div style={{fontSize:14,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{sv(p.clearances)}</div>}
               {!isMobile&&<div style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{p.shots!=null?`${p.shots}/${p.shotsOnTarget}`:"—"}</div>}
               {!isMobile&&<div style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{sv(p.fouls)}</div>}
-              <div style={{fontSize:isMobile?11:14,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,background:hm(Math.abs(+p.totalGA),5),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>
+              <div style={{fontSize:isMobile?11:14,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,textAlign:"center"}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>
             </div>)}
           </div></TableWrap>
         </div>}
