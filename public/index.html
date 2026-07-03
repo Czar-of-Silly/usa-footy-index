@@ -534,13 +534,20 @@ function SeasonSparkline({seasons,width=180,height=60}){
 
 // Tiny inline SVG sparkline for table rows (no Recharts overhead)
 function MiniSpark({data,width=60,height=20,color}){
-  if(!data||data.length<2)return null;
+  if(!data||data.length<2)return <span style={{fontFamily:T.mono,fontSize:10,color:T.textMute}}>—</span>;
   const vals=data.map(d=>d.grade);
-  const mn=Math.min(...vals)-3,mx=Math.max(...vals)+3,range=mx-mn||1;
-  const pts=vals.map((v,i)=>`${(i/(vals.length-1))*width},${height-((v-mn)/range)*height}`).join(" ");
+  const innerW=width-6,innerH=height-6;
+  const rawMn=Math.min(...vals),rawMx=Math.max(...vals);
+  const mid=(rawMn+rawMx)/2,span=Math.max(rawMx-rawMn,14);
+  const mn=mid-span/2-2,range=span+4;
+  const X=i=>2+(i/(vals.length-1))*innerW;
+  const Y=v=>3+innerH-((v-mn)/range)*innerH;
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+  const pts=vals.map((v,i)=>`${X(i)},${Y(v)}`).join(" ");
   return <svg width={width} height={height} style={{display:"block"}}>
-    <polyline points={pts} fill="none" stroke={color||T.ink} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".7"/>
-    <circle cx={width} cy={height-((vals[vals.length-1]-mn)/range)*height} r="2" fill={color||T.ink}/>
+    <line x1={2} y1={Y(avg)} x2={2+innerW} y2={Y(avg)} stroke={T.border} strokeWidth="1" strokeDasharray="2 3"/>
+    <polyline points={pts} fill="none" stroke={T.ink} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx={X(vals.length-1)} cy={Y(vals[vals.length-1])} r="2.5" fill={color||T.ink}/>
   </svg>;
 }
 
@@ -2126,7 +2133,7 @@ function MLSAnalytics(){
                   </div>
                 </div>
                 <div style={{textAlign:"center",fontFamily:T.mono,fontWeight:700,fontSize:isMobile?12:14,color:formColor(p.formTrend),display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {isMobile?formIcon(p.formTrend):<MiniSpark data={genFormCurve(p)} width={68} height={22} color={gc(p.seasonGrade)}/>}
+                  {isMobile?formIcon(p.formTrend):<span style={{display:"inline-flex",alignItems:"center",gap:6}}><MiniSpark data={genFormCurve(p)} width={68} height={22} color={gc(p.seasonGrade)}/><span style={{fontSize:11}}>{formIcon(p.formTrend)}</span></span>}
                 </div>
                 <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.goals,20),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.goals}</div>
                 <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.assists,15),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.assists}</div>
@@ -3234,7 +3241,7 @@ function MLSAnalytics(){
                     <PosGlyph pos={pe.pos} h={30}/>
                     <div>
                       <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink}}>{pe.pos}s</div>
-                      <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{pe.count} players · {pe.goals} goals · {pe.assists} assists · {pe.tackles} tackles</div>
+                      <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{pe.count} players · {pe.goals} goal{pe.goals===1?"":"s"} · {pe.assists} assist{pe.assists===1?"":"s"}{pe.tackles>0?" · "+pe.tackles+" tackles":""}</div>
                     </div>
                   </div>
                   <Badge grade={pe.avg} size="lg"/>
@@ -3277,7 +3284,7 @@ function MLSAnalytics(){
                     <div style={{display:"flex",height:18,borderRadius:0,overflow:"hidden",marginBottom:6}}>
                       {[{c:T.gold,n:pe.elite},{c:T.green,n:pe.great},{c:T.blue,n:pe.above},{c:T.textDim,n:pe.average},{c:T.red,n:pe.poor}].filter(t=>t.n>0).map((t,i)=>(
                         <div key={i} style={{flex:t.n,background:t.c,opacity:.65,display:"flex",alignItems:"center",justifyContent:"center",minWidth:t.n>0?14:0}}>
-                          <span style={{fontSize:8,fontWeight:700,color:"#fff",textShadow:"0 1px 2px rgba(0,0,0,.3)"}}>{t.n}</span>
+                          
                         </div>
                       ))}
                     </div>
