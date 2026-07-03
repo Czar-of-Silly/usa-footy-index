@@ -214,6 +214,40 @@ async function main() {
   // ═══════════════════════════════════════════════════════════════════════
   output.dataSources.push("MLS Official (Opta)");
 
+  // ═══ [ESPN DEF] Season defensive stats (tackles/interceptions) ═══════
+  // ESPN's core API carries full Opta defensive stats per athlete; the MLS
+  // stats feed has no outfield tackle/interception counts (aerials only).
+  console.log("  [ESPN DEF] Season tackles/interceptions (core API)...");
+  const espnDef={};
+  {
+    const withId=roster.filter(r=>r.espnId);
+    let done=0,found=0;
+    const CORE="https://sports.core.api.espn.com/v2/sports/soccer/leagues/usa.1/seasons/"+CY+"/types";
+    async function fetchDef(r){
+      for(const st of[1,2]){
+        try{
+          const d=await get(CORE+"/"+st+"/athletes/"+r.espnId+"/statistics");
+          const cats=d?.splits?.categories||[];
+          const def=cats.find(c=>c.name==="defensive");
+          if(!def)continue;
+          const g=(nm)=>{const s=(def.stats||[]).find(x=>x.name===nm);return s?(s.value||0):0;};
+          const tackles=g("totalTackles");
+          espnDef[r.name]={tackles,tacklesWon:g("effectiveTackles"),interceptions:g("interceptions"),blockedShots:g("blockedShots")};
+          if(tackles>0||espnDef[r.name].interceptions>0)found++;
+          return;
+        }catch{}
+      }
+    }
+    const CONC=8;
+    for(let i=0;i<withId.length;i+=CONC){
+      await Promise.all(withId.slice(i,i+CONC).map(fetchDef));
+      done=Math.min(i+CONC,withId.length);
+      if(done%80<CONC)process.stdout.write("          "+done+"/"+withId.length+"\r");
+      await sleep(80);
+    }
+    console.log("          ✅ defensive stats for "+Object.keys(espnDef).length+" players ("+found+" with tackles/interceptions)");
+  }
+
   // ═══ [MLS STATS] Official MLS (Opta) player stats — replaces Sofascore ════
   // Loaded from stats-cache.json (run `node fetch-mls-stats.js` first).
   // Keyed by sportecId, so the merge joins by ID, not fuzzy name matching.
@@ -317,6 +351,7 @@ async function main() {
     // [MLS STATS] official Opta stats, joined by sportecId (no name matching)
     const sid = rp._mls && rp._mls.sportecId ? rp._mls.sportecId : null;
     const ms = (sid && mlsStats[sid]) || {};
+    const ed = find(rp.name, espnDef) || {};   // [ESPN DEF] tackles/interceptions
     const hasMLS = !!(ms.normalized_player_minutes);
 
     const hasESPN = (e.games || 0) > 0;
@@ -377,8 +412,10 @@ async function main() {
       gi: Math.round((ga.receiving || 0) * 100) / 100,
       totalGA: Math.round((ga.total || 0) * 100) / 100,
       // ── [MLS STATS] Official MLS (Opta), joined by sportecId ──
-      tk: 0,                                                 // no outfield tackle count in feed
-      intc: ms.defensive_clearances || 0,                   // defensive-volume proxy (clearances)
+      tk: ed.tackles || 0,                                   // [ESPN DEF] real Opta tackles via ESPN
+      tkw: ed.tacklesWon || 0,                               // [ESPN DEF] effective tackles
+      blk: ed.blockedShots || 0,                             // [ESPN DEF] blocked shots
+      intc: ed.interceptions || 0,                          // [ESPN DEF] real interceptions (clearances remain on clr)
       arl: ms.tackling_games_air_won || 0,                  // aerial duels won
       arlLost: ms.tackling_games_air_lost || 0,
       arlPct: (ms.tackling_games_air_sum > 0) ? Math.round(100 * (ms.tackling_games_air_won || 0) / ms.tackling_games_air_sum) : 0,
