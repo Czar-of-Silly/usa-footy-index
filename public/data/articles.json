@@ -1,6 +1,38 @@
 [
  {
   "kicker": "Golden Boot · Race",
+  "headline": "Cuypers holds one-goal edge at the top",
+  "dek": "The Chicago striker leads at 13, but Musa and Messi are a single finish behind with plenty of season remaining.",
+  "body": "Hugo Cuypers sits at 13 goals for Chicago Fire FC, one clear of Petar Musa (FC Dallas) and Leo Messi (Inter Miami CF), who are level on 12. Messi complicates the picture further by ranking second in assists with seven, making him the race's most versatile threat. Cuypers holds the advantage for now, but the margin is thin enough that a quiet week from Chicago could hand the lead to either challenger.",
+  "created": "2026-07-05T12:17:51.417Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Stat Race · Assists",
+  "headline": "Son leads assists; Messi and Dreyer give chase",
+  "dek": "LAFC's Son Heung-Min sits on eight assists, one ahead of a pair of players separated by nothing at all.",
+  "body": "Son Heung-Min has distributed eight assists for LAFC, the most in the league at this stage. Behind him, Leo Messi of Inter Miami CF and Anders Dreyer of San Diego FC are deadlocked on seven. San Diego's expansion-season production through Dreyer is a notable data point. Son needs only to maintain his current rate to hold the lead, but the gap is narrow enough that one decisive performance changes the order.",
+  "created": "2026-07-05T12:17:51.417Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "xG · Finishing Splits",
+  "headline": "Ingvartsen and White sit at opposite extremes",
+  "dek": "San Diego's Ingvartsen is outscoring his xG by 4.3 goals; Vancouver's White is leaving 2.4 on the table.",
+  "body": "Marcus Ingvartsen leads all overperformers with 11 goals against an xG of 6.8, a positive difference of plus-4.3. Houston's Guilherme is close behind at plus-4.2 on just 3.8 expected goals. At the other end, Brian White of Vancouver has scored 10 but carries an xG of 12.4, a gap of minus-2.4. Minnesota's Kelvin Yeboah trails his model by minus-1.8. Both underperformers remain productive in volume terms, which softens the concern.",
+  "created": "2026-07-05T12:17:51.417Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Standings · Both Conferences",
+  "headline": "Nashville defense sets the standard; San Jose leads West",
+  "dek": "Nashville's 11 goals allowed is the best defensive record in MLS, while Inter Miami's attack has produced 39 goals, most in the league.",
+  "body": "Nashville SC tops the East on 33 points with a 10-3-1 record and have conceded only 11 goals across 14 matches, the stingiest mark in the league. San Jose Earthquakes lead the West on 32 points at 10-2-3 and have scored 34 times. Inter Miami CF own the most potent attack in MLS with 39 goals for, though their defensive numbers do not appear in the top marks. The two conference leaders are separated by a single point.",
+  "created": "2026-07-05T12:17:51.417Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Golden Boot · Race",
   "headline": "Cuypers leads, but Musa and Messi breathe down his neck",
   "dek": "One goal separates Chicago's Belgian striker from a two-man pack at 12 apiece.",
   "body": "Hugo Cuypers sits atop the MLS scoring chart with 13 goals for Chicago Fire FC. Petar Musa of FC Dallas and Inter Miami's Leo Messi share second place at 12. Messi also carries a parallel threat in the assists column, where he trails only LAFC's Son Heung-Min, 8 to 7. Anders Dreyer of San Diego FC matches Messi's seven helpers. The golden boot picture will tighten fast if Cuypers hits a dry spell.",
