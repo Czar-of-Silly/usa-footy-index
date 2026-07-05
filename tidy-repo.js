@@ -7,8 +7,8 @@
 //   attic/             <- stray file copies, screenshots, scratch notes
 //
 // Deliberately NOT touched: weekly-newsletter.js + its workflow (your
-// in-progress work), sofa-proxy/ (looks like a real sub-project -- say the
-// word if it's dead and I'll archive it too), and everything the site needs.
+// in-progress work) and everything the site needs. sofa-proxy/ is archived
+// too -- retired now that tackles come straight from ESPN's core API.
 //
 // Run from repo root: node tidy-repo.js
 // Then review with `git status`, and commit when it looks right.
@@ -21,7 +21,7 @@ const moves={
     "apply-usfi-update.js","fix-headshots.js","test-apifootball.js",
     "test-sofa-via-scraperapi.js","sofa-proxy-worker.js",
     "check-blocks.js","check-data.js","check-sofa.js","detect-name-mismatches.js",
-    "dump-grading.js"
+    "dump-grading.js","sofa-proxy"
   ],
   "attic":[
     "Untitled.txt","2026-06-22 22_54_59-Greenshot.png",
