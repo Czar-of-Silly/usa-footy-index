@@ -110,7 +110,7 @@ async function main() {
   console.log(`          ✅ ${rc} players`);
 
   console.log("  [ESPN] Boxscores...");
-  const espn={}; const gameIds=[]; const now=new Date();
+  const espn={}; const espnIdByName={}; const gameIds=[]; const now=new Date();
   for(let d=new Date(CY,1,1);d<now;d.setDate(d.getDate()+14)){
     const f=d.toISOString().slice(0,10).replace(/-/g,""),td=new Date(d);td.setDate(td.getDate()+14);
     const t=(td>now?now:td).toISOString().slice(0,10).replace(/-/g,"");
@@ -123,6 +123,7 @@ async function main() {
     if(Array.isArray(d?.rosters))for(const tr of d.rosters)for(const e of(tr?.roster||[])){
       const n=e?.athlete?.displayName;if(!n||!e.stats)continue;
       if(!espn[n])espn[n]={mins:0,goals:0,assists:0,shots:0,sot:0,fouls:0,yc:0,rc:0,saves:0,games:0,matchLog:[]};
+        if(e?.athlete?.id&&!espnIdByName[n])espnIdByName[n]=String(e.athlete.id);
       espn[n].games++;espn[n].mins+=(e.starter?90:e.subbedIn?30:90);
       for(const s of e.stats){const v=s.value||0;switch(s.name){case"totalGoals":espn[n].goals+=v;break;case"goalAssists":espn[n].assists+=v;break;case"totalShots":espn[n].shots+=v;break;case"shotsOnTarget":espn[n].sot+=v;break;case"foulsCommitted":espn[n].fouls+=v;break;case"yellowCards":espn[n].yc+=v;break;case"redCards":espn[n].rc+=v;break;case"saves":espn[n].saves+=v;break;}}{const _c=d?.header?.competitions?.[0],_cs=_c?.competitors||[];let _hs=0,_as=0;for(const _q of _cs){if(_q.homeAway==="home")_hs=+(_q.score||0);else _as=+(_q.score||0);}const _gs={};for(const _s of e.stats)_gs[_s.name]=_s.value||0;const _other=d.rosters.find(x=>x!==tr);if(espn[n].matchLog)espn[n].matchLog.push({date:_c?.date||null,opp:_other?.team?.abbreviation||"",ha:tr?.homeAway==="home"?"H":"A",mins:(e.starter?90:e.subbedIn?30:90),g:_gs.totalGoals||0,a:_gs.goalAssists||0,sh:_gs.totalShots||0,sot:_gs.shotsOnTarget||0,fl:_gs.foulsCommitted||0,yc:_gs.yellowCards||0,rc:_gs.redCards||0,hs:_hs,as:_as});}
     }}catch{}bd++;if(bd%10===0)process.stdout.write(`          ${bd}/${gameIds.length}\r`);await sleep(120);
@@ -220,7 +221,10 @@ async function main() {
   console.log("  [ESPN DEF] Season tackles/interceptions (core API)...");
   const espnDef={};
   {
-    const withId=roster.filter(r=>r.espnId);
+    const idByName={};
+    for(const r of roster)if(r.espnId&&!idByName[r.name])idByName[r.name]=String(r.espnId);
+    for(const[n,id]of Object.entries(espnIdByName))if(!idByName[n])idByName[n]=id;
+    const withId=Object.entries(idByName).map(([name,espnId])=>({name,espnId}));
     let done=0,found=0;
     const CORE="https://sports.core.api.espn.com/v2/sports/soccer/leagues/usa.1/seasons/"+CY+"/types";
     async function fetchDef(r){
@@ -246,6 +250,14 @@ async function main() {
       await sleep(80);
     }
     console.log("          ✅ defensive stats for "+Object.keys(espnDef).length+" players ("+found+" with tackles/interceptions)");
+    {
+      const tokenOwner={};
+      for(const full of Object.keys(espnDef))for(const tok of full.split(" ")){
+        if(tok.length<4)continue;
+        tokenOwner[tok]=(tok in tokenOwner)?null:full; // null = ambiguous
+      }
+      for(const[tok,full]of Object.entries(tokenOwner))if(full&&!espnDef[tok])espnDef[tok]=espnDef[full];
+    }
   }
 
   // ═══ [MLS STATS] Official MLS (Opta) player stats — replaces Sofascore ════
