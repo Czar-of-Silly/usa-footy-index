@@ -62,6 +62,15 @@ jobs:
       - name: Fetch market values (Transfermarkt dataset, weekly refresh)
         run: node fetch-market-values.js || echo "MV refresh skipped this run"
 
+      # Front-page articles: Claude drafts quick hits from the fresh cache.
+      # Skips silently when the ANTHROPIC_API_KEY secret is missing; never
+      # blocks the data update on an API hiccup.
+      - name: Generate front-page articles
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node generate-articles.js || echo "articles skipped this run"
+        timeout-minutes: 5
+
       - name: Auto commit and push
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
