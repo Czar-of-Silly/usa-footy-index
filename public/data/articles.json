@@ -1,0 +1,34 @@
+[
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Cuypers leads, but Musa and Messi breathe down his neck",
+  "dek": "One goal separates Chicago's Belgian striker from a two-man pack at 12 apiece.",
+  "body": "Hugo Cuypers sits atop the MLS scoring chart with 13 goals for Chicago Fire FC. Petar Musa of FC Dallas and Inter Miami's Leo Messi share second place at 12. Messi also carries a parallel threat in the assists column, where he trails only LAFC's Son Heung-Min, 8 to 7. Anders Dreyer of San Diego FC matches Messi's seven helpers. The golden boot picture will tighten fast if Cuypers hits a dry spell.",
+  "created": "2026-07-05T05:03:02.791Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Finishing · xG Watch",
+  "headline": "Ingvartsen and Guilherme beating the numbers by wide margins",
+  "dek": "Two attackers are scoring far above what the model expects, while White and Yeboah owe the ledger goals.",
+  "body": "Marcus Ingvartsen of San Diego FC leads the league's xG overperformers with 11 goals against an expected 6.8, a gap of plus-4.3. Houston's Guilherme sits just behind at plus-4.2, having converted 8 goals from chances worth only 3.8. On the other side, Vancouver's Brian White has 10 goals but an xG of 12.4, leaving him minus-2.4. Minnesota's Kelvin Yeboah trails his xG by 1.8. Regression pressure on both underperformers is real.",
+  "created": "2026-07-05T05:03:02.791Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Tackles · Defensive Workload",
+  "headline": "Cubas at 52 tackles, a clear margin over the field",
+  "dek": "Vancouver's holding midfielder is setting a punishing defensive pace midseason.",
+  "body": "Andrés Cubas of the Vancouver Whitecaps leads all MLS players with 52 tackles recorded. Inter Miami's Yannick Bright is second at 47, and D.C. United's João Peglow sits third at 45. The five-tackle gap between Cubas and Bright is notable at this stage of the campaign. All three players operate in central or defensive-midfield roles, reflecting where teams are investing their pressing and recovery work this season.",
+  "created": "2026-07-05T05:03:02.791Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Standings · East and West",
+  "headline": "Nashville and San Jose hold conference leads on 33 and 32 pts",
+  "dek": "Nashville's defense is the stingiest in MLS; Miami's attack has no equal in goals scored.",
+  "body": "Nashville SC lead the Eastern Conference with 33 points from a 10-3-1 record, conceding just 11 goals, the best defensive return in the league. San Jose Earthquakes top the West on 32 points at 10-2-3, though their 15 goals allowed show more vulnerability at the back. Inter Miami CF hold the league's most productive attack with 39 goals scored, nine more than San Jose's conference-leading total of 34.",
+  "created": "2026-07-05T05:03:02.791Z",
+  "status": "pending"
+ }
+]
