@@ -71,8 +71,17 @@ jobs:
         run: node generate-articles.js || echo "articles skipped this run"
         timeout-minutes: 5
 
-      - name: Auto commit and push
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Auto-update MLS data (rosters + Opta stats + salaries)"
-          file_pattern: "public/data/*.json"
+      # Race-safe commit: rebase on top of anything pushed during the run,
+      # then push. Skips cleanly when the data didn't change.
+      - name: Commit and push (rebase-safe)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/*.json
+          if git diff --cached --quiet; then
+            echo "No data changes this run."
+            exit 0
+          fi
+          git commit -m "Auto-update MLS data (rosters + Opta stats + salaries)"
+          git pull --rebase origin main
+          git push origin main
