@@ -1368,19 +1368,19 @@ function MLSAnalytics(){
   // Season leaders
   const leaders=useMemo(()=>{if(!players.length)return[];
     const cats=[
-      {k:"goals",l:"Golden Boot",icon:"⚽",unit:"",desc:"Most goals scored"},
-      {k:"assists",l:"Playmaker",icon:"🎯",unit:"",desc:"Most assists"},
-      {k:"overall",l:"Best Overall",icon:"🏆",unit:"",desc:"Highest overall grade"},
-      {k:"officialXg",l:"xG Leader",icon:"📊",unit:"",desc:"Highest official Opta xG"},
-      {k:"keyPasses",l:"Key Passer",icon:"🔑",unit:"",desc:"Most key passes"},
-      {k:"chances",l:"Chance Creator",icon:"✨",unit:"",desc:"Most chances involved in"},
-      {k:"clearances",l:"Clearances",icon:"🧹",unit:"",desc:"Most defensive clearances"},
-      {k:"aerialPct",l:"Aerial King",icon:"🦅",unit:"%",desc:"Best aerial duel win % · min 15 duels",minField:"aerialAtt",minVal:15},
-      {k:"distance",l:"Engine",icon:"🏃",unit:"km",desc:"Most distance covered"},
-      {k:"pressures",l:"Presser",icon:"⚡",unit:"",desc:"Most pressures applied"},
-      {k:"nutmegs",l:"Nutmegs",icon:"🥜",unit:"",desc:"Most nutmegs"},
-      {k:"saves",l:"Shot Stopper",icon:"🧤",unit:"",desc:"Most saves · Goalkeepers only"},
-      {k:"keeperEff",l:"Save Quality",icon:"🥅",unit:"",desc:"Saves above expected (xSaves) · Goalkeepers"},
+      {k:"goals",l:"Golden Boot",unit:"",desc:"Most goals scored"},
+      {k:"assists",l:"Playmaker",unit:"",desc:"Most assists"},
+      {k:"overall",l:"Best Overall",unit:"",desc:"Highest overall grade"},
+      {k:"officialXg",l:"xG Leader",unit:"",desc:"Highest official Opta xG"},
+      {k:"keyPasses",l:"Key Passer",unit:"",desc:"Most key passes"},
+      {k:"chances",l:"Chance Creator",unit:"",desc:"Most chances involved in"},
+      {k:"clearances",l:"Clearances",unit:"",desc:"Most defensive clearances"},
+      {k:"aerialPct",l:"Aerial King",unit:"%",desc:"Best aerial duel win % · min 15 duels",minField:"aerialAtt",minVal:15},
+      {k:"distance",l:"Engine",unit:"km",desc:"Most distance covered"},
+      {k:"pressures",l:"Presser",unit:"",desc:"Most pressures applied"},
+      {k:"nutmegs",l:"Nutmegs",unit:"",desc:"Most nutmegs"},
+      {k:"saves",l:"Shot Stopper",unit:"",desc:"Most saves · Goalkeepers only"},
+      {k:"keeperEff",l:"Save Quality",unit:"",desc:"Saves above expected (xSaves) · Goalkeepers"},
     ];
     return cats.map(c=>{let pool=[...players].filter(p=>parseFloat(p[c.k])>0);if(c.minField)pool=pool.filter(p=>(parseFloat(p[c.minField])||0)>=c.minVal);const sorted=pool.sort((a,b)=>(parseFloat(b[c.k])||0)-(parseFloat(a[c.k])||0));return{...c,top:sorted.slice(0,5)};}).filter(c=>c.top.length>0);
   },[players]);
@@ -1949,7 +1949,6 @@ function MLSAnalytics(){
           const formIcon=(t)=>t==="up"?"▲":t==="down"?"▼":"—";
           const formColor=(t)=>t==="up"?T.green:t==="down"?T.red:T.textMute;
           const profileColor=(p)=>p==="Offensive"?T.accent:p==="Defensive"?T.blue:T.textDim;
-          const profileIcon=(p)=>p==="Offensive"?"⚔":"Defensive"?"🛡":"⚖";
 
           // Top 3 season rated
           const top3=srFiltered.slice(0,3);
@@ -3092,11 +3091,11 @@ function MLSAnalytics(){
                 <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Data-driven predictions based on composite grades, production, and minutes played. Updated daily.</div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:16}}>
-                <RaceCard title="MVP Race" icon="🏆" candidates={mvpCandidates} metricLabel="MVP Score" metricFn={p=>p.mvpScore} gradeFn={p=>p.overall}/>
-                <RaceCard title="Golden Boot" icon="👟" candidates={bootRace} metricLabel="Goals" metricFn={p=>`${p.goals}G ${p.assists}A`} gradeFn={p=>p.overall}/>
-                <RaceCard title="Defender of the Year" icon="🛡" candidates={doyRace} metricLabel="DEF Grade" metricFn={p=>p.defense} gradeFn={p=>p.defense}/>
-                <RaceCard title="Young Player" icon="⭐" candidates={youngRace} metricLabel="Grade" metricFn={p=>p.overall} gradeFn={p=>p.overall}/>
-                <RaceCard title="GK of the Year" icon="🧤" candidates={gkRace} metricLabel="GK Grade" metricFn={p=>p.overall} gradeFn={p=>p.overall}/>
+                <RaceCard title="MVP Race" candidates={mvpCandidates} metricLabel="MVP Score" metricFn={p=>p.mvpScore} gradeFn={p=>p.overall}/>
+                <RaceCard title="Golden Boot" candidates={bootRace} metricLabel="Goals" metricFn={p=>`${p.goals}G ${p.assists}A`} gradeFn={p=>p.overall}/>
+                <RaceCard title="Defender of the Year" candidates={doyRace} metricLabel="DEF Grade" metricFn={p=>p.defense} gradeFn={p=>p.defense}/>
+                <RaceCard title="Young Player" candidates={youngRace} metricLabel="Grade" metricFn={p=>p.overall} gradeFn={p=>p.overall}/>
+                <RaceCard title="GK of the Year" candidates={gkRace} metricLabel="GK Grade" metricFn={p=>p.overall} gradeFn={p=>p.overall}/>
               </div>
             </div>;
           })()}
@@ -3209,7 +3208,6 @@ function MLSAnalytics(){
             const avgCar=Math.round(d.players.reduce((s,p)=>s+p.carrying,0)/n);
             return{pos,count:d.players.length,avg,top,bot,avgAge,avgMV,top5,topScorers,goals:d.goals,assists:d.assists,tackles:d.tackles,elite,great,above,average,poor,grades:d.grades,avgAtt,avgPas,avgDef,avgCre,avgCar};
           });
-          const posAbbr={Forward:"FWD",Midfielder:"MID",Defender:"DEF",Goalkeeper:"GK"};
           const totalPlayers=players.length;
 
           return <div style={{animation:"fadeUp .4s ease"}}>
@@ -3592,8 +3590,8 @@ function MLSAnalytics(){
               {row("Internationals"+(c.intlMax!==K.MAX_INTERNATIONAL?" (of "+c.intlMax+" slots)":""),c.before.intl,c.after.intl,c.after.intl>(c.intlMax!=null?c.intlMax:K.MAX_INTERNATIONAL))}
               {budgetBar(c.after.budgetCharge,K.SENIOR_SALARY_BUDGET)}
               <div style={{display:"flex",justifyContent:"space-between",fontSize:11,padding:"3px 0",color:T.textDim}}><span style={{fontFamily:T.sans}}>GAM available</span><span style={{fontFamily:T.mono}}>{TM_GAM[name]!=null?"$"+(TM_GAM[name]/1e6).toFixed(2)+"M":"\u2014"}</span></div>
-              {c.violations.map((v,i)=><div key={"v"+i} style={{fontSize:10.5,color:T.red,marginTop:7,lineHeight:1.45,display:"flex",gap:5}}><span>⛔</span><span>{v}</span></div>)}
-              {c.warnings.map((w,i)=><div key={"w"+i} style={{fontSize:10.5,color:T.gold,marginTop:5,lineHeight:1.45,display:"flex",gap:5}}><span>⚠</span><span>{w}</span></div>)}
+              {c.violations.map((v,i)=><div key={"v"+i} style={{fontSize:10.5,color:T.red,marginTop:7,lineHeight:1.45,display:"flex",gap:5}}><span style={{width:8,height:8,background:T.red,display:"inline-block",flexShrink:0,marginTop:3}}></span><span>{v}</span></div>)}
+              {c.warnings.map((w,i)=><div key={"w"+i} style={{fontSize:10.5,color:T.gold,marginTop:5,lineHeight:1.45,display:"flex",gap:5}}><span style={{width:8,height:8,background:T.gold,display:"inline-block",flexShrink:0,marginTop:3}}></span><span>{w}</span></div>)}
             </div>;
           };
           return <div style={{animation:"fadeUp .4s ease"}}>
@@ -3636,9 +3634,9 @@ function MLSAnalytics(){
                     const stepBtn=(on,txt)=><button onClick={on} style={{width:18,height:18,lineHeight:"15px",padding:0,border:`1px solid ${T.border}`,borderRadius:0,background:T.surface,color:T.ink,cursor:"pointer",fontSize:11,fontFamily:T.mono}}>{txt}</button>;
                     return <div key={i} style={{flex:1,minWidth:240,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",justifyContent:i?"flex-end":"flex-start"}}>
                       <span style={{fontSize:9,color:T.textMute,fontWeight:700,letterSpacing:1,textTransform:"uppercase"}}>{nm} adds</span>
-                      <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontFamily:T.sans,color:T.textDim}}>💰<input type="number" min="0" step="50" value={ast.gam?ast.gam/1000:""} placeholder="0" onChange={e=>setAst({...ast,gam:Math.max(0,(+e.target.value||0))*1000})} style={{width:62,padding:"3px 6px",border:`1px solid ${T.border}`,borderRadius:0,background:T.surface,color:T.ink,fontFamily:T.mono,fontSize:11}}/>$K GAM</span>
-                      <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontFamily:T.sans,color:T.textDim}}>🌍 {stepBtn(()=>setAst({...ast,intl:Math.max(0,(ast.intl||0)-1)}),"−")}<b style={{fontFamily:T.mono,minWidth:10,textAlign:"center"}}>{ast.intl||0}</b>{stepBtn(()=>setAst({...ast,intl:Math.min(3,(ast.intl||0)+1)}),"+")} slot</span>
-                      <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontFamily:T.sans,color:T.textDim}}>🎯 {stepBtn(()=>setAst({...ast,picks:Math.max(0,(ast.picks||0)-1)}),"−")}<b style={{fontFamily:T.mono,minWidth:10,textAlign:"center"}}>{ast.picks||0}</b>{stepBtn(()=>setAst({...ast,picks:Math.min(4,(ast.picks||0)+1)}),"+")} pick</span>
+                      <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontFamily:T.sans,color:T.textDim}}><span style={{fontFamily:T.mono,fontSize:8,fontWeight:700,letterSpacing:.8}}>GAM</span><input type="number" min="0" step="50" value={ast.gam?ast.gam/1000:""} placeholder="0" onChange={e=>setAst({...ast,gam:Math.max(0,(+e.target.value||0))*1000})} style={{width:62,padding:"3px 6px",border:`1px solid ${T.border}`,borderRadius:0,background:T.surface,color:T.ink,fontFamily:T.mono,fontSize:11}}/>$K GAM</span>
+                      <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontFamily:T.sans,color:T.textDim}}><span style={{fontFamily:T.mono,fontSize:8,fontWeight:700,letterSpacing:.8}}>INTL</span> {stepBtn(()=>setAst({...ast,intl:Math.max(0,(ast.intl||0)-1)}),"−")}<b style={{fontFamily:T.mono,minWidth:10,textAlign:"center"}}>{ast.intl||0}</b>{stepBtn(()=>setAst({...ast,intl:Math.min(3,(ast.intl||0)+1)}),"+")} slot</span>
+                      <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontFamily:T.sans,color:T.textDim}}><span style={{fontFamily:T.mono,fontSize:8,fontWeight:700,letterSpacing:.8}}>PICKS</span> {stepBtn(()=>setAst({...ast,picks:Math.max(0,(ast.picks||0)-1)}),"−")}<b style={{fontFamily:T.mono,minWidth:10,textAlign:"center"}}>{ast.picks||0}</b>{stepBtn(()=>setAst({...ast,picks:Math.min(4,(ast.picks||0)+1)}),"+")} pick</span>
                     </div>;})}
                 </div>
               </div>
