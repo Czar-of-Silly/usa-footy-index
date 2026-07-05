@@ -154,7 +154,7 @@ function validate(a) {
   const nameLike = (headline + " " + body).match(/\b[A-ZÀ-Þ][a-zà-þ'’.-]+ [A-ZÀ-Þ][a-zà-þ'’.-]+\b/g) || [];
   for (const nm of nameLike) {
     const toks = nm.split(" ");
-    const tokKnown = t => ALLOW.has(t.replace(/[.,'’]/g, "")) || [...factNames].some(f => f.includes(t));
+    const tokKnown = raw => { const t = raw.replace(/['’]s\b/, "").replace(/[.,'’]/g, ""); return ALLOW.has(t) || [...factNames].some(f => f.includes(t)); };
     if (!toks.every(tokKnown)) problems.push("unknown name: " + nm);
   }
   return { article: { kicker: stripDashes(a.kicker).slice(0, 40), headline, dek: dek.slice(0, 150), body }, problems };
