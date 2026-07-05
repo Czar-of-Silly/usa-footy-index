@@ -1,290 +1,172 @@
 #!/usr/bin/env node
 /**
- * USA Footy Index — Weekly Newsletter Generator
- * Reads mls-cache.json, computes TOTW/movers/rankings,
- * calls Claude API for narrative blurbs, outputs newsletter HTML.
- * 
- * Usage: ANTHROPIC_API_KEY=sk-... node weekly-newsletter.js
- * Or set the key in GitHub Actions secrets.
+ * USA Footy Index — Weekly Newsletter Generator (season-stats rebuild)
+ *
+ * The previous version was built entirely on matchLog (TOTW, movers) and
+ * completed matches (recent results). The pipeline no longer produces either,
+ * so this rebuild leads with the data that IS populated: the table and season
+ * stat leaders. It degrades UP automatically: if matchLog reappears in the
+ * cache, the Team of the Week block is added back on top.
+ *
+ * Sends nothing. Writes public/data/newsletter-latest.html for you to paste
+ * into Beehiiv (or wire to Beehiiv's API later).
+ *
+ * Usage:
+ *   ANTHROPIC_API_KEY=sk-... node weekly-newsletter.js
+ *   ARTICLES_MOCK=1 node weekly-newsletter.js   (offline test, skips API)
  */
 
 const fs = require("fs");
 const path = require("path");
 
-// ── CONFIG ──────────────────────────────────────────────────────────────
-const CACHE_PATH_1 = path.join(__dirname, "public", "data", "mls-cache.json");
-const CACHE_PATH_2 = path.join(__dirname, "data", "mls-cache.json");
-const CACHE_PATH = fs.existsSync(CACHE_PATH_1) ? CACHE_PATH_1 : CACHE_PATH_2;
-const OUTPUT_PATH = path.join(__dirname, "public", "data", "newsletter-latest.html");
-const CLAUDE_MODEL = "claude-sonnet-4-20250514";
+const CACHE_1 = path.join(__dirname, "public", "data", "mls-cache.json");
+const CACHE_2 = path.join(__dirname, "data", "mls-cache.json");
+const CACHE_PATH = fs.existsSync(CACHE_1) ? CACHE_1 : CACHE_2;
+const OUT_PATH = path.join(__dirname, "public", "data", "newsletter-latest.html");
+const MODEL = "claude-sonnet-4-6";
 const API_KEY = process.env.ANTHROPIC_API_KEY || "";
+const MOCK = !!process.env.ARTICLES_MOCK;
 
 // ── HELPERS ─────────────────────────────────────────────────────────────
-function rateGame(m) {
-  let r = 55;
-  r += (m.g || 0) * 12;
-  r += (m.a || 0) * 8;
-  r += (m.sot || 0) * 2;
-  r += (m.sh || 0) * 0.5;
-  r -= (m.fl || 0) * 1;
-  r -= (m.yc || 0) * 3;
-  r -= (m.rc || 0) * 10;
-  r += (m.mins || 0) >= 80 ? 3 : (m.mins || 0) >= 45 ? 2 : 1;
-  return Math.max(42, Math.min(99, Math.round(r)));
+const num = (v) => (typeof v === "number" && !isNaN(v) ? v : 0);
+const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function stripDashes(t) {
+  return t ? t.replace(/\s*[—–]\s*/g, ", ").replace(/,\s*,/g, ",").replace(/\s+([.,;:])/g, "$1").trim() : t;
 }
-
-function gc(g) {
-  if (g >= 85) return "#B68D40";
-  if (g >= 75) return "#2D6A4F";
-  if (g >= 65) return "#264653";
-  if (g >= 55) return "#6B6560";
-  return "#9B2226";
+function gc(g) { return g >= 85 ? "#B68D40" : g >= 75 ? "#2D6A4F" : g >= 65 ? "#264653" : g >= 55 ? "#6B6560" : "#9B2226"; }
+function posCode(p) {
+  const z = String(p || "").toLowerCase();
+  if (z.startsWith("goal")) return "GK";
+  if (z.startsWith("def")) return "DEF";
+  if (z.startsWith("mid")) return "MID";
+  return "FWD";
 }
-
-function gl(g) {
-  if (g >= 85) return "ELITE";
-  if (g >= 75) return "GREAT";
-  if (g >= 65) return "ABOVE AVG";
-  if (g >= 55) return "AVG";
-  return "BELOW AVG";
-}
+const fmtDate = (d) => { try { return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" }); } catch { return ""; } };
 
 async function callClaude(prompt) {
-  if (!API_KEY) {
-    console.log("  ⚠ No ANTHROPIC_API_KEY — skipping AI narrative");
-    return null;
-  }
+  if (MOCK) return null;
+  if (!API_KEY) { console.log("  ⚠ No ANTHROPIC_API_KEY, skipping AI narrative"); return null; }
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }],
-      }),
+      headers: { "Content-Type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
+      body: JSON.stringify({ model: MODEL, max_tokens: 700, messages: [{ role: "user", content: prompt }] }),
     });
     const data = await res.json();
+    if (data.error) { console.log("  ⚠ API error:", data.error.message); return null; }
     return data.content?.[0]?.text || null;
-  } catch (e) {
-    console.log("  ⚠ Claude API error:", e.message);
-    return null;
-  }
+  } catch (e) { console.log("  ⚠ API request failed:", e.message); return null; }
 }
 
 // ── MAIN ────────────────────────────────────────────────────────────────
 async function main() {
-  console.log("\n📰 USA Footy Index — Weekly Newsletter Generator\n");
-
-  if (!fs.existsSync(CACHE_PATH)) {
-    console.log("❌ No cache file found at", CACHE_PATH);
-    process.exit(1);
-  }
+  console.log("\n📰 USA Footy Index, Weekly Newsletter (season-stats build)\n");
+  if (!fs.existsSync(CACHE_PATH)) { console.log("❌ No cache at", CACHE_PATH); process.exit(1); }
 
   const cache = JSON.parse(fs.readFileSync(CACHE_PATH, "utf8"));
-  const players = cache.players || [];
+  const played = (cache.players || []).filter((p) => num(p.m) > 0);
   const standings = cache.standings || [];
   const matches = cache.matches || [];
+  console.log(`  ${played.length} players w/ minutes, ${standings.length} teams, ${matches.length} fixtures`);
 
-  console.log(`  ${players.length} players, ${standings.length} teams, ${matches.length} matches`);
+  // Leaders
+  const byG = [...played].sort((a, b) => num(b.g) - num(a.g)).slice(0, 5);
+  const byA = [...played].sort((a, b) => num(b.as) - num(a.as)).slice(0, 5);
+  const byXG = [...played].sort((a, b) => num(b.xg) - num(a.xg)).slice(0, 5);
+  const gks = played.filter((p) => posCode(p.p) === "GK").sort((a, b) => num(b.sv) - num(a.sv)).slice(0, 3);
 
-  // ── TEAM OF THE WEEK ──────────────────────────────────────────────
-  console.log("\n⚽ Computing Team of the Week...");
-  const allLogs = [];
-  players.forEach((pl) => {
-    (pl.matchLog || []).forEach((m) => {
-      if (!m.date) return;
-      const dateKey = m.date.slice(0, 10);
-      const rating = rateGame(m);
-      allLogs.push({ player: pl, dateKey, rating, ...m });
-    });
-  });
+  // xG performers (season form proxy), min 600 mins
+  const finPool = played.filter((p) => num(p.m) >= 600 && num(p.xg) >= 2).map((p) => ({ p, d: num(p.g) - num(p.xg) }));
+  const over = [...finPool].sort((a, b) => b.d - a.d).slice(0, 3);
+  const under = [...finPool].sort((a, b) => a.d - b.d).slice(0, 3);
 
-  // Group into matchweeks
-  const byDate = {};
-  allLogs.forEach((l) => {
-    if (!byDate[l.dateKey]) byDate[l.dateKey] = [];
-    byDate[l.dateKey].push(l);
-  });
-  const dateKeys = Object.keys(byDate).sort();
-  const weeks = [];
-  let current = [];
-  dateKeys.forEach((dk, i) => {
-    current.push(dk);
-    const next = dateKeys[i + 1];
-    if (!next || new Date(next) - new Date(dk) > 3 * 86400000) {
-      weeks.push({ dates: [...current], logs: current.flatMap((d) => byDate[d]) });
-      current = [];
-    }
-  });
-
-  const latestWeek = weeks[weeks.length - 1];
-  const weekNum = weeks.length;
-
-  // Best at each position
-  const bestAt = (positions) => {
-    const eligible = latestWeek.logs.filter((l) => positions.includes(l.player.p));
-    eligible.sort((a, b) => b.rating - a.rating);
-    const seen = new Set();
-    return eligible.filter((l) => {
-      if (seen.has(l.player.n)) return false;
-      seen.add(l.player.n);
-      return true;
-    });
-  };
-
-  const fwLogs = bestAt(["Forward", "FW"]);
-  const mfLogs = bestAt(["Midfielder", "MF"]);
-  const dfLogs = bestAt(["Defender", "DF", "DEF"]);
-  const gkLogs = bestAt(["GK", "Goalkeeper"]);
-
-  const totwXi = [
-    fwLogs[0], fwLogs[1], fwLogs[2],
-    mfLogs[0], mfLogs[1], mfLogs[2],
-    dfLogs[0], dfLogs[1], dfLogs[2], dfLogs[3],
-    gkLogs[0],
-  ].filter(Boolean);
-
-  const topPerf = [...latestWeek.logs]
-    .sort((a, b) => b.rating - a.rating)
-    .filter((l, i, arr) => arr.findIndex((x) => x.player.n === l.player.n) === i)
-    .slice(0, 5);
-
-  const starOfWeek = topPerf[0];
-  console.log(`  MW${weekNum}: ${totwXi.length} players, star: ${starOfWeek?.player?.n} (${starOfWeek?.rating})`);
-
-  // ── POWER RANKINGS ────────────────────────────────────────────────
-  console.log("\n📊 Computing Power Rankings...");
-  // Simple: points + goals added proxy
+  // Power rankings (standings + season production proxy)
   const teamStats = {};
-  players.forEach((p) => {
-    if (!teamStats[p.t]) teamStats[p.t] = { grades: [], count: 0 };
-    // Use a simple overall proxy: goals + assists weighted
-    teamStats[p.t].grades.push((p.g || 0) * 2 + (p.as || 0) * 1.5 + (p.tk || 0) * 0.5);
-    teamStats[p.t].count++;
+  played.forEach((p) => {
+    (teamStats[p.t] = teamStats[p.t] || { s: 0, n: 0 });
+    teamStats[p.t].s += num(p.g) * 2 + num(p.as) * 1.5 + num(p.tk) * 0.5;
+    teamStats[p.t].n += 1;
   });
+  const maxPts = Math.max(...standings.map((s) => num(s.pts)), 1);
+  const power = standings.map((s) => {
+    const avg = teamStats[s.team] ? teamStats[s.team].s / teamStats[s.team].n : 0;
+    return { ...s, power: Math.round((num(s.pts) / maxPts) * 100 * 0.6 + avg * 0.4) };
+  }).sort((a, b) => b.power - a.power).map((t, i) => ({ ...t, rank: i + 1 }));
 
-  const stMap = {};
-  standings.forEach((s) => (stMap[s.team] = s));
-  const maxPts = Math.max(...standings.map((s) => s.pts || 0), 1);
+  // Conference leaders for the narrative
+  const conf = {};
+  standings.forEach((t) => (conf[t.conf] = conf[t.conf] || []).push(t));
+  const confLead = Object.keys(conf).map((c) => [...conf[c]].sort((a, b) => num(b.pts) - num(a.pts))[0]).filter(Boolean);
 
-  const powerRanked = standings
-    .map((s) => {
-      const avgGrade = teamStats[s.team]
-        ? teamStats[s.team].grades.reduce((a, b) => a + b, 0) / teamStats[s.team].count
-        : 0;
-      const normPts = ((s.pts || 0) / maxPts) * 100;
-      const power = Math.round(normPts * 0.6 + avgGrade * 0.4);
-      return { ...s, power, gd: (s.gf || 0) - (s.ga || 0) };
-    })
-    .sort((a, b) => b.power - a.power)
-    .map((t, i) => ({ ...t, rank: i + 1 }));
+  // Optional: Team of the Week if matchLog ever returns
+  const hasLogs = (cache.players || []).some((p) => Array.isArray(p.matchLog) && p.matchLog.length);
 
-  console.log(`  Top 3: ${powerRanked.slice(0, 3).map((t) => t.team).join(", ")}`);
+  // Upcoming fixtures
+  const fixtures = [...matches].filter((m) => !m.completed).sort((a, b) => (a.date || "").localeCompare(b.date || "")).slice(0, 8);
 
-  // ── MOVERS ────────────────────────────────────────────────────────
-  console.log("\n🔥 Computing Movers...");
-  const movers = players
-    .filter((p) => p.matchLog && p.matchLog.length >= 5)
-    .map((p) => {
-      const ratings = p.matchLog.map(rateGame);
-      const last5 = ratings.slice(-5);
-      const seasonAvg = Math.round(ratings.reduce((s, v) => s + v, 0) / ratings.length);
-      const formAvg = Math.round(last5.reduce((s, v) => s + v, 0) / last5.length);
-      return { ...p, formAvg, seasonAvg, delta: formAvg - seasonAvg };
-    });
-
-  const heating = movers.filter((p) => p.delta >= 3).sort((a, b) => b.delta - a.delta).slice(0, 3);
-  const cooling = movers.filter((p) => p.delta <= -3).sort((a, b) => a.delta - b.delta).slice(0, 3);
-  console.log(`  Heating: ${heating.map((p) => p.n).join(", ") || "none yet"}`);
-  console.log(`  Cooling: ${cooling.map((p) => p.n).join(", ") || "none yet"}`);
-
-  // ── RECENT RESULTS ────────────────────────────────────────────────
-  const recentMatches = [...matches]
-    .filter((m) => m.completed)
-    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
-    .slice(0, 8);
-
-  // ── CLAUDE NARRATIVE ──────────────────────────────────────────────
+  // ── AI NARRATIVE ──
   console.log("\n✍️  Generating narrative...");
-  const narrativePrompt = `You are writing a brief MLS analytics newsletter called "USA Footy Index Weekly" for Matchweek ${weekNum} of the 2026 MLS season.
+  const prompt = `You write the intro for "USA Footy Index Weekly", a 2026 MLS analytics newsletter.
 
-Write these 4 sections in a punchy, data-driven, slightly opinionated sports writing style. Keep it tight — no fluff.
+Write two short paragraphs (about 110 words total) from these facts:
+- Conference leaders: ${confLead.map((t) => `${t.name} (${t.conf}, ${t.pts}pts, ${t.w}-${t.d}-${t.l})`).join("; ")}.
+- Golden Boot lead: ${byG[0] ? `${byG[0].n} (${byG[0].t}) ${num(byG[0].g)} goals` : "n/a"}.
+- xG leader: ${byXG[0] ? `${byXG[0].n} (${byXG[0].t}) ${num(byXG[0].xg).toFixed(1)} xG` : "n/a"}.
+- Hottest finisher vs xG: ${over[0] ? `${over[0].p.n} (${over[0].p.t}) +${over[0].d.toFixed(1)} over expected` : "n/a"}.
 
-1. STAR OF THE WEEK (2-3 sentences): ${starOfWeek?.player?.n} (${starOfWeek?.player?.t}) earned a ${starOfWeek?.rating} match rating. They had ${starOfWeek?.g || 0} goals, ${starOfWeek?.a || 0} assists, ${starOfWeek?.sh || 0} shots in ${starOfWeek?.mins || 0} minutes vs ${starOfWeek?.opp || "?"} (${starOfWeek?.ha || "?"}).
+House style, follow exactly: no em-dashes or en-dashes, use commas or periods. No rhetorical questions. No hedging adverbs. Lead with the fact then the context. Plain text only, no headers, no markdown.`;
+  let narrative = await callClaude(prompt);
+  narrative = narrative ? stripDashes(narrative) : null;
 
-2. POWER RANKINGS BLURB (2-3 sentences): Top 3 are ${powerRanked.slice(0, 3).map((t) => `${t.team} (${t.pts}pts, ${t.w}-${t.d}-${t.l})`).join(", ")}. Comment on what separates them.
+  // ── BUILD HTML ──
+  console.log("📝 Building HTML...");
+  const season = cache.season || new Date().getFullYear();
+  const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-3. HEATING UP (1 sentence each for up to 3 players): ${heating.length ? heating.map((p) => `${p.n} (${p.t}, ${p.p}) — form ${p.formAvg} vs season ${p.seasonAvg}, delta +${p.delta}`).join("; ") : "No significant movers this week."}
+  const leaderRows = (arr, val, fmt) => arr.map((p, i) => `<tr style="border-bottom:1px solid #EDE9E0;">
+        <td style="padding:5px 0;color:#A09A90;width:20px;">${i + 1}</td>
+        <td style="padding:5px 0;font-weight:bold;color:#1A1A1A;">${esc(p.n)}</td>
+        <td style="padding:5px 0;color:#6B6560;">${esc(p.t)}</td>
+        <td style="padding:5px 0;text-align:right;font-weight:bold;color:#1A1A1A;">${fmt ? fmt(val(p)) : val(p)}</td>
+      </tr>`).join("\n      ");
 
-4. ONE THING TO WATCH (1 paragraph): Pick an interesting storyline from this data for next week.
-
-Write in plain text with section headers. No markdown formatting. Keep total length under 300 words.`;
-
-  const narrative = await callClaude(narrativePrompt);
-
-  // ── BUILD HTML ────────────────────────────────────────────────────
-  console.log("\n📝 Building newsletter HTML...");
-
-  const weekDates = latestWeek ? (() => {
-    const d1 = new Date(latestWeek.dates[0] + "T12:00:00Z");
-    const d2 = latestWeek.dates.length > 1 ? new Date(latestWeek.dates[latestWeek.dates.length - 1] + "T12:00:00Z") : d1;
-    const fmt = (d) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    return latestWeek.dates.length > 1 ? `${fmt(d1)} – ${fmt(d2)}` : fmt(d1);
-  })() : "";
+  const leaderBlock = (title, arr, val, fmt) => `<div style="margin-bottom:18px;">
+      <div style="font-size:11px;color:#2D6A4F;font-weight:bold;font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">${title}</div>
+      <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;">
+      ${leaderRows(arr, val, fmt)}
+      </table>
+    </div>`;
 
   const html = `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>USA Footy Index Weekly — MW${weekNum}</title></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>USA Footy Index Weekly</title></head>
 <body style="margin:0;padding:0;background:#F4F1EA;font-family:Georgia,'Times New Roman',serif;">
 <div style="max-width:600px;margin:0 auto;background:#FFFFFF;">
 
-  <!-- Header -->
   <div style="padding:24px 32px;border-bottom:3px solid #1A1A1A;text-align:center;">
     <div style="font-size:11px;color:#A09A90;letter-spacing:3px;font-family:Arial,sans-serif;text-transform:uppercase;">USA FOOTY INDEX</div>
     <div style="font-size:28px;font-weight:bold;color:#1A1A1A;margin-top:8px;">Weekly Report</div>
-    <div style="font-size:13px;color:#6B6560;font-family:Arial,sans-serif;margin-top:4px;">Matchweek ${weekNum} · ${weekDates} · 2026 MLS Season</div>
+    <div style="font-size:13px;color:#6B6560;font-family:Arial,sans-serif;margin-top:4px;">${today} · ${season} MLS Season</div>
   </div>
 
-  <!-- TOTW -->
-  <div style="padding:24px 32px;border-bottom:1px solid #D6D0C4;">
-    <div style="font-size:10px;color:#A09A90;letter-spacing:2px;font-family:Arial,sans-serif;text-transform:uppercase;margin-bottom:12px;">TEAM OF THE WEEK — MW${weekNum}</div>
-    <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;">
-      <tr style="border-bottom:1px solid #D6D0C4;">
-        <td style="padding:6px 0;font-weight:bold;color:#A09A90;font-size:10px;">POS</td>
-        <td style="padding:6px 0;font-weight:bold;color:#A09A90;font-size:10px;">PLAYER</td>
-        <td style="padding:6px 0;font-weight:bold;color:#A09A90;font-size:10px;">TEAM</td>
-        <td style="padding:6px 0;font-weight:bold;color:#A09A90;font-size:10px;text-align:center;">RTG</td>
-        <td style="padding:6px 0;font-weight:bold;color:#A09A90;font-size:10px;text-align:center;">G</td>
-        <td style="padding:6px 0;font-weight:bold;color:#A09A90;font-size:10px;text-align:center;">A</td>
-      </tr>
-      ${totwXi.map((l) => `<tr style="border-bottom:1px solid #EDE9E0;">
-        <td style="padding:6px 0;color:#6B6560;font-size:11px;">${l.player.p}</td>
-        <td style="padding:6px 0;font-weight:bold;color:#1A1A1A;">${l.player.n}</td>
-        <td style="padding:6px 0;color:#6B6560;">${l.player.t}</td>
-        <td style="padding:6px 0;text-align:center;font-weight:bold;color:${gc(l.rating)};">${l.rating}</td>
-        <td style="padding:6px 0;text-align:center;color:${l.g > 0 ? "#2D6A4F" : "#A09A90"};">${l.g || 0}</td>
-        <td style="padding:6px 0;text-align:center;color:${l.a > 0 ? "#264653" : "#A09A90"};">${l.a || 0}</td>
-      </tr>`).join("\n      ")}
-    </table>
-  </div>
-
-  <!-- AI Narrative -->
   ${narrative ? `<div style="padding:24px 32px;border-bottom:1px solid #D6D0C4;">
-    <div style="font-size:14px;color:#1A1A1A;line-height:1.7;white-space:pre-wrap;">${narrative.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+    <div style="font-size:14px;color:#1A1A1A;line-height:1.7;white-space:pre-wrap;">${esc(narrative)}</div>
   </div>` : ""}
 
-  <!-- Power Rankings -->
   <div style="padding:24px 32px;border-bottom:1px solid #D6D0C4;">
-    <div style="font-size:10px;color:#A09A90;letter-spacing:2px;font-family:Arial,sans-serif;text-transform:uppercase;margin-bottom:12px;">POWER RANKINGS — TOP 10</div>
+    <div style="font-size:10px;color:#A09A90;letter-spacing:2px;font-family:Arial,sans-serif;text-transform:uppercase;margin-bottom:14px;">SEASON LEADERS</div>
+    ${leaderBlock("Goals", byG, (p) => num(p.g))}
+    ${leaderBlock("Assists", byA, (p) => num(p.as))}
+    ${leaderBlock("Expected Goals (xG)", byXG, (p) => num(p.xg), (v) => v.toFixed(1))}
+    ${leaderBlock("Goalkeeper Saves", gks, (p) => num(p.sv))}
+  </div>
+
+  <div style="padding:24px 32px;border-bottom:1px solid #D6D0C4;">
+    <div style="font-size:10px;color:#A09A90;letter-spacing:2px;font-family:Arial,sans-serif;text-transform:uppercase;margin-bottom:12px;">POWER RANKINGS, TOP 10</div>
     <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;">
-      ${powerRanked.slice(0, 10).map((t) => `<tr style="border-bottom:1px solid #EDE9E0;">
+      ${power.slice(0, 10).map((t) => `<tr style="border-bottom:1px solid #EDE9E0;">
         <td style="padding:5px 0;font-weight:900;font-size:16px;color:${t.rank <= 3 ? "#B68D40" : "#6B6560"};width:24px;">${t.rank}</td>
-        <td style="padding:5px 0;font-weight:bold;color:#1A1A1A;">${t.team}</td>
+        <td style="padding:5px 0;font-weight:bold;color:#1A1A1A;">${esc(t.name || t.team)}</td>
         <td style="padding:5px 0;color:#6B6560;">${t.w}-${t.d}-${t.l}</td>
         <td style="padding:5px 0;color:#6B6560;">${t.pts} pts</td>
         <td style="padding:5px 0;text-align:right;font-weight:bold;color:${gc(t.power)};">${t.power}</td>
@@ -292,44 +174,29 @@ Write in plain text with section headers. No markdown formatting. Keep total len
     </table>
   </div>
 
-  <!-- Movers -->
-  ${heating.length || cooling.length ? `<div style="padding:24px 32px;border-bottom:1px solid #D6D0C4;">
-    <div style="font-size:10px;color:#A09A90;letter-spacing:2px;font-family:Arial,sans-serif;text-transform:uppercase;margin-bottom:12px;">MOVERS</div>
-    ${heating.length ? `<div style="margin-bottom:16px;">
-      <div style="font-size:11px;color:#2D6A4F;font-weight:bold;font-family:Arial,sans-serif;margin-bottom:8px;">🔥 HEATING UP</div>
-      ${heating.map((p) => `<div style="padding:6px 0;border-bottom:1px solid #EDE9E0;font-family:Arial,sans-serif;font-size:13px;">
-        <strong>${p.n}</strong> (${p.t}) — <span style="color:#2D6A4F;font-weight:bold;">↑${p.delta}</span> · Form: ${p.formAvg} · Season: ${p.seasonAvg}
-      </div>`).join("\n      ")}
-    </div>` : ""}
-    ${cooling.length ? `<div>
-      <div style="font-size:11px;color:#9B2226;font-weight:bold;font-family:Arial,sans-serif;margin-bottom:8px;">❄️ COOLING DOWN</div>
-      ${cooling.map((p) => `<div style="padding:6px 0;border-bottom:1px solid #EDE9E0;font-family:Arial,sans-serif;font-size:13px;">
-        <strong>${p.n}</strong> (${p.t}) — <span style="color:#9B2226;font-weight:bold;">↓${Math.abs(p.delta)}</span> · Form: ${p.formAvg} · Season: ${p.seasonAvg}
-      </div>`).join("\n      ")}
-    </div>` : ""}
+  ${over.length ? `<div style="padding:24px 32px;border-bottom:1px solid #D6D0C4;">
+    <div style="font-size:10px;color:#A09A90;letter-spacing:2px;font-family:Arial,sans-serif;text-transform:uppercase;margin-bottom:12px;">FINISHING vs xG</div>
+    <div style="font-size:11px;color:#2D6A4F;font-weight:bold;font-family:Arial,sans-serif;margin-bottom:6px;">OVERPERFORMING</div>
+    ${over.map((o) => `<div style="padding:4px 0;font-family:Arial,sans-serif;font-size:13px;"><strong>${esc(o.p.n)}</strong> (${esc(o.p.t)}) <span style="color:#2D6A4F;font-weight:bold;">+${o.d.toFixed(1)}</span> · ${num(o.p.g)}G from ${num(o.p.xg).toFixed(1)} xG</div>`).join("\n    ")}
+    <div style="font-size:11px;color:#9B2226;font-weight:bold;font-family:Arial,sans-serif;margin:12px 0 6px;">UNDERPERFORMING</div>
+    ${under.map((o) => `<div style="padding:4px 0;font-family:Arial,sans-serif;font-size:13px;"><strong>${esc(o.p.n)}</strong> (${esc(o.p.t)}) <span style="color:#9B2226;font-weight:bold;">${o.d.toFixed(1)}</span> · ${num(o.p.g)}G from ${num(o.p.xg).toFixed(1)} xG</div>`).join("\n    ")}
   </div>` : ""}
 
-  <!-- Recent Results -->
-  <div style="padding:24px 32px;border-bottom:1px solid #D6D0C4;">
-    <div style="font-size:10px;color:#A09A90;letter-spacing:2px;font-family:Arial,sans-serif;text-transform:uppercase;margin-bottom:12px;">RECENT RESULTS</div>
-    ${recentMatches.map((m) => {
-      const hs = +(m.homeScore || 0), as = +(m.awayScore || 0);
-      return `<div style="padding:4px 0;font-family:Arial,sans-serif;font-size:13px;">
-        <span style="font-weight:${hs > as ? "bold" : "normal"};color:${hs > as ? "#1A1A1A" : "#6B6560"};">${m.home}</span>
-        <span style="font-weight:bold;margin:0 8px;">${hs}–${as}</span>
-        <span style="font-weight:${as > hs ? "bold" : "normal"};color:${as > hs ? "#1A1A1A" : "#6B6560"};">${m.away}</span>
-      </div>`;
-    }).join("\n    ")}
-  </div>
+  ${fixtures.length ? `<div style="padding:24px 32px;border-bottom:1px solid #D6D0C4;">
+    <div style="font-size:10px;color:#A09A90;letter-spacing:2px;font-family:Arial,sans-serif;text-transform:uppercase;margin-bottom:12px;">UPCOMING FIXTURES</div>
+    ${fixtures.map((m) => `<div style="padding:4px 0;font-family:Arial,sans-serif;font-size:13px;color:#1A1A1A;">
+        <span style="color:#A09A90;font-size:11px;display:inline-block;width:52px;">${fmtDate(m.date)}</span>
+        <strong>${esc(m.home)}</strong> <span style="color:#A09A90;">vs</span> <strong>${esc(m.away)}</strong>
+      </div>`).join("\n    ")}
+  </div>` : ""}
 
-  <!-- Footer -->
   <div style="padding:24px 32px;text-align:center;">
     <div style="margin-bottom:16px;">
       <a href="https://usfootyindex.com" style="display:inline-block;background:#1A1A1A;color:#F4F1EA;padding:10px 28px;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold;font-size:13px;border-radius:4px;">Explore Full Stats →</a>
     </div>
     <div style="font-size:10px;color:#A09A90;font-family:Arial,sans-serif;line-height:1.6;">
       USA Footy Index · usfootyindex.com<br>
-      Data from ESPN, American Soccer Analysis, Sofascore<br>
+      Data from ESPN, American Soccer Analysis, official MLS (Opta)<br>
       <a href="https://usfootyindex.beehiiv.com" style="color:#6B6560;">Manage subscription</a>
     </div>
   </div>
@@ -338,13 +205,11 @@ Write in plain text with section headers. No markdown formatting. Keep total len
 </body>
 </html>`;
 
-  fs.writeFileSync(OUTPUT_PATH, html);
-  console.log(`\n✅ Newsletter saved to ${OUTPUT_PATH}`);
-  console.log(`   ${html.length} bytes · MW${weekNum}`);
-  console.log("\n📋 Next steps:");
-  console.log("   1. Open the HTML file in a browser to preview");
-  console.log("   2. Copy the content into Beehiiv's editor");
-  console.log("   3. Or use Beehiiv's API to send programmatically\n");
+  fs.writeFileSync(OUT_PATH, html);
+  console.log(`\n✅ Newsletter saved to ${OUT_PATH} (${html.length} bytes)`);
+  console.log(`   leaders: ${byG[0]?.n || "?"} (G), ${byA[0]?.n || "?"} (A) · power top: ${power[0]?.name || power[0]?.team || "?"}`);
+  if (hasLogs) console.log("   (matchLog detected, a TOTW block can be re-enabled, ping me)");
+  console.log("\n📋 Next: open the HTML to preview, then paste into Beehiiv's editor. No auto-send.");
 }
 
-main().catch(console.error);
+main().catch((e) => { console.error(e); process.exit(1); });

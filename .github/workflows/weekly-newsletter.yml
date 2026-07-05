@@ -1,30 +1,36 @@
 name: Weekly Newsletter
-
 on:
   schedule:
-    - cron: '0 15 * * 2'
-  workflow_dispatch:
-
+    # Tuesday 13:00 UTC (~8-9am ET), after the weekend data refresh has landed.
+    - cron: '0 13 * * 2'
+  workflow_dispatch:   # manual "Run workflow" button
+permissions:
+  contents: write
 jobs:
-  generate:
+  newsletter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout latest
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
-      - run: npm install
+      - name: Install dependencies
+        run: npm install
 
+      # Reads the committed public/data/mls-cache.json (refreshed by Update MLS
+      # Data) and writes public/data/newsletter-latest.html. Sends nothing.
       - name: Generate newsletter
+        run: node weekly-newsletter.js
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: node weekly-newsletter.js
+        timeout-minutes: 5
 
-      - name: Upload newsletter
-        uses: actions/upload-artifact@v4
+      - name: Commit newsletter HTML
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          name: newsletter
-          path: public/data/newsletter-latest.html
-          retention-days: 30
+          commit_message: "Auto-generate weekly newsletter HTML"
+          file_pattern: "public/data/newsletter-latest.html"

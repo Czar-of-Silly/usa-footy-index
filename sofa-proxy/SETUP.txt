@@ -1,0 +1,17 @@
+SOFA-PROXY — file-based Cloudflare Worker (no dashboard editor, no clipboard)
+
+ONE-TIME SETUP (run from inside the sofa-proxy folder):
+  1. cd sofa-proxy
+  2. wrangler login              (approve in browser)
+  3. wrangler secret put SECRET  (paste a long random string when prompted)
+  4. wrangler deploy             (ships index.js; prints your worker URL)
+
+EVERY TIME YOU CHANGE THE WORKER AFTER THAT:
+  - edit index.js in VS Code
+  - wrangler deploy
+
+TEST IT (swap in the SECRET you set):
+  Invoke-RestMethod "https://sofa-proxy.czar-of-silly.workers.dev/?token=YOUR_SECRET&q=%2Funique-tournament%2F242%2Fseasons" | ConvertTo-Json -Depth 3
+
+NOTE: the old dashboard-created worker and this one share the name "sofa-proxy",
+so `wrangler deploy` will overwrite/replace it — that's intended.
