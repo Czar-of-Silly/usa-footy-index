@@ -253,7 +253,7 @@ function computeGrades(ps){
   // map rank percentile to grade scale targeting top=95, median=75, bottom=40.
   // Math: 40 + pow(rankPct, 1.5) * 59 — ceiling 99
   const OV_REF=0.85,GRADE_EXP=0.9;/*OVANCHOR*/
-  const POS_REF={FW:0.85,MF:0.82,DF:0.76,GK:0.72};/*POSREF*/
+  const POS_REF={FW:0.85,MF:0.82,DF:0.72,GK:0.72};/*POSREF*/
   const grOf=(v,ceil)=>{const cc=ceil||99;return Math.max(0,Math.min(cc,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/OV_REF)),GRADE_EXP)*cc)));};
   const grOfP=(v,pos)=>{const ref=POS_REF[pos]||OV_REF;return Math.max(0,Math.min(99,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/ref)),GRADE_EXP)*990)/10));};/*NOCAP*//*DEC*/
   if(gkComposites.length>=3){
