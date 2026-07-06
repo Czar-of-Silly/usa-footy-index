@@ -256,7 +256,7 @@ function computeGrades(ps){
   const OV_REF=0.85,GRADE_EXP=0.9;/*OVANCHOR*/
   const POS_REF={FW:0.85,MF:0.82,DF:0.72,GK:0.72};/*POSREF*/
   const grOf=(v,ceil)=>{const cc=ceil||99;return Math.max(0,Math.min(cc,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/OV_REF)),GRADE_EXP)*cc)));};
-  const grOfP=(v,pos)=>{const ref=POS_REF[pos]||OV_REF;return Math.max(0,Math.min(99,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/ref)),GRADE_EXP)*990)/10));};/*NOCAP*//*DEC*/
+  const grOfP=(v,pos,ceil=99)=>{const ref=POS_REF[pos]||OV_REF;return Math.max(0,Math.min(ceil,Math.round(Math.pow(Math.max(0,Math.min(1,(v||0)/ref)),GRADE_EXP)*990)/10));};/*DEC*/
   if(gkComposites.length>=3){
     const rankToGrade=(rankPct)=>Math.round(42+Math.pow(Math.max(0,Math.min(1,rankPct)),1.5)*57);
     const buildRanks=(key)=>{
@@ -1798,7 +1798,7 @@ function MLSAnalytics(){
                   <span style={{fontSize:8,letterSpacing:"0.24em",display:"block",marginTop:3}}>INDEX GRADE</span>
                 </div>
                 <div onClick={()=>setSel(topPlayer)} style={{aspectRatio:"4/4.6",overflow:"hidden",border:`3px solid ${T.ink}`,boxShadow:`0 0 0 4px ${T.bg}, 0 0 0 5px ${T.ink}`,position:"relative",background:T.card,cursor:"pointer"}}>
-                  {(topPlayer.localHeadshot||topPlayer.headshot)&&<img src={topPlayer.localHeadshot||topPlayer.headshot} alt={topPlayer.name} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top",filter:"grayscale(.85) sepia(.4) contrast(1.12) brightness(1.02)"}}/>}
+                  {(topPlayer.localHeadshot||topPlayer.headshot)&&<img src={topPlayer.localHeadshot||topPlayer.headshot} alt={topPlayer.name} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"top",filter:"grayscale(.85) sepia(.4) contrast(1.12) brightness(1.02)"}} onError={e=>{e.target.style.display="none";}}/>}
                   <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(circle, rgba(35,31,25,.5) 1px, transparent 1.5px)",backgroundSize:"4px 4px",mixBlendMode:"overlay",pointerEvents:"none"}}></div>
                   <div style={{position:"absolute",left:0,right:0,bottom:0,background:"linear-gradient(transparent, rgba(35,31,25,.78))",padding:"26px 14px 10px"}}>
                     <div style={{fontFamily:T.display,fontWeight:900,fontSize:20,color:"#E8DCC0",lineHeight:1.05}}>{topPlayer.name}</div>
@@ -1824,7 +1824,7 @@ function MLSAnalytics(){
                   {top3.map((p,i)=>(
                     <div key={p.id} onClick={()=>setSel(p)} style={{cursor:"pointer",border:`1px solid ${T.border}`,padding:16,display:"flex",gap:14,alignItems:"center",background:T.surface}}>
                       <div style={{fontFamily:T.display,fontWeight:900,fontSize:34,color:T.borderLt,lineHeight:1,minWidth:30}}>{i+1}</div>
-                      {(p.localHeadshot||p.headshot)?<img src={p.localHeadshot||p.headshot} alt={p.name} style={{width:54,height:54,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.ink}`,filter:"grayscale(.6) sepia(.3)"}}/>:null}
+                      {(p.localHeadshot||p.headshot)?<img src={p.localHeadshot||p.headshot} alt={p.name} style={{width:54,height:54,borderRadius:"50%",objectFit:"cover",border:`2px solid ${T.ink}`,filter:"grayscale(.6) sepia(.3)"}} onError={e=>{e.target.style.display="none";}}/>:null}
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink,lineHeight:1.1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
                         <div style={{fontFamily:T.mono,fontSize:9.5,letterSpacing:"0.1em",textTransform:"uppercase",color:T.textDim,marginTop:3}}>{p.position} {"\u00b7"} {tname(p.team)}</div>
@@ -1920,7 +1920,7 @@ function MLSAnalytics(){
           </div>
 
           {best&&<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,padding:"20px 24px",marginBottom:24,display:"flex",alignItems:"center",gap:20,flexWrap:"wrap",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
-            {(best.localHeadshot||best.headshot)?<img src={best.localHeadshot||best.headshot} alt={best.name} style={{width:64,height:64,objectFit:"cover",objectPosition:"top",border:`2px solid ${T.ink}`,filter:"grayscale(.6) sepia(.3)",display:"block",background:T.card,flexShrink:0,marginRight:6}}/>:<TeamBadge abbr={best.team} size={48} logo={best?.teamLogo}/>}
+            {(best.localHeadshot||best.headshot)?<img src={best.localHeadshot||best.headshot} alt={best.name} style={{width:64,height:64,objectFit:"cover",objectPosition:"top",border:`2px solid ${T.ink}`,filter:"grayscale(.6) sepia(.3)",display:"block",background:T.card,flexShrink:0,marginRight:6}} onError={e=>{e.target.style.display="none";}}/>:<TeamBadge abbr={best.team} size={48} logo={best?.teamLogo}/>}
             <div style={{flex:1,minWidth:200}}>
               <div style={{fontSize:9,color:T.accent,fontWeight:700,letterSpacing:2,fontFamily:T.sans,textTransform:"uppercase",marginBottom:3}}>Top Rated Player</div>
               <div style={{fontFamily:T.display,fontWeight:700,fontSize:32,color:T.ink,letterSpacing:-.5,lineHeight:1}}>{best.name}</div>
