@@ -226,11 +226,12 @@ function computeGrades(ps){
       const n90s=p.n90s||6.7;const S=(pool,val)=>pct(pool,((val||0)*n90s+mn(pool)*K90S)/(n90s+K90S));
 
       // Sub-grades: universal (ranked against all outfielders)
-      const att=S(ofOxg,p.oxg90)*.40+S(ofXg,p.xg90)*.20+S(ofChc,p.chc90)*.25+S(ofXa,p.xa90)*.15;
-      const pas=S(ofPc,p.pc)*.25+S(ofPassPerf,p.passPerfV)*.20+S(ofPg,p.pga)*.15+S(ofFtp,p.ftp90)*.15+S(ofKp,p.kp90)*.15+S(ofPresR,p.presRV)*.10;
-      const defT=[[ofDf,p.dga,.20],[ofTk,p.tk90,.15],[ofPrs,p.prs90,.15],[ofIntc,p.intc90,.10],[ofClr,p.clr90,.10],[ofArl,p.arl90,.10],[ofArlPct,p.arlPctV,.075],[ofTkPct,p.tkwPct,.075],[ofBlk,p.blk90,.05]].filter(t=>t[0].length>0);const defWsum=defT.reduce((s,t)=>s+t[2],0)||1;const def=defT.reduce((s,t)=>s+S(t[0],t[1])*t[2],0)/defWsum;/*GRADEENGINE*/
-      const cre=S(ofKp,p.kp90)*.40+S(ofXa,p.xa90)*.25+S(ofChc,p.chc90)*.20+S(ofSca,p.sca90)*.15;
-      const car=S(ofGdr,p.gdrV)*.35+S(ofEsc,p.escV)*.20+S(ofPrgc,p.prgc90)*.15+S(ofDrb,p.drb90)*.10+S(ofFtp,p.ftp90)*.10+S(ofFls,p.flSuf90)*.10;
+      const wsum=(terms)=>{const t2=terms.filter(t=>t[0].length>0);const w=t2.reduce((s,t)=>s+t[2],0)||1;return t2.reduce((s,t)=>s+S(t[0],t[1])*t[2],0)/w;};
+      const att=wsum([[ofOxg,p.oxg90,.40],[ofXg,p.xg90,.20],[ofChc,p.chc90,.25],[ofXa,p.xa90,.15]]);
+      const pas=wsum([[ofPc,p.pc,.25],[ofPassPerf,p.passPerfV,.20],[ofPg,p.pga,.15],[ofFtp,p.ftp90,.15],[ofKp,p.kp90,.15],[ofPresR,p.presRV,.10]]);
+      const def=wsum([[ofDf,p.dga,.20],[ofTk,p.tk90,.15],[ofPrs,p.prs90,.15],[ofIntc,p.intc90,.10],[ofClr,p.clr90,.10],[ofArl,p.arl90,.10],[ofArlPct,p.arlPctV,.075],[ofTkPct,p.tkwPct,.075],[ofBlk,p.blk90,.05]]);/*GRADEENGINE*/
+      const cre=wsum([[ofKp,p.kp90,.40],[ofXa,p.xa90,.25],[ofChc,p.chc90,.20],[ofSca,p.sca90,.15]]);
+      const car=wsum([[ofGdr,p.gdrV,.35],[ofEsc,p.escV,.20],[ofPrgc,p.prgc90,.15],[ofDrb,p.drb90,.10],[ofFtp,p.ftp90,.10],[ofFls,p.flSuf90,.10]]);
       const gaP=S(ofGa,p.tga);
 
       // Position-weighted Overall (weights unchanged)
