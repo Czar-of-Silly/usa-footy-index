@@ -1565,7 +1565,7 @@ function MLSAnalytics(){
               {name:"Overall",weight:"Position-weighted composite — FW: 30% ATT, 25% G+, 20% CRE | MF: 20% G+, 20% PAS, 20% CRE | DF: 30% DEF, 25% G+, 20% PAS",desc:"The composite score is role-aware. A defender's Overall rewards defensive excellence; a forward's rewards attacking output. Sub-grades are universal (everyone is ranked the same way on Attack, Passing, etc.) but the Overall reflects what matters for each position."},
               {name:"Attack",weight:"/*STEP5*/40% Official xG/90 + 20% ASA xG/90 + 25% Chances/90 + 15% xA/90",desc:"Goal threat and chance involvement, anchored by official Opta expected goals blended with ASA's independent model, plus chance volume and expected assists. Two xG models reduce single-model noise."},
               {name:"Passing",weight:"25% Completion % + 20% Passing vs Expected + 15% Difficult Passes/90 + 15% Pass G+ + 15% Key Passes/90 + 10% Pressure Resistance",desc:"Beyond completion rate: rewards passers who beat the expected-completion model and complete difficult, line-breaking passes — not sideways recyclers."},
-              {name:"Defense",weight:"25% Defensive G+ + 20% Pressures/90 + 15% Interceptions/90 + 15% Aerials Won/90 + 15% Clearances/90 + 10% Aerial Win %",desc:"Combines defensive value added (Goals Added) with active defending — pressures applied, clearances, and aerial dominance for set pieces and crosses."},
+              {name:"Defense",weight:"20% Defensive G+ + 15% Tackles/90 + 15% Pressures/90 + 10% Interceptions/90 + 10% Clearances/90 + 10% Aerials Won/90 + 7.5% Aerial Win % + 7.5% Tackle Success % + 5% Blocked Shots/90",desc:"Combines defensive value added (Goals Added) with active defending: tackles won and their success rate, pressures applied, interceptions, clearances, blocked shots, and aerial dominance for set pieces and crosses."},
               {name:"Creativity",weight:"40% Key Passes/90 + 25% xA/90 + 20% Chances/90 + 15% Shot-Creating Actions/90",desc:"Isolates playmaking: passes that set up shots, expected assists, and overall chance involvement. A player can rate low on Attack but high here by creating for others."},
               {name:"Carrying",weight:"35% Dribbling G+ + 20% Escape Rate + 15% Progressive Carries/90 + 10% Dribbles/90 + 10% Difficult Passes/90 + 10% Fouls Drawn/90",desc:"Ball progression with the feet, measured by ASA dribbling Goals Added (the value a carry adds), how often a player escapes pressure, and a touch of flair. MLS event data has no raw take-on count, so we grade carrying value rather than raw dribble attempts."},
             ].map(cat=>(
@@ -1673,7 +1673,7 @@ function MLSAnalytics(){
 
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:20}}>
               {[
-                {v:"700+",l:"Players Graded"},
+                {v:(players.length?Math.floor(players.length/10)*10+"+":"700+"),l:"Players Graded"},
                 {v:"30",l:"MLS Clubs"},
                 {v:"3",l:"Data Sources"},
               ].map(s=>(
@@ -1920,7 +1920,7 @@ function MLSAnalytics(){
           </div>
 
           {best&&<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,padding:"20px 24px",marginBottom:24,display:"flex",alignItems:"center",gap:20,flexWrap:"wrap",boxShadow:"0 1px 4px rgba(0,0,0,.04)"}}>
-            {(best.localHeadshot||best.headshot)?<div style={{position:"relative",flexShrink:0,marginRight:6}}><img src={best.localHeadshot||best.headshot} alt={best.name} style={{width:64,height:64,objectFit:"cover",objectPosition:"top",border:`2px solid ${T.ink}`,filter:"grayscale(.6) sepia(.3)",display:"block",background:T.card}}/><div style={{position:"absolute",bottom:-8,right:-10}}><TeamBadge abbr={best.team} size={26} logo={best?.teamLogo}/></div></div>:<TeamBadge abbr={best.team} size={48} logo={best?.teamLogo}/>}
+            {(best.localHeadshot||best.headshot)?<img src={best.localHeadshot||best.headshot} alt={best.name} style={{width:64,height:64,objectFit:"cover",objectPosition:"top",border:`2px solid ${T.ink}`,filter:"grayscale(.6) sepia(.3)",display:"block",background:T.card,flexShrink:0,marginRight:6}}/>:<TeamBadge abbr={best.team} size={48} logo={best?.teamLogo}/>}
             <div style={{flex:1,minWidth:200}}>
               <div style={{fontSize:9,color:T.accent,fontWeight:700,letterSpacing:2,fontFamily:T.sans,textTransform:"uppercase",marginBottom:3}}>Top Rated Player</div>
               <div style={{fontFamily:T.display,fontWeight:700,fontSize:32,color:T.ink,letterSpacing:-.5,lineHeight:1}}>{best.name}</div>
