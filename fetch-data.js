@@ -566,6 +566,31 @@ async function main() {
   console.log(`          ✅ Headshots: ${hsDown} new · ${hsSkip} cached · ${hsFail} failed`);
 
   // ═══ WRITE ═════════════════════════════════════════════════════════════
+  // ═══ [RETAIN] Departed-player retention ═══════════════════════
+  // A player who vanishes from the roster feed stays in the cache so the
+  // season record (leaders, races, history) keeps their stats. Two straight
+  // missing runs are required before departed:true (feed blips happen).
+  // The app excludes flagged players from team-strength math only.
+  try {
+    const prevPath = path.join(__dirname, "public", "data", "mls-cache.json");
+    if (fs.existsSync(prevPath)) {
+      const prev = JSON.parse(fs.readFileSync(prevPath, "utf8"));
+      if (prev && Array.isArray(prev.players) && prev.season === output.season) {
+        const have = new Set(output.players.map(p => p.n));
+        let carried = 0, flagged = 0;
+        for (const op of prev.players) {
+          if (!op || !op.n || have.has(op.n) || (op.m || 0) < 1) continue;
+          const missingRuns = (op.missingRuns || 0) + 1;
+          const rec = { ...op, missingRuns };
+          if (missingRuns >= 2) { rec.departed = true; flagged++; }
+          output.players.push(rec); carried++;
+        }
+        if (carried) console.log(`  [RETAIN] carried ${carried} missing player(s), ${flagged} flagged departed`);
+        else console.log("  [RETAIN] no missing players this run");
+      }
+    }
+  } catch (e) { console.log("  [RETAIN] skipped: " + e.message); }
+
   const outDir = path.join(__dirname, "public", "data"); // [PATHFIX] app reads public/data
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
   const json = JSON.stringify(output);

@@ -1158,7 +1158,7 @@ function MLSAnalytics(){
         n:String(r.n).slice(0,40),t:String(r.t).slice(0,5),p:normPos(r.p),a:safe(r.a,15,45,25),ht:safe(r.ht,155,205,null),wt:safe(r.wt,55,110,null),
         m:safe(r.m,0,3000,600),g:safe(r.g,0,40,0),as:safe(r.as,0,30,0),xg:safe(r.xg,0,20,0),xa:safe(r.xa,0,15,0),
         pp:safe(r.pp,30,99,75),xpp:safe(r.xpp,30,99,75),gs:safe(r.gs,-3,5,0),gp:safe(r.gp,-3,5,0),gdr:safe(r.gdr,-3,5,0),gdf:safe(r.gdf,-3,5,0),gi:safe(r.gi,-3,5,0),
-        mv:safe(r.mv,0,50e6,500000),tk:safe(r.tk,0,80,0),tkw:safe(r.tkw,0,80,0),blk:safe(r.blk,0,60,0),sh:safe(r.sh,0,120,0),so:safe(r.so,0,60,0),fl:safe(r.fl,0,50,0),yc:safe(r.yc,0,15,0),rc:safe(r.rc,0,3,0),
+        mv:safe(r.mv,0,50e6,500000),tk:safe(r.tk,0,80,0),tkw:safe(r.tkw,0,80,0),departed:r.departed===true,blk:safe(r.blk,0,60,0),sh:safe(r.sh,0,120,0),so:safe(r.so,0,60,0),fl:safe(r.fl,0,50,0),yc:safe(r.yc,0,15,0),rc:safe(r.rc,0,3,0),
         kp:safe(r.kp,0,80,0),sca:safe(r.sca,0,120,0),prgp:safe(r.prgp,0,200,0),ftp:safe(r.ftp,0,100,0),prs:safe(r.prs,0,500,0),intc:safe(r.intc,0,60,0),arl:safe(r.arl,0,80,0),drb:safe(r.drb,0,80,0),prgc:safe(r.prgc,0,100,0),/*3B-FIELDS*/oxg:safe(r.oxg,0,30,0),chc:safe(r.chc,0,150,0),gop:safe(r.gop,0,150,0),arlPct:safe(r.arlPct,0,100,0),arlLost:safe(r.arlLost,0,120,0),clr:safe(r.clr,0,250,0),presR:safe(r.presR,-5,5,0),esc:safe(r.esc,0,5,0),dist:safe(r.dist,0,400,0),spd:safe(r.spd,0,45,0),nut:safe(r.nut,0,60,0),flSuf:safe(r.flSuf,0,200,0),xsv:safe(r.xsv,0,250,0),gkEff:safe(r.gkEff,-25,25,0),headshot:r.headshot||null,
         matchLog:Array.isArray(r.matchLog)?r.matchLog:[],
         sal:safe(r.guaranteedComp||r.baseSalary||r.salary,0,40e6,0),
@@ -1175,7 +1175,7 @@ function MLSAnalytics(){
       const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players from pools
       setLoadProgress(95);
       const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,tacklesWon:r.tkw||0,blocks:r.blk||0,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:+(r.oxg||0),chances:r.chc||0,goalOpps:r.gop||0,aerialPct:r.arlPct||0,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:r.clr||0,pressureRes:+(r.presR||0),escapeRate:+(r.esc||0),distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:+(r.oxg||0),chances:r.chc||0,goalOpps:r.gop||0,aerialPct:r.arlPct||0,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:r.clr||0,pressureRes:+(r.presR||0),escapeRate:+(r.esc||0),distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}
@@ -1266,7 +1266,7 @@ function MLSAnalytics(){
 
   // Derived
   const enrichedTeams=useMemo(()=>MLS_TEAMS.map(t=>{
-    const tp=players.filter(p=>p.team===t.abbr);const n=tp.length||1;
+    const tp=players.filter(p=>p.team===t.abbr&&!p.departed);const n=tp.length||1;
     const sum=(k)=>tp.reduce((s,p)=>s+(parseFloat(p[k])||0),0);
     const avg=(k)=>Math.round(sum(k)/n);const wAvg=(k)=>{let ws=0,wt=0;for(const p of tp){const w=parseFloat(p.mins)||0;if(w<=0)continue;ws+=(parseFloat(p[k])||0)*w;wt+=w;}return wt>0?Math.round(ws/wt):55;};
     return{...t,overall:tp.length?wAvg("overall"):55,attack:tp.length?wAvg("attack"):55,passing:tp.length?wAvg("passing"):55,defense:tp.length?wAvg("defense"):55,creativity:tp.length?wAvg("creativity"):55,carrying:tp.length?wAvg("carrying"):55,squadValue:sum("marketValue"),count:tp.length,totalGoals:sum("goals"),totalAssists:sum("assists"),avgAge:tp.length?(sum("age")/n).toFixed(1):null,totalTackles:sum("tackles"),topScorer:tp.length?[...tp].sort((a,b)=>b.goals-a.goals)[0]:null,topRated:tp.length?[...tp].sort((a,b)=>b.overall-a.overall)[0]:null};
@@ -2368,7 +2368,7 @@ function MLSAnalytics(){
               const isOpen=expandTeam===t.abbr;
               const level=isOpen?teamLevel:0;
               const rosterTbl="1fr 40px 44px 36px 36px 48px 48px 42px 42px 50px";
-              const rosterRaw=players.filter(p=>p.team===t.abbr);
+              const rosterRaw=players.filter(p=>p.team===t.abbr&&!p.departed);
               const dir=rosterDir==="asc"?1:-1;
               const roster=[...rosterRaw].sort((a,b)=>{if(rosterSort==="age")return dir*(parseFloat(a.age||99)-parseFloat(b.age||99));const av=parseFloat(a[rosterSort])||a[rosterSort]||0,bv=parseFloat(b[rosterSort])||b[rosterSort]||0;return dir*(av-bv);});
 
@@ -2492,8 +2492,8 @@ function MLSAnalytics(){
               const cats=[{l:"Overall",k:"overall"},{l:"Attack",k:"attack"},{l:"Passing",k:"passing"},{l:"Defense",k:"defense"},{l:"Creativity",k:"creativity"},{l:"Carrying",k:"carrying"}];
               const hWins=cats.filter(c=>tH[c.k]>tA[c.k]).length;
               const aWins=cats.filter(c=>tA[c.k]>tH[c.k]).length;
-              const hRoster=players.filter(p=>p.team===h2hHome).sort((a,b)=>b.overall-a.overall);
-              const aRoster=players.filter(p=>p.team===h2hAway).sort((a,b)=>b.overall-a.overall);
+              const hRoster=players.filter(p=>p.team===h2hHome&&!p.departed).sort((a,b)=>b.overall-a.overall);
+              const aRoster=players.filter(p=>p.team===h2hAway&&!p.departed).sort((a,b)=>b.overall-a.overall);
               const hBestFW=hRoster.find(p=>p.position==="Forward"||p.position==="FW");
               const aBestDF=aRoster.find(p=>p.position==="Defender"||p.position==="DF"||p.position==="DEF");
               const aBestFW=aRoster.find(p=>p.position==="Forward"||p.position==="FW");
@@ -3603,7 +3603,7 @@ function MLSAnalytics(){
         {!loading&&tab==="trade"&&(()=>{/*TRADE-V2*/
           const teamSel=[["","— select club —"],...MLS_TEAMS.map(t=>[t.abbr,t.name])];
           const nameOf=a=>{const t=MLS_TEAMS.find(x=>x.abbr===a);return t?t.name:a;};
-          const rosterOf=t=>players.filter(p=>p.team===t);
+          const rosterOf=t=>players.filter(p=>p.team===t&&!p.departed);
           const rA=trA?rosterOf(trA):[], rB=trB?rosterOf(trB):[];
           const result=(trA&&trB&&trA!==trB&&(trOutA.length||trOutB.length))?tmEvaluate({rosterA:rA,rosterB:rB,outA:trOutA,outB:trOutB,nameA:trA,nameB:trB,assetA:trAstA,assetB:trAstB}):null;
           const PILL={DP:{bg:T.accent,t:"DP"},U22:{bg:T.blue,t:"U22"},INT:{bg:T.gold,t:"INT"}};

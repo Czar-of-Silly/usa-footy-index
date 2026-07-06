@@ -74,24 +74,13 @@ const pendingOut = state.pendingOut || {};
 const pendingIn = state.pendingIn || {};
 const announced = state.announced || [];
 const nowSnap = {};
-for (const p of players) if (p.n && p.t) nowSnap[p.n] = { t: p.t, m: p.m || 0 };
+for (const p of players) if (p.n && p.t && !p.departed) nowSnap[p.n] = { t: p.t, m: p.m || 0 };
 if (Object.keys(prevSnap).length) {
   for (const [n, v] of Object.entries(nowSnap)) {
     if (prevSnap[n] && prevSnap[n].t !== v.t) facts.moves.push({ player: n, from: tn(prevSnap[n].t), to: tn(v.t) });
   }
-  // candidates = current gaps PLUS names already pending from prior runs,
-  // because a departed player leaves the snapshot after run 1 and would
-  // otherwise never reach the 2-run confirmation.
-  const outCandidates = { ...pendingOut };
-  for (const [n, v] of Object.entries(prevSnap)) if (!nowSnap[n] && !outCandidates[n]) outCandidates[n] = { t: v.t, m: v.m, runs: 0 };
-  for (const [n, rec] of Object.entries(outCandidates)) {
-    if (nowSnap[n] || (rec.m || 0) < 450 || announced.includes(n)) { delete pendingOut[n]; continue; }
-    rec.runs += 1;
-    if (rec.runs >= 2 && facts.departures.length < 3) {
-      facts.departures.push({ player: n, lastClub: tn(rec.t), minutesThisSeason: rec.m });
-      announced.push(n); delete pendingOut[n];
-    } else pendingOut[n] = rec;
-  }
+  // (diff-based departure detection removed: departures now come from the
+  // cache's departed flag -- see below, outside this gate)
   const inCandidates = { ...pendingIn };
   for (const [n, v] of Object.entries(nowSnap)) if (!prevSnap[n] && !inCandidates[n]) inCandidates[n] = { t: v.t, runs: 0 };
   for (const [n, rec] of Object.entries(inCandidates)) {
@@ -102,6 +91,14 @@ if (Object.keys(prevSnap).length) {
       announced.push(n); delete pendingIn[n];
     } else pendingIn[n] = rec;
   }
+}
+// departures: read the cache's departed flag (fetch-data retains vanished
+// players and confirms over two runs) -- one source of truth, no baseline needed
+for (const p of players) {
+  if (!p.departed || (p.m || 0) < 450 || announced.includes(p.n)) continue;
+  if (facts.departures.length >= 3) break;
+  facts.departures.push({ player: p.n, lastClub: tn(p.t), minutesThisSeason: p.m || 0 });
+  announced.push(p.n);
 }
 const newState = { playerTeams: nowSnap, pendingOut, pendingIn, announced: announced.slice(-60), updated: new Date().toISOString() };
 
