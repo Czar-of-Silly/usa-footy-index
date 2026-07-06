@@ -273,7 +273,7 @@ function computeGrades(ps){
     const hndRanks=buildRanks('handling');
     for(const g of gkComposites){
       o[g.id]={
-        overall:grOfP(g.ov,"GK",95),
+        overall:grOfP(g.ov,"GK",99),
         attack:grOf(g.shotStop,99),
         passing:grOf(g.dist,99),
         defense:grOf(g.command,99),
@@ -287,7 +287,7 @@ function computeGrades(ps){
   // ── OUTFIELD PASS 2 [OPT1] ──
   // Sub-grades ranked LEAGUE-WIDE (all outfielders); Overall ranked WITHIN
   // position (so each position can top out near 99).
-  const OV_CEIL={FW:99,MF:97,DF:94};
+  const OV_CEIL={FW:99,MF:99,DF:99};
   const ovGradeOf2=(rp,ceil)=>Math.round(42+Math.pow(Math.max(0,Math.min(1,rp)),1.5)*(((ceil||97))-42));
   const rankToGradeOf=(rp)=>Math.round(42+Math.pow(Math.max(0,Math.min(1,rp)),1.5)*57);
   if(ofComposites.length>=3){
@@ -625,9 +625,9 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
     <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:8}}>
       <span style={{fontSize:12,color:T.textDim,width:72,fontWeight:500,flexShrink:0,fontFamily:T.sans}}>{label}</span>
       <div style={{flex:1,height:5,background:T.borderLt,borderRadius:0,overflow:"hidden"}}>
-        <div style={{width:`${Math.min(100,Math.max(1,(val/max)*100))}%`,height:"100%",background:highlight?T.ink:"#A09A9060",borderRadius:0,transition:"width .5s ease"}}/>
+        <div style={{width:`${val==null?0:Math.min(100,Math.max(1,(val/max)*100))}%`,height:"100%",background:highlight?T.ink:"#A09A9060",borderRadius:0,transition:"width .5s ease"}}/>
       </div>
-      <span style={{fontFamily:T.mono,fontWeight:600,fontSize:13,color:T.text,width:36,textAlign:"right"}}>{val}</span>
+      <span style={{fontFamily:T.mono,fontWeight:600,fontSize:13,color:T.text,width:36,textAlign:"right"}}>{val==null?"—":val}</span>
       {pctKey&&pct[pctKey]!=null&&<PctBadge value={pct[pctKey]}/>}
     </div>
   );
@@ -814,14 +814,14 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>ATTACKING</span>
             <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.attack)}}>{p.attack} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.attack)}</span></span>
           </div>
-          {bar("Goals",p.goals,20,true,"goals")}{bar("Assists",p.assists,15,true,"assists")}{bar("xG",p.xGoals,2.5,false)}{bar("xA",p.xAssists,2.5,false)}{bar("Shots",p.shots||0,60,false)}{bar("On Target",p.shotsOnTarget||0,30,false)}{bar("Official xG",p.officialXg||0,12,false)}
+          {bar("Goals",p.goals,20,true,"goals")}{bar("Assists",p.assists,15,true,"assists")}{bar("xG",p.xGoals,2.5,false)}{bar("xA",p.xAssists,2.5,false)}{bar("Shots",p.shots||0,60,false)}{bar("On Target",p.shotsOnTarget||0,30,false)}{bar("Official xG",p.officialXg,12,false)}
         </div>
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>CREATIVITY</span>
             <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.creativity)}}>{p.creativity} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.creativity)}</span></span>
           </div>
-          {bar("Key Passes",p.keyPasses||0,50,true,"keyPasses")}{bar("Chances",p.chances||0,60,true,"chances")}{bar("xA",p.xAssists,10,false)}
+          {bar("Key Passes",p.keyPasses||0,50,true,"keyPasses")}{bar("Chances",p.chances,60,true,"chances")}{bar("xA",p.xAssists,10,false)}
         </div>
         <div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6,marginBottom:12}}>
@@ -836,7 +836,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             <span style={{fontSize:10,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans}}>DEFENSIVE</span>
             <span style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:gc(p.defense)}}>{p.defense} <span style={{fontSize:9,fontWeight:600,letterSpacing:.5,opacity:.8}}>{gl(p.defense)}</span></span>
           </div>
-          {bar("Clearances",p.clearances||0,80,true,"clearances")}{bar("Pressures",p.pressures||0,300,true,"pressures")}{bar("Aerial Win %",p.aerialPct||0,100,true,"aerialPct")}{bar("Aerials Won",p.aerials||0,50,false,"aerials")}{bar("Fouls",p.fouls||0,25,false)}
+          {bar("Clearances",p.clearances||0,80,true,"clearances")}{bar("Pressures",p.pressures||0,300,true,"pressures")}{bar("Aerial Win %",p.aerialPct,100,true,"aerialPct")}{bar("Aerials Won",p.aerials||0,50,false,"aerials")}{bar("Fouls",p.fouls||0,25,false)}
           <div style={{display:"flex",gap:12,marginTop:6}}>
             <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:12,borderRadius:0,background:"#E8C94A"}}/><span style={{fontSize:13,color:T.textDim,fontFamily:T.mono,fontWeight:600}}>{sv(p.yellowCards)}</span></div>
             <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:12,borderRadius:0,background:T.red}}/><span style={{fontSize:13,color:T.textDim,fontFamily:T.mono,fontWeight:600}}>{sv(p.redCards)}</span></div>
@@ -1176,7 +1176,7 @@ function MLSAnalytics(){
       const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players from pools
       setLoadProgress(95);
       const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:+(r.oxg||0),chances:r.chc||0,goalOpps:r.gop||0,aerialPct:r.arlPct||0,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:r.clr||0,pressureRes:+(r.presR||0),escapeRate:+(r.esc||0),distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:("oxg" in r)?+(r.oxg||0):null,chances:("chc" in r)?(r.chc||0):null,goalOpps:r.gop||0,aerialPct:("arlPct" in r)?(r.arlPct||0):null,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:("clr" in r)?(r.clr||0):null,pressureRes:("presR" in r)?+(r.presR||0):null,escapeRate:("esc" in r)?+(r.esc||0):null,distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}
@@ -2313,7 +2313,7 @@ function MLSAnalytics(){
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
               <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><Badge grade={p.defense} size={isMobile?"sm":"md"}/></div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,textAlign:"center"}}>{p.tackles!=null?p.tackles:"—"}</div>{!isMobile&&<div style={{fontSize:13,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.tacklePct!=null?p.tacklePct+"%":"—"}</div>}
-              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.aerialPct,100),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.aerialAtt>0?p.aerialPct+"%":"—"}</div>
+              <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.aerialPct,100),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.aerialPct!=null?p.aerialPct+"%":"—"}</div>
               <div style={{fontSize:isMobile?13:15,color:T.ink,fontWeight:600,background:hm(p.pressures,300),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{sv(p.pressures)}</div>
               {!isMobile&&<div style={{fontSize:14,color:T.textDim,background:hm(p.clearances,40),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{sv(p.clearances)}</div>}
               {!isMobile&&<div style={{fontSize:13,color:T.textDim,textAlign:"center"}}>{sv(p.fouls)}</div>}
