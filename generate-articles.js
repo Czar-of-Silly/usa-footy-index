@@ -50,7 +50,7 @@ const teamName = {}; standings.forEach(s => teamName[s.team] = s.name);
 const tn = a => teamName[a] || a;
 
 // ─── FACT PACKETS ────────────────────────────────────────────────────────────
-const facts = { recaps: [], moves: [], races: {}, table: {} };
+const facts = { recaps: [], moves: [], departures: [], arrivals: [], races: {}, table: {} };
 const factNames = new Set(); // every legit name the model may use
 
 // 1. Recent completed matches (last 6 days)
@@ -62,17 +62,48 @@ for (const m of matches) {
   facts.recaps.push({ home: tn(m.home), away: tn(m.away), score: `${m.homeScore}-${m.awayScore}`, date: m.date.slice(0, 10) });
 }
 
-// 2. Roster moves via snapshot diff
-let prevSnap = {};
-if (fs.existsSync(STATE)) { try { prevSnap = JSON.parse(fs.readFileSync(STATE, "utf8")).playerTeams || {}; } catch {} }
+// 2. Roster moves, departures, and arrivals via snapshot diff (v2)
+// Departures/arrivals need TWO consecutive runs before announcement, so a
+// one-run feed blip never becomes transfer news. v1 snapshots (plain team
+// strings, no minutes) migrate automatically.
+let state = {};
+if (fs.existsSync(STATE)) { try { state = JSON.parse(fs.readFileSync(STATE, "utf8")); } catch {} }
+const prevSnap = {};
+for (const [n, v] of Object.entries(state.playerTeams || {})) prevSnap[n] = typeof v === "string" ? { t: v, m: 0 } : v;
+const pendingOut = state.pendingOut || {};
+const pendingIn = state.pendingIn || {};
+const announced = state.announced || [];
 const nowSnap = {};
-for (const p of players) if (p.n && p.t) nowSnap[p.n] = p.t;
+for (const p of players) if (p.n && p.t) nowSnap[p.n] = { t: p.t, m: p.m || 0 };
 if (Object.keys(prevSnap).length) {
-  for (const [n, t] of Object.entries(nowSnap)) {
-    if (prevSnap[n] && prevSnap[n] !== t) facts.moves.push({ player: n, from: tn(prevSnap[n]), to: tn(t) });
+  for (const [n, v] of Object.entries(nowSnap)) {
+    if (prevSnap[n] && prevSnap[n].t !== v.t) facts.moves.push({ player: n, from: tn(prevSnap[n].t), to: tn(v.t) });
+  }
+  // candidates = current gaps PLUS names already pending from prior runs,
+  // because a departed player leaves the snapshot after run 1 and would
+  // otherwise never reach the 2-run confirmation.
+  const outCandidates = { ...pendingOut };
+  for (const [n, v] of Object.entries(prevSnap)) if (!nowSnap[n] && !outCandidates[n]) outCandidates[n] = { t: v.t, m: v.m, runs: 0 };
+  for (const [n, rec] of Object.entries(outCandidates)) {
+    if (nowSnap[n] || (rec.m || 0) < 450 || announced.includes(n)) { delete pendingOut[n]; continue; }
+    rec.runs += 1;
+    if (rec.runs >= 2 && facts.departures.length < 3) {
+      facts.departures.push({ player: n, lastClub: tn(rec.t), minutesThisSeason: rec.m });
+      announced.push(n); delete pendingOut[n];
+    } else pendingOut[n] = rec;
+  }
+  const inCandidates = { ...pendingIn };
+  for (const [n, v] of Object.entries(nowSnap)) if (!prevSnap[n] && !inCandidates[n]) inCandidates[n] = { t: v.t, runs: 0 };
+  for (const [n, rec] of Object.entries(inCandidates)) {
+    if (!nowSnap[n] || announced.includes(n)) { delete pendingIn[n]; continue; }
+    rec.runs += 1;
+    if (rec.runs >= 2 && facts.arrivals.length < 3) {
+      facts.arrivals.push({ player: n, joined: tn(nowSnap[n].t) });
+      announced.push(n); delete pendingIn[n];
+    } else pendingIn[n] = rec;
   }
 }
-fs.writeFileSync(STATE, JSON.stringify({ playerTeams: nowSnap, updated: new Date().toISOString() }, null, 0));
+const newState = { playerTeams: nowSnap, pendingOut, pendingIn, announced: announced.slice(-60), updated: new Date().toISOString() };
 
 // 3. Stat races (raw cache stats only — grades are client-side)
 const withMins = players.filter(p => (p.m || 0) >= 450);
@@ -103,7 +134,16 @@ if (byGf) facts.table.bestAttack = { team: byGf.name, gf: byGf.gf };
 if (byGa) facts.table.bestDefense = { team: byGa.name, ga: byGa.ga };
 
 // register every legit name (players + teams) for validation
+// Skip generation when nothing material changed since the last run
+newState.factsHash = require("crypto").createHash("md5").update(JSON.stringify([facts.recaps, facts.moves, facts.departures, facts.arrivals, facts.races, facts.table])).digest("hex");
+fs.writeFileSync(STATE, JSON.stringify(newState));
+console.log("Lanes — recaps:" + facts.recaps.length + " moves:" + facts.moves.length + " departures:" + facts.departures.length + " arrivals:" + facts.arrivals.length);
+if (state.factsHash && state.factsHash === newState.factsHash && !TEST_MODE) {
+  console.log("ℹ️  Facts unchanged since last run — no new briefs needed.");
+  process.exit(0);
+}
 for (const p of players) if (p.n) factNames.add(p.n);
+for (const d of facts.departures) factNames.add(d.player);
 for (const s of standings) { factNames.add(s.name); factNames.add(s.team); }
 
 // ─── PROMPT ──────────────────────────────────────────────────────────────────
@@ -113,7 +153,8 @@ STRICT RULES:
 - Use ONLY the facts below. Do not invent scorers, injuries, quotes, transfers, streaks, or any detail not present.
 - Never use em dashes or the words "delve", "testament", "landscape", "showcase", "underscore".
 - No emoji. No exclamation marks.
-- If the facts include matches, lead with a recap. If they include roster moves, one brief covers them. Otherwise write stat-race and table briefs.
+- If the facts include matches, lead with a recap. If they include roster moves, departures, or arrivals, one brief covers the movement news. Otherwise write stat-race and table briefs.
+- Departures mean a player is no longer in the MLS record. Their destination is UNKNOWN: never name or guess a new club, league, transfer fee, or reason. State only that they have left, which club they leave, and their season line if provided.
 
 FACTS (JSON):
 ${JSON.stringify(facts, null, 1)}
