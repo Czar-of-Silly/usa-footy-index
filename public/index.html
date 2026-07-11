@@ -1707,15 +1707,25 @@ function MLSAnalytics(){
 
       <main style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px"}}>
         {/* Loading */}
-        {loading&&<div style={{padding:"80px 0",textAlign:"center",animation:"fadeUp .5s ease"}}>
-          <div style={{fontFamily:T.mono,fontSize:9,letterSpacing:"0.3em",textTransform:"uppercase",color:T.accent,fontWeight:700,marginBottom:10}}>USA Footy Index</div><div style={{fontFamily:T.display,fontWeight:900,fontSize:26,color:T.ink,letterSpacing:-.5,marginBottom:6}}>Composing Today&apos;s Edition</div><div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim,marginBottom:22}}>{loadMsg}</div>
-          <div style={{width:320,height:3,background:T.borderLt,borderRadius:0,margin:"0 auto",overflow:"hidden"}}>
-            <div style={{width:`${loadProgress}%`,height:"100%",background:loadProgress>=100?T.green:T.ink,borderRadius:0,transition:"width .4s ease"}}/>
+        {loading&&<div style={{padding:"64px 0",textAlign:"center",animation:"fadeUp .5s ease"}}>
+          <style>{`
+            @keyframes usfiStamp{0%{opacity:0;transform:scale(2.2) rotate(-8deg)}55%{opacity:1;transform:scale(.92) rotate(1.5deg)}75%{transform:scale(1.05) rotate(-.5deg)}100%{opacity:1;transform:scale(1) rotate(0deg)}}
+            @keyframes usfiCaret{0%,45%{opacity:1}50%,100%{opacity:0}}
+            @keyframes usfiInk{0%{opacity:.55}50%{opacity:1}100%{opacity:.55}}
+          `}</style>
+          <div style={{display:"inline-block",animation:"usfiStamp .7s cubic-bezier(.22,1.4,.36,1) both",filter:"sepia(.25) contrast(1.05)",marginBottom:14}}><Logo size={88}/></div>
+          <div style={{fontFamily:T.mono,fontSize:9,letterSpacing:"0.3em",textTransform:"uppercase",color:T.accent,fontWeight:700,marginBottom:10}}>USA Footy Index</div>
+          <div style={{fontFamily:T.display,fontWeight:900,fontSize:26,color:T.ink,letterSpacing:-.5,marginBottom:6}}>Composing Today&apos;s Edition</div>
+          <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim,marginBottom:22}}>{loadMsg}<span style={{animation:"usfiCaret 1.1s steps(1) infinite",marginLeft:2}}>▌</span></div>
+          <div style={{position:"relative",width:320,margin:"0 auto"}}>
+            <div style={{width:"100%",height:2,background:T.borderLt}}/>
+            <div style={{position:"absolute",top:0,left:0,width:`${loadProgress}%`,height:2,background:loadProgress>=100?T.green:T.ink,transition:"width .4s ease",animation:"usfiInk 2.4s ease-in-out infinite"}}/>
+            <div style={{position:"absolute",top:-4,left:`calc(${loadProgress}% - 5px)`,width:10,height:10,transform:"rotate(45deg)",background:loadProgress>=100?T.green:T.ink,transition:"left .4s ease"}}/>
           </div>
-          <div style={{display:"flex",justifyContent:"space-between",width:320,margin:"8px auto 0"}}>
-            <span style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{loadProgress}%</span>
-            <span style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>
-              {loadProgress<80?"Setting the type...":loadProgress<95?"Inking the plates...":"Running the presses..."}
+          <div style={{display:"flex",justifyContent:"space-between",width:320,margin:"14px auto 0"}}>
+            <span style={{fontSize:10,color:T.textMute,fontFamily:T.mono,letterSpacing:"0.15em"}}>{loadProgress}%</span>
+            <span style={{fontSize:10,color:T.textMute,fontFamily:T.serif,fontStyle:"italic"}}>
+              {loadProgress<40?"Setting the type...":loadProgress<80?"Wiring the box scores...":loadProgress<95?"Inking the plates...":"Running the presses..."}
             </span>
           </div>
         </div>}
