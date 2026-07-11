@@ -52,12 +52,34 @@ export async function onRequestPost(context) {
       const name = String(row[0]).toLowerCase();
       if (qTokens.some(t => name.includes(t))) { matched.push(row); if (matched.length >= 12) break; }
     }
+    // team-aware packing: if the question names a team, include its roster rows
+    const qWords = new Set(question.toLowerCase().replace(/./g, "").match(/[a-zà-þ'’-]+/g) || []);
+    const GENERIC = new Set(["united", "city", "club", "football", "fc", "sc", "cf"]);
+    const teamHits = [];
+    for (const s of ctx.standings || []) {
+      const abbr = String(s.team || "").toLowerCase();
+      const nameToks = (String(s.name || "").toLowerCase().replace(/./g, "").match(/[a-zà-þ'’-]{2,}/g) || []).filter(t => !GENERIC.has(t));
+      if ((abbr && qWords.has(abbr)) || nameToks.some(t => qWords.has(t))) {
+        teamHits.push(s.team);
+        if (teamHits.length >= 3) break;
+      }
+    }
+    const teamRows = {};
+    for (const row of ctx.players || []) {
+      if (!teamHits.includes(row[1])) continue;
+      (teamRows[row[1]] = teamRows[row[1]] || []).push(row);
+    }
+    for (const t of Object.keys(teamRows)) {
+      teamRows[t] = teamRows[t].sort((a, b) => (b[7] || 0) - (a[7] || 0)).slice(0, 30);
+    }
+
     const packed = {
       note: ctx.note, season: ctx.season, dataAsOf: ctx.generated,
       standings: ctx.standings,
       topRatedByPosition: ctx.topRatedByPosition,
       topScorers: ctx.topScorers, topAssists: ctx.topAssists, topTacklers: ctx.topTacklers,
-      playersMentionedInQuestion: matched
+      playersMentionedInQuestion: matched,
+      teamsMentionedInQuestion: teamRows
     };
 
     const prompt = `You are the desk assistant for USA Footy Index, an MLS analytics broadsheet. Answer the reader's question using ONLY the data record below. Voice: plain, confident newspaper desk. Two to five sentences, no lists, no em dashes, no exclamation marks, no emoji.
