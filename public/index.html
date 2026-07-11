@@ -1817,6 +1817,47 @@ function MLSAnalytics(){
                 </div>
               </div>}
             </div>}
+            {/* ═══ DESK ROW: slate · movers · subscribe ═══ */}
+            {(()=>{
+              const upcoming=[...matchesData].filter(m=>!m.completed&&m.date&&new Date(m.date)>=new Date()).sort((a,b)=>(a.date||"").localeCompare(b.date||"")).slice(0,6);
+              const latest=[...matchesData].filter(m=>m.completed).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,6);
+              const slate=upcoming.length?upcoming:latest;
+              const slateTitle=upcoming.length?"The Slate \u00b7 Upcoming":"The Slate \u00b7 Latest Results";
+              const risers=[...movers].sort((a,b)=>b.delta-a.delta).slice(0,4).filter(p=>p.delta>0);
+              const fallers=[...movers].sort((a,b)=>a.delta-b.delta).slice(0,4).filter(p=>p.delta<0);
+              const fmtD=(d)=>{try{return new Date(d).toLocaleDateString("en-US",{month:"short",day:"numeric"}).toUpperCase();}catch(e){return "";}};
+              const colHead=(t)=>(<div style={{fontFamily:T.mono,fontSize:10,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:T.bg,background:T.ink,padding:"6px 10px 5px",marginBottom:10}}>{t}</div>);
+              const rowStyle={display:"flex",justifyContent:"space-between",padding:"6px 2px",borderBottom:`1px dotted ${T.borderLt}`,fontFamily:T.mono,fontSize:11.5};
+              if(!slate.length&&!risers.length&&!fallers.length)return null;
+              return <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:isMobile?24:32,padding:"30px 0 26px",borderBottom:`1px solid ${T.borderLt}`}}>
+                <div>
+                  {colHead(slateTitle)}
+                  {slate.length?slate.map((m,i)=>(
+                    <div key={i} style={Object.assign({},rowStyle,{color:T.text})}>
+                      <span>{m.home}{upcoming.length?" v ":` ${m.homeScore||0}\u2013${m.awayScore||0} `}{m.away}</span>
+                      <span style={{color:T.textMute}}>{fmtD(m.date)}</span>
+                    </div>)):<div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim}}>Nothing on the wire.</div>}
+                </div>
+                <div>
+                  {colHead("Risers & Fallers \u00b7 Form")}
+                  {risers.map(p=>(
+                    <div key={p.name} onClick={()=>setSel(p)} style={Object.assign({},rowStyle,{cursor:"pointer"})}>
+                      <span style={{color:T.text}}>{"\u25b2"} {p.name}</span><span style={{color:T.green,fontWeight:700}}>+{p.delta}</span>
+                    </div>))}
+                  {fallers.map(p=>(
+                    <div key={p.name} onClick={()=>setSel(p)} style={Object.assign({},rowStyle,{cursor:"pointer"})}>
+                      <span style={{color:T.text}}>{"\u25bc"} {p.name}</span><span style={{color:T.red,fontWeight:700}}>{p.delta}</span>
+                    </div>))}
+                  {!risers.length&&!fallers.length&&<div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim}}>Form data settles after two match logs.</div>}
+                </div>
+                <div style={{border:`3px double ${T.ink}`,padding:"18px 16px",textAlign:"center",alignSelf:"start",background:T.surface}}>
+                  <div style={{fontFamily:T.mono,fontSize:8.5,letterSpacing:"0.28em",textTransform:"uppercase",color:T.textMute,marginBottom:8}}>{"\u2014"} Advertisement {"\u2014"}</div>
+                  <div style={{fontFamily:T.display,fontWeight:900,fontSize:19,color:T.ink,lineHeight:1.15}}>Subscribe to the Dispatch</div>
+                  <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim,margin:"8px 0 14px"}}>The Index, delivered weekly by wire. Grades, movers, and the stories behind the numbers.</div>
+                  <a href="https://usfootyindex.beehiiv.com" target="_blank" rel="noopener noreferrer" style={{display:"inline-block",background:T.accent,color:T.bg,textDecoration:"none",padding:"10px 22px",fontFamily:T.mono,fontWeight:700,fontSize:10.5,letterSpacing:"0.18em",textTransform:"uppercase"}}>Subscribe Free {"\u2192"}</a>
+                </div>
+              </div>;
+            })()}
             {graded.length>=3&&(()=>{
               const top3=sortedG.slice(0,3);
               const leaders=[
