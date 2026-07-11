@@ -36,6 +36,18 @@ const STATE = "public/data/articles-state.json";
 const MODEL = "claude-sonnet-4-6";
 const MAX_ARTICLES_KEPT = 12;
 
+// Anti-speculation + search-grounding rules appended to every prompt.
+const GROUNDING_RULES = [
+  "",
+  "TRANSFER AND ROSTER-MOVE RULES (these override everything above):",
+  "- The roster-moves facts come from roster snapshots only. They do NOT include destination clubs, incoming signings' origin clubs, or transfer fees.",
+  "- Before writing about any departure, use web search to find the player's destination club. If search confirms it, state it. If you cannot confirm it, report the departure WITHOUT any destination and NEVER write phrases like 'destination unknown' or 'his destination is unknown'.",
+  "- Before writing about any incoming signing, use web search to verify the player's full name spelling and previous club against official club announcements. If you cannot verify a name, leave that player out of the article entirely.",
+  "- Never invent, guess, or approximate a player name, club, or fee. A shorter, verified article always beats a longer, speculative one.",
+  "- Do not pad with empty observations (e.g. noting that news arrived on the same day as something else unless the timing itself is the story)."
+].join("\n");
+
+
 const API_KEY = process.env.ANTHROPIC_API_KEY;
 const TEST_MODE = process.env.TEST_MODE === "1";
 
@@ -167,7 +179,8 @@ async function callClaude() {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 1600, messages: [{ role: "user", content: prompt }] })
+    body: JSON.stringify({ model: MODEL,
+      tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 1600, messages: [{ role: "user", content: prompt + GROUNDING_RULES }] })
   });
   if (!res.ok) throw new Error("Anthropic API " + res.status + ": " + (await res.text()).slice(0, 200));
   const data = await res.json();
