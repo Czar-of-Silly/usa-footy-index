@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Roster Move · MLS",
+  "headline": "D.C. United land Ordaz from LAFC in $2.375M deal",
+  "dek": "The El Salvador international joins the Black-and-Red as a U22 Initiative player after 98 appearances in LAFC colors.",
+  "body": "D.C. United have acquired forward Nathan Ordaz from LAFC for $2.375 million, with up to an additional $500,000 available in performance incentives. LAFC also retains a sell-on percentage on any future trade. Ordaz, 22, made 98 appearances for the Black and Gold across all competitions since signing as the club's fourth homegrown player in 2022, recording 14 goals and 12 assists. He carries 14 caps for El Salvador into his new posting in the nation's capital.",
+  "created": "2026-07-15T12:16:40.282Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Cuypers leads Musa and Messi by one at the top",
+  "dek": "Chicago's Hugo Cuypers holds a slim advantage in the MLS scoring race with the season past its midpoint.",
+  "body": "Hugo Cuypers of Chicago Fire FC sits first in the goals table on 13, one clear of Petar Musa (FC Dallas) and Leo Messi (Inter Miami CF), who are level on 12. Messi also ranks second in the assists race on seven, one behind LAFC's Son Heung-Min, who leads the league on eight. Anders Dreyer of San Diego FC shares second in assists with Messi on seven. Andrés Cubas of Vancouver Whitecaps tops the tackles leaderboard at 52, with Inter Miami's Yannick Bright second on 47 and D.C. United's João Peglow third on 45.",
+  "created": "2026-07-15T12:16:40.282Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "xG · Finishing",
+  "headline": "Ingvartsen and Guilherme outrun the model by wide margins",
+  "dek": "Two strikers are converting well beyond expectation, while Vancouver's Brian White carries a significant xG deficit.",
+  "body": "San Diego FC's Marcus Ingvartsen leads MLS in xG outperformance with 11 goals against an xG of 6.8, a gap of plus-4.3. Houston Dynamo's Guilherme is close behind at plus-4.2, having scored eight times from an xG of 3.8. On the other side, Vancouver's Brian White sits 2.4 goals below expectation, 10 goals scored against an xG of 12.4, the largest deficit in the league. Minnesota's Kelvin Yeboah is next at minus-1.8, having hit eight from an xG of 9.8.",
+  "created": "2026-07-15T12:16:40.282Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Standings · East & West",
+  "headline": "Nashville and San Jose sit atop their conferences",
+  "dek": "Nashville's backline remains the stingiest in the league as San Jose pace the West on goal difference.",
+  "body": "Nashville SC lead the Eastern Conference on 33 points, built on a 10W-3D-1L record. Their 11 goals allowed is the best defensive mark in MLS. San Jose Earthquakes top the West on 32 points at 10W-2D-3L, having scored 34 times in 15 outings. Inter Miami CF hold the league's most potent attack with 39 goals scored, seven more than any conference leader, though their table standing trails Nashville's in the East.",
+  "created": "2026-07-15T12:16:40.282Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Roster · Movement",
   "headline": "Six players cross MLS borders in one window",
   "dek": "Gabriel Pirani heads to San Diego FC while two departures shrink the Galaxy and Whitecaps rosters.",
@@ -61,38 +93,6 @@
   "dek": "Nashville SC hold the East on 33 points; San Jose Earthquakes top the West on 32 with the sharper attack.",
   "body": "Nashville SC lead the Eastern Conference with 33 points from a 10-3-1 record and the stingiest defense in the league, having conceded just 11 goals. San Jose Earthquakes front the West on 32 points at 10-2-3, posting 34 goals scored. Inter Miami CF own the best attack in MLS with 39 goals for the season, though their defensive numbers have kept them off the top line in the East.",
   "created": "2026-07-09T13:51:07.108Z",
-  "status": "approved"
- },
- {
-  "kicker": "Roster · Movement",
-  "headline": "Tiago, Palacio swap addresses in MLS",
-  "dek": "Two midweek deals shift pieces between New England, Orlando, Salt Lake, and Toronto.",
-  "body": "Tiago moves from New England Revolution to Orlando City SC, adding depth to a side that has been active in the market. Nelson Palacio heads in the opposite direction of the league map, leaving Real Salt Lake for Toronto FC. Neither club released contract details. The moves leave the Revolution and RSL with roster holes to fill before the next selection window closes.",
-  "created": "2026-07-08T12:23:23.004Z",
-  "status": "approved"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Cuypers holds a one-goal edge at the top",
-  "dek": "Chicago's Belgian striker leads Musa and Messi by a single goal with the season still live.",
-  "body": "Hugo Cuypers of Chicago Fire FC sits at 13 goals, one clear of FC Dallas forward Petar Musa and Inter Miami CF's Leo Messi, who are level at 12. Messi is also second in the assists table with seven, behind LAFC's Son Heung-Min, who leads that category at eight. Anders Dreyer of San Diego FC shares second in assists. Three players within one goal of the boot is as tight a race as the league has produced this term.",
-  "created": "2026-07-08T12:23:23.004Z",
-  "status": "approved"
- },
- {
-  "kicker": "Finishing · xG Watch",
-  "headline": "Ingvartsen and Guilherme defy the model",
-  "dek": "Two forwards are each outscoring their expected-goals marks by more than four goals.",
-  "body": "Marcus Ingvartsen of San Diego FC has 11 goals against an xG of 6.8, a positive gap of plus-4.3. Houston Dynamo FC's Guilherme is close behind at plus-4.2, with eight goals from an xG of 3.8. On the other side of the ledger, Vancouver's Brian White holds 10 goals but carries an xG of 12.4, leaving him minus-2.4. Minnesota's Kelvin Yeboah is minus-1.8, with eight goals against an xG of 9.8.",
-  "created": "2026-07-08T12:23:23.004Z",
-  "status": "approved"
- },
- {
-  "kicker": "Standings · Conference",
-  "headline": "Nashville and San Jose lead their tables",
-  "dek": "A combined two points separate the Eastern and Western leaders as the season reaches full stride.",
-  "body": "Nashville SC top the East with 33 points from a 10-3-1 record. Their 11 goals conceded is the best defensive mark in the league. San Jose Earthquakes lead the West on 32 points, record 10-2-3, and have scored 34 times, second only to Inter Miami CF, whose 39 goals for is the highest total in MLS. Nashville's attack and defense combination makes them the most complete side on paper through this stage.",
-  "created": "2026-07-08T12:23:23.004Z",
   "status": "approved"
  }
 ]
