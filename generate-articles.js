@@ -163,7 +163,7 @@ STRICT RULES:
 - Never use em dashes or the words "delve", "testament", "landscape", "showcase", "underscore".
 - No emoji. No exclamation marks.
 - If the facts include matches, lead with a recap. If they include roster moves, departures, or arrivals, one brief covers the movement news. Otherwise write stat-race and table briefs.
-- Departures mean a player is no longer in the MLS record. Their destination is UNKNOWN: never name or guess a new club, league, transfer fee, or reason. State only that they have left, which club they leave, and their season line if provided.
+- Departures mean a player is no longer in the MLS record. The packet does not know where he went: use web search to confirm the destination. If confirmed, name it. If not confirmed, report only the departure and season line and say nothing at all about the destination: the phrase "destination unknown" and every variant of it is banned.
 
 FACTS (JSON):
 ${JSON.stringify(facts, null, 1)}
@@ -198,6 +198,7 @@ function validate(a) {
   if (words < 30 || words > 120) problems.push("body length " + words + "w");
   if (headline.length > 70) problems.push("headline too long");
   if (BANNED.test(headline + " " + dek + " " + body)) problems.push("banned phrase/char");
+  if (/destinations?\s+(?:is|are|was|were|remains?|stays?)\s+(?:unknown|unclear|a mystery|undisclosed|not known)/i.test(headline + " " + dek + " " + body)) problems.push("destination-unknown phrasing");
   // every person-like name (Two Capitalized Words) must exist in the fact
   // names; ordinary capitalized phrases are allowlisted so "Golden Boot" or
   // "Eastern Conference" never demote a legit brief
