@@ -577,6 +577,11 @@ async function main() {
     .toLowerCase().replace(/['’]/g, "").replace(/[.\-]/g, " ").replace(/\s+/g, " ").trim()
     .split(" ").filter(t => !["jr", "sr", "ii", "iii", "iv"].includes(t)).join(" ");
   const sofaByTeam = {}; const sofaGlobal = {};
+  // persistent resolved values — survives CI runs where Sofascore 403s
+  const MV_CACHE_PATH = require("path").join(__dirname, "public", "data", "mv-cache.json");
+  let mvCacheVals = {};
+  try { mvCacheVals = JSON.parse(fs.readFileSync(MV_CACHE_PATH, "utf8")) || {}; } catch (e) {}
+  if (Object.keys(mvCacheVals).length) console.log("          📦 mv-cache: " + Object.keys(mvCacheVals).length + " persisted values loaded");
   try {
     const seasons = await sofaGet(`/unique-tournament/${MLS_TOURNAMENT}/seasons`);
     const seasonId = seasons?.seasons?.[0]?.id;
@@ -626,12 +631,25 @@ async function main() {
     for (const p of output.players) {
       if ((p.mv || 0) > 0) { already++; continue; }
       const norm = mvNorm(MV_OVERRIDES[p.n] || p.n);
-      const v = matchIn(norm, sofaByTeam[p.t]) || matchIn(norm, sofaGlobal);
+      const v = matchIn(norm, sofaByTeam[p.t]) || matchIn(norm, sofaGlobal) || mvCacheVals[norm] || 0;
       if (v) { p.mv = v; filled++; }
       else if ((p.m || 0) >= 450 && !p.departed) unmatched.push(p.n + " (" + p.t + ")");
     }
     console.log(`          ✅ market values: ${filled} backfilled, ${already} already present`);
     if (unmatched.length) console.log("          ⚠️  regulars still unmatched (" + unmatched.length + "): " + unmatched.slice(0, 12).join(", ") + (unmatched.length > 12 ? " …" : ""));
+    // persist every resolved value so blocked-IP runs (CI) can reuse them
+    try {
+      const merged = { ...mvCacheVals };
+      for (const p of output.players) if ((p.mv || 0) > 0) merged[mvNorm(p.n)] = p.mv;
+      const sorted = {}; for (const k of Object.keys(merged).sort()) sorted[k] = merged[k];
+      const out = JSON.stringify(sorted);
+      if (out !== JSON.stringify(mvCacheVals)) {
+        fs.writeFileSync(MV_CACHE_PATH, out);
+        console.log("          💾 mv-cache.json updated (" + Object.keys(sorted).length + " names)");
+      } else {
+        console.log("          mv-cache.json unchanged (" + Object.keys(sorted).length + " names)");
+      }
+    } catch (e) { console.log("          mv-cache save skipped: " + e.message); }
   }
 
   // ═══ WRITE ═════════════════════════════════════════════════════════════
