@@ -76,6 +76,7 @@ export async function onRequestPost(context) {
     const packed = {
       note: ctx.note, season: ctx.season, dataAsOf: ctx.generated,
       standings: ctx.standings,
+      recentResults: ctx.recentResults || [],
       topRatedByPosition: ctx.topRatedByPosition,
       topScorers: ctx.topScorers, topAssists: ctx.topAssists, topTacklers: ctx.topTacklers,
       playersMentionedInQuestion: matched,

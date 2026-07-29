@@ -68,11 +68,19 @@ for (const pos of ["Forward", "Midfielder", "Defender", "GK"]) {
 const topBy = (k, n = 5) => rated.filter(p => (p[k] || 0) > 0)
   .sort((a, b) => (b[k] || 0) - (a[k] || 0)).slice(0, n).map(row);
 
+// last 21 days of finals, newest first: [YYYY-MM-DD, home, hs, as, away]
+const cutoff = Date.now() - 21 * 864e5;
+const recentResults = (cache.matches || [])
+  .filter(m => m && m.completed && m.date && Date.parse(m.date) >= cutoff)
+  .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+  .map(m => [String(m.date).slice(0, 10), m.home, +m.homeScore || 0, +m.awayScore || 0, m.away]);
+
 const ctx = {
   generated: new Date().toISOString(),
   season: cache.season || 2026,
-  note: "grades: 42-99 scale computed by the USA Footy Index engine; player rows are [name, team, position, overall, goals, assists, tackles, minutes]",
+  note: "grades: 42-99 scale computed by the USA Footy Index engine; player rows are [name, team, position, overall, goals, assists, tackles, minutes]; recentResults rows are [date, homeTeam, homeGoals, awayGoals, awayTeam], newest first",
   standings: (cache.standings || []).map(s => ({ team: s.team, name: s.name, conf: s.conf, pts: s.pts, w: s.w, d: s.d, l: s.l, gf: s.gf, ga: s.ga })),
+  recentResults,
   topRatedByPosition: leadersByPos,
   topScorers: topBy("g"),
   topAssists: topBy("as"),
