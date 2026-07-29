@@ -32,6 +32,15 @@ export async function onRequestPost(context) {
     const question = String(body.question || "").trim().slice(0, MAX_QUESTION);
     if (question.length < 3) return json({ error: "Ask a real question." }, 400);
 
+    // question log for product insight — no-op unless the ASK_LOGS KV
+    // binding is configured in the Pages dashboard. Never blocks the answer.
+    try {
+      if (env.ASK_LOGS) {
+        const logKey = "q:" + Date.now().toString().padStart(14, "0") + ":" + Math.random().toString(36).slice(2, 8);
+        context.waitUntil(env.ASK_LOGS.put(logKey, JSON.stringify({ q: question, t: new Date().toISOString() }), { expirationTtl: 60 * 60 * 24 * 90 }));
+      }
+    } catch (e) { /* logging must never break the bot */ }
+
     // very light per-IP throttle via Cloudflare cache (best-effort, not a wall)
     const ip = request.headers.get("CF-Connecting-IP") || "anon";
     const throttleKey = new Request("https://throttle.usfi/" + ip + "/" + Math.floor(Date.now() / 60000));
