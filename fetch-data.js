@@ -565,40 +565,73 @@ async function main() {
   }
   console.log(`          ✅ Headshots: ${hsDown} new · ${hsSkip} cached · ${hsFail} failed`);
 
-  // ═══ [Sofa MV] Market values from Sofascore team squads ═══════════════
-  // Value-only fetch: the Opta migration removed Sofascore stats, but market
-  // values have no Opta equivalent. Backfills missing values, never overwrites.
+  // ═══ [Sofa MV v2] Market values from Sofascore team squads ════════════
+  // Team-scoped, normalization-hardened matcher. Backfills missing values
+  // only; never overwrites. Add stubborn cases to MV_OVERRIDES as
+  // "Cache Name": "Sofascore Name".
   console.log("  [Sofa MV] Market values...");
-  const sofaMV = {};
+  const MV_OVERRIDES = {
+    // "Saba Lobjanidze": "Saba Lobzhanidze",
+  };
+  const mvNorm = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/['’]/g, "").replace(/[.\-]/g, " ").replace(/\s+/g, " ").trim()
+    .split(" ").filter(t => !["jr", "sr", "ii", "iii", "iv"].includes(t)).join(" ");
+  const sofaByTeam = {}; const sofaGlobal = {};
   try {
     const seasons = await sofaGet(`/unique-tournament/${MLS_TOURNAMENT}/seasons`);
     const seasonId = seasons?.seasons?.[0]?.id;
     if (!seasonId) throw new Error("no Sofascore season id");
     const st = await sofaGet(`/unique-tournament/${MLS_TOURNAMENT}/season/${seasonId}/standings/total`);
-    const teamIds = [];
-    for (const grp of st?.standings || []) for (const row of grp?.rows || []) if (row?.team?.id) teamIds.push(row.team.id);
+    // map Sofascore team names to our abbrs through standings names
+    const abbrByNorm = {};
+    for (const s of output.standings) abbrByNorm[mvNorm(s.name)] = s.team;
+    const teams = [];
+    for (const grp of st?.standings || []) for (const row of grp?.rows || []) {
+      if (!row?.team?.id) continue;
+      const sofaName = mvNorm(row.team.name || "");
+      let abbr = abbrByNorm[sofaName] || null;
+      if (!abbr) { // token-subset fallback for name-style differences
+        const sTok = sofaName.split(" ");
+        const hits = Object.entries(abbrByNorm).filter(([k]) => { const kt = k.split(" "); return sTok.every(t => kt.includes(t)) || kt.every(t => sTok.includes(t)); });
+        if (hits.length === 1) abbr = hits[0][1];
+      }
+      teams.push({ id: row.team.id, abbr });
+    }
     let got = 0;
-    for (const tid of teamIds) {
+    for (const t of teams) {
       try {
-        const squad = await sofaGet(`/team/${tid}/players`);
+        const squad = await sofaGet(`/team/${t.id}/players`);
         for (const it of squad?.players || []) {
           const pl = it?.player; if (!pl?.name) continue;
           const v = pl.proposedMarketValue || pl.marketValue || it.marketValue || 0;
-          if (v > 0 && !sofaMV[pl.name]) { sofaMV[pl.name] = v; got++; }
+          if (v <= 0) continue;
+          const key = mvNorm(pl.name);
+          if (t.abbr) { (sofaByTeam[t.abbr] = sofaByTeam[t.abbr] || {})[key] = v; }
+          if (!sofaGlobal[key]) { sofaGlobal[key] = v; got++; }
         }
-      } catch (e) { console.error("          team " + tid + ": " + e.message); }
+      } catch (e) { console.error("          team " + t.id + ": " + e.message); }
       await sleep(350);
     }
-    console.log(`          ✅ ${got} values across ${teamIds.length} squads`);
+    console.log(`          ✅ ${got} values across ${teams.length} squads (${teams.filter(t => t.abbr).length} mapped to abbrs)`);
   } catch (e) { console.error("          ❌ " + e.message); }
   {
-    let filled = 0, already = 0;
+    const tokenHit = (a, b) => { const at = a.split(" "), bt = b.split(" "); return at.every(x => bt.includes(x)) || bt.every(x => at.includes(x)); };
+    const matchIn = (norm, map) => {
+      if (!map) return 0;
+      if (map[norm]) return map[norm];
+      const hits = Object.entries(map).filter(([k]) => tokenHit(norm, k));
+      return hits.length === 1 ? hits[0][1] : 0;
+    };
+    let filled = 0, already = 0, unmatched = [];
     for (const p of output.players) {
       if ((p.mv || 0) > 0) { already++; continue; }
-      const v = find(p.n, sofaMV);
+      const norm = mvNorm(MV_OVERRIDES[p.n] || p.n);
+      const v = matchIn(norm, sofaByTeam[p.t]) || matchIn(norm, sofaGlobal);
       if (v) { p.mv = v; filled++; }
+      else if ((p.m || 0) >= 450 && !p.departed) unmatched.push(p.n + " (" + p.t + ")");
     }
     console.log(`          ✅ market values: ${filled} backfilled, ${already} already present`);
+    if (unmatched.length) console.log("          ⚠️  regulars still unmatched (" + unmatched.length + "): " + unmatched.slice(0, 12).join(", ") + (unmatched.length > 12 ? " …" : ""));
   }
 
   // ═══ WRITE ═════════════════════════════════════════════════════════════
