@@ -75,12 +75,34 @@ const recentResults = (cache.matches || [])
   .sort((a, b) => String(b.date).localeCompare(String(a.date)))
   .map(m => [String(m.date).slice(0, 10), m.home, +m.homeScore || 0, +m.awayScore || 0, m.away]);
 
+// transfers: arrivals from the article engine's confirmed list, departures
+// from the cache's departed-player lifecycle. newsroom: approved articles.
+let transfers = { arrivals: [], departures: [] };
+try {
+  const st = JSON.parse(fs.readFileSync("public/data/articles-state.json", "utf8"));
+  const pt = st.playerTeams || {};
+  transfers.arrivals = (st.announced || []).map(n => [n, (pt[n] && pt[n].t) || null]).filter(a => a[1]);
+} catch (e) {}
+transfers.departures = (cache.players || []).filter(p => p && p.departed && p.n).map(p => [p.n, p.t]).slice(0, 40);
+
+let newsroom = [];
+try {
+  const arts = JSON.parse(fs.readFileSync("public/data/articles.json", "utf8"));
+  newsroom = (Array.isArray(arts) ? arts : [])
+    .filter(a => a && a.status === "approved" && a.headline)
+    .sort((a, b) => String(b.created || "").localeCompare(String(a.created || "")))
+    .slice(0, 10)
+    .map(a => [String(a.created || "").slice(0, 10), a.kicker || "", a.headline, a.dek || ""]);
+} catch (e) {}
+
 const ctx = {
   generated: new Date().toISOString(),
   season: cache.season || 2026,
-  note: "grades: 42-99 scale computed by the USA Footy Index engine; player rows are [name, team, position, overall, goals, assists, tackles, minutes]; recentResults rows are [date, homeTeam, homeGoals, awayGoals, awayTeam], newest first",
+  note: "grades: 42-99 scale computed by the USA Footy Index engine; player rows are [name, team, position, overall, goals, assists, tackles, minutes]; recentResults rows are [date, homeTeam, homeGoals, awayGoals, awayTeam], newest first; transfers holds confirmed arrivals/departures as [name, team]; newsroom rows are [date, kicker, headline, dek] from the Index's own published articles",
   standings: (cache.standings || []).map(s => ({ team: s.team, name: s.name, conf: s.conf, pts: s.pts, w: s.w, d: s.d, l: s.l, gf: s.gf, ga: s.ga })),
   recentResults,
+  transfers,
+  newsroom,
   topRatedByPosition: leadersByPos,
   topScorers: topBy("g"),
   topAssists: topBy("as"),

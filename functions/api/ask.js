@@ -86,6 +86,8 @@ export async function onRequestPost(context) {
       note: ctx.note, season: ctx.season, dataAsOf: ctx.generated,
       standings: ctx.standings,
       recentResults: ctx.recentResults || [],
+      transfers: ctx.transfers || { arrivals: [], departures: [] },
+      newsroom: ctx.newsroom || [],
       topRatedByPosition: ctx.topRatedByPosition,
       topScorers: ctx.topScorers, topAssists: ctx.topAssists, topTacklers: ctx.topTacklers,
       playersMentionedInQuestion: matched,
