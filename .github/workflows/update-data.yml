@@ -22,7 +22,7 @@ jobs:
           node-version: '22'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       # Layer 1: MLS official rosters (who's on each team, incl. SEI players)
       - name: Fetch MLS rosters (Layer 1)
@@ -88,5 +88,6 @@ jobs:
             exit 0
           fi
           git commit -m "Auto-update MLS data (rosters + Opta stats + salaries)"
+          git checkout -- package.json package-lock.json 2>/dev/null || true
           git pull --rebase origin main
           git push origin main
