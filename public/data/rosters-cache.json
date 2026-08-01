@@ -1,16 +1,16 @@
 {
-  "generated": "2026-07-30T12:28:14.216Z",
+  "generated": "2026-08-01T12:01:45.616Z",
   "source": "MLS Digital API",
   "sourceUrl": "https://dapi.mlssoccer.com/v2/content/en-us/players",
   "teamCount": 30,
-  "playerCount": 928,
+  "playerCount": 930,
   "teams": {
     "MLS-CLU-00000A": {
       "sportecId": "MLS-CLU-00000A",
       "optaId": 11091,
       "name": "Atlanta United",
       "abbr": "ATL",
-      "playerCount": 30,
+      "playerCount": 29,
       "players": [
         {
           "sportecId": "MLS-OBJ-000CLL",
@@ -418,43 +418,6 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mqkycwfvqhjzhwwpyv0u",
           "slug": "aleksey-miranchuk",
           "lastUpdated": "2026-06-05T14:38:09.326Z"
-        },
-        {
-          "sportecId": "MLS-OBJ-0007KA",
-          "optaId": 315199802,
-          "clubSportecId": "MLS-CLU-00000A",
-          "clubOptaId": 11091,
-          "clubAbbr": "ATL",
-          "firstName": "Pedro",
-          "lastName": "Amador",
-          "knownName": "Pedro Amador",
-          "displayName": "Pedro Amador",
-          "jerseyNumber": "18",
-          "position": "defense",
-          "height": 180,
-          "weight": 0,
-          "footedness": null,
-          "dateOfBirth": "1998-12-18",
-          "age": 27,
-          "cityOfBirth": "Loures",
-          "countryOfBirth": "Portugal",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gm9tzolfnz3gvczcqxmy",
-          "slug": "pedro-amador",
-          "lastUpdated": "2026-05-29T22:05:20.745Z"
         },
         {
           "sportecId": "MLS-OBJ-0007BV",
@@ -1129,7 +1092,7 @@
       "optaId": 15296,
       "name": "Austin FC",
       "abbr": "ATX",
-      "playerCount": 27,
+      "playerCount": 28,
       "players": [
         {
           "sportecId": "MLS-OBJ-000BXJ",
@@ -1206,6 +1169,43 @@
           "lastUpdated": "2026-06-26T14:26:35.236Z"
         },
         {
+          "sportecId": "MLS-OBJ-00083M",
+          "optaId": 315200498,
+          "clubSportecId": "MLS-CLU-000003",
+          "clubOptaId": 15296,
+          "clubAbbr": "ATX",
+          "firstName": "Jorge",
+          "lastName": "Alastuey",
+          "knownName": null,
+          "displayName": "Jorge Alastuey",
+          "jerseyNumber": "24",
+          "position": "midfield",
+          "height": 178,
+          "weight": 0,
+          "footedness": null,
+          "dateOfBirth": "2003-05-14",
+          "age": 23,
+          "cityOfBirth": "Zaragoza",
+          "countryOfBirth": "Spain",
+          "rosterCategory": null,
+          "isSenior": false,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/eq1wxsj8xbednqgf7dig",
+          "slug": "jorge-alastuey",
+          "lastUpdated": "2026-07-31T20:50:56.108Z"
+        },
+        {
           "sportecId": "MLS-OBJ-00081D",
           "optaId": 315200417,
           "clubSportecId": "MLS-CLU-000003",
@@ -1229,8 +1229,8 @@
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
+          "isLoanedOut": true,
+          "playerStatus_1": "Loaned Out",
           "playerCategory_1": "U22 Initiative",
           "playerCategory_2": "International",
           "isDP": false,
@@ -1240,7 +1240,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wtameqwtqe84lptdla6f",
           "slug": "nicolas-dubersarsky",
-          "lastUpdated": "2026-06-26T15:37:47.531Z"
+          "lastUpdated": "2026-07-31T14:07:28.984Z"
         },
         {
           "sportecId": "MLS-OBJ-0007XG",
@@ -4484,9 +4484,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/votnk8m9m2y0m6kyc2ur",
           "slug": "fabian-mrozek",
-          "lastUpdated": "2026-06-24T18:02:54.083Z"
+          "lastUpdated": "2026-07-31T16:21:40.486Z"
         },
         {
           "sportecId": "MLS-OBJ-000CCM",
@@ -4558,9 +4558,9 @@
           "isHomegrown": true,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wakchuhncevdy9mibj9n",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ouxl6k31ve9c369qjqa9",
           "slug": "felix-samson",
-          "lastUpdated": "2026-06-24T17:57:21.554Z"
+          "lastUpdated": "2026-07-31T16:20:53.063Z"
         },
         {
           "sportecId": "MLS-OBJ-000C6Q",
@@ -4817,9 +4817,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pv86lg0k2ehn34iysaqd",
           "slug": "ademar-chavez",
-          "lastUpdated": "2026-07-22T19:54:48.315Z"
+          "lastUpdated": "2026-07-31T16:22:06.991Z"
         },
         {
           "sportecId": "MLS-OBJ-00081V",
@@ -5678,8 +5678,45 @@
       "optaId": 436,
       "name": "Colorado Rapids",
       "abbr": "COL",
-      "playerCount": 28,
+      "playerCount": 29,
       "players": [
+        {
+          "sportecId": "MLS-OBJ-000F5O",
+          "optaId": 315209644,
+          "clubSportecId": "MLS-CLU-00000J",
+          "clubOptaId": 436,
+          "clubAbbr": "COL",
+          "firstName": "Youssef",
+          "lastName": "Maziz",
+          "knownName": null,
+          "displayName": "Youssef Maziz",
+          "jerseyNumber": "88",
+          "position": "midfield",
+          "height": 175,
+          "weight": 81,
+          "footedness": null,
+          "dateOfBirth": "1998-06-24",
+          "age": 28,
+          "cityOfBirth": "Thionville",
+          "countryOfBirth": "France",
+          "rosterCategory": null,
+          "isSenior": false,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": null,
+          "slug": "youssef-maziz",
+          "lastUpdated": "2026-07-31T21:07:43.517Z"
+        },
         {
           "sportecId": "MLS-OBJ-000F38",
           "optaId": 315209556,
@@ -5713,9 +5750,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/urtdiqmdswmmyrztnafi",
           "slug": "loic-williams",
-          "lastUpdated": "2026-07-15T02:33:58.126Z"
+          "lastUpdated": "2026-07-31T16:26:47.935Z"
         },
         {
           "sportecId": "MLS-OBJ-000CL4",
@@ -5750,9 +5787,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ysrepb20af6w9freyci6",
           "slug": "donavan-phillip",
-          "lastUpdated": "2026-05-29T21:56:13.198Z"
+          "lastUpdated": "2026-07-31T16:27:19.662Z"
         },
         {
           "sportecId": "MLS-OBJ-000CHL",
@@ -5806,8 +5843,8 @@
           "height": 193,
           "weight": 80,
           "footedness": null,
-          "dateOfBirth": "2007-07-05",
-          "age": 19,
+          "dateOfBirth": "2007-09-05",
+          "age": 18,
           "cityOfBirth": "Brisbane",
           "countryOfBirth": "Australia",
           "rosterCategory": "Senior",
@@ -5826,7 +5863,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/tkqfddw8of887yvedozw",
           "slug": "lucas-herrington",
-          "lastUpdated": "2026-06-05T14:40:10.211Z"
+          "lastUpdated": "2026-07-31T21:05:22.657Z"
         },
         {
           "sportecId": "MLS-OBJ-00084N",
@@ -5861,9 +5898,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vlsvmi1apwoxduxmgztr",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gx1e4royg2sah434mr7c",
           "slug": "mamadou-diop",
-          "lastUpdated": "2026-05-29T21:55:59.489Z"
+          "lastUpdated": "2026-07-31T16:24:13.876Z"
         },
         {
           "sportecId": "MLS-OBJ-00081J",
@@ -6379,9 +6416,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xskcq2ybrut19hwm8hu5",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/snmgc2xeow9g6zgriuxe",
           "slug": "kosi-thompson",
-          "lastUpdated": "2026-06-05T14:40:03.06Z"
+          "lastUpdated": "2026-07-31T16:26:22.662Z"
         },
         {
           "sportecId": "MLS-OBJ-000076",
@@ -7965,7 +8002,7 @@
           "lastName": "Flowers",
           "knownName": null,
           "displayName": "Benjamin Flowers",
-          "jerseyNumber": "21",
+          "jerseyNumber": "31",
           "position": "offense",
           "height": 175,
           "weight": 66,
@@ -7988,9 +8025,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mucyxjq7ct325mdbe8jh",
           "slug": "benjamin-flowers",
-          "lastUpdated": "2026-07-28T15:10:26.071Z"
+          "lastUpdated": "2026-07-31T20:51:16.104Z"
         },
         {
           "sportecId": "MLS-OBJ-000CUX",
@@ -8099,9 +8136,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ajjzj3liwniggdcs8ou4",
           "slug": "kaka-scabin",
-          "lastUpdated": "2026-06-05T14:37:45.604Z"
+          "lastUpdated": "2026-07-31T16:39:28.177Z"
         },
         {
           "sportecId": "MLS-OBJ-000CGP",
@@ -8617,9 +8654,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xzgmbtsif3luxolqr6xs",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/jay69qfw9sepf5muga9w",
           "slug": "daniel-baran",
-          "lastUpdated": "2026-06-12T00:21:51.024Z"
+          "lastUpdated": "2026-07-31T16:44:55.124Z"
         },
         {
           "sportecId": "MLS-OBJ-000537",
@@ -8691,9 +8728,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/a59pomyraqxlmsjchrei",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/oeeirblypgolmyna3tbi",
           "slug": "enes-sali",
-          "lastUpdated": "2026-06-05T14:37:15.508Z"
+          "lastUpdated": "2026-07-31T16:39:53.354Z"
         },
         {
           "sportecId": "MLS-OBJ-000538",
@@ -8802,9 +8839,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/bs7lgknoxs8zk8kz96ip",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/m4jbqz8otabhdaroorli",
           "slug": "daniel",
-          "lastUpdated": "2026-07-17T01:37:41.121Z"
+          "lastUpdated": "2026-07-31T16:44:26.317Z"
         },
         {
           "sportecId": "MLS-OBJ-0001ID",
@@ -8822,7 +8859,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2001-07-31",
-          "age": 24,
+          "age": 25,
           "cityOfBirth": "Santana Do Riacho",
           "countryOfBirth": "Brazil",
           "rosterCategory": "Senior",
@@ -9061,9 +9098,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dde5cyffmqdyh6c0lzps",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/puo375ypmcj3unemgkb1",
           "slug": "tsiki-ntsabeleng",
-          "lastUpdated": "2026-06-05T14:37:37.684Z"
+          "lastUpdated": "2026-07-31T16:40:17.508Z"
         },
         {
           "sportecId": "MLS-OBJ-0000JR",
@@ -9098,9 +9135,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nvqon58na1z4qqosibox",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/axg2zwdllhdoc1kt1bjn",
           "slug": "santiago-moreno",
-          "lastUpdated": "2026-06-10T23:15:15.975Z"
+          "lastUpdated": "2026-07-31T16:40:46.762Z"
         },
         {
           "sportecId": "MLS-OBJ-0000E3",
@@ -9331,8 +9368,82 @@
       "optaId": 1326,
       "name": "D.C. United",
       "abbr": "DC",
-      "playerCount": 29,
+      "playerCount": 31,
       "players": [
+        {
+          "sportecId": "MLS-OBJ-000F5Q",
+          "optaId": 315209646,
+          "clubSportecId": "MLS-CLU-00000D",
+          "clubOptaId": 1326,
+          "clubAbbr": "DC",
+          "firstName": "Kamil",
+          "lastName": "Castillo",
+          "knownName": null,
+          "displayName": "Kamil Castillo",
+          "jerseyNumber": "40",
+          "position": "midfield",
+          "height": 180,
+          "weight": 66,
+          "footedness": null,
+          "dateOfBirth": "2010-01-03",
+          "age": 16,
+          "cityOfBirth": "Washington, D.C.",
+          "countryOfBirth": "USA",
+          "rosterCategory": null,
+          "isSenior": false,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": null,
+          "slug": "kamil-castillo",
+          "lastUpdated": "2026-07-31T21:09:55.847Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-000F5P",
+          "optaId": 315209645,
+          "clubSportecId": "MLS-CLU-00000D",
+          "clubOptaId": 1326,
+          "clubAbbr": "DC",
+          "firstName": "Kimito",
+          "lastName": "Nono",
+          "knownName": null,
+          "displayName": "Kimito Nono",
+          "jerseyNumber": "2",
+          "position": "defense",
+          "height": 178,
+          "weight": 67,
+          "footedness": null,
+          "dateOfBirth": "2002-03-26",
+          "age": 24,
+          "cityOfBirth": "Ibaraki",
+          "countryOfBirth": "Japan",
+          "rosterCategory": "Senior",
+          "isSenior": true,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": "International",
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": true,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gwsvst5qariyldemavsu",
+          "slug": "kimito-nono",
+          "lastUpdated": "2026-07-31T21:07:39.046Z"
+        },
         {
           "sportecId": "MLS-OBJ-000F35",
           "optaId": 200087,
@@ -9366,9 +9477,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/tgippotqvoao34vbuoev",
           "slug": "andre-dozzell",
-          "lastUpdated": "2026-07-13T23:09:25.834Z"
+          "lastUpdated": "2026-07-31T16:49:24.825Z"
         },
         {
           "sportecId": "MLS-OBJ-000CH2",
@@ -9625,9 +9736,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mswrgoxumqft6xdupaqi",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pglvay0fwnpvisnnueco",
           "slug": "hakim-karamoko",
-          "lastUpdated": "2026-07-23T21:04:31.456Z"
+          "lastUpdated": "2026-07-31T16:48:59.592Z"
         },
         {
           "sportecId": "MLS-OBJ-0007VO",
@@ -10980,9 +11091,9 @@
           "lastName": "Rodríguez",
           "knownName": null,
           "displayName": "Sebastián Rodríguez",
-          "jerseyNumber": "34",
+          "jerseyNumber": "19",
           "position": "midfield",
-          "height": 0,
+          "height": 182,
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2007-09-13",
@@ -11005,7 +11116,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/abprxuzuoybwne6rk8ui",
           "slug": "sebastian-rodriguez-x3810",
-          "lastUpdated": "2026-06-14T00:04:36.264Z"
+          "lastUpdated": "2026-07-31T14:02:22.849Z"
         },
         {
           "sportecId": "MLS-OBJ-0002G3",
@@ -11114,9 +11225,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xjc69kiam5odovls3dbq",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/klkalpssztvtpbzwspl0",
           "slug": "duncan-mcguire",
-          "lastUpdated": "2026-07-22T23:19:36.963Z"
+          "lastUpdated": "2026-07-31T16:51:24.895Z"
         },
         {
           "sportecId": "MLS-OBJ-0001FB",
@@ -13241,9 +13352,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vmeh5kfm3hbusogewvge",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/y0aq6gsipjfv58olqh68",
           "slug": "robert-taylor",
-          "lastUpdated": "2026-07-20T18:10:41.424Z"
+          "lastUpdated": "2026-07-31T15:44:02.04Z"
         },
         {
           "sportecId": "MLS-OBJ-000062",
@@ -18184,7 +18295,7 @@
           "lastName": "Turgeman",
           "knownName": "Dor Turgeman",
           "displayName": "Dor Turgeman",
-          "jerseyNumber": "11",
+          "jerseyNumber": "99",
           "position": "offense",
           "height": 185,
           "weight": 81,
@@ -18209,7 +18320,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nuqji1hs7irdd8rph6ro",
           "slug": "dor-turgeman",
-          "lastUpdated": "2026-06-05T14:41:27.562Z"
+          "lastUpdated": "2026-07-31T22:45:46.527Z"
         },
         {
           "sportecId": "MLS-OBJ-0001AH",
@@ -18244,9 +18355,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/al9ejwhzsal4n4owdl5e",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/kjlbzf4vwgcsocatvqln",
           "slug": "marcos-zambrano-x2061",
-          "lastUpdated": "2026-07-22T22:31:06.103Z"
+          "lastUpdated": "2026-07-31T17:49:11.998Z"
         },
         {
           "sportecId": "MLS-OBJ-000816",
@@ -18873,9 +18984,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gr7f7npzqldemv6e0fex",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dxbjjp9ltcyfxx88ztkz",
           "slug": "cody-baker",
-          "lastUpdated": "2026-07-22T23:20:02.584Z"
+          "lastUpdated": "2026-07-31T17:48:47.23Z"
         },
         {
           "sportecId": "MLS-OBJ-00009Y",
@@ -18947,9 +19058,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ts4px0b6tdogjmepct1z",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mtm5czdpz7qkld9foy3z",
           "slug": "william-sands",
-          "lastUpdated": "2026-06-05T14:41:15.088Z"
+          "lastUpdated": "2026-07-31T17:58:46.827Z"
         },
         {
           "sportecId": "MLS-OBJ-0000B0",
@@ -19058,9 +19169,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/prd-league/htfakqxuiqdbauojlqgu",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/uo1iuaattvgwdb6qtoz3",
           "slug": "wilson-harris",
-          "lastUpdated": "2026-07-22T23:20:02.051Z"
+          "lastUpdated": "2026-07-31T17:50:06.595Z"
         },
         {
           "sportecId": "MLS-OBJ-0000LA",
@@ -19220,7 +19331,7 @@
           "lastName": "Harrison",
           "knownName": null,
           "displayName": "Jack Harrison",
-          "jerseyNumber": null,
+          "jerseyNumber": "11",
           "position": "midfield",
           "height": 175,
           "weight": 70,
@@ -19243,9 +19354,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/prd-league/rcjwkexsddycl7a82qqb",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wxodyu6psbgik4wd9krr",
           "slug": "jack-harrison",
-          "lastUpdated": "2026-07-27T16:32:11.225Z"
+          "lastUpdated": "2026-07-31T22:45:45.148Z"
         },
         {
           "sportecId": "MLS-OBJ-0000F9",
@@ -19285,43 +19396,6 @@
           "lastUpdated": "2026-06-05T14:41:18.048Z"
         },
         {
-          "sportecId": "MLS-OBJ-00001L",
-          "optaId": 95284,
-          "clubSportecId": "MLS-CLU-00000N",
-          "clubOptaId": 928,
-          "clubAbbr": "NE",
-          "firstName": "Diego",
-          "lastName": "Fagúndez",
-          "knownName": null,
-          "displayName": "Diego Fagúndez",
-          "jerseyNumber": "77",
-          "position": "midfield",
-          "height": 173,
-          "weight": 68,
-          "footedness": null,
-          "dateOfBirth": "1995-02-14",
-          "age": 31,
-          "cityOfBirth": "Montevideo",
-          "countryOfBirth": "Uruguay",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zyz2e944v4ne1pag3dhd",
-          "slug": "diego-fagundez",
-          "lastUpdated": "2026-06-05T14:41:14.288Z"
-        },
-        {
           "sportecId": "MLS-OBJ-0000EY",
           "optaId": 151940,
           "clubSportecId": "MLS-CLU-00000N",
@@ -19357,6 +19431,43 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nstfkrarnd0xvabmjney",
           "slug": "andrew-farrell",
           "lastUpdated": "2026-06-05T14:41:16.915Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-00001L",
+          "optaId": 95284,
+          "clubSportecId": "MLS-CLU-00000N",
+          "clubOptaId": 928,
+          "clubAbbr": "NE",
+          "firstName": "Diego",
+          "lastName": "Fagúndez",
+          "knownName": null,
+          "displayName": "Diego Fagúndez",
+          "jerseyNumber": "77",
+          "position": "midfield",
+          "height": 173,
+          "weight": 68,
+          "footedness": null,
+          "dateOfBirth": "1995-02-14",
+          "age": 31,
+          "cityOfBirth": "Montevideo",
+          "countryOfBirth": "Uruguay",
+          "rosterCategory": "Senior",
+          "isSenior": true,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/a6sudhdm9bjxav4meheh",
+          "slug": "diego-fagundez",
+          "lastUpdated": "2026-07-31T17:50:36.164Z"
         }
       ]
     },
@@ -19437,9 +19548,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/w3ng2qduki1kb4uaj3qj",
           "slug": "benie-traore",
-          "lastUpdated": "2026-07-22T19:54:44.563Z"
+          "lastUpdated": "2026-07-31T17:58:20.398Z"
         },
         {
           "sportecId": "MLS-OBJ-000CTG",
@@ -19474,9 +19585,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nauohpzoz2agrd6hqdmu",
           "slug": "arnau-farnos",
-          "lastUpdated": "2026-07-22T22:39:49.048Z"
+          "lastUpdated": "2026-07-31T18:00:00.76Z"
         },
         {
           "sportecId": "MLS-OBJ-000CUN",
@@ -19511,9 +19622,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ujtsox9fdxcrryzvcpw0",
           "slug": "kevin-pierre",
-          "lastUpdated": "2026-05-29T21:59:54.955Z"
+          "lastUpdated": "2026-07-31T17:59:10.613Z"
         },
         {
           "sportecId": "MLS-OBJ-00086P",
@@ -19918,9 +20029,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/r95irtfm69o51bfxxyxe",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/weos3168gleo3nyrkgqo",
           "slug": "peter-molinari",
-          "lastUpdated": "2026-07-17T01:36:33.732Z"
+          "lastUpdated": "2026-07-31T17:59:37.373Z"
         },
         {
           "sportecId": "MLS-OBJ-0005D5",
@@ -21649,7 +21760,7 @@
           "weight": 86,
           "footedness": null,
           "dateOfBirth": "1999-07-31",
-          "age": 26,
+          "age": 27,
           "cityOfBirth": "West Chester, PA",
           "countryOfBirth": "USA",
           "rosterCategory": "Supplemental Slots 21-24",
@@ -22267,9 +22378,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/juzi7l7xvj5z5vruvncg",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/prdpnpljz0b4wjphfruh",
           "slug": "clovis-archange",
-          "lastUpdated": "2026-07-17T22:15:14.93Z"
+          "lastUpdated": "2026-07-31T18:02:57.242Z"
         },
         {
           "sportecId": "MLS-OBJ-0007K3",
@@ -22970,9 +23081,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/prd-league/lamdg6iicewtwwvbkx8o",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/yq4etzlcavhqqmargw0y",
           "slug": "daryl-dike",
-          "lastUpdated": "2026-07-20T15:27:28.888Z"
+          "lastUpdated": "2026-07-31T18:03:31.386Z"
         },
         {
           "sportecId": "MLS-OBJ-0000HM",
@@ -23166,7 +23277,7 @@
       "optaId": 5513,
       "name": "Philadelphia Union",
       "abbr": "PHI",
-      "playerCount": 30,
+      "playerCount": 29,
       "players": [
         {
           "sportecId": "MLS-OBJ-000D2B",
@@ -23460,9 +23571,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/j5jxlwtjhsyweqcupods",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/sej9psdufg36ooboq2t7",
           "slug": "bruno-damiani",
-          "lastUpdated": "2026-07-22T22:41:29.438Z"
+          "lastUpdated": "2026-07-31T18:07:29.064Z"
         },
         {
           "sportecId": "MLS-OBJ-000818",
@@ -23608,9 +23719,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qcipenm2p3q5jq1hrvwo",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/futos6jsrtvnpine0b7d",
           "slug": "markus-anderson",
-          "lastUpdated": "2026-05-29T21:52:47.62Z"
+          "lastUpdated": "2026-07-31T18:08:18.542Z"
         },
         {
           "sportecId": "MLS-OBJ-00034Z",
@@ -23722,43 +23833,6 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qzygvtz4zx6ktdals4lh",
           "slug": "neil-pierre",
           "lastUpdated": "2026-07-22T22:40:51.446Z"
-        },
-        {
-          "sportecId": "MLS-OBJ-00039B",
-          "optaId": 597743,
-          "clubSportecId": "MLS-CLU-000002",
-          "clubOptaId": 5513,
-          "clubAbbr": "PHI",
-          "firstName": "Olwethu",
-          "lastName": "Makhanya",
-          "knownName": null,
-          "displayName": "Olwethu Makhanya",
-          "jerseyNumber": "29",
-          "position": "defense",
-          "height": 188,
-          "weight": 0,
-          "footedness": "Right",
-          "dateOfBirth": "2004-04-30",
-          "age": 22,
-          "cityOfBirth": "Durban, KwaZulu Natal",
-          "countryOfBirth": "South Africa",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": "International",
-          "playerCategory_2": "U22 Initiative",
-          "isDP": false,
-          "isU22": true,
-          "isHomegrown": false,
-          "isInternational": true,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ki3yb41bzrgznwnnc1m6",
-          "slug": "olwethu-makhanya",
-          "lastUpdated": "2026-06-10T23:27:36.099Z"
         },
         {
           "sportecId": "MLS-OBJ-0007SX",
@@ -24015,9 +24089,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/hqmlrhvq11ekb4jshikv",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/e1vpqhvhcqefdhcc9zdf",
           "slug": "benjamin-bender",
-          "lastUpdated": "2026-07-22T22:41:11.21Z"
+          "lastUpdated": "2026-07-31T18:07:54.257Z"
         },
         {
           "sportecId": "MLS-OBJ-0000IU",
@@ -24089,9 +24163,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/b4moio2id3sp3aaqqv6x",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zhv8qmsm0tj1w4cyiv44",
           "slug": "indiana-vassilev",
-          "lastUpdated": "2026-05-30T23:08:38.999Z"
+          "lastUpdated": "2026-07-31T18:07:04.576Z"
         },
         {
           "sportecId": "MLS-OBJ-0000IM",
@@ -24200,9 +24274,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/oyy86ogrmwrilkrtywjp",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/j7z8go9gnl3wg9yqt6ul",
           "slug": "kai-wagner",
-          "lastUpdated": "2026-07-20T18:10:54.609Z"
+          "lastUpdated": "2026-07-31T18:06:38.756Z"
         },
         {
           "sportecId": "MLS-OBJ-0000IF",
@@ -24806,6 +24880,43 @@
           "lastUpdated": "2026-07-16T23:15:59.684Z"
         },
         {
+          "sportecId": "MLS-OBJ-000F5R",
+          "optaId": 165990,
+          "clubSportecId": "MLS-CLU-00000P",
+          "clubOptaId": 1581,
+          "clubAbbr": "POR",
+          "firstName": "Vincent",
+          "lastName": "Janssen",
+          "knownName": null,
+          "displayName": "Vincent Janssen",
+          "jerseyNumber": "14",
+          "position": "offense",
+          "height": 185,
+          "weight": 79,
+          "footedness": "Left",
+          "dateOfBirth": "1994-06-15",
+          "age": 32,
+          "cityOfBirth": "Heesch",
+          "countryOfBirth": "Netherlands",
+          "rosterCategory": null,
+          "isSenior": false,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": null,
+          "slug": "vincent-janssen",
+          "lastUpdated": "2026-07-30T15:09:53.083Z"
+        },
+        {
           "sportecId": "MLS-OBJ-0000J7",
           "optaId": 436988,
           "clubSportecId": "MLS-CLU-00000P",
@@ -24841,43 +24952,6 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/jblqvodp0yovow5qyaxt",
           "slug": "hunter-sulte",
           "lastUpdated": "2026-07-16T23:18:30.845Z"
-        },
-        {
-          "sportecId": "MLS-OBJ-0000JU",
-          "optaId": 137415,
-          "clubSportecId": "MLS-CLU-00000P",
-          "clubOptaId": 1581,
-          "clubAbbr": "POR",
-          "firstName": "Felipe",
-          "lastName": "Mora",
-          "knownName": null,
-          "displayName": "Felipe Mora",
-          "jerseyNumber": "9",
-          "position": "offense",
-          "height": 175,
-          "weight": 68,
-          "footedness": "Right",
-          "dateOfBirth": "1993-08-02",
-          "age": 32,
-          "cityOfBirth": "Santiago",
-          "countryOfBirth": "Chile",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/d5i6mzcw8ympws3svc1b",
-          "slug": "felipe-mora",
-          "lastUpdated": "2026-07-24T23:18:19.759Z"
         },
         {
           "sportecId": "MLS-OBJ-0000JE",
@@ -26683,7 +26757,7 @@
           "lastName": "Holse",
           "knownName": null,
           "displayName": "Carlo Holse",
-          "jerseyNumber": null,
+          "jerseyNumber": "19",
           "position": "midfield",
           "height": 175,
           "weight": 73,
@@ -26708,7 +26782,7 @@
           "isGenAdidas": false,
           "headshot": null,
           "slug": "carlo-holse",
-          "lastUpdated": "2026-07-29T19:17:21.676Z"
+          "lastUpdated": "2026-07-31T22:49:18.805Z"
         },
         {
           "sportecId": "MLS-OBJ-000CUL",
@@ -26743,9 +26817,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fba2c0aghknlomfaxno5",
           "slug": "palmer-ault-x6006",
-          "lastUpdated": "2026-07-16T17:48:33.309Z"
+          "lastUpdated": "2026-07-31T18:23:38.671Z"
         },
         {
           "sportecId": "MLS-OBJ-000CQJ",
@@ -27002,9 +27076,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/eixznotayoaryrhezvtm",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/inkq8qvn1h4kg7d0jkkr",
           "slug": "zachary-zengue",
-          "lastUpdated": "2026-07-17T23:25:43.432Z"
+          "lastUpdated": "2026-07-31T18:22:41.413Z"
         },
         {
           "sportecId": "MLS-OBJ-0005M6",
@@ -27668,9 +27742,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mqvglx9lfgq6z0hb2mdm",
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/y7ev8yk0ktbyzp8rnvra",
           "slug": "alexandru-matan",
-          "lastUpdated": "2026-07-23T00:02:18.918Z"
+          "lastUpdated": "2026-07-31T18:23:13.956Z"
         },
         {
           "sportecId": "MLS-OBJ-0001J9",
@@ -29166,9 +29240,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/jinbchkggxd7r94czfra",
           "slug": "peter-kingston",
-          "lastUpdated": "2026-05-29T21:53:20.479Z"
+          "lastUpdated": "2026-07-31T18:19:27.198Z"
         },
         {
           "sportecId": "MLS-OBJ-0005JC",
@@ -29193,8 +29267,8 @@
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
+          "isLoanedOut": true,
+          "playerStatus_1": "Loaned Out",
           "playerCategory_1": "International",
           "playerCategory_2": null,
           "isDP": false,
@@ -29204,7 +29278,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fk9wyvyqtk7vr6fom9xv",
           "slug": "yu-tsukanome",
-          "lastUpdated": "2026-05-29T21:53:17.658Z"
+          "lastUpdated": "2026-07-31T23:15:00.952Z"
         },
         {
           "sportecId": "MLS-OBJ-0005ID",
@@ -31144,9 +31218,9 @@
           "isHomegrown": false,
           "isInternational": true,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/h6ojbagb4yx25n3rb6nb",
           "slug": "niklas-dorsch",
-          "lastUpdated": "2026-07-28T21:30:48.656Z"
+          "lastUpdated": "2026-07-31T18:27:36.708Z"
         },
         {
           "sportecId": "MLS-OBJ-000158",
@@ -31181,9 +31255,9 @@
           "isHomegrown": false,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ybj5gtcmfbkwvwg8ovkz",
           "slug": "jackson-gilman-x2365",
-          "lastUpdated": "2026-07-16T21:46:11.346Z"
+          "lastUpdated": "2026-07-31T18:27:11.379Z"
         },
         {
           "sportecId": "MLS-OBJ-000CM1",
@@ -31551,9 +31625,9 @@
           "isHomegrown": true,
           "isInternational": false,
           "isGenAdidas": false,
-          "headshot": null,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ltt3ewocu9bnpux05u1b",
           "slug": "richard-chukwu",
-          "lastUpdated": "2026-07-16T21:31:50.858Z"
+          "lastUpdated": "2026-07-31T18:28:01.205Z"
         },
         {
           "sportecId": "MLS-OBJ-0002OE",
@@ -31565,7 +31639,7 @@
           "lastName": "Palacio",
           "knownName": "Nelson Palacio",
           "displayName": "Nelson Palacio",
-          "jerseyNumber": "6",
+          "jerseyNumber": "8",
           "position": "midfield",
           "height": 180,
           "weight": 80,
@@ -31590,7 +31664,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/rjlzkr3am7umylxobexs",
           "slug": "nelson-palacio",
-          "lastUpdated": "2026-07-16T20:21:58.048Z"
+          "lastUpdated": "2026-07-31T21:19:32.685Z"
         },
         {
           "sportecId": "MLS-OBJ-0001K6",
@@ -35019,43 +35093,6 @@
       "lastUpdated": "2026-06-05T14:38:09.326Z"
     },
     {
-      "sportecId": "MLS-OBJ-0007KA",
-      "optaId": 315199802,
-      "clubSportecId": "MLS-CLU-00000A",
-      "clubOptaId": 11091,
-      "clubAbbr": "ATL",
-      "firstName": "Pedro",
-      "lastName": "Amador",
-      "knownName": "Pedro Amador",
-      "displayName": "Pedro Amador",
-      "jerseyNumber": "18",
-      "position": "defense",
-      "height": 180,
-      "weight": 0,
-      "footedness": null,
-      "dateOfBirth": "1998-12-18",
-      "age": 27,
-      "cityOfBirth": "Loures",
-      "countryOfBirth": "Portugal",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gm9tzolfnz3gvczcqxmy",
-      "slug": "pedro-amador",
-      "lastUpdated": "2026-05-29T22:05:20.745Z"
-    },
-    {
       "sportecId": "MLS-OBJ-0007BV",
       "optaId": 168097,
       "clubSportecId": "MLS-CLU-00000A",
@@ -35796,6 +35833,43 @@
       "lastUpdated": "2026-06-26T14:26:35.236Z"
     },
     {
+      "sportecId": "MLS-OBJ-00083M",
+      "optaId": 315200498,
+      "clubSportecId": "MLS-CLU-000003",
+      "clubOptaId": 15296,
+      "clubAbbr": "ATX",
+      "firstName": "Jorge",
+      "lastName": "Alastuey",
+      "knownName": null,
+      "displayName": "Jorge Alastuey",
+      "jerseyNumber": "24",
+      "position": "midfield",
+      "height": 178,
+      "weight": 0,
+      "footedness": null,
+      "dateOfBirth": "2003-05-14",
+      "age": 23,
+      "cityOfBirth": "Zaragoza",
+      "countryOfBirth": "Spain",
+      "rosterCategory": null,
+      "isSenior": false,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/eq1wxsj8xbednqgf7dig",
+      "slug": "jorge-alastuey",
+      "lastUpdated": "2026-07-31T20:50:56.108Z"
+    },
+    {
       "sportecId": "MLS-OBJ-00081D",
       "optaId": 315200417,
       "clubSportecId": "MLS-CLU-000003",
@@ -35819,8 +35893,8 @@
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
+      "isLoanedOut": true,
+      "playerStatus_1": "Loaned Out",
       "playerCategory_1": "U22 Initiative",
       "playerCategory_2": "International",
       "isDP": false,
@@ -35830,7 +35904,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wtameqwtqe84lptdla6f",
       "slug": "nicolas-dubersarsky",
-      "lastUpdated": "2026-06-26T15:37:47.531Z"
+      "lastUpdated": "2026-07-31T14:07:28.984Z"
     },
     {
       "sportecId": "MLS-OBJ-0007XG",
@@ -39047,9 +39121,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/votnk8m9m2y0m6kyc2ur",
       "slug": "fabian-mrozek",
-      "lastUpdated": "2026-06-24T18:02:54.083Z"
+      "lastUpdated": "2026-07-31T16:21:40.486Z"
     },
     {
       "sportecId": "MLS-OBJ-000CCM",
@@ -39121,9 +39195,9 @@
       "isHomegrown": true,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wakchuhncevdy9mibj9n",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ouxl6k31ve9c369qjqa9",
       "slug": "felix-samson",
-      "lastUpdated": "2026-06-24T17:57:21.554Z"
+      "lastUpdated": "2026-07-31T16:20:53.063Z"
     },
     {
       "sportecId": "MLS-OBJ-000C6Q",
@@ -39380,9 +39454,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pv86lg0k2ehn34iysaqd",
       "slug": "ademar-chavez",
-      "lastUpdated": "2026-07-22T19:54:48.315Z"
+      "lastUpdated": "2026-07-31T16:22:06.991Z"
     },
     {
       "sportecId": "MLS-OBJ-00081V",
@@ -40235,6 +40309,43 @@
       "lastUpdated": "2026-05-29T21:57:18.165Z"
     },
     {
+      "sportecId": "MLS-OBJ-000F5O",
+      "optaId": 315209644,
+      "clubSportecId": "MLS-CLU-00000J",
+      "clubOptaId": 436,
+      "clubAbbr": "COL",
+      "firstName": "Youssef",
+      "lastName": "Maziz",
+      "knownName": null,
+      "displayName": "Youssef Maziz",
+      "jerseyNumber": "88",
+      "position": "midfield",
+      "height": 175,
+      "weight": 81,
+      "footedness": null,
+      "dateOfBirth": "1998-06-24",
+      "age": 28,
+      "cityOfBirth": "Thionville",
+      "countryOfBirth": "France",
+      "rosterCategory": null,
+      "isSenior": false,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": null,
+      "slug": "youssef-maziz",
+      "lastUpdated": "2026-07-31T21:07:43.517Z"
+    },
+    {
       "sportecId": "MLS-OBJ-000F38",
       "optaId": 315209556,
       "clubSportecId": "MLS-CLU-00000J",
@@ -40267,9 +40378,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/urtdiqmdswmmyrztnafi",
       "slug": "loic-williams",
-      "lastUpdated": "2026-07-15T02:33:58.126Z"
+      "lastUpdated": "2026-07-31T16:26:47.935Z"
     },
     {
       "sportecId": "MLS-OBJ-000CL4",
@@ -40304,9 +40415,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ysrepb20af6w9freyci6",
       "slug": "donavan-phillip",
-      "lastUpdated": "2026-05-29T21:56:13.198Z"
+      "lastUpdated": "2026-07-31T16:27:19.662Z"
     },
     {
       "sportecId": "MLS-OBJ-000CHL",
@@ -40360,8 +40471,8 @@
       "height": 193,
       "weight": 80,
       "footedness": null,
-      "dateOfBirth": "2007-07-05",
-      "age": 19,
+      "dateOfBirth": "2007-09-05",
+      "age": 18,
       "cityOfBirth": "Brisbane",
       "countryOfBirth": "Australia",
       "rosterCategory": "Senior",
@@ -40380,7 +40491,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/tkqfddw8of887yvedozw",
       "slug": "lucas-herrington",
-      "lastUpdated": "2026-06-05T14:40:10.211Z"
+      "lastUpdated": "2026-07-31T21:05:22.657Z"
     },
     {
       "sportecId": "MLS-OBJ-00084N",
@@ -40415,9 +40526,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vlsvmi1apwoxduxmgztr",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gx1e4royg2sah434mr7c",
       "slug": "mamadou-diop",
-      "lastUpdated": "2026-05-29T21:55:59.489Z"
+      "lastUpdated": "2026-07-31T16:24:13.876Z"
     },
     {
       "sportecId": "MLS-OBJ-00081J",
@@ -40933,9 +41044,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xskcq2ybrut19hwm8hu5",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/snmgc2xeow9g6zgriuxe",
       "slug": "kosi-thompson",
-      "lastUpdated": "2026-06-05T14:40:03.06Z"
+      "lastUpdated": "2026-07-31T16:26:22.662Z"
     },
     {
       "sportecId": "MLS-OBJ-000076",
@@ -42501,7 +42612,7 @@
       "lastName": "Flowers",
       "knownName": null,
       "displayName": "Benjamin Flowers",
-      "jerseyNumber": "21",
+      "jerseyNumber": "31",
       "position": "offense",
       "height": 175,
       "weight": 66,
@@ -42524,9 +42635,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mucyxjq7ct325mdbe8jh",
       "slug": "benjamin-flowers",
-      "lastUpdated": "2026-07-28T15:10:26.071Z"
+      "lastUpdated": "2026-07-31T20:51:16.104Z"
     },
     {
       "sportecId": "MLS-OBJ-000CUX",
@@ -42635,9 +42746,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ajjzj3liwniggdcs8ou4",
       "slug": "kaka-scabin",
-      "lastUpdated": "2026-06-05T14:37:45.604Z"
+      "lastUpdated": "2026-07-31T16:39:28.177Z"
     },
     {
       "sportecId": "MLS-OBJ-000CGP",
@@ -43153,9 +43264,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xzgmbtsif3luxolqr6xs",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/jay69qfw9sepf5muga9w",
       "slug": "daniel-baran",
-      "lastUpdated": "2026-06-12T00:21:51.024Z"
+      "lastUpdated": "2026-07-31T16:44:55.124Z"
     },
     {
       "sportecId": "MLS-OBJ-000537",
@@ -43227,9 +43338,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/a59pomyraqxlmsjchrei",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/oeeirblypgolmyna3tbi",
       "slug": "enes-sali",
-      "lastUpdated": "2026-06-05T14:37:15.508Z"
+      "lastUpdated": "2026-07-31T16:39:53.354Z"
     },
     {
       "sportecId": "MLS-OBJ-000538",
@@ -43338,9 +43449,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/bs7lgknoxs8zk8kz96ip",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/m4jbqz8otabhdaroorli",
       "slug": "daniel",
-      "lastUpdated": "2026-07-17T01:37:41.121Z"
+      "lastUpdated": "2026-07-31T16:44:26.317Z"
     },
     {
       "sportecId": "MLS-OBJ-0001ID",
@@ -43358,7 +43469,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2001-07-31",
-      "age": 24,
+      "age": 25,
       "cityOfBirth": "Santana Do Riacho",
       "countryOfBirth": "Brazil",
       "rosterCategory": "Senior",
@@ -43597,9 +43708,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dde5cyffmqdyh6c0lzps",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/puo375ypmcj3unemgkb1",
       "slug": "tsiki-ntsabeleng",
-      "lastUpdated": "2026-06-05T14:37:37.684Z"
+      "lastUpdated": "2026-07-31T16:40:17.508Z"
     },
     {
       "sportecId": "MLS-OBJ-0000JR",
@@ -43634,9 +43745,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nvqon58na1z4qqosibox",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/axg2zwdllhdoc1kt1bjn",
       "slug": "santiago-moreno",
-      "lastUpdated": "2026-06-10T23:15:15.975Z"
+      "lastUpdated": "2026-07-31T16:40:46.762Z"
     },
     {
       "sportecId": "MLS-OBJ-0000E3",
@@ -43861,6 +43972,80 @@
       "lastUpdated": "2026-06-05T14:37:38.465Z"
     },
     {
+      "sportecId": "MLS-OBJ-000F5Q",
+      "optaId": 315209646,
+      "clubSportecId": "MLS-CLU-00000D",
+      "clubOptaId": 1326,
+      "clubAbbr": "DC",
+      "firstName": "Kamil",
+      "lastName": "Castillo",
+      "knownName": null,
+      "displayName": "Kamil Castillo",
+      "jerseyNumber": "40",
+      "position": "midfield",
+      "height": 180,
+      "weight": 66,
+      "footedness": null,
+      "dateOfBirth": "2010-01-03",
+      "age": 16,
+      "cityOfBirth": "Washington, D.C.",
+      "countryOfBirth": "USA",
+      "rosterCategory": null,
+      "isSenior": false,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": null,
+      "slug": "kamil-castillo",
+      "lastUpdated": "2026-07-31T21:09:55.847Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-000F5P",
+      "optaId": 315209645,
+      "clubSportecId": "MLS-CLU-00000D",
+      "clubOptaId": 1326,
+      "clubAbbr": "DC",
+      "firstName": "Kimito",
+      "lastName": "Nono",
+      "knownName": null,
+      "displayName": "Kimito Nono",
+      "jerseyNumber": "2",
+      "position": "defense",
+      "height": 178,
+      "weight": 67,
+      "footedness": null,
+      "dateOfBirth": "2002-03-26",
+      "age": 24,
+      "cityOfBirth": "Ibaraki",
+      "countryOfBirth": "Japan",
+      "rosterCategory": "Senior",
+      "isSenior": true,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": "International",
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": true,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gwsvst5qariyldemavsu",
+      "slug": "kimito-nono",
+      "lastUpdated": "2026-07-31T21:07:39.046Z"
+    },
+    {
       "sportecId": "MLS-OBJ-000F35",
       "optaId": 200087,
       "clubSportecId": "MLS-CLU-00000D",
@@ -43893,9 +44078,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/tgippotqvoao34vbuoev",
       "slug": "andre-dozzell",
-      "lastUpdated": "2026-07-13T23:09:25.834Z"
+      "lastUpdated": "2026-07-31T16:49:24.825Z"
     },
     {
       "sportecId": "MLS-OBJ-000CH2",
@@ -44152,9 +44337,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mswrgoxumqft6xdupaqi",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pglvay0fwnpvisnnueco",
       "slug": "hakim-karamoko",
-      "lastUpdated": "2026-07-23T21:04:31.456Z"
+      "lastUpdated": "2026-07-31T16:48:59.592Z"
     },
     {
       "sportecId": "MLS-OBJ-0007VO",
@@ -45498,9 +45683,9 @@
       "lastName": "Rodríguez",
       "knownName": null,
       "displayName": "Sebastián Rodríguez",
-      "jerseyNumber": "34",
+      "jerseyNumber": "19",
       "position": "midfield",
-      "height": 0,
+      "height": 182,
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2007-09-13",
@@ -45523,7 +45708,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/abprxuzuoybwne6rk8ui",
       "slug": "sebastian-rodriguez-x3810",
-      "lastUpdated": "2026-06-14T00:04:36.264Z"
+      "lastUpdated": "2026-07-31T14:02:22.849Z"
     },
     {
       "sportecId": "MLS-OBJ-0002G3",
@@ -45632,9 +45817,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/xjc69kiam5odovls3dbq",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/klkalpssztvtpbzwspl0",
       "slug": "duncan-mcguire",
-      "lastUpdated": "2026-07-22T23:19:36.963Z"
+      "lastUpdated": "2026-07-31T16:51:24.895Z"
     },
     {
       "sportecId": "MLS-OBJ-0001FB",
@@ -47741,9 +47926,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vmeh5kfm3hbusogewvge",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/y0aq6gsipjfv58olqh68",
       "slug": "robert-taylor",
-      "lastUpdated": "2026-07-20T18:10:41.424Z"
+      "lastUpdated": "2026-07-31T15:44:02.04Z"
     },
     {
       "sportecId": "MLS-OBJ-000062",
@@ -52639,7 +52824,7 @@
       "lastName": "Turgeman",
       "knownName": "Dor Turgeman",
       "displayName": "Dor Turgeman",
-      "jerseyNumber": "11",
+      "jerseyNumber": "99",
       "position": "offense",
       "height": 185,
       "weight": 81,
@@ -52664,7 +52849,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nuqji1hs7irdd8rph6ro",
       "slug": "dor-turgeman",
-      "lastUpdated": "2026-06-05T14:41:27.562Z"
+      "lastUpdated": "2026-07-31T22:45:46.527Z"
     },
     {
       "sportecId": "MLS-OBJ-0001AH",
@@ -52699,9 +52884,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/al9ejwhzsal4n4owdl5e",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/kjlbzf4vwgcsocatvqln",
       "slug": "marcos-zambrano-x2061",
-      "lastUpdated": "2026-07-22T22:31:06.103Z"
+      "lastUpdated": "2026-07-31T17:49:11.998Z"
     },
     {
       "sportecId": "MLS-OBJ-000816",
@@ -53328,9 +53513,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/gr7f7npzqldemv6e0fex",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dxbjjp9ltcyfxx88ztkz",
       "slug": "cody-baker",
-      "lastUpdated": "2026-07-22T23:20:02.584Z"
+      "lastUpdated": "2026-07-31T17:48:47.23Z"
     },
     {
       "sportecId": "MLS-OBJ-00009Y",
@@ -53402,9 +53587,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ts4px0b6tdogjmepct1z",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mtm5czdpz7qkld9foy3z",
       "slug": "william-sands",
-      "lastUpdated": "2026-06-05T14:41:15.088Z"
+      "lastUpdated": "2026-07-31T17:58:46.827Z"
     },
     {
       "sportecId": "MLS-OBJ-0000B0",
@@ -53513,9 +53698,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/prd-league/htfakqxuiqdbauojlqgu",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/uo1iuaattvgwdb6qtoz3",
       "slug": "wilson-harris",
-      "lastUpdated": "2026-07-22T23:20:02.051Z"
+      "lastUpdated": "2026-07-31T17:50:06.595Z"
     },
     {
       "sportecId": "MLS-OBJ-0000LA",
@@ -53675,7 +53860,7 @@
       "lastName": "Harrison",
       "knownName": null,
       "displayName": "Jack Harrison",
-      "jerseyNumber": null,
+      "jerseyNumber": "11",
       "position": "midfield",
       "height": 175,
       "weight": 70,
@@ -53698,9 +53883,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/prd-league/rcjwkexsddycl7a82qqb",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wxodyu6psbgik4wd9krr",
       "slug": "jack-harrison",
-      "lastUpdated": "2026-07-27T16:32:11.225Z"
+      "lastUpdated": "2026-07-31T22:45:45.148Z"
     },
     {
       "sportecId": "MLS-OBJ-0000F9",
@@ -53740,43 +53925,6 @@
       "lastUpdated": "2026-06-05T14:41:18.048Z"
     },
     {
-      "sportecId": "MLS-OBJ-00001L",
-      "optaId": 95284,
-      "clubSportecId": "MLS-CLU-00000N",
-      "clubOptaId": 928,
-      "clubAbbr": "NE",
-      "firstName": "Diego",
-      "lastName": "Fagúndez",
-      "knownName": null,
-      "displayName": "Diego Fagúndez",
-      "jerseyNumber": "77",
-      "position": "midfield",
-      "height": 173,
-      "weight": 68,
-      "footedness": null,
-      "dateOfBirth": "1995-02-14",
-      "age": 31,
-      "cityOfBirth": "Montevideo",
-      "countryOfBirth": "Uruguay",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zyz2e944v4ne1pag3dhd",
-      "slug": "diego-fagundez",
-      "lastUpdated": "2026-06-05T14:41:14.288Z"
-    },
-    {
       "sportecId": "MLS-OBJ-0000EY",
       "optaId": 151940,
       "clubSportecId": "MLS-CLU-00000N",
@@ -53812,6 +53960,43 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nstfkrarnd0xvabmjney",
       "slug": "andrew-farrell",
       "lastUpdated": "2026-06-05T14:41:16.915Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-00001L",
+      "optaId": 95284,
+      "clubSportecId": "MLS-CLU-00000N",
+      "clubOptaId": 928,
+      "clubAbbr": "NE",
+      "firstName": "Diego",
+      "lastName": "Fagúndez",
+      "knownName": null,
+      "displayName": "Diego Fagúndez",
+      "jerseyNumber": "77",
+      "position": "midfield",
+      "height": 173,
+      "weight": 68,
+      "footedness": null,
+      "dateOfBirth": "1995-02-14",
+      "age": 31,
+      "cityOfBirth": "Montevideo",
+      "countryOfBirth": "Uruguay",
+      "rosterCategory": "Senior",
+      "isSenior": true,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/a6sudhdm9bjxav4meheh",
+      "slug": "diego-fagundez",
+      "lastUpdated": "2026-07-31T17:50:36.164Z"
     },
     {
       "sportecId": "MLS-OBJ-000BHU",
@@ -53883,9 +54068,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/w3ng2qduki1kb4uaj3qj",
       "slug": "benie-traore",
-      "lastUpdated": "2026-07-22T19:54:44.563Z"
+      "lastUpdated": "2026-07-31T17:58:20.398Z"
     },
     {
       "sportecId": "MLS-OBJ-000CTG",
@@ -53920,9 +54105,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/nauohpzoz2agrd6hqdmu",
       "slug": "arnau-farnos",
-      "lastUpdated": "2026-07-22T22:39:49.048Z"
+      "lastUpdated": "2026-07-31T18:00:00.76Z"
     },
     {
       "sportecId": "MLS-OBJ-000CUN",
@@ -53957,9 +54142,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ujtsox9fdxcrryzvcpw0",
       "slug": "kevin-pierre",
-      "lastUpdated": "2026-05-29T21:59:54.955Z"
+      "lastUpdated": "2026-07-31T17:59:10.613Z"
     },
     {
       "sportecId": "MLS-OBJ-00086P",
@@ -54364,9 +54549,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/r95irtfm69o51bfxxyxe",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/weos3168gleo3nyrkgqo",
       "slug": "peter-molinari",
-      "lastUpdated": "2026-07-17T01:36:33.732Z"
+      "lastUpdated": "2026-07-31T17:59:37.373Z"
     },
     {
       "sportecId": "MLS-OBJ-0005D5",
@@ -56086,7 +56271,7 @@
       "weight": 86,
       "footedness": null,
       "dateOfBirth": "1999-07-31",
-      "age": 26,
+      "age": 27,
       "cityOfBirth": "West Chester, PA",
       "countryOfBirth": "USA",
       "rosterCategory": "Supplemental Slots 21-24",
@@ -56695,9 +56880,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/juzi7l7xvj5z5vruvncg",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/prdpnpljz0b4wjphfruh",
       "slug": "clovis-archange",
-      "lastUpdated": "2026-07-17T22:15:14.93Z"
+      "lastUpdated": "2026-07-31T18:02:57.242Z"
     },
     {
       "sportecId": "MLS-OBJ-0007K3",
@@ -57398,9 +57583,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/prd-league/lamdg6iicewtwwvbkx8o",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/yq4etzlcavhqqmargw0y",
       "slug": "daryl-dike",
-      "lastUpdated": "2026-07-20T15:27:28.888Z"
+      "lastUpdated": "2026-07-31T18:03:31.386Z"
     },
     {
       "sportecId": "MLS-OBJ-0000HM",
@@ -57879,9 +58064,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/j5jxlwtjhsyweqcupods",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/sej9psdufg36ooboq2t7",
       "slug": "bruno-damiani",
-      "lastUpdated": "2026-07-22T22:41:29.438Z"
+      "lastUpdated": "2026-07-31T18:07:29.064Z"
     },
     {
       "sportecId": "MLS-OBJ-000818",
@@ -58027,9 +58212,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qcipenm2p3q5jq1hrvwo",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/futos6jsrtvnpine0b7d",
       "slug": "markus-anderson",
-      "lastUpdated": "2026-05-29T21:52:47.62Z"
+      "lastUpdated": "2026-07-31T18:08:18.542Z"
     },
     {
       "sportecId": "MLS-OBJ-00034Z",
@@ -58141,43 +58326,6 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/qzygvtz4zx6ktdals4lh",
       "slug": "neil-pierre",
       "lastUpdated": "2026-07-22T22:40:51.446Z"
-    },
-    {
-      "sportecId": "MLS-OBJ-00039B",
-      "optaId": 597743,
-      "clubSportecId": "MLS-CLU-000002",
-      "clubOptaId": 5513,
-      "clubAbbr": "PHI",
-      "firstName": "Olwethu",
-      "lastName": "Makhanya",
-      "knownName": null,
-      "displayName": "Olwethu Makhanya",
-      "jerseyNumber": "29",
-      "position": "defense",
-      "height": 188,
-      "weight": 0,
-      "footedness": "Right",
-      "dateOfBirth": "2004-04-30",
-      "age": 22,
-      "cityOfBirth": "Durban, KwaZulu Natal",
-      "countryOfBirth": "South Africa",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": "International",
-      "playerCategory_2": "U22 Initiative",
-      "isDP": false,
-      "isU22": true,
-      "isHomegrown": false,
-      "isInternational": true,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ki3yb41bzrgznwnnc1m6",
-      "slug": "olwethu-makhanya",
-      "lastUpdated": "2026-06-10T23:27:36.099Z"
     },
     {
       "sportecId": "MLS-OBJ-0007SX",
@@ -58434,9 +58582,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/hqmlrhvq11ekb4jshikv",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/e1vpqhvhcqefdhcc9zdf",
       "slug": "benjamin-bender",
-      "lastUpdated": "2026-07-22T22:41:11.21Z"
+      "lastUpdated": "2026-07-31T18:07:54.257Z"
     },
     {
       "sportecId": "MLS-OBJ-0000IU",
@@ -58508,9 +58656,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/b4moio2id3sp3aaqqv6x",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/zhv8qmsm0tj1w4cyiv44",
       "slug": "indiana-vassilev",
-      "lastUpdated": "2026-05-30T23:08:38.999Z"
+      "lastUpdated": "2026-07-31T18:07:04.576Z"
     },
     {
       "sportecId": "MLS-OBJ-0000IM",
@@ -58619,9 +58767,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/oyy86ogrmwrilkrtywjp",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/j7z8go9gnl3wg9yqt6ul",
       "slug": "kai-wagner",
-      "lastUpdated": "2026-07-20T18:10:54.609Z"
+      "lastUpdated": "2026-07-31T18:06:38.756Z"
     },
     {
       "sportecId": "MLS-OBJ-0000IF",
@@ -59216,6 +59364,43 @@
       "lastUpdated": "2026-07-16T23:15:59.684Z"
     },
     {
+      "sportecId": "MLS-OBJ-000F5R",
+      "optaId": 165990,
+      "clubSportecId": "MLS-CLU-00000P",
+      "clubOptaId": 1581,
+      "clubAbbr": "POR",
+      "firstName": "Vincent",
+      "lastName": "Janssen",
+      "knownName": null,
+      "displayName": "Vincent Janssen",
+      "jerseyNumber": "14",
+      "position": "offense",
+      "height": 185,
+      "weight": 79,
+      "footedness": "Left",
+      "dateOfBirth": "1994-06-15",
+      "age": 32,
+      "cityOfBirth": "Heesch",
+      "countryOfBirth": "Netherlands",
+      "rosterCategory": null,
+      "isSenior": false,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": null,
+      "slug": "vincent-janssen",
+      "lastUpdated": "2026-07-30T15:09:53.083Z"
+    },
+    {
       "sportecId": "MLS-OBJ-0000J7",
       "optaId": 436988,
       "clubSportecId": "MLS-CLU-00000P",
@@ -59251,43 +59436,6 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/jblqvodp0yovow5qyaxt",
       "slug": "hunter-sulte",
       "lastUpdated": "2026-07-16T23:18:30.845Z"
-    },
-    {
-      "sportecId": "MLS-OBJ-0000JU",
-      "optaId": 137415,
-      "clubSportecId": "MLS-CLU-00000P",
-      "clubOptaId": 1581,
-      "clubAbbr": "POR",
-      "firstName": "Felipe",
-      "lastName": "Mora",
-      "knownName": null,
-      "displayName": "Felipe Mora",
-      "jerseyNumber": "9",
-      "position": "offense",
-      "height": 175,
-      "weight": 68,
-      "footedness": "Right",
-      "dateOfBirth": "1993-08-02",
-      "age": 32,
-      "cityOfBirth": "Santiago",
-      "countryOfBirth": "Chile",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/d5i6mzcw8ympws3svc1b",
-      "slug": "felipe-mora",
-      "lastUpdated": "2026-07-24T23:18:19.759Z"
     },
     {
       "sportecId": "MLS-OBJ-0000JE",
@@ -61075,7 +61223,7 @@
       "lastName": "Holse",
       "knownName": null,
       "displayName": "Carlo Holse",
-      "jerseyNumber": null,
+      "jerseyNumber": "19",
       "position": "midfield",
       "height": 175,
       "weight": 73,
@@ -61100,7 +61248,7 @@
       "isGenAdidas": false,
       "headshot": null,
       "slug": "carlo-holse",
-      "lastUpdated": "2026-07-29T19:17:21.676Z"
+      "lastUpdated": "2026-07-31T22:49:18.805Z"
     },
     {
       "sportecId": "MLS-OBJ-000CUL",
@@ -61135,9 +61283,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fba2c0aghknlomfaxno5",
       "slug": "palmer-ault-x6006",
-      "lastUpdated": "2026-07-16T17:48:33.309Z"
+      "lastUpdated": "2026-07-31T18:23:38.671Z"
     },
     {
       "sportecId": "MLS-OBJ-000CQJ",
@@ -61394,9 +61542,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/eixznotayoaryrhezvtm",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/inkq8qvn1h4kg7d0jkkr",
       "slug": "zachary-zengue",
-      "lastUpdated": "2026-07-17T23:25:43.432Z"
+      "lastUpdated": "2026-07-31T18:22:41.413Z"
     },
     {
       "sportecId": "MLS-OBJ-0005M6",
@@ -62060,9 +62208,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mqvglx9lfgq6z0hb2mdm",
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/y7ev8yk0ktbyzp8rnvra",
       "slug": "alexandru-matan",
-      "lastUpdated": "2026-07-23T00:02:18.918Z"
+      "lastUpdated": "2026-07-31T18:23:13.956Z"
     },
     {
       "sportecId": "MLS-OBJ-0001J9",
@@ -63540,9 +63688,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/jinbchkggxd7r94czfra",
       "slug": "peter-kingston",
-      "lastUpdated": "2026-05-29T21:53:20.479Z"
+      "lastUpdated": "2026-07-31T18:19:27.198Z"
     },
     {
       "sportecId": "MLS-OBJ-0005JC",
@@ -63567,8 +63715,8 @@
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
+      "isLoanedOut": true,
+      "playerStatus_1": "Loaned Out",
       "playerCategory_1": "International",
       "playerCategory_2": null,
       "isDP": false,
@@ -63578,7 +63726,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fk9wyvyqtk7vr6fom9xv",
       "slug": "yu-tsukanome",
-      "lastUpdated": "2026-05-29T21:53:17.658Z"
+      "lastUpdated": "2026-07-31T23:15:00.952Z"
     },
     {
       "sportecId": "MLS-OBJ-0005ID",
@@ -65500,9 +65648,9 @@
       "isHomegrown": false,
       "isInternational": true,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/h6ojbagb4yx25n3rb6nb",
       "slug": "niklas-dorsch",
-      "lastUpdated": "2026-07-28T21:30:48.656Z"
+      "lastUpdated": "2026-07-31T18:27:36.708Z"
     },
     {
       "sportecId": "MLS-OBJ-000158",
@@ -65537,9 +65685,9 @@
       "isHomegrown": false,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ybj5gtcmfbkwvwg8ovkz",
       "slug": "jackson-gilman-x2365",
-      "lastUpdated": "2026-07-16T21:46:11.346Z"
+      "lastUpdated": "2026-07-31T18:27:11.379Z"
     },
     {
       "sportecId": "MLS-OBJ-000CM1",
@@ -65907,9 +66055,9 @@
       "isHomegrown": true,
       "isInternational": false,
       "isGenAdidas": false,
-      "headshot": null,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ltt3ewocu9bnpux05u1b",
       "slug": "richard-chukwu",
-      "lastUpdated": "2026-07-16T21:31:50.858Z"
+      "lastUpdated": "2026-07-31T18:28:01.205Z"
     },
     {
       "sportecId": "MLS-OBJ-0002OE",
@@ -65921,7 +66069,7 @@
       "lastName": "Palacio",
       "knownName": "Nelson Palacio",
       "displayName": "Nelson Palacio",
-      "jerseyNumber": "6",
+      "jerseyNumber": "8",
       "position": "midfield",
       "height": 180,
       "weight": 80,
@@ -65946,7 +66094,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/rjlzkr3am7umylxobexs",
       "slug": "nelson-palacio",
-      "lastUpdated": "2026-07-16T20:21:58.048Z"
+      "lastUpdated": "2026-07-31T21:19:32.685Z"
     },
     {
       "sportecId": "MLS-OBJ-0001K6",
