@@ -479,6 +479,68 @@ function Select({value,onChange,options,label,width=140}){
 
 function Rule(){return <div style={{borderTop:`1px solid ${T.border}`,margin:"20px 0"}}/>;}
 
+// ─── MOBILE UI (Phase 2) ──────────────────────────────────────────────
+function NavIcon({name,size=20}){
+  const P={
+    home:<path d="M3 11.5 12 4l9 7.5M5.5 10.5V20h13v-9.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round"/>,
+    players:<g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.8-4 3.9-6 7.5-6s6.7 2 7.5 6"/></g>,
+    teams:<path d="M12 3.5 5 6.2v5.3c0 4.3 2.9 7.6 7 9 4.1-1.4 7-4.7 7-9V6.2L12 3.5Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>,
+    search:<g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="m15.2 15.2 4.8 4.8"/></g>,
+    more:<g fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></g>
+  };
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false">{P[name]||null}</svg>;
+}
+
+function BottomSheet({open,onClose,title,children}){
+  useEffect(()=>{
+    if(!open)return;
+    const h=e=>{if(e.key==="Escape")onClose();};
+    document.addEventListener("keydown",h);
+    const prev=document.body.style.overflow;document.body.style.overflow="hidden";
+    return()=>{document.removeEventListener("keydown",h);document.body.style.overflow=prev;};
+  },[open]);
+  if(!open)return null;
+  return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:1200,background:"rgba(0,0,0,.35)",backdropFilter:"blur(2px)"}}>
+    <div role="dialog" aria-modal="true" aria-label={title} onClick={e=>e.stopPropagation()} className="usfi-sheet" style={{position:"absolute",left:0,right:0,bottom:0,background:T.bg,borderTop:`3px solid ${T.ink}`,maxHeight:"82vh",overflowY:"auto",padding:"14px 16px calc(18px + env(safe-area-inset-bottom))",boxShadow:"0 -12px 40px rgba(0,0,0,.18)"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,borderBottom:`1px solid ${T.borderLt}`,paddingBottom:8}}>
+        <div style={{fontFamily:T.display,fontWeight:700,fontSize:19,color:T.ink}}>{title}</div>
+        <button onClick={onClose} aria-label="Close" style={{background:"none",border:`1px solid ${T.border}`,width:32,height:32,fontSize:20,lineHeight:1,cursor:"pointer",color:T.ink,fontFamily:T.serif,borderRadius:0}}>×</button>
+      </div>
+      {children}
+    </div>
+  </div>;
+}
+
+function MobileSortBar({options,sortKey,sortDir,onSort}){
+  return <div role="group" aria-label="Sort players" style={{display:"flex",gap:6,padding:"8px 10px",overflowX:"auto",borderBottom:`2px solid ${T.ink}`,background:T.card,fontFamily:T.sans,alignItems:"center",WebkitOverflowScrolling:"touch"}}>
+    <span style={{fontSize:11,color:T.textMute,flexShrink:0,letterSpacing:.6,textTransform:"uppercase",fontWeight:600}}>Sort</span>
+    {options.map(([k,l])=>{const a=sortKey===k;return <button key={k} onClick={()=>onSort(k)} aria-pressed={a} style={{flexShrink:0,border:`1px solid ${a?T.ink:T.border}`,background:a?T.ink:"transparent",color:a?T.bg:T.textDim,fontSize:11,fontWeight:600,padding:"6px 10px",borderRadius:0,cursor:"pointer",fontFamily:T.sans,minHeight:32}}>{l}{a?(sortDir==="asc"?" \u25b2":" \u25bc"):""}</button>;})}
+  </div>;
+}
+
+function MobilePlayerCard({p,i,onOpen}){
+  const nr=p.rated===false||p.overall==null;
+  return <div role="button" tabIndex={0} onClick={onOpen} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onOpen();}}} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 56px",gap:10,alignItems:"center",padding:"11px 12px",borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,cursor:"pointer",minHeight:64}}>
+    <div style={{fontFamily:T.serif,fontWeight:700,fontSize:13,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
+    <div style={{minWidth:0}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+        <TeamBadge abbr={p.team} size={22} logo={p.teamLogo}/>
+        <div style={{minWidth:0}}>
+          <div style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+          <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans}}>{p.position} {"\u00b7"} {p.team}{p.age?` \u00b7 Age ${Math.floor(+p.age)}`:""}</div>
+        </div>
+      </div>
+      <div style={{display:"flex",gap:12,marginTop:6,fontFamily:T.mono,fontSize:11.5,color:T.textDim,flexWrap:"wrap"}}>
+        <span><b style={{color:T.text}}>{dv(p.goals)}</b> G</span>
+        <span><b style={{color:T.text}}>{dv(p.assists)}</b> A</span>
+        <span><b style={{color:+p.totalGA>=0?T.green:T.red}}>{+p.totalGA>=0?"+":""}{dv(p.totalGA)}</b> G+</span>
+        <span><b style={{color:T.text}}>{dv(p.xg90)}</b> xG/90</span>
+      </div>
+    </div>
+    <div style={{textAlign:"center"}}>{nr?<span style={{fontFamily:T.serif,fontWeight:700,fontSize:14,color:T.textMute}}>NR</span>:<span style={{display:"inline-flex",flexDirection:"column",alignItems:"center"}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:24,color:T.ink,lineHeight:1,letterSpacing:-.5}}>{Math.round(p.overall)}</span><span style={{width:24,height:3,background:gc(p.overall),marginTop:4,display:"block"}}></span></span>}</div>
+  </div>;
+}
+
 function TableWrap({children}){
   return <div className="table-scroll" style={{borderRadius:0,border:`1px solid ${T.border}`,overflow:"hidden",background:T.surface}}>
     <div className="table-inner">{children}</div>
@@ -1025,13 +1087,13 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
 
 
 // ─── SEARCH ──────────────────────────────────────────────────────────────────
-function PlayerSearch({players,onSelect}){
+function PlayerSearch({players,onSelect,wide,autoFocus}){
   const[q,setQ]=useState("");const[open,setOpen]=useState(false);const ref=useRef(null);
   useEffect(()=>{const h=e=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false);};document.addEventListener("mousedown",h);return()=>document.removeEventListener("mousedown",h);},[]);
-  const res=useMemo(()=>q.length<2?[]:players.filter(p=>p.name?.toLowerCase().includes(q.toLowerCase())||p.team?.toLowerCase().includes(q.toLowerCase())).slice(0,8),[q,players]);
-  return <div ref={ref} style={{position:"relative",width:"100%",maxWidth:240}}>
-    <input value={q} onChange={e=>{setQ(e.target.value);setOpen(true);}} placeholder="Search players..." onFocus={()=>setOpen(true)} style={{width:"100%",padding:"8px 12px",background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,color:T.text,fontSize:13,fontFamily:T.sans,outline:"none"}}/>
-    {open&&res.length>0&&<div style={{position:"absolute",top:"100%",left:0,right:0,background:T.surface,border:`1px solid ${T.border}`,borderTop:"none",borderBottomLeftRadius:6,borderBottomRightRadius:6,zIndex:500,maxHeight:320,overflowY:"auto",boxShadow:"0 12px 32px rgba(0,0,0,.12)"}}>
+  const res=useMemo(()=>q.length<2?[]:players.filter(p=>p.name?.toLowerCase().includes(q.toLowerCase())||p.team?.toLowerCase().includes(q.toLowerCase())||p.teamName?.toLowerCase().includes(q.toLowerCase())).slice(0,wide?12:8),[q,players]);
+  return <div ref={ref} style={{position:"relative",width:"100%",maxWidth:wide?"none":240}}>
+    <input value={q} aria-label="Search players and teams" autoFocus={!!autoFocus} onChange={e=>{setQ(e.target.value);setOpen(true);}} placeholder={wide?"Search players or teams\u2026":"Search players..."} onFocus={()=>setOpen(true)} style={{width:"100%",padding:wide?"12px 14px":"8px 12px",background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,color:T.text,fontSize:13,fontFamily:T.sans,outline:"none"}}/>
+    {open&&res.length>0&&<div style={{position:wide?"static":"absolute",top:"100%",left:0,right:0,background:T.surface,border:`1px solid ${T.border}`,borderTop:"none",borderBottomLeftRadius:6,borderBottomRightRadius:6,zIndex:500,maxHeight:320,overflowY:"auto",boxShadow:"0 12px 32px rgba(0,0,0,.12)"}}>
       {res.map((p,i)=><div key={p.id} onClick={()=>{onSelect(p);setQ("");setOpen(false);}} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderTop:i?`1px solid ${T.borderLt}`:"none",cursor:"pointer",transition:"background .1s"}} onMouseEnter={e=>e.currentTarget.style.background=T.card} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
         <TeamBadge abbr={p.team} size={36} logo={p.teamLogo}/><div style={{flex:1,minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",color:T.ink}}>{p.name}</div><div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.teamName}</div></div><Badge grade={p.overall} rated={p.rated} size="sm"/>
       </div>)}
@@ -1092,13 +1154,14 @@ function MLSAnalytics(){
   // Bulletproof wire scroll: drive it in JS so it works on every browser/OS,
   // independent of CSS keyframe quirks. Pauses on hover.
   useEffect(()=>{
+    const reduceMotion=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     let raf, x=0, paused=false, last=performance.now();
     const tick=(now)=>{
       const el=document.querySelector(".wire-inner");
       if(el){
         el.style.animation="none"; // disable CSS anim, we drive it
         const dt=Math.min(64, now-last); last=now;
-        if(!paused){ x-=dt*0.035; const half=el.scrollWidth/2; if(half>0 && -x>=half) x+=half; el.style.transform=`translateX(${x}px)`; }
+        if(!paused&&!reduceMotion){ x-=dt*0.035; const half=el.scrollWidth/2; if(half>0 && -x>=half) x+=half; el.style.transform=`translateX(${x}px)`; }
       } else { last=now; }
       raf=requestAnimationFrame(tick);
     };
@@ -1437,6 +1500,23 @@ function MLSAnalytics(){
   },[players]);
 
   const TABS=[{id:"front",l:"Front Page"},{id:"ask",l:"Ask USFI"},{id:"players",l:"Player Grades"},{id:"season",l:"Season Rating"},{id:"defense",l:"Defense"},{id:"passing",l:"Passing"},{id:"teams",l:"Teams"},{id:"rankings",l:"Table"},{id:"leaders",l:"Leaders"},{id:"valuations",l:"Values"},{id:"positions",l:"Positional"},{id:"compare",l:"Compare"+(comparePlayers.length?` (${comparePlayers.length})`:"")},{id:"trade",l:"Trade Machine"}];
+  const[moreOpen,setMoreOpen]=useState(false);const[searchOpen,setSearchOpen]=useState(false);
+  const PRIMARY_IDS=["front","players","teams"];
+  const MORE_IDS=TABS.map(t=>t.id).filter(id=>!PRIMARY_IDS.includes(id));
+  const TAB_BLURB={ask:"Ask questions of the Index record",season:"Full-season composite ratings",defense:"Defensive grades and stats",passing:"Passing grades and stats",rankings:"Standings and Power Rankings",leaders:"Stat leaders, TOTW, Best XI",valuations:"Market values and value efficiency",positions:"Positional breakdowns",compare:"Head-to-head radar",trade:"Build and grade a trade"};
+  // Default sort per section — applied on first visit only; afterwards the user's own sort is remembered per section
+  const TAB_SORT={teams:["overall","desc"],rankings:["pts","desc"],defense:["defense","desc"],passing:["passing","desc"],valuations:["marketValue","desc"],players:["overall","desc"],season:["overall","desc"]};
+  const sortMemo=useRef({});
+  const goTab=(id)=>{
+    setMoreOpen(false);setSearchOpen(false);
+    if(id!==tab){
+      sortMemo.current[tab]=[sortKey,sortDir];
+      const s=sortMemo.current[id]||TAB_SORT[id];
+      if(s){setSortKey(s[0]);setSortDir(s[1]);}
+      setTab(id);
+    }
+    try{window.scrollTo({top:0,left:0,behavior:"auto"});}catch(e){}
+  };
   const tbl=isMobile?"28px 1fr 40px 42px 34px 34px 50px":"34px 1fr 48px 54px 46px 46px 56px 60px 52px 60px 48px 60px";
 
   return (
@@ -1448,6 +1528,11 @@ function MLSAnalytics(){
         @keyframes stampStrike{0%{opacity:0;transform:rotate(-2deg) scale(1.7);filter:blur(1.5px)}62%{opacity:1;transform:rotate(-8deg) scale(.96);filter:blur(0)}100%{opacity:1;transform:rotate(-7deg) scale(1)}}
         .stamp-strike{opacity:1;animation:stampStrike .5s cubic-bezier(.2,1.6,.35,1) .2s both}
         *{box-sizing:border-box;margin:0;padding:0}
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+        button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid ${T.accent};outline-offset:2px}
+        @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+        .usfi-sheet{animation:sheetUp .22s ease-out}
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.wire-inner{transform:none!important}}
         @keyframes modalIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
         @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
         @keyframes spin{to{transform:rotate(360deg)}}
@@ -1466,10 +1551,10 @@ function MLSAnalytics(){
           .resp-season-strip{flex-wrap:wrap!important}
           .resp-season-strip>div{flex:none!important;width:calc(33.3% - 4px)!important}
           header .logo-wrap{padding:6px 0!important}
-          nav{padding:0 12px!important}
-          nav>div{justify-content:flex-start!important;gap:6px!important;padding:8px 0!important}
-          nav button{padding:7px 14px!important;font-size:10px!important;letter-spacing:0.5px!important}
-          main{padding:16px 12px!important}
+          .usfi-tabs{padding:0 12px!important}
+          .usfi-tabs>div{justify-content:flex-start!important;gap:6px!important;padding:8px 0!important}
+          .usfi-tabs button{padding:7px 14px!important;font-size:11px!important;letter-spacing:0.5px!important}
+          main{padding:16px 12px calc(96px + env(safe-area-inset-bottom))!important}
           .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
           .table-inner{min-width:auto!important}
           select{font-size:12px!important;padding:6px 24px 6px 8px!important}
@@ -1525,7 +1610,8 @@ function MLSAnalytics(){
       })()}
       <header style={{background:"transparent",padding:"0 24px",borderBottom:`2px solid ${T.ink}`}}>
         <div style={{maxWidth:1200,margin:"0 auto",textAlign:"center",padding:"10px 0 6px"}}>
-          <div onClick={()=>setTab("front")} style={{display:"inline-block"}}><Logo size={68} dark={dark}/></div>
+          <div onClick={()=>goTab("front")} role="link" tabIndex={0} onKeyDown={e=>{if(e.key==="Enter")goTab("front");}} aria-label="USA Footy Index home" style={{display:"inline-block",cursor:"pointer"}}><Logo size={68} dark={dark}/></div>
+          <h1 className="sr-only">USA Footy Index {"\u2014"} MLS player grades and analytics</h1>
           <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:6,flexWrap:"wrap"}}>
             <select value={season} onChange={e=>{setSeason(Number(e.target.value));}} style={{padding:"4px 14px",background:T.card,border:`1px solid ${T.border}`,borderRadius:0,fontSize:14,fontFamily:T.mono,fontWeight:700,color:T.ink,cursor:"pointer",appearance:"none",WebkitAppearance:"none",paddingRight:24,backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A09A90'/%3E%3C/svg%3E")`,backgroundRepeat:"no-repeat",backgroundPosition:"right 8px center"}}><option value={2026}>2026</option><option value={2025}>2025</option><option value={2024}>2024</option></select>
             {!loading&&<PlayerSearch players={players} onSelect={p=>setSel(p)}/>}
@@ -1698,13 +1784,43 @@ function MLSAnalytics(){
       </div>}
 
       {/* ═══ STICKY NAV ══════════════════════════════════════════════════ */}
-      <nav style={{position:"sticky",top:0,zIndex:100,background:T.surface,borderBottom:`2px solid ${T.ink}`,padding:"0 24px",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
+      {!isMobile&&<nav className="usfi-tabs" aria-label="Sections" style={{position:"sticky",top:0,zIndex:100,background:T.surface,borderBottom:`2px solid ${T.ink}`,padding:"0 24px",boxShadow:"0 2px 8px rgba(0,0,0,.06)"}}>
         <div style={{maxWidth:1200,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:isMobile?"flex-start":"center",gap:4,flexWrap:isMobile?"nowrap":"wrap",overflowX:isMobile?"auto":"visible",WebkitOverflowScrolling:"touch",scrollbarWidth:"none",msOverflowStyle:"none",padding:"6px 0"}}>
-          {TABS.map(t=><button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="teams"){setSortKey("overall");setSortDir("desc");}else if(t.id==="rankings"){setSortKey("pts");setSortDir("desc");}else if(t.id==="defense"){setSortKey("defense");setSortDir("desc");}else if(t.id==="passing"){setSortKey("passing");setSortDir("desc");}else if(t.id==="valuations"){setSortKey("marketValue");setSortDir("desc");setTeamFilter("All");}else if(t.id==="players"||t.id==="season"){setSortKey("overall");setSortDir("desc");}}} style={{flexShrink:0,background:tab===t.id?T.ink:"transparent",border:"none",color:tab===t.id?T.bg:T.textDim,padding:"8px 18px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.8,textTransform:"uppercase",transition:"all .15s",borderRadius:0,whiteSpace:"nowrap"}}>{t.l}</button>)}
+          {TABS.map(t=><button key={t.id} aria-current={tab===t.id?"page":undefined} onClick={()=>goTab(t.id)} style={{flexShrink:0,background:tab===t.id?T.ink:"transparent",border:"none",color:tab===t.id?T.bg:T.textDim,padding:"8px 18px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.8,textTransform:"uppercase",transition:"all .15s",borderRadius:0,whiteSpace:"nowrap"}}>{t.l}</button>)}
         </div>
-      </nav>
+      </nav>}
+
+      {/* ═══ MOBILE BOTTOM NAV ═══════════════════════════════════════════ */}
+      {isMobile&&!loading&&<nav aria-label="Primary" className="usfi-bottom-nav" style={{position:"fixed",left:0,right:0,bottom:0,zIndex:1000,background:T.surface,borderTop:`2px solid ${T.ink}`,display:"grid",gridTemplateColumns:"repeat(5,1fr)",paddingBottom:"env(safe-area-inset-bottom)",boxShadow:"0 -2px 10px rgba(0,0,0,.08)"}}>
+        {[["front","Home","home"],["players","Players","players"],["teams","Teams","teams"],["search","Search","search"],["more","More","more"]].map(([id,l,ic])=>{
+          const active=id==="search"?searchOpen:id==="more"?(moreOpen||(MORE_IDS.includes(tab)&&!searchOpen)):(tab===id&&!moreOpen&&!searchOpen);
+          const go=()=>{if(id==="search"){setMoreOpen(false);setSearchOpen(v=>!v);}else if(id==="more"){setSearchOpen(false);setMoreOpen(v=>!v);}else goTab(id);};
+          return <button key={id} onClick={go} aria-current={tab===id?"page":undefined} aria-expanded={id==="more"?moreOpen:id==="search"?searchOpen:undefined} style={{background:"transparent",border:"none",borderTop:`3px solid ${active?T.ink:"transparent"}`,color:active?T.ink:T.textDim,padding:"7px 0 8px",minHeight:56,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,cursor:"pointer",fontFamily:T.sans,fontWeight:active?700:600,fontSize:11,letterSpacing:.4,textTransform:"uppercase",borderRadius:0}}>
+            <NavIcon name={ic} size={21}/><span>{l}</span>
+          </button>;
+        })}
+      </nav>}
+
+      <BottomSheet open={isMobile&&moreOpen} onClose={()=>setMoreOpen(false)} title="More from the Index">
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          {TABS.filter(t=>MORE_IDS.includes(t.id)).map(t=>{const active=tab===t.id;return <button key={t.id} onClick={()=>goTab(t.id)} aria-current={active?"page":undefined} style={{textAlign:"left",background:active?T.ink:T.surface,color:active?T.bg:T.ink,border:`1px solid ${active?T.ink:T.border}`,padding:"12px 12px",cursor:"pointer",fontFamily:T.sans,borderRadius:0,minHeight:60}}>
+            <div style={{fontFamily:T.serif,fontWeight:700,fontSize:15}}>{t.l}</div>
+            <div style={{fontSize:11,marginTop:3,color:active?T.bg:T.textDim,opacity:active?.85:1}}>{TAB_BLURB[t.id]||""}</div>
+          </button>;})}
+        </div>
+        <div style={{display:"flex",gap:8,marginTop:12}}>
+          <button onClick={()=>{setMoreOpen(false);setShowGrading(true);}} style={{flex:1,background:"none",border:`1px solid ${T.border}`,padding:"10px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,color:T.accent,borderRadius:0}}>How We Grade</button>
+          <button onClick={()=>{setMoreOpen(false);setShowAbout(true);}} style={{flex:1,background:"none",border:`1px solid ${T.border}`,padding:"10px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,color:T.textDim,borderRadius:0}}>About</button>
+        </div>
+      </BottomSheet>
+
+      <BottomSheet open={isMobile&&searchOpen} onClose={()=>setSearchOpen(false)} title="Search the Index">
+        <PlayerSearch players={players} wide autoFocus onSelect={p=>{setSearchOpen(false);setSel(p);}}/>
+        <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12,color:T.textDim,marginTop:10}}>Type a player name, club name, or club code (e.g. NSH).</div>
+      </BottomSheet>
 
       <main style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px"}}>
+        {!loading&&<h2 className="sr-only">{(TABS.find(x=>x.id===tab)||{}).l||"Section"}</h2>}
         {/* Loading */}
         {loading&&<div style={{padding:"64px 0",textAlign:"center",animation:"fadeUp .5s ease"}}>
           <style>{`
@@ -1987,7 +2103,7 @@ function MLSAnalytics(){
           </div>}
 
           <TableWrap><div>
-            <div style={{display:"grid",gridTemplateColumns:tbl,padding:isMobile?"8px 10px":"10px 14px",background:T.card,fontSize:isMobile?9:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}>
+            {isMobile?<MobileSortBar options={[["overall","Grade"],["age","Age"],["goals","G"],["assists","A"],["totalGA","G+"],["xg90","xG/90"],["marketValue","Value"]]} sortKey={sortKey} sortDir={sortDir} onSort={toggleSort}/>:<div style={{display:"grid",gridTemplateColumns:tbl,padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}>
               <div style={{textAlign:"center"}}>#</div><div>Player</div>
               <ColHead label="Grd" sortKey="overall" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
               <ColHead label="Age" sortKey="age" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
@@ -1999,8 +2115,8 @@ function MLSAnalytics(){
               {!isMobile&&<div style={{textAlign:"center"}}>Sh/SoT</div>}
               {!isMobile&&<ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}
               <ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>
-            </div>
-            {filtered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,alignItems:"center",padding:isMobile?"12px 10px":"16px 14px",minHeight:isMobile?44:56,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
+            </div>}
+            {filtered.map((p,i)=>isMobile?<MobilePlayerCard key={p.id} p={p} i={i} onOpen={()=>setSel(p)}/>:<div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,alignItems:"center",padding:isMobile?"12px 10px":"16px 14px",minHeight:isMobile?44:56,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
               <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0,flex:1}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div>{!isMobile&&p.matchLog?.length>=2&&<MiniSparkline matchLog={p.matchLog} w={48} h={16}/>}</div>
               <div style={{textAlign:"center"}}>{p.rated===false||p.overall==null?<span style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.textMute}}>NR</span>:<span style={{display:"inline-flex",flexDirection:"column",alignItems:"center"}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:isMobile?20:28,color:T.ink,lineHeight:1,letterSpacing:-.5}}>{Math.round(p.overall)}</span><span style={{width:isMobile?20:26,height:3,background:gc(p.overall),marginTop:4,display:"block"}}></span></span>}</div>
