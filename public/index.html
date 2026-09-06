@@ -1683,7 +1683,10 @@ function MLSAnalytics(){
         const warn=[];
         if(ageDays!=null&&ageDays>4)warn.push("Data last refreshed "+Math.floor(ageDays)+" days ago; grades and the table may trail live results.");
         if(cacheMeta&&!srcOk)warn.push("One or more data sources were unavailable on the last run; some stats may be incomplete.");
-        if(pipeStatus&&pipeStatus.steps){const bad=Object.entries(pipeStatus.steps).filter(([k,v])=>v&&v!=="ok").map(([k,v])=>k+" "+v);if(bad.length)warn.push("Pipeline: "+bad.join(", ")+".");}
+        if(pipeStatus&&pipeStatus.steps){
+          const bad=Object.entries(pipeStatus.steps).filter(([k,v])=>v&&v!=="ok").map(([k,v])=>k==="articles"&&pipeStatus.articleReasonLabel?"articles: "+pipeStatus.articleReasonLabel:k+" "+v);
+          if(bad.length)warn.push("Pipeline: "+bad.join(", ")+".");
+        }
         if(!warn.length)return null;
         return <div role="status" style={{background:"#F3E4DC",borderBottom:`1px solid ${T.red}`,color:T.red,fontFamily:T.mono,fontSize:11,letterSpacing:"0.06em",padding:"6px 24px",textAlign:"center"}}>{"\u26a0 "+warn.join(" ")}</div>;
       })()}

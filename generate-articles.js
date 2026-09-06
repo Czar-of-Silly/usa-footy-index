@@ -33,6 +33,11 @@ const fs = require("fs");
 const CACHE = "public/data/mls-cache.json";
 const OUT = "public/data/articles.json";
 const STATE = "public/data/articles-state.json";
+const GEN_STATUS = "public/data/article-gen-status.json";
+function writeStatus(reason, extra) {
+  try { fs.writeFileSync(GEN_STATUS, JSON.stringify({ reason, checkedAt: new Date().toISOString(), ...extra })); }
+  catch (e) { console.log("(could not write " + GEN_STATUS + ": " + e.message + ")"); }
+}
 const MODEL = "claude-sonnet-4-6";
 const MAX_ARTICLES_KEPT = 12;
 
@@ -51,8 +56,8 @@ const GROUNDING_RULES = [
 const API_KEY = process.env.ANTHROPIC_API_KEY;
 const TEST_MODE = process.env.TEST_MODE === "1";
 
-if (!fs.existsSync(CACHE)) { console.log("❌ " + CACHE + " not found. Run from repo root after a fetch."); process.exit(1); }
-if (!API_KEY && !TEST_MODE) { console.log("ℹ️  ANTHROPIC_API_KEY not set — skipping article generation."); process.exit(0); }
+if (!fs.existsSync(CACHE)) { console.log("❌ " + CACHE + " not found. Run from repo root after a fetch."); writeStatus("no-cache"); process.exit(1); }
+if (!API_KEY && !TEST_MODE) { console.log("ℹ️  ANTHROPIC_API_KEY not set — skipping article generation."); writeStatus("no-key"); process.exit(0); }
 
 const cache = JSON.parse(fs.readFileSync(CACHE, "utf8"));
 const players = cache.players || [];
@@ -149,6 +154,7 @@ fs.writeFileSync(STATE, JSON.stringify(newState));
 console.log("Lanes — recaps:" + facts.recaps.length + " moves:" + facts.moves.length + " departures:" + facts.departures.length + " arrivals:" + facts.arrivals.length);
 if (state.factsHash && state.factsHash === newState.factsHash && !TEST_MODE) {
   console.log("ℹ️  Facts unchanged since last run — no new briefs needed.");
+  writeStatus("unchanged", { recaps: facts.recaps.length, moves: facts.moves.length, departures: facts.departures.length, arrivals: facts.arrivals.length });
   process.exit(0);
 }
 for (const p of players) if (p.n) factNames.add(p.n);
@@ -216,12 +222,12 @@ function validate(a) {
 (async () => {
   let raw;
   try { raw = await callClaude(); }
-  catch (e) { console.log("❌ " + e.message); process.exit(1); }
+  catch (e) { console.log("❌ " + e.message); writeStatus("api-error", { message: String(e.message || e).slice(0, 300) }); process.exit(1); }
 
   let arr;
   try { arr = JSON.parse(raw.replace(/```json|```/g, "").trim()); }
-  catch { console.log("❌ Model did not return valid JSON. First 200 chars:\n" + raw.slice(0, 200)); process.exit(1); }
-  if (!Array.isArray(arr)) { console.log("❌ Expected a JSON array."); process.exit(1); }
+  catch { console.log("❌ Model did not return valid JSON. First 200 chars:\n" + raw.slice(0, 200)); writeStatus("bad-json", { preview: raw.slice(0, 200) }); process.exit(1); }
+  if (!Array.isArray(arr)) { console.log("❌ Expected a JSON array."); writeStatus("not-array"); process.exit(1); }
 
   const now = new Date().toISOString();
   const fresh = [];
@@ -241,5 +247,7 @@ function validate(a) {
 
   fs.writeFileSync(OUT, JSON.stringify(all, null, 1));
   const ap = all.filter(a => a.status === "approved").length;
+  const pendingReasons = fresh.filter(a => a.status === "pending");
+  writeStatus("wrote", { total: all.length, approved: ap, pendingThisRun: pendingReasons.length });
   console.log("\n   " + OUT + " written: " + all.length + " total, " + ap + " approved (front page shows approved only).");
 })();
