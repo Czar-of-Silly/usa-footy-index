@@ -1,0 +1,2 @@
+# SPA fallback — real URLs resolve to the app shell (Functions rewrite the <head> per route)
+/*  /index.html  200

@@ -90,6 +90,10 @@ jobs:
       - name: Snapshot rankings
         run: node snapshot-rankings.js
 
+      # Route metadata for /players/<slug> and /teams/<slug> previews + sitemap.
+      - name: Build routes and sitemap
+        run: node build-routes.js
+
       # Surface step health on the site masthead + Actions summary.
       - name: Write pipeline status
         if: always()
@@ -106,6 +110,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add 'public/data/*.json'
+          git add public/sitemap.xml 2>/dev/null || true
           git add public/headshots/*.png 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No data changes this run."

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>USA Footy Index — MLS Player Analytics & Grades for Every Player</title>
@@ -99,6 +100,13 @@ function fmtET(d,opts){try{const x=d instanceof Date?d:new Date(d);if(isNaN(x))r
 function fmtETTime(d){try{const x=new Date(d);if(isNaN(x))return "";return x.toLocaleString("en-US",{timeZone:ET,month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+" ET";}catch(e){return "";}}
 // Pick the newest ranking snapshot that is at least 5 days older than the current data
 function pickWeekAgo(hist,generated){if(!Array.isArray(hist)||!hist.length)return null;const ref=generated?Date.parse(generated):Date.now();const cutoff=ref-5*864e5;const c=hist.filter(h=>h&&h.date&&Date.parse(h.date)<=cutoff).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));return c[0]||null;}
+// ─── ROUTES (Phase 3) ─────────────────────────────────────────────────
+// slugify must stay identical to build-routes.js (server-side) so /players/<slug> resolves the same player.
+function slugify(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");}
+const ROUTE_PATHS={front:"/",ask:"/ask",players:"/players",season:"/season-ratings",defense:"/defense",passing:"/passing",teams:"/teams",rankings:"/power-rankings",leaders:"/leaders",valuations:"/values",positions:"/positions",compare:"/compare",trade:"/trade-machine"};
+const PATH_TABS=Object.fromEntries(Object.entries(ROUTE_PATHS).map(([k,v])=>[v,k]));
+PATH_TABS["/table"]="rankings";PATH_TABS["/standings"]="rankings";PATH_TABS["/valuations"]="valuations";PATH_TABS["/trade"]="trade";PATH_TABS["/season"]="season";
+const SITE_TITLE="USA Footy Index \u2014 MLS Player Analytics & Grades for Every Player";
 const MLS_TEAMS = [
   {abbr:"ATL",name:"Atlanta United FC",conf:"Eastern",c1:"#80000A",c2:"#221F1F"},
   {abbr:"ATX",name:"Austin FC",conf:"Western",c1:"#00B140",c2:"#1a1a1a"},
@@ -707,6 +715,7 @@ function TopCards({players,metric,metricLabel,onSelect}){
 
 // ─── PLAYER MODAL ────────────────────────────────────────────────────────────
 function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
+  const[shareMsg,setShareMsg]=useState("");
   const[hsError,setHsError]=useState(false);
   useEffect(()=>setHsError(false),[p?.id]);
   if(!p)return null;
@@ -725,6 +734,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
   return <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.4)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(4px)"}}>
     <div onClick={e=>e.stopPropagation()} className="resp-modal" style={{background:T.bg,border:`1px solid ${T.border}`,borderRadius:0,width:"100%",maxWidth:860,maxHeight:"92vh",width:"calc(100% - 16px)",overflowY:"auto",animation:"modalIn .3s ease",boxShadow:"0 24px 60px rgba(0,0,0,.2)",position:"relative"}}>
       {/* Close */}
+      <button aria-label="Share this player" title="Copy link" onClick={async()=>{const url=window.location.href;const title=document.title;try{if(navigator.share){await navigator.share({title,url});return;}}catch(e){if(e&&e.name==="AbortError")return;}try{await navigator.clipboard.writeText(url);setShareMsg("Link copied");}catch(e){setShareMsg(url);}setTimeout(()=>setShareMsg(""),1800);}} style={{position:"absolute",top:12,right:46,background:T.bg,border:`1px solid ${T.border}`,borderRadius:0,color:T.ink,height:26,padding:"0 9px",cursor:"pointer",fontSize:10,fontWeight:700,letterSpacing:.6,textTransform:"uppercase",fontFamily:T.sans,display:"flex",alignItems:"center",gap:5,zIndex:10}}><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 15V3m0 0L8 7m4-4 4 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>{shareMsg||"Share"}</button>
       <button onClick={onClose} style={{position:"absolute",top:12,right:12,background:T.bg,border:`1px solid ${T.border}`,borderRadius:0,color:T.ink,width:26,height:26,cursor:"pointer",fontSize:18,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",zIndex:10,lineHeight:1,fontFamily:T.sans}}>×</button>
       {/* Header */}
       <div style={{padding:"28px 48px 24px 32px",borderBottom:`1px solid ${T.border}`}}>
@@ -1538,6 +1548,54 @@ function MLSAnalytics(){
     }
     try{window.scrollTo({top:0,left:0,behavior:"auto"});}catch(e){}
   };
+
+  // ── ROUTER (Phase 3): the URL is derived from state; popstate/initial load push the URL into state ──
+  const slugIndex=useMemo(()=>{
+    const byName={};players.forEach(p=>{const k=slugify(p.name);byName[k]=(byName[k]||0)+1;});
+    const toSlug={},fromSlug={};
+    players.forEach(p=>{const base=slugify(p.name);const s=byName[base]>1?base+"-"+slugify(p.team):base;toSlug[p.id]=s;if(!fromSlug[s])fromSlug[s]=p;});
+    return{toSlug,fromSlug};
+  },[players]);
+  const teamSlug=(abbr)=>{const t=MLS_TEAMS.find(x=>x.abbr===abbr);return slugify(t?t.name:abbr);};
+  const teamFromSlug=(s)=>MLS_TEAMS.find(t=>slugify(t.name)===s||t.abbr.toLowerCase()===s);
+  const routeReady=useRef(false);
+  const applyRouteRef=useRef(null);
+  applyRouteRef.current=(loc)=>{
+    const path=(loc.pathname||"/").replace(/\/+$/,"")||"/";const q=new URLSearchParams(loc.search||"");
+    const seg=path.split("/").filter(Boolean);
+    let t="front";
+    if(seg[0]==="players"&&seg[1]){t="players";setSel(slugIndex.fromSlug[decodeURIComponent(seg[1])]||null);}
+    else if(seg[0]==="teams"&&seg[1]){t="teams";const tm=teamFromSlug(decodeURIComponent(seg[1]));if(tm){setExpandTeam(tm.abbr);setTeamLevel(1);}setSel(null);}
+    else{t=PATH_TABS[path]||(seg[0]?PATH_TABS["/"+seg[0]]:null)||"front";setSel(null);if(t==="teams"){setExpandTeam(null);setTeamLevel(0);}}
+    if(t==="compare"){const raw=q.get("players");if(raw){const ps=raw.split(",").map(s=>slugIndex.fromSlug[s.trim()]).filter(Boolean).slice(0,3);setComparePlayers(ps);}}
+    if(t!==tab){const s=sortMemo.current[t]||TAB_SORT[t];if(s){setSortKey(s[0]);setSortDir(s[1]);}setTab(t);}
+    setMoreOpen(false);setSearchOpen(false);
+  };
+  const currentUrl=()=>{
+    if(sel&&slugIndex.toSlug[sel.id])return "/players/"+slugIndex.toSlug[sel.id];
+    if(tab==="teams"&&expandTeam)return "/teams/"+teamSlug(expandTeam);
+    if(tab==="compare"&&comparePlayers.length){const ss=comparePlayers.map(p=>slugIndex.toSlug[p.id]).filter(Boolean);if(ss.length)return "/compare?players="+ss.join(",");}
+    return ROUTE_PATHS[tab]||"/";
+  };
+  const pageTitle=()=>{
+    if(sel)return `${sel.name} \u2014 ${sel.position}, ${sel.teamName||sel.team}${sel.overall!=null?" \u00b7 Grade "+Math.round(sel.overall):""} | USA Footy Index`;
+    if(tab==="teams"&&expandTeam){const t=MLS_TEAMS.find(x=>x.abbr===expandTeam);return `${t?t.name:expandTeam} \u2014 Team Grade & Roster | USA Footy Index`;}
+    if(tab==="front")return SITE_TITLE;
+    const l=(TABS.find(x=>x.id===tab)||{}).l||"";return `${l.replace(/ \(\d+\)$/,"")} \u2014 MLS | USA Footy Index`;
+  };
+  // initial URL → state, once the player index exists
+  const syncSkip=useRef(false);
+  useEffect(()=>{if(loading||!players.length||routeReady.current)return;routeReady.current=true;syncSkip.current=true;applyRouteRef.current(window.location);},[loading,players]);
+  // back / forward
+  useEffect(()=>{const onPop=()=>{if(routeReady.current)applyRouteRef.current(window.location);};window.addEventListener("popstate",onPop);return()=>window.removeEventListener("popstate",onPop);},[]);
+  // state → URL, title, canonical
+  useEffect(()=>{
+    if(!routeReady.current)return;
+    if(syncSkip.current){syncSkip.current=false;return;} // same commit as the initial URL→state sync: state is still pre-route
+    const u=currentUrl();const cur=window.location.pathname+window.location.search;
+    if(u!==cur){try{window.history.pushState({u},"",u);}catch(e){}}
+    try{document.title=pageTitle();const abs=window.location.origin+u;const c=document.querySelector('link[rel="canonical"]');if(c)c.setAttribute("href",abs);const og=document.querySelector('meta[property="og:url"]');if(og)og.setAttribute("content",abs);}catch(e){}
+  },[tab,sel,expandTeam,comparePlayers,slugIndex]);
   const tbl=isMobile?"28px 1fr 40px 42px 34px 34px 50px":"34px 1fr 48px 54px 46px 46px 56px 60px 52px 60px 48px 60px";
 
   return (

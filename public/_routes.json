@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/data/*",
+    "/headshots/*",
+    "/*.png",
+    "/*.jpg",
+    "/*.ico",
+    "/*.xml",
+    "/*.txt",
+    "/*.json",
+    "/*.js",
+    "/*.css",
+    "/*.html",
+    "/*.zip",
+    "/*.webmanifest"
+  ]
+}
