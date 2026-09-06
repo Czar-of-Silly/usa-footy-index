@@ -518,6 +518,27 @@ function MobileSortBar({options,sortKey,sortDir,onSort}){
   </div>;
 }
 
+// Generic phone card used by Season / Defense / Passing. stats: [label, value, color?]
+function MobileStatCard({p,i,grade,gradeLabel,sub,stats,rankColor,onOpen}){
+  const nr=grade==null||!Number.isFinite(+grade);
+  return <div role="button" tabIndex={0} onClick={onOpen} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onOpen();}}} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 56px",gap:10,alignItems:"center",padding:"11px 12px",borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,cursor:"pointer",minHeight:64}}>
+    <div style={{fontFamily:T.serif,fontWeight:700,fontSize:13,color:rankColor||(i<3?T.accent:T.textMute),textAlign:"center"}}>{i+1}</div>
+    <div style={{minWidth:0}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+        <TeamBadge abbr={p.team} size={22} logo={p.teamLogo}/>
+        <div style={{minWidth:0}}>
+          <div style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+          <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{sub}</div>
+        </div>
+      </div>
+      <div style={{display:"flex",gap:12,marginTop:6,fontFamily:T.mono,fontSize:11.5,color:T.textDim,flexWrap:"wrap"}}>
+        {stats.map(([l,v,c])=><span key={l}><b style={{color:c||T.text}}>{dv(v)}</b> {l}</span>)}
+      </div>
+    </div>
+    <div style={{textAlign:"center"}}>{nr?<span style={{fontFamily:T.serif,fontWeight:700,fontSize:14,color:T.textMute}}>NR</span>:<span style={{display:"inline-flex",flexDirection:"column",alignItems:"center"}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:24,color:T.ink,lineHeight:1,letterSpacing:-.5}}>{Math.round(+grade)}</span><span style={{width:24,height:3,background:gc(+grade),marginTop:4,display:"block"}}></span>{gradeLabel&&<span style={{fontSize:8,letterSpacing:.8,textTransform:"uppercase",color:T.textMute,marginTop:3,fontFamily:T.sans}}>{gradeLabel}</span>}</span>}</div>
+  </div>;
+}
+
 function MobilePlayerCard({p,i,onOpen}){
   const nr=p.rated===false||p.overall==null;
   return <div role="button" tabIndex={0} onClick={onOpen} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onOpen();}}} className="rh" style={{display:"grid",gridTemplateColumns:"24px 1fr 56px",gap:10,alignItems:"center",padding:"11px 12px",borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,cursor:"pointer",minHeight:64}}>
@@ -2308,7 +2329,7 @@ function MLSAnalytics(){
             {/* ── TABLE VIEW ── */}
             {srView==="table"&&<TableWrap><div>
               {(()=>{const srTbl=isMobile?"28px 1fr 42px 32px 38px 38px 42px":"30px 1fr 56px 80px 50px 50px 60px 60px 64px";return <>
-              <div style={{display:"grid",gridTemplateColumns:srTbl,padding:isMobile?"6px 6px":"10px 14px",background:T.card,fontSize:isMobile?8:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}>
+              {isMobile?<MobileSortBar options={[["seasonGrade","Season"],["goals","G"],["assists","A"],["consistency","Consistency"],["impactPer90","Impact/90"],["totalGA","G+"]]} sortKey={srSort} sortDir={srDir} onSort={toggleSrSort}/>:<div style={{display:"grid",gridTemplateColumns:srTbl,padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}>
                 <div style={{textAlign:"center"}}>#</div><div>Player</div>
                 <ColHead label="SZN" sortKey="seasonGrade" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>
                 <div style={{textAlign:"center"}}>{isMobile?"Form":"Form Curve"}</div>
@@ -2317,8 +2338,8 @@ function MLSAnalytics(){
                 <ColHead label={isMobile?"Con":"Consist"} sortKey="consistency" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>
                 {!isMobile&&<ColHead label="Imp/90" sortKey="impactPer90" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>}
                 {!isMobile&&<ColHead label="G+" sortKey="totalGA" currentSort={srSort} currentDir={srDir} onSort={toggleSrSort} center/>}
-              </div>
-              {srFiltered.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:srTbl,padding:isMobile?"8px 6px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
+              </div>}
+              {srFiltered.map((p,i)=>isMobile?<MobileStatCard key={p.id} p={p} i={i} grade={p.seasonGrade} gradeLabel="Season" rankColor={i<3?T.gold:i<10?T.green:T.textMute} sub={`${p.position} \u00b7 ${p.team} \u00b7 ${p.mins} min${(p.mins||0)<450?" \u00b7 PROV":""}`} stats={[["G",p.goals],["A",p.assists],["Con",p.consistency],["Imp/90",p.impactPer90],["G+",(+p.totalGA>=0?"+":"")+p.totalGA,+p.totalGA>=0?T.green:T.red]]} onOpen={()=>setSel(p)}/>:<div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:srTbl,padding:isMobile?"8px 6px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
                 <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.gold:i<10?T.green:T.textMute,textAlign:"center"}}>{i+1}</div>
                 <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}>
                   <TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/>
@@ -2475,8 +2496,8 @@ function MLSAnalytics(){
           <TopCards players={defData} metric={p=>p.tackles||0} metricLabel="TACKLES" onSelect={setSel}/>
           <TableWrap><div>
             {(()=>{const defTbl=isMobile?"24px 1fr 38px 42px 42px 42px 42px":"24px 1fr 46px 46px 46px 52px 54px 48px 46px 56px 52px";return <>
-            <div style={{display:"grid",gridTemplateColumns:defTbl,padding:isMobile?"8px 10px":"10px 14px",background:T.card,fontSize:isMobile?9:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Def" sortKey="defense" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Tkl" sortKey="tackles" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<ColHead label="Tk%" sortKey="tacklePct" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}<ColHead label="Aer%"/*3B2*/ sortKey="aerialPct" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Prs" sortKey="pressures" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<ColHead label="Clr" sortKey="clearances" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<div style={{textAlign:"center"}}>YC/RC</div>}<ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>
-            {defData.map((p,i)=><div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:defTbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer"}}>
+            {isMobile?<MobileSortBar options={[["defense","Def"],["tackles","Tkl"],["tacklePct","Tk%"],["aerialPct","Aer%"],["pressures","Prs"],["clearances","Clr"],["fouls","Fls"],["totalGA","G+"]]} sortKey={sortKey} sortDir={sortDir} onSort={toggleSort}/>:<div style={{display:"grid",gridTemplateColumns:defTbl,padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Def" sortKey="defense" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Tkl" sortKey="tackles" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<ColHead label="Tk%" sortKey="tacklePct" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}<ColHead label="Aer%"/*3B2*/ sortKey="aerialPct" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Prs" sortKey="pressures" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<ColHead label="Clr" sortKey="clearances" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<ColHead label="Fls" sortKey="fouls" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<div style={{textAlign:"center"}}>YC/RC</div>}<ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>}
+            {defData.map((p,i)=>isMobile?<MobileStatCard key={p.id} p={p} i={i} grade={p.defense} gradeLabel="Def" sub={`${p.position} \u00b7 ${p.team}`} stats={[["Tkl",p.tackles],["Tk%",p.tacklePct!=null?p.tacklePct+"%":null],["Aer%",p.aerialPct!=null?p.aerialPct+"%":null],["Prs",p.pressures],["Clr",p.clearances],["Fls",p.fouls],["YC/RC",(p.yellowCards??0)+"/"+(p.redCards??0)],["G+",(+p.totalGA>=0?"+":"")+p.totalGA,+p.totalGA>=0?T.green:T.red]]} onOpen={()=>setSel(p)}/>:<div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:defTbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer"}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
               <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><Badge grade={p.defense} size={isMobile?"sm":"md"}/></div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,textAlign:"center"}}>{p.tackles!=null?p.tackles:"—"}</div>{!isMobile&&<div style={{fontSize:13,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.tacklePct!=null?p.tacklePct+"%":"—"}</div>}
@@ -2506,8 +2527,8 @@ function MLSAnalytics(){
           <TopCards players={passData} metric={p=>p.passComp+"%"} metricLabel="COMPLETION" onSelect={setSel}/>
           <TableWrap><div>
             {(()=>{const passTbl=isMobile?"24px 1fr 40px 56px 52px 46px":"24px 1fr 48px 68px 68px 68px 56px 56px 56px";return <>
-            <div style={{display:"grid",gridTemplateColumns:passTbl,padding:isMobile?"8px 10px":"10px 14px",background:T.card,fontSize:isMobile?9:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Pass" sortKey="passing" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Comp%" sortKey="passComp" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<div style={{textAlign:"center"}}>xComp%</div>}<div style={{textAlign:"center"}}>{isMobile?"±Exp":"vs Exp"}</div>{!isMobile&&<ColHead label="PrgP" sortKey="prgPasses" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<ColHead label="F3rd" sortKey="ftPasses" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}<ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>
-            {passData.map((p,i)=>{const ae=Number(p.passAboveExp);return <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:passTbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer"}}>
+            {isMobile?<MobileSortBar options={[["passing","Pass"],["passComp","Comp%"],["prgPasses","PrgP"],["ftPasses","F3rd"],["totalGA","G+"]]} sortKey={sortKey} sortDir={sortDir} onSort={toggleSort}/>:<div style={{display:"grid",gridTemplateColumns:passTbl,padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}><div style={{textAlign:"center"}}>#</div><div>Player</div><ColHead label="Pass" sortKey="passing" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Comp%" sortKey="passComp" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<div style={{textAlign:"center"}}>xComp%</div>}<div style={{textAlign:"center"}}>{isMobile?"±Exp":"vs Exp"}</div>{!isMobile&&<ColHead label="PrgP" sortKey="prgPasses" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}{!isMobile&&<ColHead label="F3rd" sortKey="ftPasses" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}<ColHead label="G+" sortKey="totalGA" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/></div>}
+            {passData.map((p,i)=>{const ae=Number(p.passAboveExp);return isMobile?<MobileStatCard key={p.id} p={p} i={i} grade={p.passing} gradeLabel="Pass" sub={`${p.position} \u00b7 ${p.team}`} stats={[["Comp",p.passComp+"%"],["xComp",p.xPassComp+"%"],["vs Exp",p.passAboveExp!=null?(ae>=0?"+":"")+p.passAboveExp+"%":null,ae>=0?T.green:T.red],["KP",p.keyPasses],["F3rd",p.ftPasses],["Pass G+",(+p.passGA>=0?"+":"")+p.passGA,+p.passGA>=0?T.green:T.red]]} onOpen={()=>setSel(p)}/>:<div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:passTbl,padding:isMobile?"10px 10px":"14px 14px",minHeight:isMobile?40:48,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer"}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
               <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div></div>
               <div style={{textAlign:"center"}}><Badge grade={p.passing} size={isMobile?"sm":"md"}/></div>
@@ -2531,7 +2552,7 @@ function MLSAnalytics(){
           <div style={{marginBottom:16}}><Select label="Conference" value={confFilter} onChange={setConfFilter} width={150} options={["All","Eastern","Western"]}/>
             </div>
           <TableWrap><div>
-            <div style={{display:"grid",gridTemplateColumns:"36px 1fr 50px 52px 80px 36px",padding:"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}><div>Rk</div><div>Team</div><ColHead label="Grade" sortKey="overall" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Plrs" sortKey="count" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><ColHead label="Squad Val" sortKey="squadValue" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><div></div></div>
+            <div style={{display:"grid",gridTemplateColumns:isMobile?"26px 1fr 46px 66px 22px":"36px 1fr 50px 52px 80px 36px",padding:isMobile?"8px 8px":"10px 14px",background:T.card,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,borderBottom:`2px solid ${T.ink}`,fontFamily:T.sans,textTransform:"uppercase"}}><div>Rk</div><div>Team</div><ColHead label="Grade" sortKey="overall" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>{!isMobile&&<ColHead label="Plrs" sortKey="count" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/>}<ColHead label={isMobile?"Value":"Squad Val"} sortKey="squadValue" currentSort={sortKey} currentDir={sortDir} onSort={toggleSort} center/><div></div></div>
             {enrichedTeams.filter(t=>confFilter==="All"||t.conf===confFilter).sort((a,b)=>{const dir=sortDir==="asc"?1:-1;const av=Number(a[sortKey])||0,bv=Number(b[sortKey])||0;return dir*(av-bv);}).map((t,i)=>{
               const isOpen=expandTeam===t.abbr;
               const level=isOpen?teamLevel:0;
@@ -2542,11 +2563,11 @@ function MLSAnalytics(){
 
               return <div key={t.abbr}>
                 {/* Team row */}
-                <div onClick={()=>toggleTeam(t.abbr)} className="rh" style={{display:"grid",gridTemplateColumns:"36px 1fr 50px 52px 80px 36px",padding:"14px 16px",borderBottom:`1px solid ${isOpen?T.border:T.borderLt}`,alignItems:"center",cursor:"pointer",background:isOpen?T.card:"transparent"}}>
+                <div onClick={()=>toggleTeam(t.abbr)} className="rh" style={{display:"grid",gridTemplateColumns:isMobile?"26px 1fr 46px 66px 22px":"36px 1fr 50px 52px 80px 36px",padding:isMobile?"12px 8px":"14px 16px",borderBottom:`1px solid ${isOpen?T.border:T.borderLt}`,alignItems:"center",cursor:"pointer",background:isOpen?T.card:"transparent"}}>
                   <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:i<3?T.accent:T.textMute}}>{i+1}</div>
-                  <div style={{display:"flex",alignItems:"center",gap:10}}><TeamBadge abbr={t.abbr} size={34} logo={teamLogos[t.abbr]}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:18,color:T.ink}}>{t.name}</div><div style={{fontSize:12,color:T.textDim,fontFamily:T.sans}}>{t.conf}</div></div></div>
+                  <div style={{display:"flex",alignItems:"center",gap:isMobile?8:10,minWidth:0}}><TeamBadge abbr={t.abbr} size={isMobile?26:34} logo={teamLogos[t.abbr]}/><div style={{minWidth:0}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?14:18,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</div><div style={{fontSize:isMobile?10:12,color:T.textDim,fontFamily:T.sans}}>{t.conf}{isMobile?` \u00b7 ${t.count} players`:""}</div></div></div>
                   <div style={{textAlign:"center"}}><Badge grade={t.overall} size="md"/></div>
-                  <div style={{fontSize:12,color:T.textDim,textAlign:"center"}}>{t.count}</div>
+                  {!isMobile&&<div style={{fontSize:12,color:T.textDim,textAlign:"center"}}>{t.count}</div>}
                   <div style={{fontFamily:T.serif,fontWeight:600,fontSize:12,color:vc(t.squadValue),textAlign:"center"}}>{t.squadValue>0?fv(t.squadValue):"—"}</div>
                   <div style={{fontSize:10,color:T.textMute,textAlign:"center"}}>{level===2?"▲":level===1?"▼▼":"▼"}</div>
                 </div>
@@ -2608,7 +2629,7 @@ function MLSAnalytics(){
                     <div style={{fontSize:9,color:T.accent,fontWeight:600,fontFamily:T.sans,cursor:"pointer"}} onClick={e=>{e.stopPropagation();setTeamLevel(1);}}>← Back to Stats</div>
                   </div>
                   {roster.length===0?<div style={{padding:16,textAlign:"center",color:T.textDim,fontSize:12,fontStyle:"italic"}}>No players loaded</div>
-                  :<>
+                  :<div className="roster-scroll" style={{overflowX:isMobile?"auto":"visible",WebkitOverflowScrolling:"touch"}}><div style={{minWidth:isMobile?600:0}}>
                     <div style={{display:"grid",gridTemplateColumns:rosterTbl,fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:.8,fontFamily:T.sans,textTransform:"uppercase",padding:"6px 8px",borderBottom:`1px solid ${T.borderLt}`,marginBottom:2}}>
                       <div>Player</div>
                       <ColHead label="Grd" sortKey="overall" currentSort={rosterSort} currentDir={rosterDir} onSort={toggleRosterSort}/>
@@ -2638,7 +2659,7 @@ function MLSAnalytics(){
                         <div style={{fontSize:10,color:vc(p.marketValue),fontFamily:T.serif,fontWeight:600}}>{fv(p.marketValue)}</div>
                       </div>
                     ))}
-                  </>}
+                  </div></div>}
                 </div>}
               </div>;
             })}
