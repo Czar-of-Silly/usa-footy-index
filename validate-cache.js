@@ -64,8 +64,13 @@ for (const m of ms) {
     if (!Number.isFinite(+m.homeScore) || !Number.isFinite(+m.awayScore)) problems.push("completed match " + m.id + " has non-numeric score");
     if (t > now) problems.push("match " + m.id + " completed but kicks off in the future " + m.date);
   } else {
-    // an "upcoming" fixture must not have kicked off more than 3 hours ago
-    if (t < now - 3 * 3600e3) problems.push("fixture " + m.id + " " + m.home + "-" + m.away + " marked upcoming but dated " + m.date);
+    // A non-completed fixture with a past kickoff is only valid if its status explains why
+    // (postponed, suspended, cancelled, etc.) — anything else past kickoff and still
+    // "upcoming" means the completed/score fields never got filled in.
+    const NON_COMPLETING_STATUS = /postpon|suspend|cancel|abandon|delay/i;
+    if (t < now - 3 * 3600e3 && !NON_COMPLETING_STATUS.test(m.status || "")) {
+      problems.push("fixture " + m.id + " " + m.home + "-" + m.away + " marked upcoming but dated " + m.date + " (status: " + (m.status || "none") + ")");
+    }
   }
 }
 
