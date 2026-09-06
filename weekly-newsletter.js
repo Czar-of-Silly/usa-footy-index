@@ -41,7 +41,7 @@ function posCode(p) {
   if (z.startsWith("mid")) return "MID";
   return "FWD";
 }
-const fmtDate = (d) => { try { return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" }); } catch { return ""; } };
+const fmtDate = (d) => { try { return new Date(d).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" }); } catch { return ""; } };
 
 async function callClaude(prompt) {
   if (MOCK) return null;
@@ -121,7 +121,7 @@ House style, follow exactly: no em-dashes or en-dashes, use commas or periods. N
   // ── BUILD HTML ──
   console.log("📝 Building HTML...");
   const season = cache.season || new Date().getFullYear();
-  const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const today = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
 
   const leaderRows = (arr, val, fmt) => arr.map((p, i) => `<tr style="border-bottom:1px solid #EDE9E0;">
         <td style="padding:5px 0;color:#A09A90;width:20px;">${i + 1}</td>

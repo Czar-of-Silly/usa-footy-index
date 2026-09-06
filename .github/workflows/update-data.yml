@@ -59,8 +59,14 @@ jobs:
       - name: Tag current-season copy
         run: cp public/data/mls-cache.json public/data/mls-cache-2026.json
 
+      # Fail closed: a broken cache never gets committed or deployed.
+      - name: Validate cache
+        run: node validate-cache.js
+
       - name: Fetch market values (Transfermarkt dataset, weekly refresh)
-        run: node fetch-market-values.js || echo "MV refresh skipped this run"
+        id: mv
+        continue-on-error: true
+        run: node fetch-market-values.js
 
       # Front-page articles: Claude drafts quick hits from the fresh cache.
       # Skips silently when the ANTHROPIC_API_KEY secret is missing; never
@@ -68,13 +74,30 @@ jobs:
       # Ask USFI knowledge: extract the live grading engine, compute grades,
       # and distill a compact context file for the /api/ask chatbot.
       - name: Build Ask USFI context
-        run: node build-ask-context.js || echo "ask context skipped"
+        id: askctx
+        continue-on-error: true
+        run: node build-ask-context.js
         timeout-minutes: 3
       - name: Generate front-page articles
+        id: articles
+        continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: node generate-articles.js || echo "articles skipped this run"
+        run: node generate-articles.js
         timeout-minutes: 5
+
+      # Real ranking history for week-over-week movement (no simulated arrows).
+      - name: Snapshot rankings
+        run: node snapshot-rankings.js
+
+      # Surface step health on the site masthead + Actions summary.
+      - name: Write pipeline status
+        if: always()
+        env:
+          MV_OUTCOME: ${{ steps.mv.outcome }}
+          ASKCTX_OUTCOME: ${{ steps.askctx.outcome }}
+          ARTICLES_OUTCOME: ${{ steps.articles.outcome }}
+        run: node write-pipeline-status.js
 
       # Race-safe commit: rebase on top of anything pushed during the run,
       # then push. Skips cleanly when the data didn't change.

@@ -91,6 +91,14 @@ const RBar = _RC.Bar;
 const DATA_URL_BASE = "./data/mls-cache";
 const CY = new Date().getFullYear();
 
+// Display value: never render null/undefined/"null" — show an em dash instead
+function dv(v){return (v==null||v===""||v==="null"||v==="undefined"||(typeof v==="number"&&!Number.isFinite(v)))?"\u2014":v;}
+// All user-facing dates render in US Eastern regardless of viewer/build timezone
+const ET="America/New_York";
+function fmtET(d,opts){try{const x=d instanceof Date?d:new Date(d);if(isNaN(x))return "";return x.toLocaleDateString("en-US",{timeZone:ET,...(opts||{month:"short",day:"numeric"})});}catch(e){return "";}}
+function fmtETTime(d){try{const x=new Date(d);if(isNaN(x))return "";return x.toLocaleString("en-US",{timeZone:ET,month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+" ET";}catch(e){return "";}}
+// Pick the newest ranking snapshot that is at least 5 days older than the current data
+function pickWeekAgo(hist,generated){if(!Array.isArray(hist)||!hist.length)return null;const ref=generated?Date.parse(generated):Date.now();const cutoff=ref-5*864e5;const c=hist.filter(h=>h&&h.date&&Date.parse(h.date)<=cutoff).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));return c[0]||null;}
 const MLS_TEAMS = [
   {abbr:"ATL",name:"Atlanta United FC",conf:"Eastern",c1:"#80000A",c2:"#221F1F"},
   {abbr:"ATX",name:"Austin FC",conf:"Western",c1:"#00B140",c2:"#1a1a1a"},
@@ -802,7 +810,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
           {[["Saves",p.saves||0],["Clean Sheets",p.cleanSheets||0],["Goals Against",p.goalsConceded||0],["Games",Math.round((p.mins||0)/90)],["Minutes",p.mins?.toLocaleString()],["Value",<span style={{color:vc(p.marketValue),fontWeight:600}}>{fv(p.marketValue)}</span>],["Salary",<span style={{fontWeight:600}}>{p.salary?`$${(p.salary/1000).toFixed(0)}K`:"—"}</span>]].map(([l,v])=>(
             <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
               <span style={{fontSize:12,color:T.textDim,fontFamily:T.sans}}>{l}</span>
-              <span style={{fontFamily:T.serif,fontWeight:600,fontSize:14,color:T.text}}>{v}</span>
+              <span style={{fontFamily:T.serif,fontWeight:600,fontSize:14,color:T.text}}>{dv(v)}</span>
             </div>
           ))}
         </div>
@@ -857,7 +865,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
           {[["Goals Added",<span style={{color:+p.totalGA>=0?T.green:T.red,fontWeight:700}}>{+p.totalGA>=0?"+":""}{p.totalGA}</span>],["xG/90",p.xg90],["xA/90",p.xa90],["Height",p.heightCm?`${Math.floor(p.heightCm/2.54/12)}'${Math.round(p.heightCm/2.54%12)}" (${p.heightCm}cm)`:"—"],["Weight",p.weightKg?`${Math.round(p.weightKg*2.205)} lbs (${p.weightKg}kg)`:"—"],["Value",<span style={{color:vc(p.marketValue),fontWeight:600}}>{fv(p.marketValue)}</span>],["Salary",<span style={{fontWeight:600}}>{p.salary?`$${(p.salary/1000).toFixed(0)}K`:"—"}</span>],["Minutes",p.mins?.toLocaleString()]].map(([l,v])=>(
             <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
               <span style={{fontSize:12,color:T.textDim,fontFamily:T.sans}}>{l}</span>
-              <span style={{fontFamily:T.serif,fontWeight:600,fontSize:14,color:T.text}}>{v}</span>
+              <span style={{fontFamily:T.serif,fontWeight:600,fontSize:14,color:T.text}}>{dv(v)}</span>
             </div>
           ))}
         </div>
@@ -1055,6 +1063,9 @@ function MLSAnalytics(){
   const[standingsData,setStandingsData]=useState([]);
   const[matchesData,setMatchesData]=useState([]);
   const[articles,setArticles]=useState([]);
+  const[cacheMeta,setCacheMeta]=useState(null);
+  const[rankHistory,setRankHistory]=useState(null);
+  const[pipeStatus,setPipeStatus]=useState(null);
   const[showGrading,setShowGrading]=useState(false);
   const[showAbout,setShowAbout]=useState(false);
   const[minMins,setMinMins]=useState(0);
@@ -1141,6 +1152,9 @@ function MLSAnalytics(){
       if(!res.ok)throw new Error(`Server returned ${res.status}`);
       setLoadProgress(50);
       const cache=await res.json();
+      setCacheMeta({generated:cache.generated||null,sources:cache.dataSources||[],players:(cache.players||[]).length,season:cache.season||season});
+      fetch("./data/rank-history.json").then(r=>r.ok?r.json():null).then(h=>setRankHistory(Array.isArray(h)?h:null)).catch(()=>setRankHistory(null));
+      fetch("./data/pipeline-status.json").then(r=>r.ok?r.json():null).then(s=>setPipeStatus(s&&typeof s==="object"?s:null)).catch(()=>setPipeStatus(null));
       (cache.standings||[]).forEach(s=>{if(s.logo)_logos[s.team]=s.logo;});
       setStandingsData(cache.standings||[]);
       setMatchesData(cache.matches||[]);
@@ -1422,39 +1436,6 @@ function MLSAnalytics(){
     return cats.map(c=>{let pool=[...players].filter(p=>parseFloat(p[c.k])>0);if(c.minField)pool=pool.filter(p=>(parseFloat(p[c.minField])||0)>=c.minVal);const sorted=pool.sort((a,b)=>(parseFloat(b[c.k])||0)-(parseFloat(a[c.k])||0));return{...c,top:sorted.slice(0,5)};}).filter(c=>c.top.length>0);
   },[players]);
 
-  // Power Rankings — simulated previous week via deterministic offset per team
-  const powerRankings=useMemo(()=>{
-    if(!enrichedTeams.length||enrichedTeams[0].count===0)return[];
-    const current=enrichedTeams.map((t,i)=>({...t,rank:i+1}));
-    // Simulate previous ranks: hash team abbr for a consistent offset
-    const hash=(s)=>s.split("").reduce((a,c)=>a+c.charCodeAt(0),0);
-    const prev=current.map(t=>{const off=((hash(t.abbr)*7+3)%9)-4;return{abbr:t.abbr,prevRank:Math.max(1,Math.min(30,t.rank+off))};});
-    // Resolve ties — shuffle duplicates
-    const used=new Set();const resolved=[];
-    prev.sort((a,b)=>a.prevRank-b.prevRank).forEach(p=>{let r=p.prevRank;while(used.has(r))r++;used.add(r);resolved.push({abbr:p.abbr,prevRank:r});});
-    const prevMap={};resolved.forEach(r=>{prevMap[r.abbr]=r.prevRank;});
-
-    // Generate a short blurb per team
-    const blurb=(t)=>{
-      const parts=[];
-      if(t.attack>=78)parts.push("elite attacking output");
-      else if(t.attack<=55)parts.push("struggling in front of goal");
-      if(t.defense>=78)parts.push("rock-solid defensive unit");
-      else if(t.defense<=55)parts.push("leaky at the back");
-      if(t.creativity>=78)parts.push("creative playmaking");
-      if(t.carrying>=78)parts.push("strong ball progression");
-      if(t.topScorer&&t.topScorer.goals>=8)parts.push(`${t.topScorer.name} leading with ${t.topScorer.goals} goals`);
-      if(!parts.length)parts.push("solid all-around performance");
-      return parts.slice(0,2).join(". ")+".";
-    };
-
-    return current.map(t=>{
-      const prev=prevMap[t.abbr]||t.rank;
-      const move=prev-t.rank;
-      return{...t,prevRank:prev,move,blurb:blurb(t)};
-    });
-  },[enrichedTeams]);
-
   const TABS=[{id:"front",l:"Front Page"},{id:"ask",l:"Ask USFI"},{id:"players",l:"Player Grades"},{id:"season",l:"Season Rating"},{id:"defense",l:"Defense"},{id:"passing",l:"Passing"},{id:"teams",l:"Teams"},{id:"rankings",l:"Table"},{id:"leaders",l:"Leaders"},{id:"valuations",l:"Values"},{id:"positions",l:"Positional"},{id:"compare",l:"Compare"+(comparePlayers.length?` (${comparePlayers.length})`:"")},{id:"trade",l:"Trade Machine"}];
   const tbl=isMobile?"28px 1fr 40px 42px 34px 34px 50px":"34px 1fr 48px 54px 46px 46px 56px 60px 52px 60px 48px 60px";
 
@@ -1520,10 +1501,28 @@ function MLSAnalytics(){
       <div style={{borderBottom:`1px solid ${T.borderLt}`,fontFamily:T.mono,fontSize:10,letterSpacing:"0.14em",textTransform:"uppercase",color:T.textDim}}>
         <div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",padding:"8px 24px",gap:12,flexWrap:"wrap"}}>
           <span>Vol. II · {season} Season</span>
-          <span>{new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}</span>
-          <span>{players&&players.length?players.length+" Players Graded":"The Independent MLS Index"}</span>
+          {(()=>{
+            const gen=cacheMeta&&cacheMeta.generated?Date.parse(cacheMeta.generated):NaN;
+            const ageDays=Number.isFinite(gen)?(Date.now()-gen)/864e5:null;
+            const srcOk=cacheMeta&&Array.isArray(cacheMeta.sources)&&cacheMeta.sources.length>=3;
+            const graded=players&&players.length?players.filter(p=>p.rated).length||players.length:0;
+            const txt=Number.isFinite(gen)?("Updated "+fmtETTime(gen)+" \u00b7 "+graded+" players graded \u00b7 "+(srcOk?"Data sources healthy":"Sources: "+((cacheMeta&&cacheMeta.sources)||[]).join(", ")||"unknown")):"Loading the record\u2026";
+            return <span title={cacheMeta&&cacheMeta.sources?"Sources: "+cacheMeta.sources.join(", "):""} style={{color:(ageDays!=null&&ageDays>4)||!srcOk?T.red:T.textDim}}>{txt}</span>;
+          })()}
+          <span>{new Date().toLocaleDateString("en-US",{timeZone:ET,weekday:"long",month:"long",day:"numeric"})}</span>
         </div>
       </div>
+      {(()=>{
+        const gen=cacheMeta&&cacheMeta.generated?Date.parse(cacheMeta.generated):NaN;
+        const ageDays=Number.isFinite(gen)?(Date.now()-gen)/864e5:null;
+        const srcOk=cacheMeta&&Array.isArray(cacheMeta.sources)&&cacheMeta.sources.length>=3;
+        const warn=[];
+        if(ageDays!=null&&ageDays>4)warn.push("Data last refreshed "+Math.floor(ageDays)+" days ago; grades and the table may trail live results.");
+        if(cacheMeta&&!srcOk)warn.push("One or more data sources were unavailable on the last run; some stats may be incomplete.");
+        if(pipeStatus&&pipeStatus.steps){const bad=Object.entries(pipeStatus.steps).filter(([k,v])=>v&&v!=="ok").map(([k,v])=>k+" "+v);if(bad.length)warn.push("Pipeline: "+bad.join(", ")+".");}
+        if(!warn.length)return null;
+        return <div role="status" style={{background:"#F3E4DC",borderBottom:`1px solid ${T.red}`,color:T.red,fontFamily:T.mono,fontSize:11,letterSpacing:"0.06em",padding:"6px 24px",textAlign:"center"}}>{"\u26a0 "+warn.join(" ")}</div>;
+      })()}
       <header style={{background:"transparent",padding:"0 24px",borderBottom:`2px solid ${T.ink}`}}>
         <div style={{maxWidth:1200,margin:"0 auto",textAlign:"center",padding:"10px 0 6px"}}>
           <div onClick={()=>setTab("front")} style={{display:"inline-block"}}><Logo size={68} dark={dark}/></div>
@@ -1741,7 +1740,10 @@ function MLSAnalytics(){
         {!loading&&tab==="front"&&(()=>{
           let graded=players.filter(p=>p.rated&&typeof p.overall==="number");if(!graded.length)graded=players.filter(p=>typeof p.overall==="number"&&p.name);
           const sortedG=[...graded].sort((a,b)=>b.overall-a.overall);const topPlayer=sortedG.find(p=>p.localHeadshot||p.headshot)||sortedG[0];
-          const sortedArt=[...articles].sort((a,b)=>(b.created||"").localeCompare(a.created||""));
+          // Editorial freshness gate: an article must be <= 7 days old AND no more than 7 days behind the data it sits next to
+          const FRESH_MS=7*864e5;const dataT=cacheMeta&&cacheMeta.generated?Date.parse(cacheMeta.generated):Date.now();
+          const freshArticles=articles.filter(a=>{const t=a.created?Date.parse(a.created):NaN;return Number.isFinite(t)&&(Date.now()-t)<=FRESH_MS&&(dataT-t)<=FRESH_MS;});
+          const sortedArt=[...freshArticles].sort((a,b)=>(b.created||"").localeCompare(a.created||""));
           const leadArticle=sortedArt[0]||null;const restArticles=sortedArt.slice(1,3);
           const leadTeam=(enrichedTeams||[]).find(t=>t.count>0)||enrichedTeams[0];
           const completed=[...matchesData].filter(m=>m.completed).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,8);
@@ -1784,17 +1786,17 @@ function MLSAnalytics(){
             </div>}
             {leadTeam&&<div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1.5fr 1fr",gap:isMobile?28:48,paddingBottom:36,borderBottom:`3px solid ${T.ink}`,alignItems:"center"}}>
               <div>
-                <div style={kicker}>{leadArticle?leadArticle.kicker:"The Lead \u00b7 Power Rankings"}</div>
+                <div style={kicker}>{leadArticle?leadArticle.kicker:"The Lead \u00b7 Team Grade Leader"}</div>
                 <div style={{fontFamily:T.display,fontWeight:900,fontSize:isMobile?32:46,lineHeight:1.05,letterSpacing:"-0.01em",color:T.ink,margin:"12px 0 14px",textShadow:"1.5px 1.5px 0 rgba(179,94,86,.35)"}}>
                   {leadArticle?leadArticle.headline:`${tname(leadTeam.abbr)} Sit Atop the Index`}
                 </div>
                 <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:17,color:T.textDim,lineHeight:1.5,marginBottom:18}}>
-                  {leadArticle?leadArticle.dek:`A minutes-weighted team grade of ${leadTeam.overall} (built on ${leadTeam.count} graded players) puts ${leadTeam.abbr} first in the composite rankings this week.`}
+                  {leadArticle?leadArticle.dek:`A minutes-weighted team grade of ${leadTeam.overall} (built on ${leadTeam.count} graded players) puts ${leadTeam.abbr} first in the Index team-grade rankings. Power Rankings (points, grade and form) live on the Table tab.`}
                 </div>
                 {leadArticle&&leadArticle.body&&<div style={{fontFamily:T.serif,fontSize:15,color:T.text,lineHeight:1.6,marginBottom:18}}>{leadArticle.body}</div>}
                 <div style={{fontFamily:T.mono,fontSize:10.5,letterSpacing:"0.12em",textTransform:"uppercase",color:T.textDim,fontWeight:600,marginBottom:18}}>By the Index {"\u00b7"} Auto-generated from live data</div>
                 <div style={{display:"flex",borderTop:`1px solid ${T.ink}`,borderBottom:`1px solid ${T.borderLt}`}}>
-                  {[[leadTeam.overall,"Team Grade"],[(leadTeam.formDelta!=null?(leadTeam.formDelta>0?"+":"")+leadTeam.formDelta:"\u2014"),"Form \u0394 5GM"],["#1","Power Rank"]].map(([v,l],i)=>(
+                  {[[leadTeam.overall,"Team Grade"],[(leadTeam.formDelta!=null?(leadTeam.formDelta>0?"+":"")+leadTeam.formDelta:"\u2014"),"Form \u0394 5GM"],["#1","Team Grade Rank"]].map(([v,l],i)=>(
                     <div key={l} style={{flex:1,padding:"10px 14px",borderRight:i<2?`1px solid ${T.borderLt}`:"none"}}>
                       <div style={{fontFamily:T.mono,fontSize:22,fontWeight:700,color:T.blue}}>{v}</div>
                       <div style={{fontFamily:T.mono,fontSize:8.5,letterSpacing:"0.16em",textTransform:"uppercase",color:T.textMute,marginTop:4}}>{l}</div>
@@ -1825,7 +1827,7 @@ function MLSAnalytics(){
               const slateTitle=upcoming.length?"The Slate \u00b7 Upcoming":"The Slate \u00b7 Latest Results";
               const risers=[...movers].sort((a,b)=>b.delta-a.delta).slice(0,4).filter(p=>p.delta>0);
               const fallers=[...movers].sort((a,b)=>a.delta-b.delta).slice(0,4).filter(p=>p.delta<0);
-              const fmtD=(d)=>{try{return new Date(d).toLocaleDateString("en-US",{month:"short",day:"numeric"}).toUpperCase();}catch(e){return "";}};
+              const fmtD=(d)=>{const s=fmtET(d);return s?s.toUpperCase():"";};
               const colHead=(t)=>(<div style={{fontFamily:T.mono,fontSize:10,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:T.bg,background:T.ink,padding:"6px 10px 5px",marginBottom:10}}>{t}</div>);
               const rowStyle={display:"flex",justifyContent:"space-between",padding:"6px 2px",borderBottom:`1px dotted ${T.borderLt}`,fontFamily:T.mono,fontSize:11.5};
               if(!slate.length&&!risers.length&&!fallers.length)return null;
@@ -1900,7 +1902,7 @@ function MLSAnalytics(){
                   <span onClick={()=>{setTab("leaders");setLeadersView("movers");}} style={{fontFamily:T.mono,fontSize:10,letterSpacing:"0.16em",textTransform:"uppercase",color:T.accent,fontWeight:700,cursor:"pointer"}}>All Movers {"\u2192"}</span>
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",columnGap:32}}>
-                  {restArticles.map(a=>storyCard(a.kicker,a.headline,a.body,null,a.created?new Date(a.created).toLocaleDateString("en-US",{month:"short",day:"numeric"}):null))}
+                  {restArticles.map(a=>storyCard(a.kicker,a.headline,a.body,null,a.created?fmtET(a.created):null))}
                   {riser&&riser.delta>0&&storyCard("Heating Up",`${riser.name} Is Outrunning His Grade`,`Recent form is ${riser.delta} points above his season baseline. The league's steepest current riser.`,()=>setSel(riser),`Grade ${riser.overall} \u00b7 ${tname(riser.team)}`)}
                   {faller&&faller.delta<0&&storyCard("Cooling Down",`${faller.name} Has Gone Quiet`,`Form has dipped ${Math.abs(faller.delta)} points below baseline over the last two matches.`,()=>setSel(faller),`Grade ${faller.overall} \u00b7 ${tname(faller.team)}`)}
                   {storyCard("Team of the Week","This Week's Best XI, Graded","The eleven highest single-match grades of the latest matchweek, in formation.",()=>{setTab("leaders");setLeadersView("totw");},"Interactive formation \u2192")}
@@ -1909,20 +1911,18 @@ function MLSAnalytics(){
               </div>
               <div>
                 <div className="sec-rule" style={{position:"relative",display:"flex",justifyContent:"space-between",alignItems:"baseline",borderBottom:`3px solid ${T.ink}`,paddingBottom:7,marginBottom:4}}>
-                  <span style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>Power Rankings</span>
+                  <span style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>Team Grades</span>
                   <span onClick={()=>setTab("teams")} style={{fontFamily:T.mono,fontSize:10,letterSpacing:"0.16em",textTransform:"uppercase",color:T.accent,fontWeight:700,cursor:"pointer"}}>Full 30 {"\u2192"}</span>
                 </div>
                 {enrichedTeams.slice(0,5).map((t,i)=>{
-                  const dlt=t.rankDelta||0;
                   return <div key={t.abbr} onClick={()=>setTab("teams")} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 0",borderBottom:`1px dotted ${T.borderLt}`,fontFamily:T.mono,fontSize:12.5,cursor:"pointer"}}>
                     <span style={{width:16,color:T.textMute,fontSize:11}}>{i+1}</span>
                     <TeamBadge abbr={t.abbr} size={16} logo={teamLogos[t.abbr]}/>
                     <span style={{flex:1,fontWeight:500,color:T.text}}>{t.name}</span>
-                    {dlt!==0&&<span style={{fontSize:10,color:dlt>0?"#5E6B33":T.red}}>{dlt>0?"\u25b2":"\u25bc"}{Math.abs(dlt)}</span>}
                     <span style={{fontWeight:700,color:T.blue}}>{t.overall}</span>
                   </div>;
                 })}
-                <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12.5,color:T.textDim,marginTop:12,marginBottom:34,lineHeight:1.5}}>Minutes-weighted composite team grades. Every player counted.</div>
+                <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12.5,color:T.textDim,marginTop:12,marginBottom:34,lineHeight:1.5}}>Minutes-weighted composite team grades. Every player counted. <span onClick={()=>setTab("rankings")} style={{color:T.accent,cursor:"pointer",fontStyle:"normal",fontFamily:T.mono,fontSize:10,letterSpacing:"0.1em",textTransform:"uppercase"}}>Power Rankings are on the Table tab \u2192</span></div>
                 {(()=>{
                   const fw=[...graded].filter(p=>p.position==="FW").sort((a,b)=>b.overall-a.overall)[0]||sortedG[0];
                   const gk=[...graded].filter(p=>(p.saves||0)>0).sort((a,b)=>(b.saves||0)-(a.saves||0))[0];
@@ -2638,7 +2638,7 @@ function MLSAnalytics(){
                 {completed.slice(0,16).map((m,i)=>{
                   const hs=+(m.homeScore||0),as=+(m.awayScore||0);
                   const dt=m.date?new Date(m.date):null;
-                  const dateStr=dt?dt.toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
+                  const dateStr=dt?fmtET(dt):"";
                   return <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",background:T.card,borderRadius:0,border:`1px solid ${T.borderLt}`}}>
                     <div style={{flex:1,textAlign:"right",display:"flex",alignItems:"center",justifyContent:"flex-end",gap:6}}>
                       <span style={{fontFamily:T.sans,fontWeight:hs>as?700:500,fontSize:11,color:hs>as?T.ink:T.textDim}}>{m.home}</span>
@@ -2678,23 +2678,29 @@ function MLSAnalytics(){
               // Movement arrow: compare power rank to pure points rank
               return{...t,power,formScore:Math.round(formScore),recentRecord:teamMatches.length};
             }).sort((a,b)=>b.power-a.power).map((t,i)=>({...t,powerRank:i+1}));
-            // Compute movement vs points rank
+            // Points-table rank computed independently of the user's current sort
+            const ptsOrder=[...standingsData].sort((a,b)=>(b.pts||0)-(a.pts||0)||((b.gf||0)-(b.ga||0))-((a.gf||0)-(a.ga||0))||(b.gf||0)-(a.gf||0)).map(s=>s.team);
+            // Real week-over-week movement only when a genuine prior snapshot exists
+            const snapWk=pickWeekAgo(rankHistory,cacheMeta&&cacheMeta.generated);
             powerRanked.forEach(t=>{
-              const ptsRank=ranked.findIndex(r=>r.abbr===t.abbr)+1;
-              t.movement=ptsRank-t.powerRank; // positive = ranked higher than standings
+              const ptsRank=ptsOrder.indexOf(t.abbr)+1;
+              t.vsTable=ptsRank>0?ptsRank-t.powerRank:0; // positive = ranked higher than the points table
+              const prev=snapWk&&snapWk.power&&snapWk.power[t.abbr];
+              t.movement=Number.isFinite(prev)?prev-t.powerRank:null; // null = no real history yet
             });
+            const moveLabel=snapWk?("Arrows: movement since "+fmtET(snapWk.date)):"Arrows: vs points table (week-over-week appears once ranking history accrues)";
             return <div style={{marginBottom:20,background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,overflow:"hidden"}}>
               <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
                   <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>Power Rankings</div>
-                  <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Composite score: 50% points + 30% team grade + 20% recent form</div>
+                  <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Composite score: 50% points + 30% team grade + 20% recent form \u00b7 {moveLabel}</div>
                 </div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:0}}>
                 {powerRanked.slice(0,12).map((t,i)=>(
                   <div key={t.abbr} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 16px",borderBottom:`1px solid ${T.borderLt}`,borderRight:`1px solid ${T.borderLt}`,background:i<3?T.card:"transparent"}}>
                     <span style={{fontFamily:T.display,fontWeight:900,fontSize:i<3?22:16,color:i<3?T.gold:i<6?T.green:T.textDim,width:24,textAlign:"center"}}>{t.powerRank}</span>
-                    <span style={{fontSize:12,width:24,textAlign:"center",fontFamily:T.mono,fontWeight:700,color:t.movement>0?T.green:t.movement<0?T.red:T.textMute}}>{t.movement>0?`↑${t.movement}`:t.movement<0?`↓${Math.abs(t.movement)}`:"—"}</span>
+                    {(()=>{const mv=t.movement!=null?t.movement:t.vsTable;const ttl=t.movement!=null?"Change since last snapshot":"Power rank vs points-table rank";return <span title={ttl} style={{fontSize:12,width:24,textAlign:"center",fontFamily:T.mono,fontWeight:700,color:mv>0?T.green:mv<0?T.red:T.textMute}}>{mv>0?`↑${mv}`:mv<0?`↓${Math.abs(mv)}`:"—"}</span>;})()}
                     <TeamBadge abbr={t.abbr} size={26} logo={teamLogos[t.abbr]}/>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontFamily:T.serif,fontWeight:700,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</div>
@@ -3013,7 +3019,7 @@ function MLSAnalytics(){
             const weekLabel=(()=>{
               const d1=new Date(week.dates[0]+"T12:00:00Z");
               const d2=week.dates.length>1?new Date(week.dates[week.dates.length-1]+"T12:00:00Z"):d1;
-              const fmt=(d)=>d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+              const fmt=(d)=>fmtET(d);
               return week.dates.length>1?`${fmt(d1)} – ${fmt(d2)}`:fmt(d1);
             })();
             const topPerf=[...week.logs].sort((a,b)=>b.rating-a.rating);
