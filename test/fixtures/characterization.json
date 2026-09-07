@@ -3,16 +3,16 @@
  "note": "Snapshot of shipped behaviour before the Phase 5.3 source split. Regenerate only when a behaviour change is intended and reviewed.",
  "players": {
   "elite forward": {
-   "key": "Denis Bouanga|LAFC",
-   "mins": 2010,
+   "key": "Leo Messi|MIA",
+   "mins": 1740,
    "pos": "Forward",
    "grades": {
     "overall": 99,
     "attack": 99,
-    "passing": 57,
-    "defense": 72,
+    "passing": 84,
+    "defense": 66,
     "creativity": 99,
-    "carrying": 80
+    "carrying": 84
    }
   },
   "average forward": {
@@ -20,12 +20,12 @@
    "mins": 1590,
    "pos": "Forward",
    "grades": {
-    "overall": 77.9,
+    "overall": 76.7,
     "attack": 75,
-    "passing": 75,
-    "defense": 80,
+    "passing": 80,
+    "defense": 78,
     "creativity": 85,
-    "carrying": 67
+    "carrying": 77
    }
   },
   "low-rated forward": {
@@ -33,64 +33,64 @@
    "mins": 1620,
    "pos": "Forward",
    "grades": {
-    "overall": 38.6,
+    "overall": 36.4,
     "attack": 44,
-    "passing": 47,
-    "defense": 29,
+    "passing": 45,
+    "defense": 26,
     "creativity": 35,
-    "carrying": 28
+    "carrying": 33
    }
   },
   "elite midfielder": {
-   "key": "Evander|CIN",
-   "mins": 1860,
+   "key": "Marcel Hartel|STL",
+   "mins": 1380,
    "pos": "Midfielder",
    "grades": {
-    "overall": 97.3,
+    "overall": 99,
     "attack": 99,
     "passing": 80,
-    "defense": 51,
+    "defense": 77,
     "creativity": 99,
-    "carrying": 95
+    "carrying": 87
    }
   },
   "average midfielder": {
-   "key": "Samuel Gidi|CIN",
-   "mins": 1800,
+   "key": "Aníbal Godoy|SD",
+   "mins": 1620,
    "pos": "Midfielder",
    "grades": {
-    "overall": 71.8,
-    "attack": 49,
-    "passing": 74,
-    "defense": 76,
-    "creativity": 66,
-    "carrying": 64
+    "overall": 70.4,
+    "attack": 53,
+    "passing": 88,
+    "defense": 66,
+    "creativity": 56,
+    "carrying": 79
    }
   },
   "elite defender": {
-   "key": "Frankie Westfield|PHI",
-   "mins": 1710,
+   "key": "Peyton Miller|NE",
+   "mins": 1530,
    "pos": "Defender",
    "grades": {
-    "overall": 97.2,
-    "attack": 79,
-    "passing": 67,
-    "defense": 86,
-    "creativity": 95,
-    "carrying": 61
+    "overall": 97.9,
+    "attack": 99,
+    "passing": 64,
+    "defense": 82,
+    "creativity": 90,
+    "carrying": 63
    }
   },
   "average defender": {
-   "key": "Enea Mihaj|ATL",
-   "mins": 1800,
+   "key": "Brendan Hines-Ike|ATX",
+   "mins": 1590,
    "pos": "Defender",
    "grades": {
-    "overall": 75.7,
-    "attack": 49,
-    "passing": 70,
-    "defense": 68,
-    "creativity": 33,
-    "carrying": 55
+    "overall": 73.2,
+    "attack": 60,
+    "passing": 71,
+    "defense": 64,
+    "creativity": 42,
+    "carrying": 59
    }
   },
   "goalkeeper": {
@@ -111,12 +111,12 @@
    "mins": 30,
    "pos": "Midfielder",
    "grades": {
-    "overall": 75.1,
+    "overall": 74.7,
     "attack": 86,
-    "passing": 61,
+    "passing": 63,
     "defense": 70,
     "creativity": 75,
-    "carrying": 73
+    "carrying": 71
    }
   },
   "partial stats": {
@@ -137,23 +137,23 @@
    "mins": 930,
    "pos": "Defender",
    "grades": {
-    "overall": 49.7,
+    "overall": 46.1,
     "attack": 56,
-    "passing": 54,
-    "defense": 43,
+    "passing": 51,
+    "defense": 41,
     "creativity": 44,
-    "carrying": 47
+    "carrying": 54
    }
   }
  },
  "distribution": {
   "n": 877,
-  "min": 38.6,
-  "p25": 62.6,
-  "median": 71.8,
-  "p75": 80.9,
+  "min": 36.4,
+  "p25": 60.6,
+  "median": 70.6,
+  "p75": 80.4,
   "max": 99,
-  "sumOverall": 62468.9
+  "sumOverall": 61561.6
  },
  "form": {
   "forward": {
@@ -256,30 +256,30 @@
  "powerRank": {
   "CHI": 10,
   "CLB": 21,
-  "NE": 7,
-  "RBNY": 24,
+  "NE": 8,
+  "RBNY": 26,
   "DC": 27,
-  "TOR": 22,
+  "TOR": 23,
   "MTL": 29,
-  "PHI": 8,
+  "PHI": 7,
   "ORL": 12,
   "NYC": 19,
-  "CIN": 25,
+  "CIN": 24,
   "ATL": 28,
   "NSH": 1,
   "MIA": 2,
   "CLT": 6,
-  "COL": 14,
+  "COL": 15,
   "DAL": 4,
   "SKC": 30,
   "LA": 17,
   "SJ": 13,
-  "RSL": 26,
+  "RSL": 25,
   "HOU": 9,
-  "POR": 15,
+  "POR": 14,
   "SEA": 20,
   "VAN": 3,
-  "MIN": 23,
+  "MIN": 22,
   "LAFC": 11,
   "ATX": 18,
   "STL": 5,

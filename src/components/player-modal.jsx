@@ -37,7 +37,7 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,his
           <div style={{flex:1}}>
             <div style={{fontFamily:T.display,fontWeight:700,fontSize:34,color:T.ink,letterSpacing:-.5,lineHeight:1}}>{p.name}</div>
             <div style={{display:"flex",gap:12,marginTop:2,fontSize:13,color:T.textDim,fontFamily:T.sans,flexWrap:"wrap"}}>
-              <span style={{fontWeight:600}}>{p.position}</span>
+              <span style={{fontWeight:600}}>{p.position}</span>{(p.mins||0)<450&&<span title="Provisional — under 450 minutes played" style={{fontSize:10,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 5px",borderRadius:0,letterSpacing:.5,flexShrink:0,marginLeft:6}}>PROV</span>}
               <span style={{color:T.border}}>|</span><span>{p.teamName}{p.prevTeam&&<span style={{fontSize:11.5,color:T.accent,fontWeight:600}}> (prev: {p.prevTeam})</span>}</span>
               <span style={{color:T.border}}>|</span><span>{p.age?`${p.age} yrs`:"—"}</span>
               <span style={{color:T.border}}>|</span><span>{p.heightCm?`${Math.floor(p.heightCm/2.54/12)}'${Math.round(p.heightCm/2.54%12)}"`:"—"}</span>

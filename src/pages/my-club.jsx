@@ -87,7 +87,7 @@ export function MyClubDesk({abbr,teams,standings,matches,players,logos,isMobile,
       </div>
       <div>
         {head("Best players")}
-        {best.map(p=>row(p.id,<span style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:16,color:gc(p.overall),width:26}}>{Math.round(p.overall)}</span><span style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</span></span>,<span style={{color:T.textMute,fontSize:11.5,flexShrink:0}}>{posGroupOf(p)}</span>,()=>onPlayer(p)))}
+        {best.map(p=>row(p.id,<span style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:16,color:gc(p.overall),width:26}}>{Math.round(p.overall)}</span><span style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</span>{(p.mins||0)<450&&<span title="Provisional — under 450 minutes played" style={{fontSize:10,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 5px",borderRadius:0,letterSpacing:.5,flexShrink:0,marginLeft:4}}>PROV</span>}</span>,<span style={{color:T.textMute,fontSize:11.5,flexShrink:0}}>{posGroupOf(p)}</span>,()=>onPlayer(p)))}
         {!best.length&&<div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12,color:T.textMute}}>No graded players yet.</div>}
       </div>
       <div>

@@ -102,7 +102,7 @@ export function computeGrades(ps){
       const pas=wsum([[ofPc,p.pc,.25],[ofPassPerf,p.passPerfV,.20],[ofPg,p.pga,.15],[ofFtp,p.ftp90,.15],[ofKp,p.kp90,.15],[ofPresR,p.presRV,.10]]);
       const def=wsum([[ofDf,p.dga,.20],[ofTk,p.tk90,.15],[ofPrs,p.prs90,.15],[ofIntc,p.intc90,.10],[ofClr,p.clr90,.10],[ofArl,p.arl90,.10],[ofArlPct,p.arlPctV,.075],[ofTkPct,p.tkwPct,.075],[ofBlk,p.blk90,.05]]);/*GRADEENGINE*/
       const cre=wsum([[ofKp,p.kp90,.40],[ofXa,p.xa90,.25],[ofChc,p.chc90,.20],[ofSca,p.sca90,.15]]);
-      const car=wsum([[ofGdr,p.gdrV,.35],[ofEsc,p.escV,.20],[ofPrgc,p.prgc90,.15],[ofDrb,p.drb90,.10],[ofFtp,p.ftp90,.10],[ofFls,p.flSuf90,.10]]);
+      const car=wsum([[ofGdr,p.gdrV,.4308],[ofEsc,p.escV,.2462],[ofDrb,p.drb90,.10],[ofFtp,p.ftp90,.1231],[ofFls,p.flSuf90,.10]]);/*prgc dropped: identical field to drb (both = nutmegs/p90, see fetch-data.js); weight folded into gdr/esc/ftp proportionally — Grading Integrity item 3*/
       const gaP=S(ofGa,p.tga);
 
       // Position-weighted Overall (weights unchanged)

@@ -26,6 +26,21 @@ function loadEngine() {
   const extract = (fn) => { const i = src.indexOf("function " + fn + "("); if (i < 0) throw new Error(fn + " not found"); let d = 0, j = src.indexOf("{", i); for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } } };
   return eval(extract("pct") + "\n" + extract("normPos") + "\n" + extract("toG") + "\n" + extract("computeGrades") + "\n;({pct,normPos,computeGrades})");
 }
+// Grading Integrity item 1: the canonical validate+prepare pipeline lives in src/grading/prepare-player.mjs
+// — the SAME transformation the web app uses, so this script's grades can never silently diverge
+// from what visitors see. Loaded synchronously via createRequire, same pattern as loadEngine() above.
+function loadPrep() {
+  const { createRequire } = require("module");
+  try { const p = createRequire(__filename)("./src/grading/prepare-player.mjs"); if (p && p.preparePlayerForGrading) return p; } catch (err) { /* older Node: fall through */ }
+  const fs = require("fs");
+  const engineSrc = fs.readFileSync("src/grading/engine.mjs", "utf8").replace(/^export\s+/gm, "");
+  const prepSrc = fs.readFileSync("src/grading/prepare-player.mjs", "utf8").replace(/^import[^\n]*\n/gm, "").replace(/^export\s+/gm, "");
+  const extractFrom = (src, fn) => { const i = src.indexOf("function " + fn + "("); if (i < 0) throw new Error(fn + " not found"); let d = 0, j = src.indexOf("{", i); for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } } };
+  const extractConst = (src, name) => { const m = src.match(new RegExp("const " + name + "=[^\\n]*;")); if (!m) throw new Error(name + " not found"); return m[0]; };
+  const code = extractFrom(engineSrc, "normPos") + "\n" + extractConst(prepSrc, "safeNum") + "\n" + extractFrom(prepSrc, "validatePlayer") + "\n" + extractFrom(prepSrc, "preparePlayerForGrading") + "\n;({safeNum,validatePlayer,preparePlayerForGrading})";
+  return eval(code);
+}
+
 const fs = require("fs");
 
 const IDX = "public/index.html";
@@ -36,37 +51,21 @@ if (!fs.existsSync(CACHE)) { console.log("❌ Run from repo root after a fetch."
 const engine = loadEngine();
 
 const cache = JSON.parse(fs.readFileSync(CACHE, "utf8"));
-const ps = cache.players.filter(r => r && r.n && (r.m || 0) > 0).map((r, i) => {
-  const m = r.m || 600, p90 = m / 90, games = Math.max(1, Math.round(m / 90));
-  const pos = engine.normPos(r.p);
-  return { id: "p" + i, n: r.n, t: r.t, m, g: r.g || 0, as: r.as || 0, tkRaw: r.tk || 0, pos,
-    isGK: (pos === "GK" || pos === "Goalkeeper"),
-    tk90: (r.tk || 0) / p90, tkwPct: (r.tk >= 8 ? (r.tkw || 0) / r.tk : 0), blk90: (r.blk || 0) / p90,
-    xg90: (r.xg || 0) / p90, xa90: (r.xa || 0) / p90, pc: r.pp || 75, pga: r.gp || 0,
-    tga: (r.gs || 0) + (r.gp || 0) + (r.gdr || 0) + (r.gdf || 0) + (r.gi || 0), dga: (r.gdf || 0) + (r.gi || 0),
-    kp90: (r.kp || 0) / p90, sca90: (r.sca || 0) / p90, prgp90: (r.prgp || 0) / p90, ftp90: (r.ftp || 0) / p90,
-    prs90: (r.prs || 0) / p90, intc90: (r.intc || 0) / p90, arl90: (r.arl || 0) / p90, drb90: (r.drb || 0) / p90, prgc90: (r.prgc || 0) / p90,
-    oxg90: (r.oxg || 0) / p90, chc90: (r.chc || 0) / p90, clr90: (r.clr || 0) / p90, flSuf90: (r.flSuf || 0) / p90,
-    arlPctV: (r.arlPct || 0), n90s: m / 90, gdrV: (r.gdr || 0), escV: (r.esc || 0), presRV: (r.presR || 0), passPerfV: (r.passPerf || 0),
-    sv90: (r.sv || 0) / p90, csRate: games > 0 ? (r.cs || 0) / games : 0, gaCon90: games > 0 ? (r.ga_conceded || 0) / p90 : 0,
-    gkEff90: games > 0 ? (r.gkEfficiency || 0) / games : 0, svMls90: (r.gkSavesMLS || 0) / p90, mlsPrs90: (r.mlsPressures || 0) / p90,
-    dpas90: (r.mlsDifficultPasses || 0) / p90, passPerf90: games > 0 ? (r.mlsPassingPerformance || 0) / games : 0,
-    dpasPct: (r.mlsDifficultPassesPct || 0), passesPctMls: (r.mlsPassesPct || r.pp || 0),
-    claim90: ((r.mlsIntCorner || 0) + (r.mlsIntHeld || 0)) / p90, sweep90: ((r.mlsIntCross || 0) + (r.mlsIntFisted || 0)) / p90,
-    aerWonRate: (r.mlsAerialsTotal > 0 ? (r.mlsAerialsWon || 0) / r.mlsAerialsTotal : 0) };
-});
+const prep = loadPrep();
+const validated = cache.players.filter(r => r && r.n && r.t && typeof r.n === "string" && (r.m || 0) > 0).map(prep.validatePlayer);
+const ps = validated.map(prep.preparePlayerForGrading);
 const grades = engine.computeGrades(ps);
 
 const rated = ps.filter(p => grades[p.id] && Number.isFinite(grades[p.id].overall));
-const row = p => [p.n, p.t, p.pos, Math.round(grades[p.id].overall), p.g, p.as, p.tkRaw, p.m];
+const row = p => [p.raw.n, p.raw.t, p.pos, Math.round(grades[p.id].overall), p.raw.g, p.raw.as, p.raw.tk, p.raw.m];
 
 const leadersByPos = {};
 for (const pos of ["Forward", "Midfielder", "Defender", "GK"]) {
-  leadersByPos[pos] = rated.filter(p => p.pos === pos && p.m >= 450)
+  leadersByPos[pos] = rated.filter(p => p.pos === pos && p.raw.m >= 450)
     .sort((a, b) => grades[b.id].overall - grades[a.id].overall).slice(0, 10).map(row);
 }
-const topBy = (k, n = 5) => rated.filter(p => (p[k] || 0) > 0)
-  .sort((a, b) => (b[k] || 0) - (a[k] || 0)).slice(0, n).map(row);
+const topBy = (k, n = 5) => rated.filter(p => (p.raw[k] || 0) > 0)
+  .sort((a, b) => (b.raw[k] || 0) - (a.raw[k] || 0)).slice(0, n).map(row);
 
 // last 21 days of finals, newest first: [YYYY-MM-DD, home, hs, as, away]
 const cutoff = Date.now() - 21 * 864e5;
@@ -106,7 +105,7 @@ const ctx = {
   topRatedByPosition: leadersByPos,
   topScorers: topBy("g"),
   topAssists: topBy("as"),
-  topTacklers: topBy("tkRaw"),
+  topTacklers: topBy("tk"),
   players: rated.map(row)
 };
 fs.writeFileSync(OUT, JSON.stringify(ctx));
