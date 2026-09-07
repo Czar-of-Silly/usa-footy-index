@@ -11,7 +11,8 @@
     "validate": "node validate-cache.js",
     "check": "node validate-cache.js && node --test \"test/*.test.js\" && node build.js",
     "build": "node build.js",
-    "make-fixture": "node scripts/make-characterization-fixture.js"
+    "make-fixture": "node scripts/make-characterization-fixture.js",
+    "audit-grades": "node scripts/audit-grades.js"
   },
   "dependencies": {
     "cheerio": "^1.2.0",

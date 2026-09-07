@@ -1,29 +1,40 @@
 #!/usr/bin/env node
-// scripts/make-characterization-fixture.js — Phase 5.3 Step 1.
-// Snapshots the CURRENTLY SHIPPED grading behaviour so the source split can be proven not to change it.
-// Uses the verbatim engine + the app's verbatim validate/prepare code (from the pre-rewritten source),
-// runs the same pool rule the app uses, and records grades for a representative set of real players
-// plus synthetic edge cases. Also snapshots computeForm, indexLean, powerRankFor and route resolution.
+// scripts/make-characterization-fixture.js — Phase 5.3 Step 1 (frozen since the Grading Integrity audit).
+// Snapshots grading behaviour against test/fixtures/frozen-cache.json — a permanent, versioned data
+// snapshot committed to the repo — NOT the live-updating public/data/mls-cache.json. This means the
+// characterization test is a real regression guard: it only changes when someone intentionally
+// regenerates it after a reviewed behaviour change, never as a side effect of the nightly data refresh.
 //
-//   node scripts/make-characterization-fixture.js --src /tmp/prerewritten.js
-//   (default: reads the pre-split app straight out of public/index.html via the splitter's pre-rewrites)
+//   node scripts/make-characterization-fixture.js [--src <pre-rewritten-app.js>] [--cache <path>]
+//   (default cache: test/fixtures/frozen-cache.json; default src: derived from src/ or public/index.html)
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
 const args = process.argv.slice(2);
-let srcPath = args.includes("--src") ? args[args.indexOf("--src") + 1] : null;
-if (!srcPath) { srcPath = path.join(require("os").tmpdir(), "usfi-prerewritten.js"); execFileSync(process.execPath, ["scripts/split-source.js", "--dry", "--emit-src", srcPath], { stdio: "pipe" }); }
-const src = fs.readFileSync(srcPath, "utf8");
+const cachePath = args.includes("--cache") ? args[args.indexOf("--cache") + 1] : "test/fixtures/frozen-cache.json";
 
-function extract(fn) { const i = src.indexOf("function " + fn + "("); if (i < 0) throw new Error(fn + " not found"); let d = 0, j = src.indexOf("{", i); for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } } }
-function extractConst(name) { const m = src.match(new RegExp("const " + name + "=[^\\n]*;")); if (!m) throw new Error(name + " not found"); return m[0]; }
-const code = [extract("pct"), extract("normPos"), extract("toG"), extract("computeGrades"), extractConst("safeNum"), extract("validatePlayer"), extract("preparePlayerForGrading"), extract("matchRating"), extract("computeForm"), extract("indexLean"), extract("powerRankFor"), extract("slugify"),
-  src.match(/const ROUTE_PATHS=[^\n]*;/)[0], src.match(/const PATH_TABS=[^\n]*\n(?:PATH_TABS\[[^\n]*\n)*/)[0],
-  "\n;({pct,normPos,toG,computeGrades,validatePlayer,preparePlayerForGrading,matchRating,computeForm,indexLean,powerRankFor,slugify,ROUTE_PATHS,PATH_TABS})"].join("\n");
-const E = eval(code);
+function loadFromSrc() {
+  const { req } = require("../test/_engine.js");
+  const engine = req("src/grading/engine.mjs"), prep = req("src/grading/prepare-player.mjs"), form = req("src/analytics/form.mjs"), matchup = req("src/analytics/matchup.mjs"), power = req("src/analytics/power-rank.mjs"), routes = req("src/routing/routes.mjs");
+  return { ...engine, ...prep, ...form, ...matchup, ...power, ...routes };
+}
+function loadFromPreSplitHtml() {
+  let srcPath = args.includes("--src") ? args[args.indexOf("--src") + 1] : null;
+  if (!srcPath) { srcPath = path.join(require("os").tmpdir(), "usfi-prerewritten.js"); execFileSync(process.execPath, ["scripts/split-source.js", "--dry", "--emit-src", srcPath], { stdio: "pipe" }); }
+  const src = fs.readFileSync(srcPath, "utf8");
+  function extract(fn) { const i = src.indexOf("function " + fn + "("); if (i < 0) throw new Error(fn + " not found"); let d = 0, j = src.indexOf("{", i); for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } } }
+  function extractConst(name) { const m = src.match(new RegExp("const " + name + "=[^\\n]*;")); if (!m) throw new Error(name + " not found"); return m[0]; }
+  const code = [extract("pct"), extract("normPos"), extract("toG"), extract("computeGrades"), extractConst("safeNum"), extract("validatePlayer"), extract("preparePlayerForGrading"), extract("matchRating"), extract("computeForm"), extract("indexLean"), extract("powerRankFor"), extract("slugify"),
+    src.match(/const ROUTE_PATHS=[^\n]*;/)[0], src.match(/const PATH_TABS=[^\n]*\n(?:PATH_TABS\[[^\n]*\n)*/)[0],
+    "\n;({pct,normPos,toG,computeGrades,validatePlayer,preparePlayerForGrading,matchRating,computeForm,indexLean,powerRankFor,slugify,ROUTE_PATHS,PATH_TABS})"].join("\n");
+  return eval(code);
+}
+// Prefer the canonical split modules (that's what's actually shipped); fall back to extracting
+// from public/index.html so this script still works on a pre-5.3 checkout.
+const E = fs.existsSync("src/grading/engine.mjs") ? loadFromSrc() : loadFromPreSplitHtml();
 
-const cache = JSON.parse(fs.readFileSync("public/data/mls-cache.json", "utf8"));
+const cache = JSON.parse(fs.readFileSync(cachePath, "utf8"));
 // exactly the app's pipeline
 const allRaw = cache.players;
 const validated = allRaw.filter(r => r && r.n && r.t && typeof r.n === "string").map(E.validatePlayer);
@@ -35,7 +46,7 @@ const isPos = (p, re) => re.test(p.raw.p || "");
 const g = (p) => { const x = grades[p.id]; return { overall: x.overall, attack: x.attack, passing: x.passing, defense: x.defense, creativity: x.creativity, carrying: x.carrying }; };
 const med = (arr) => arr[Math.floor(arr.length / 2)];
 const fw = pick(p => isPos(p, /Forward/) && p.raw.m >= 900, "overall"), mf = pick(p => isPos(p, /Midfielder/) && p.raw.m >= 900, "overall"), df = pick(p => isPos(p, /Defender/) && p.raw.m >= 900, "overall"), gk = pick(p => p.isGK && p.raw.m >= 900, "overall");
-const negGA = inter.find(p => grades[p.id] && p.tga < -0.5 && p.raw.m >= 600);
+const negGA = inter.find(p => grades[p.id] && p.tga < -0.02 && p.raw.m >= 600); // Goals Added is a per-90 rate (Grading Integrity item 2); a season-cumulative-scale threshold no longer matches
 const lowMin = inter.find(p => grades[p.id] && p.raw.m > 0 && p.raw.m <= 120);
 const partial = inter.find(p => grades[p.id] && p.raw.m >= 600 && (p.raw.xg == null || p.raw.xg === 0) && (p.raw.tk == null || p.raw.tk === 0));
 const fixtures = {
