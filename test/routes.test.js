@@ -26,7 +26,7 @@ test("client route tables: aliases resolve", () => {
 
 // edge metadata (pure)
 test("edge metaFor: sections, aliases, players, teams, matchups, 404s", async () => {
-  const mod = await import(path.join(ROOT, "functions/[[path]].js"));
+  const mod = await import(require("url").pathToFileURL(path.join(ROOT, "functions/[[path]].js")).href);
   const routes = { season: 2026, players: { "leo-messi": { n: "Leo Messi", t: "MIA", tn: "Inter Miami CF", pos: "Forward", g: 99, gl: 18, as: 10, m: 1740, h: "headshots/leo-messi.png" } },
     teams: { "atlanta-united-fc": { abbr: "ATL", name: "Atlanta United FC", conf: "Eastern", g: 70, pts: 22, rank: 28, logo: null }, "orlando-city-sc": { abbr: "ORL", name: "Orlando City SC", conf: "Eastern", g: 73, pts: 28, rank: 20, logo: "https://x/orl.png" } },
     fixtures: [{ home: "ATL", away: "ORL", date: "2026-09-09T23:30Z" }] };
