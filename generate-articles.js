@@ -49,7 +49,8 @@ const GROUNDING_RULES = [
   "- Before writing about any departure, use web search to find the player's destination club. If search confirms it, state it. If you cannot confirm it, report the departure WITHOUT any destination and NEVER write phrases like 'destination unknown' or 'his destination is unknown'.",
   "- Before writing about any incoming signing, use web search to verify the player's full name spelling and previous club against official club announcements. If you cannot verify a name, leave that player out of the article entirely.",
   "- Never invent, guess, or approximate a player name, club, or fee. A shorter, verified article always beats a longer, speculative one.",
-  "- Do not pad with empty observations (e.g. noting that news arrived on the same day as something else unless the timing itself is the story)."
+  "- Do not pad with empty observations (e.g. noting that news arrived on the same day as something else unless the timing itself is the story).",
+  "- Do not narrate your search process (no \"I need to search for...\", \"Let me verify...\", or similar). Search silently. Your final visible output must be ONLY the JSON array — nothing before it, nothing after it."
 ].join("\n");
 
 
@@ -178,6 +179,7 @@ Return ONLY a JSON array (no markdown fences, no preamble) of 2 to 4 briefs:
 [{"kicker":"2-4 word section label like 'Golden Boot · Race'","headline":"max 60 chars, punchy","dek":"one italic-style standfirst sentence, max 140 chars","body":"55-90 words of plain prose"}]`;
 
 // ─── CLAUDE CALL ─────────────────────────────────────────────────────────────
+let lastStopReason = null;
 async function callClaude() {
   if (TEST_MODE) {
     return JSON.stringify([{ kicker: "Golden Boot · Race", headline: "Test Headline About " + (facts.races.goals[0]?.player || "Nobody"), dek: "A test standfirst.", body: `${facts.races.goals[0]?.player || "Nobody"} leads the league with ${facts.races.goals[0]?.value || 0} goals. ` + "Plain test prose follows here to satisfy the length bounds of the validator, with additional words describing the race in strictly factual terms drawn from the packet above, and nothing invented anywhere in this body." }]);
@@ -186,10 +188,11 @@ async function callClaude() {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
     body: JSON.stringify({ model: MODEL,
-      tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 1600, messages: [{ role: "user", content: prompt + GROUNDING_RULES }] })
+      tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], max_tokens: 4096, messages: [{ role: "user", content: prompt + GROUNDING_RULES }] })
   });
   if (!res.ok) throw new Error("Anthropic API " + res.status + ": " + (await res.text()).slice(0, 200));
   const data = await res.json();
+  lastStopReason = data.stop_reason || null;
   return (data.content || []).map(c => c.text || "").join("");
 }
 
@@ -225,9 +228,20 @@ function validate(a) {
   catch (e) { console.log("❌ " + e.message); writeStatus("api-error", { message: String(e.message || e).slice(0, 300) }); process.exit(1); }
 
   let arr;
-  try { arr = JSON.parse(raw.replace(/```json|```/g, "").trim()); }
-  catch { console.log("❌ Model did not return valid JSON. First 200 chars:\n" + raw.slice(0, 200)); writeStatus("bad-json", { preview: raw.slice(0, 200) }); process.exit(1); }
-  if (!Array.isArray(arr)) { console.log("❌ Expected a JSON array."); writeStatus("not-array"); process.exit(1); }
+  const cleaned = raw.replace(/```json|```/g, "").trim();
+  try { arr = JSON.parse(cleaned); }
+  catch {
+    // Safety net: if anything slipped through before/after the array (shouldn't happen
+    // now that narration is banned and the token budget is raised), pull out just the [...] span.
+    const m = cleaned.match(/\[[\s\S]*\]/);
+    if (m) { try { arr = JSON.parse(m[0]); } catch {} }
+  }
+  if (!arr) {
+    console.log("❌ Model did not return valid JSON. Stop reason: " + lastStopReason + ". First 200 chars:\n" + raw.slice(0, 200));
+    writeStatus("bad-json", { preview: raw.slice(0, 200), stopReason: lastStopReason });
+    process.exit(1);
+  }
+  if (!Array.isArray(arr)) { console.log("❌ Expected a JSON array."); writeStatus("not-array", { stopReason: lastStopReason }); process.exit(1); }
 
   const now = new Date().toISOString();
   const fresh = [];
