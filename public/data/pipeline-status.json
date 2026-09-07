@@ -1,1 +1,1 @@
-{"generated":"2026-09-06T18:46:20.803Z","writtenAt":"2026-09-06T18:49:04.752Z","players":1007,"sources":["ESPN","ASA","MLS Official (Opta)"],"steps":{"marketValues":"ok","askContext":"ok","articles":"bad-json"},"articleReason":"bad-json","articleReasonLabel":"model returned non-JSON"}
+{"generated":"2026-09-07T00:54:54.959Z","writtenAt":"2026-09-07T00:57:26.516Z","players":1007,"sources":["ESPN","ASA","MLS Official (Opta)"],"steps":{"marketValues":"ok","askContext":"ok","articles":"ok"},"articleReason":"wrote","articleReasonLabel":"generated normally"}
