@@ -926,6 +926,90 @@ function MatchupView({home,away,teams,standings,matches,players,logos,onPlayer,o
   </div>;
 }
 
+// ─── MY CLUB (Phase 4d) ───────────────────────────────────────────────
+const MYCLUB_KEY="usfi:myClub";
+function readMyClub(){try{const v=localStorage.getItem(MYCLUB_KEY);return v&&MLS_TEAMS.some(t=>t.abbr===v)?v:null;}catch(e){return null;}}
+function writeMyClub(v){try{if(v)localStorage.setItem(MYCLUB_KEY,v);else localStorage.removeItem(MYCLUB_KEY);}catch(e){}}
+function MyClubPicker({value,onChange,compact}){
+  const teams=[...MLS_TEAMS].sort((a,b)=>a.name.localeCompare(b.name));
+  return <select aria-label="My club" value={value||""} onChange={e=>onChange(e.target.value||null)} style={{padding:compact?"4px 10px":"6px 12px",background:value?T.ink:T.card,color:value?T.bg:T.ink,border:`1px solid ${T.border}`,borderRadius:0,fontSize:compact?11:12,fontFamily:T.sans,fontWeight:600,cursor:"pointer",maxWidth:200}}>
+    <option value="">My club{"\u2026"}</option>
+    {teams.map(t=><option key={t.abbr} value={t.abbr}>{t.name}</option>)}
+    {value&&<option value="">Clear my club</option>}
+  </select>;
+}
+function powerRankFor(abbr,teams,standings,matches){
+  if(!standings.length)return null;
+  const grade={};teams.forEach(t=>{grade[t.abbr]=t.overall;});
+  const maxPts=Math.max(...standings.map(s=>s.pts||0),1);
+  const rows=standings.map(s=>{const tm=matches.filter(m=>m.completed&&(m.home===s.team||m.away===s.team)).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,5);let fp=0;for(const m of tm){const hs=+(m.homeScore||0),as=+(m.awayScore||0);const home=m.home===s.team;fp+=(home?hs>as:as>hs)?3:hs===as?1:0;}const f=tm.length?(fp/(tm.length*3))*100:50;return{team:s.team,score:Math.round(((s.pts||0)/maxPts)*100*.5+(grade[s.team]||50)*.3+f*.2)};}).sort((a,b)=>b.score-a.score);
+  const i=rows.findIndex(r=>r.team===abbr);return i<0?null:i+1;
+}
+function MyClubDesk({abbr,teams,standings,matches,players,logos,isMobile,onChange,onPlayer,onTeam,onMatchup,onCard}){
+  const t=teams.find(x=>x.abbr===abbr)||MLS_TEAMS.find(x=>x.abbr===abbr);
+  if(!t)return null;
+  const s=standings.find(x=>x.team===abbr)||{};
+  const ptsOrder=[...standings].sort((a,b)=>(b.pts||0)-(a.pts||0)||((b.gf||0)-(b.ga||0))-((a.gf||0)-(a.ga||0))||(b.gf||0)-(a.gf||0)).map(x=>x.team);
+  const tableRank=ptsOrder.indexOf(abbr)+1||null;
+  const gradeRank=(()=>{const o=[...teams].filter(x=>x.overall!=null).sort((a,b)=>b.overall-a.overall).map(x=>x.abbr);const i=o.indexOf(abbr);return i<0?null:i+1;})();
+  const powerRank=powerRankFor(abbr,teams,standings,matches);
+  const now=Date.now();
+  const next=matches.filter(m=>!m.completed&&m.date&&(m.home===abbr||m.away===abbr)&&Date.parse(m.date)>now-3*3600e3&&!/postpon|cancel/i.test(m.status||"")).sort((a,b)=>a.date.localeCompare(b.date))[0]||null;
+  const recent=matches.filter(m=>m.completed&&m.date&&(m.home===abbr||m.away===abbr)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5).reverse();
+  const res=recent.map(m=>{const gf=m.home===abbr?+(m.homeScore||0):+(m.awayScore||0),ga=m.home===abbr?+(m.awayScore||0):+(m.homeScore||0);return gf>ga?"W":gf===ga?"D":"L";});
+  const squad=players.filter(p=>p.team===abbr&&!p.departed);
+  const best=squad.filter(p=>p.rated!==false&&p.overall!=null).sort((a,b)=>b.overall-a.overall).slice(0,5);
+  const withForm=squad.filter(p=>p.matchLog&&p.matchLog.length>=5).map(p=>{const f=computeForm(p.matchLog,p.position);return{p,d:f&&f.delta!=null?Math.round(f.delta*10)/10:null,last:f?Math.round(f.last5Avg):null};}).filter(x=>x.d!=null);
+  const risers=[...withForm].filter(x=>x.d>0).sort((a,b)=>b.d-a.d).slice(0,3),fallers=[...withForm].filter(x=>x.d<0).sort((a,b)=>a.d-b.d).slice(0,3);
+  const gone=players.filter(p=>p.team===abbr&&p.departed).sort((a,b)=>(b.mins||0)-(a.mins||0)).slice(0,6);
+  const opp=next?(next.home===abbr?next.away:next.home):null;const oppT=opp?(teams.find(x=>x.abbr===opp)||MLS_TEAMS.find(x=>x.abbr===opp)):null;
+  const head=(txt)=><div style={{fontFamily:T.mono,fontSize:10,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:T.bg,background:T.ink,padding:"6px 10px 5px",marginBottom:10}}>{txt}</div>;
+  const row=(k,left,right,onClick)=><div key={k} onClick={onClick} className={onClick?"rh":undefined} style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,padding:"6px 2px",borderBottom:`1px dotted ${T.borderLt}`,fontFamily:T.mono,fontSize:11.5,cursor:onClick?"pointer":"default"}}>{left}{right}</div>;
+  const stat=(v,l)=><div style={{textAlign:"center",minWidth:64}}><div style={{fontFamily:T.display,fontWeight:900,fontSize:22,lineHeight:1,color:T.ink}}>{v==null?"\u2014":v}</div><div style={{fontFamily:T.mono,fontSize:8.5,letterSpacing:1.2,color:T.textMute,marginTop:4,textTransform:"uppercase"}}>{l}</div></div>;
+  return <section aria-label={"My club: "+t.name} style={{margin:"26px 0 4px",border:`1px solid ${T.border}`,background:T.surface}}>
+    <div style={{display:"flex",alignItems:"center",gap:14,padding:isMobile?"12px 12px":"14px 18px",borderBottom:`2px solid ${T.ink}`,flexWrap:"wrap"}}>
+      <div onClick={()=>onTeam(abbr)} style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer",minWidth:0,flex:"1 1 260px"}}>
+        <TeamBadge abbr={abbr} size={isMobile?40:52} logo={logos[abbr]}/>
+        <div style={{minWidth:0}}>
+          <div style={{fontFamily:T.mono,fontSize:9.5,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:T.accent}}>My club</div>
+          <div style={{fontFamily:T.display,fontWeight:700,fontSize:isMobile?20:24,color:T.ink,lineHeight:1.1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</div>
+          <div style={{fontFamily:T.mono,fontSize:11,color:T.textDim,marginTop:2}}>{s.w!=null?`${s.w}-${s.d}-${s.l} \u00b7 ${s.pts} pts`:""}{t.conf?` \u00b7 ${t.conf}`:""}</div>
+        </div>
+      </div>
+      <div style={{display:"flex",gap:isMobile?10:18,alignItems:"center",flexWrap:"wrap"}}>
+        {t.overall!=null&&<div style={{textAlign:"center"}}><div style={{fontFamily:T.display,fontWeight:900,fontSize:26,lineHeight:1,color:gc(t.overall)}}>{Math.round(t.overall)}</div><div style={{fontFamily:T.mono,fontSize:8.5,letterSpacing:1.2,color:T.textMute,marginTop:4}}>TEAM GRADE</div></div>}
+        {stat(tableRank?"#"+tableRank:null,"on points")}
+        {stat(gradeRank?"#"+gradeRank:null,"team grade")}
+        {stat(powerRank?"#"+powerRank:null,"power rank")}
+      </div>
+      <div style={{marginLeft:"auto",display:"flex",gap:8,alignItems:"center"}}><MyClubPicker value={abbr} onChange={onChange} compact/></div>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1.1fr 1fr 1fr",gap:isMobile?18:24,padding:isMobile?"14px 12px":"16px 18px"}}>
+      <div>
+        {head(next?"Next match":"Fixtures")}
+        {next?<div>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><TeamBadge abbr={opp} size={34} logo={logos[opp]}/><div><div style={{fontFamily:T.serif,fontWeight:700,fontSize:15,color:T.ink}}>{next.home===abbr?"vs ":"at "}{oppT?oppT.name:opp}</div><div style={{fontFamily:T.mono,fontSize:11,color:T.textDim}}>{fmtETTime(next.date)}{oppT&&oppT.overall!=null?` \u00b7 grade ${Math.round(oppT.overall)}`:""}</div></div></div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button onClick={()=>onMatchup(next.home,next.away)} style={{background:T.ink,border:"none",color:T.bg,padding:"6px 12px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,borderRadius:0}}>Match preview {"\u2192"}</button><CardButton small label="Preview card" onClick={()=>onCard(next)}/></div>
+        </div>:<div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim}}>No upcoming fixture on the schedule.</div>}
+        <div style={{marginTop:14}}><div style={{fontFamily:T.mono,fontSize:9,letterSpacing:1.2,color:T.textMute,marginBottom:6}}>{res.length?`LAST ${res.length}`:"RECENT FORM"}</div>
+          <div style={{display:"flex",gap:4,alignItems:"center"}}>{res.length?res.map((r,i)=><span key={i} title={recent[i].home+" "+recent[i].homeScore+"\u2013"+recent[i].awayScore+" "+recent[i].away} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:22,height:22,fontFamily:T.mono,fontWeight:700,fontSize:11,color:T.bg,background:r==="W"?T.green:r==="D"?T.textDim:T.red}}>{r}</span>):<span style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12,color:T.textMute}}>No results on record</span>}</div></div>
+      </div>
+      <div>
+        {head("Best players")}
+        {best.map(p=>row(p.id,<span style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:16,color:gc(p.overall),width:26}}>{Math.round(p.overall)}</span><span style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</span></span>,<span style={{color:T.textMute,fontSize:10,flexShrink:0}}>{posGroupOf(p)}</span>,()=>onPlayer(p)))}
+        {!best.length&&<div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12,color:T.textMute}}>No graded players yet.</div>}
+      </div>
+      <div>
+        {head("Risers & fallers")}
+        {risers.map(x=>row("r"+x.p.id,<span style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{"\u25b2"} {x.p.name}</span>,<span style={{color:T.green,fontWeight:700,flexShrink:0}}>+{x.d}</span>,()=>onPlayer(x.p)))}
+        {fallers.map(x=>row("f"+x.p.id,<span style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{"\u25bc"} {x.p.name}</span>,<span style={{color:T.red,fontWeight:700,flexShrink:0}}>{x.d}</span>,()=>onPlayer(x.p)))}
+        {!risers.length&&!fallers.length&&<div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12,color:T.textMute}}>Form movement appears after five games.</div>}
+        {gone.length>0&&<div style={{marginTop:12}}><div style={{fontFamily:T.mono,fontSize:9,letterSpacing:1.2,color:T.textMute,marginBottom:4}}>OFF THE BOOKS</div><div style={{fontFamily:T.serif,fontSize:12,color:T.textDim,lineHeight:1.5}}>{gone.map(p=>p.name).join(" \u00b7 ")}</div></div>}
+      </div>
+    </div>
+  </section>;
+}
+
 function MiniSparkline({matchLog,pos,w=40,h=14}){
   if(!matchLog||matchLog.length<2)return null;
   const last5=matchLog.slice(-5);
@@ -1829,6 +1913,8 @@ function MLSAnalytics(){
   const TABS=[{id:"front",l:"Front Page"},{id:"ask",l:"Ask USFI"},{id:"players",l:"Player Grades"},{id:"season",l:"Season Rating"},{id:"defense",l:"Defense"},{id:"passing",l:"Passing"},{id:"teams",l:"Teams"},{id:"rankings",l:"Table"},{id:"leaders",l:"Leaders"},{id:"valuations",l:"Values"},{id:"positions",l:"Positional"},{id:"compare",l:"Compare"+(comparePlayers.length?` (${comparePlayers.length})`:"")},{id:"trade",l:"Trade Machine"}];
   const[moreOpen,setMoreOpen]=useState(false);const[searchOpen,setSearchOpen]=useState(false);
   const[matchup,setMatchup]=useState(null);
+  const[myClub,setMyClubState]=useState(()=>readMyClub());
+  const setMyClub=(v)=>{writeMyClub(v);setMyClubState(v);};
   const PRIMARY_IDS=["front","players","teams"];
   const MORE_IDS=TABS.map(t=>t.id).filter(id=>!PRIMARY_IDS.includes(id));
   const TAB_BLURB={ask:"Ask questions of the Index record",season:"Full-season composite ratings",defense:"Defensive grades and stats",passing:"Passing grades and stats",rankings:"Standings and Power Rankings",leaders:"Stat leaders, TOTW, Best XI",valuations:"Market values and value efficiency",positions:"Positional breakdowns",compare:"Head-to-head radar",trade:"Build and grade a trade"};
@@ -2000,6 +2086,7 @@ function MLSAnalytics(){
             {!loading&&<PlayerSearch players={players} onSelect={p=>setSel(p)}/>}
             <button onClick={()=>setShowGrading(true)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:0,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.accent,letterSpacing:.5,transition:"border-color .2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=T.border}>How We Grade</button>
             <button onClick={()=>setShowAbout(true)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:0,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.textDim,letterSpacing:.5}}>About</button>
+            <MyClubPicker value={myClub} onChange={setMyClub} compact/>
             
           </div>
         </div>
@@ -2317,6 +2404,11 @@ function MLSAnalytics(){
                 </div>
               </div>}
             </div>}
+            {/* ═══ MY CLUB (Phase 4d) ═══ */}
+            {myClub?<MyClubDesk abbr={myClub} teams={enrichedTeams} standings={standingsData} matches={matchesData} players={players} logos={teamLogos} isMobile={isMobile} onChange={setMyClub}
+              onPlayer={p=>setSel(p)} onTeam={ab=>{setExpandTeam(ab);setTeamLevel(1);goTab("teams");}} onMatchup={(h,a)=>openMatchup(h,a)}
+              onCard={fx=>{const st={};standingsData.forEach(s=>{st[s.team]=s;});const teams=enrichedTeams.map(t=>{const s=st[t.abbr]||{};return{...t,pts:s.pts,w:s.w,dr:s.d,l:s.l};});cardMatchPreview({m:fx,teams,logos:teamLogos,matches:matchesData});}}/>
+            :<div style={{margin:"26px 0 4px",padding:isMobile?"10px 12px":"10px 16px",border:`1px dashed ${T.border}`,display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}><div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim}}>Follow a club and the front page opens with its next match, form, best players and movers. Kept on this device only.</div><MyClubPicker value={null} onChange={setMyClub}/></div>}
             {/* ═══ DESK ROW: slate · movers · subscribe ═══ */}
             {(()=>{
               const upcoming=[...matchesData].filter(m=>!m.completed&&m.date&&new Date(m.date)>=new Date()).sort((a,b)=>(a.date||"").localeCompare(b.date||"")).slice(0,6);
@@ -2333,7 +2425,7 @@ function MLSAnalytics(){
                 <div>
                   {colHead(slateTitle)}
                   {slate.length?slate.map((m,i)=>(
-                    <div key={i} style={Object.assign({},rowStyle,{color:T.text,alignItems:"center"})}>
+                    <div key={i} style={Object.assign({},rowStyle,{color:T.text,alignItems:"center"},(()=>{const mine=myClub&&(m.home===myClub||m.away===myClub);return mine?{borderLeft:`3px solid ${T.accent}`,paddingLeft:6,fontWeight:700}:{};})())}>
                       <span role="link" tabIndex={0} title="Open match preview" onClick={()=>openMatchup(m.home,m.away)} onKeyDown={e=>{if(e.key==="Enter")openMatchup(m.home,m.away);}} style={{cursor:"pointer",textDecoration:"underline",textDecorationColor:T.borderLt,textUnderlineOffset:3}}>{m.home}{upcoming.length?" v ":` ${m.homeScore||0}\u2013${m.awayScore||0} `}{m.away}</span>
                       <span style={{color:T.textMute,display:"flex",alignItems:"center",gap:8}}>{fmtD(m.date)}{upcoming.length>0&&<button title="Download match preview card" aria-label={"Download preview card for "+m.home+" v "+m.away} onClick={()=>{const st={};standingsData.forEach(s=>{st[s.team]=s;});const teams=enrichedTeams.map(t=>{const s=st[t.abbr]||{};return{...t,pts:s.pts,w:s.w,dr:s.d,l:s.l};});cardMatchPreview({m,teams,logos:teamLogos,matches:matchesData});}} style={{background:"none",border:`1px solid ${T.borderLt}`,color:T.textDim,width:22,height:20,padding:0,cursor:"pointer",fontFamily:T.mono,fontSize:11,lineHeight:1,borderRadius:0}}>{"\u2193"}</button>}</span>
                     </div>)):<div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim}}>Nothing on the wire.</div>}
