@@ -15,7 +15,7 @@
     "/*.js",
     "/*.css",
     "/*.html",
-    "/*.zip",
+    "/*.zip", "/*.webp", "/*.svg", "/*.gif", "/*.jpeg", "/*.woff", "/*.woff2", "/*.map",
     "/*.webmanifest"
   ]
 }

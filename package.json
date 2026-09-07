@@ -6,7 +6,10 @@
   "scripts": {
     "fetch": "node fetch-data.js",
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "node --test \"test/*.test.js\"",
+    "validate": "node validate-cache.js",
+    "check": "node validate-cache.js && node --test \"test/*.test.js\""
   },
   "dependencies": {
     "cheerio": "^1.2.0",

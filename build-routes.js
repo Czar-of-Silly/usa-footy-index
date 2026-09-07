@@ -66,7 +66,7 @@ fs.writeFileSync("public/data/routes.json", JSON.stringify({ generated: cache.ge
 
 // sitemap: sections + teams + rated players
 const lastmod = (cache.generated || new Date().toISOString()).slice(0, 10);
-const urls = [["/", "daily", "1.0"], ["/players", "daily", "0.9"], ["/teams", "daily", "0.9"], ["/power-rankings", "daily", "0.9"], ["/leaders", "daily", "0.8"], ["/values", "weekly", "0.7"], ["/positions", "weekly", "0.7"], ["/compare", "weekly", "0.6"], ["/trade-machine", "weekly", "0.6"], ["/ask", "weekly", "0.6"], ["/season-ratings", "weekly", "0.6"], ["/defense", "weekly", "0.6"], ["/passing", "weekly", "0.6"], ["/methodology", "weekly", "0.7"]];
+const urls = [["/", "daily", "1.0"], ["/players", "daily", "0.9"], ["/teams", "daily", "0.9"], ["/power-rankings", "daily", "0.9"], ["/leaders", "daily", "0.8"], ["/values", "weekly", "0.7"], ["/positions", "weekly", "0.7"], ["/compare", "weekly", "0.6"], ["/trade-machine", "weekly", "0.6"], ["/ask", "weekly", "0.6"], ["/season-ratings", "weekly", "0.6"], ["/defense", "weekly", "0.6"], ["/passing", "weekly", "0.6"], ["/methodology", "weekly", "0.7"], ["/matchups", "daily", "0.8"]];
 for (const slug of Object.keys(teams)) urls.push(["/teams/" + slug, "daily", "0.8"]);
 for (const f of fixtures) urls.push(["/matchup/" + f.home.toLowerCase() + "-v-" + f.away.toLowerCase(), "daily", "0.7"]);
 for (const [slug, p] of Object.entries(players)) if (p.m > 0) urls.push(["/players/" + slug, "weekly", "0.6"]);

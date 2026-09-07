@@ -23,26 +23,21 @@ const SECTIONS = {
   "/season": "/season-ratings",
   "/defense": ["MLS Defensive Grades", "Defensive grades, tackles, aerials, pressures and clearances for every MLS player."],
   "/passing": ["MLS Passing Grades", "Passing grades, completion vs expected, progressive and final-third passing for every MLS player."],
+  "/matchups": ["MLS Matchups \u2014 Every Fixture, Previewed", "Every upcoming MLS fixture with team grade, points, last-five form, key player battles and a clearly labelled Index lean."],
   "/methodology": ["Methodology & Data Status \u2014 How the Index Works", "How USA Footy Index grades MLS players: per-90 rates, shrinkage, percentile ranks, position weights, the 42\u201399 scale, team grade vs table vs power rank, sources, update schedule and limitations."],
   "/data-status": "/methodology", "/about-the-index": "/methodology",
 };
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-export async function onRequest({ request, env }) {
-  const url = new URL(request.url);
-  const path = url.pathname.replace(/\/+$/, "") || "/";
-  const shellReq = new Request(new URL("/", url.origin), { headers: request.headers, method: "GET" });
-  const shell = await env.ASSETS.fetch(shellReq);
-  if (!shell.ok) return shell;
-
+// Pure: given a path and routes.json (may be null), return { meta, status }. Unit-tested.
+export function metaFor(path, routes) {
+  path = (path || "/").replace(/\/+$/, "") || "/";
   let meta = null, status = 200;
   let sec = SECTIONS[path], canonPath = path;
   if (typeof sec === "string") { canonPath = sec; sec = SECTIONS[sec]; }
   const seg = path.split("/").filter(Boolean);
 
   if ((seg[0] === "players" || seg[0] === "teams") && seg[1]) {
-    let routes = null;
-    try { const r = await env.ASSETS.fetch(new URL("/data/routes.json", url.origin)); if (r.ok) routes = await r.json(); } catch (e) { routes = null; }
     const slug = decodeURIComponent(seg[1]);
     if (routes && seg[0] === "players" && routes.players && routes.players[slug]) {
       const p = routes.players[slug];
@@ -71,8 +66,6 @@ export async function onRequest({ request, env }) {
       meta = { title: "Not found | " + SITE_NAME, desc: "That page does not exist in the Index.", url: SITE + path, image: DEFAULT_IMG, card: "summary_large_image", noindex: true };
     }
   } else if (seg[0] === "matchup" && seg[1]) {
-    let routes = null;
-    try { const r = await env.ASSETS.fetch(new URL("/data/routes.json", url.origin)); if (r.ok) routes = await r.json(); } catch (e) { routes = null; }
     const parts = decodeURIComponent(seg[1]).toLowerCase().split("-v-");
     const byCode = {}; if (routes && routes.teams) for (const t of Object.values(routes.teams)) byCode[String(t.abbr || "").toLowerCase()] = t;
     const H = byCode[parts[0]], A = byCode[parts[1]];
@@ -96,6 +89,25 @@ export async function onRequest({ request, env }) {
     status = 404;
     meta = { title: "Not found | " + SITE_NAME, desc: "That page does not exist in the Index.", url: SITE + path, image: DEFAULT_IMG, card: "summary_large_image", noindex: true };
   }
+
+  return { meta, status };
+}
+
+export async function onRequest({ request, env }) {
+  const url = new URL(request.url);
+  const path = url.pathname.replace(/\/+$/, "") || "/";
+  // Static files never get a rewritten shell, even if _routes.json misses an extension.
+  if (/\.[a-z0-9]{2,5}$/i.test(path)) return env.ASSETS.fetch(request);
+  const shellReq = new Request(new URL("/", url.origin), { headers: request.headers, method: "GET" });
+  const shell = await env.ASSETS.fetch(shellReq);
+  if (!shell.ok) return shell;
+
+  const seg = path.split("/").filter(Boolean);
+  let routes = null;
+  if ((seg[0] === "players" || seg[0] === "teams" || seg[0] === "matchup") && seg[1]) {
+    try { const r = await env.ASSETS.fetch(new URL("/data/routes.json", url.origin)); if (r.ok) routes = await r.json(); } catch (e) { routes = null; }
+  }
+  const { meta, status } = metaFor(path, routes);
 
   const headers = new Headers(shell.headers);
   headers.set("Content-Type", "text/html; charset=utf-8");
