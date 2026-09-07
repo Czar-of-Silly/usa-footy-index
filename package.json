@@ -20,6 +20,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-react": "^7.28.5",
+    "esbuild": "^0.24.2",
     "sharp": "^0.35.3"
   }
 }
