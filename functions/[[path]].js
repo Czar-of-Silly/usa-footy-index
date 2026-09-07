@@ -68,6 +68,26 @@ export async function onRequest({ request, env }) {
       status = 404;
       meta = { title: "Not found | " + SITE_NAME, desc: "That page does not exist in the Index.", url: SITE + path, image: DEFAULT_IMG, card: "summary_large_image", noindex: true };
     }
+  } else if (seg[0] === "matchup" && seg[1]) {
+    let routes = null;
+    try { const r = await env.ASSETS.fetch(new URL("/data/routes.json", url.origin)); if (r.ok) routes = await r.json(); } catch (e) { routes = null; }
+    const parts = decodeURIComponent(seg[1]).toLowerCase().split("-v-");
+    const byCode = {}; if (routes && routes.teams) for (const t of Object.values(routes.teams)) byCode[String(t.abbr || "").toLowerCase()] = t;
+    const H = byCode[parts[0]], A = byCode[parts[1]];
+    if (H && A) {
+      const fx = routes.fixtures && routes.fixtures.find(f => (f.home === H.abbr && f.away === A.abbr) || (f.home === A.abbr && f.away === H.abbr));
+      const home = fx && fx.home === A.abbr ? A : H, away = home === H ? A : H;
+      meta = {
+        title: home.name + " v " + away.name + " \u2014 Match Preview | " + SITE_NAME,
+        desc: home.name + " (grade " + (home.g ?? "\u2014") + ", " + (home.pts ?? "\u2014") + " pts) host " + away.name + " (grade " + (away.g ?? "\u2014") + ", " + (away.pts ?? "\u2014") + " pts). Team-grade edge, points per game, last-five form, key player battles and a clearly labelled Index lean.",
+        url: SITE + "/matchup/" + home.abbr.toLowerCase() + "-v-" + away.abbr.toLowerCase(),
+        image: DEFAULT_IMG, card: "summary_large_image",
+        jsonld: { "@context": "https://schema.org", "@type": "SportsEvent", name: home.name + " v " + away.name, sport: "Soccer", ...(fx && fx.date ? { startDate: fx.date } : {}), homeTeam: { "@type": "SportsTeam", name: home.name }, awayTeam: { "@type": "SportsTeam", name: away.name }, organizer: { "@type": "SportsOrganization", name: "Major League Soccer" }, url: SITE + "/matchup/" + home.abbr.toLowerCase() + "-v-" + away.abbr.toLowerCase() },
+      };
+    } else {
+      status = 404;
+      meta = { title: "Not found | " + SITE_NAME, desc: "That matchup is not in the Index.", url: SITE + path, image: DEFAULT_IMG, card: "summary_large_image", noindex: true };
+    }
   } else if (Array.isArray(sec)) {
     meta = { title: sec[0] + " | " + SITE_NAME, desc: sec[1], url: SITE + canonPath, image: DEFAULT_IMG, card: "summary_large_image" };
   } else if (path !== "/") {

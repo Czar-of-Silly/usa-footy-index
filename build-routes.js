@@ -61,13 +61,15 @@ const powerRank = {}; power.forEach((t, i) => { powerRank[t.team] = i + 1; });
 for (const s of standings) { const name = teamName[s.team] || s.name; teams[slugify(name)] = { abbr: s.team, name, conf: s.conf, g: teamGrade[s.team], pts: s.pts, rank: powerRank[s.team], logo: s.logo || null }; }
 for (const t of MLS_TEAMS) { const slug = slugify(t.name); if (!teams[slug]) teams[slug] = { abbr: t.abbr, name: t.name, conf: t.conf || null, g: null, pts: null, rank: null, logo: null }; }
 
-fs.writeFileSync("public/data/routes.json", JSON.stringify({ generated: cache.generated, season: cache.season, players, teams }));
+const fixtures = (cache.matches || []).filter(m => !m.completed && m.home && m.away && m.date && Date.parse(m.date) > Date.now() - 3 * 3600e3).sort((a, b) => a.date.localeCompare(b.date)).map(m => ({ id: m.id, home: m.home, away: m.away, date: m.date, status: m.status || "" }));
+fs.writeFileSync("public/data/routes.json", JSON.stringify({ generated: cache.generated, season: cache.season, players, teams, fixtures }));
 
 // sitemap: sections + teams + rated players
 const lastmod = (cache.generated || new Date().toISOString()).slice(0, 10);
 const urls = [["/", "daily", "1.0"], ["/players", "daily", "0.9"], ["/teams", "daily", "0.9"], ["/power-rankings", "daily", "0.9"], ["/leaders", "daily", "0.8"], ["/values", "weekly", "0.7"], ["/positions", "weekly", "0.7"], ["/compare", "weekly", "0.6"], ["/trade-machine", "weekly", "0.6"], ["/ask", "weekly", "0.6"], ["/season-ratings", "weekly", "0.6"], ["/defense", "weekly", "0.6"], ["/passing", "weekly", "0.6"]];
 for (const slug of Object.keys(teams)) urls.push(["/teams/" + slug, "daily", "0.8"]);
+for (const f of fixtures) urls.push(["/matchup/" + f.home.toLowerCase() + "-v-" + f.away.toLowerCase(), "daily", "0.7"]);
 for (const [slug, p] of Object.entries(players)) if (p.m > 0) urls.push(["/players/" + slug, "weekly", "0.6"]);
 const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map(([u, f, pr]) => "  <url><loc>" + SITE + u + "</loc><lastmod>" + lastmod + "</lastmod><changefreq>" + f + "</changefreq><priority>" + pr + "</priority></url>").join("\n") + "\n</urlset>\n";
 fs.writeFileSync("public/sitemap.xml", xml);
-console.log("✅ routes.json: " + Object.keys(players).length + " players, " + Object.keys(teams).length + " teams \u00b7 sitemap.xml: " + urls.length + " URLs");
+console.log("✅ routes.json: " + Object.keys(players).length + " players, " + Object.keys(teams).length + " teams, " + fixtures.length + " fixtures \u00b7 sitemap.xml: " + urls.length + " URLs");
