@@ -641,10 +641,203 @@ function FormSparkline({data,width=200,height=50}){
 // Season-over-season sparkline — shows grade dots connected by a line
 
 // Mini inline sparkline for table rows — pure SVG, no Recharts
-function MiniSparkline({matchLog,w=40,h=14}){
+// ─── MATCH FORM (Phase 4a) ────────────────────────────────────────────
+// Production-based per-match rating from the match-log row. Attackers/midfielders:
+// goals, assists, shots, discipline, minutes (unchanged from the original formula).
+// Defenders and keepers additionally: clean sheet / goals conceded while on the pitch.
+// It is a proxy built from box-score events, not the full grading engine — say so in the UI.
+function matchRating(m,pos){
+  const P=String(pos||"").toLowerCase();
+  const isGK=/gk|goal|keep/.test(P);
+  const isDef=isGK||/def|back/.test(P);
+  let r=55;
+  r+=(m.g||0)*(isDef?14:12);r+=(m.a||0)*(isDef?10:8);
+  r+=(m.sot||0)*2;r+=(m.sh||0)*.5;
+  r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;
+  const mins=m.mins||0;r+=mins>=80?3:1;
+  if(isDef&&mins>=60){const conceded=m.ha==="H"?(m.as||0):(m.hs||0);r+=conceded===0?8:conceded===1?2:conceded===2?-1:-3;if(isGK&&conceded===0)r+=2;}
+  return Math.max(42,Math.min(99,Math.round(r)));
+}
+function computeForm(matchLog,pos){
+  const log=Array.isArray(matchLog)?matchLog:[];
+  if(!log.length)return null;
+  const ratings=log.map(m=>matchRating(m,pos));
+  const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
+  const last5=ratings.slice(-5),prev5=ratings.slice(-10,-5);
+  const last5Avg=avg(last5),seasonAvg=avg(ratings);
+  const basis=prev5.length>=3?"prev":"season";
+  const delta=last5Avg==null?null:(basis==="prev"?last5Avg-avg(prev5):last5Avg-seasonAvg);
+  const l5=log.slice(-5);
+  const res=l5.map(m=>{const gf=m.ha==="H"?(m.hs||0):(m.as||0),ga=m.ha==="H"?(m.as||0):(m.hs||0);return gf>ga?"W":gf===ga?"D":"L";});
+  return{ratings,last5Avg,seasonAvg,delta,basis,g:l5.reduce((s,m)=>s+(m.g||0),0),a:l5.reduce((s,m)=>s+(m.a||0),0),mins:l5.reduce((s,m)=>s+(m.mins||0),0),w:res.filter(x=>x==="W").length,d:res.filter(x=>x==="D").length,l:res.filter(x=>x==="L").length,res,count:log.length};
+}
+// Trend of the last 10 match ratings; the last five are shaded as the "form window".
+function FormTrend({matchLog,pos,height=150}){
+  const f=computeForm(matchLog,pos);
+  if(!f||f.ratings.length<2)return null;
+  const narrow=typeof window!=="undefined"&&window.innerWidth<600;
+  const W=narrow?360:640,H=height,padL=30,padR=14,padT=24,padB=28,show=narrow?6:10;
+  const pts0=matchLog.slice(-show),rs=f.ratings.slice(-show);
+  const n=rs.length,x=i=>padL+(n===1?0:i*((W-padL-padR)/(n-1))),y=v=>padT+(1-(v-42)/57)*(H-padT-padB);
+  const pts=rs.map((v,i)=>[x(i),y(v)]);
+  const d="M"+pts.map(p=>p.map(v=>v.toFixed(1)).join(",")).join("L");
+  const winStart=Math.max(0,n-5);
+  return <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="xMidYMid meet" role="img" aria-label={"Match rating trend, last "+n+" games"} style={{display:"block",fontFamily:T.sans}}>
+    {n>5&&<rect x={x(winStart)-8} y={padT-6} width={x(n-1)-x(winStart)+16} height={H-padT-padB+12} fill={T.ink} opacity=".05"/>}
+    {[50,60,70,80,90].map(v=><g key={v}><line x1={padL} x2={W-padR} y1={y(v)} y2={y(v)} stroke={T.borderLt} strokeWidth="1"/><text x={padL-6} y={y(v)+3} fontSize="9" fill={T.textMute} textAnchor="end" fontFamily="JetBrains Mono,monospace">{v}</text></g>)}
+    {f.seasonAvg!=null&&<line x1={padL} x2={W-padR} y1={y(f.seasonAvg)} y2={y(f.seasonAvg)} stroke={T.textDim} strokeWidth="1" strokeDasharray="3 4"/>}
+    <path d={d} fill="none" stroke={T.ink} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round"/>
+    {pts.map(([px,py],i)=><g key={i}><circle cx={px} cy={py} r={i===n-1?5:3.5} fill={gc(rs[i])} stroke={T.bg} strokeWidth="1.5"/><text x={px} y={py-9} fontSize="9" fontWeight="700" fill={T.ink} textAnchor="middle" fontFamily="JetBrains Mono,monospace">{rs[i]}</text><text x={px} y={H-padB+13} fontSize="8.5" fill={T.textDim} textAnchor="middle">{(pts0[i].ha==="A"?"@":"")+(pts0[i].opp||"")}</text></g>)}
+    {n>5&&<text x={x(winStart)-4} y={H-4} fontSize="8" fill={T.textMute} letterSpacing="1">LAST 5</text>}
+    {f.seasonAvg!=null&&<text x={padL+2} y={y(f.seasonAvg)+10} fontSize="8" fill={T.textDim} textAnchor="start" letterSpacing=".5">SEASON AVG {Math.round(f.seasonAvg)}</text>}
+  </svg>;
+}
+
+// ─── SHARE CARDS (Phase 4b) ───────────────────────────────────────────
+// 1200×630 landscape cards for link previews and social. Same tokens as the page.
+let DATA_GENERATED=null; // ISO string of the cache's generated time; set on load
+const CARD_W=1200,CARD_H=630;
+const F_DISPLAY="'Playfair Display','Source Serif 4',Georgia,serif",F_SERIF="'Source Serif 4','Libre Baskerville',Georgia,serif",F_MONO="'JetBrains Mono','Courier New',monospace",F_FELL="'IM Fell English SC','Playfair Display',serif";
+const cardLoadImg=(src)=>new Promise(r=>{if(!src)return r(null);const img=new Image();img.crossOrigin="anonymous";img.onload=()=>r(img);img.onerror=()=>r(null);img.src=src;setTimeout(()=>r(null),3500);});
+async function cardFonts(){try{await Promise.all(["700 44px "+F_DISPLAY,"900 60px "+F_DISPLAY,"400 18px "+F_SERIF,"italic 18px "+F_SERIF,"700 12px "+F_MONO,"400 34px "+F_FELL].map(f=>document.fonts.load(f)));await document.fonts.ready;}catch(e){}}
+function cardSpaced(x,text,px,py,sp,align){const w=[...text].reduce((s,ch)=>s+x.measureText(ch).width+sp,0)-sp;let cx=align==="right"?px-w:align==="center"?px-w/2:px;const prev=x.textAlign;x.textAlign="left";for(const ch of text){x.fillText(ch,cx,py);cx+=x.measureText(ch).width+sp;}x.textAlign=prev;return w;}
+function cardTrunc(x,text,maxW){let t=String(text||"");if(x.measureText(t).width<=maxW)return t;while(t.length>1&&x.measureText(t+"\u2026").width>maxW)t=t.slice(0,-1);return t+"\u2026";}
+function cardBadge(x,img,abbr,cx,cy,size){if(img){try{x.drawImage(img,cx-size/2,cy-size/2,size,size);return;}catch(e){}}x.fillStyle=T.card;x.fillRect(cx-size/2,cy-size/2,size,size);x.strokeStyle=T.border;x.lineWidth=1;x.strokeRect(cx-size/2,cy-size/2,size,size);x.fillStyle=T.ink;x.textAlign="center";x.font=`700 ${Math.round(size*0.28)}px ${F_MONO}`;x.fillText(abbr||"",cx,cy+size*0.1);x.textAlign="left";}
+function cardStamp(x,cx,cy,grade,label,size){const col=gc(grade);x.save();x.translate(cx,cy);x.rotate(-0.05);x.strokeStyle=col;x.lineWidth=3;x.strokeRect(-size/2,-size/2,size,size);x.lineWidth=1;x.strokeRect(-size/2+7,-size/2+7,size-14,size-14);x.fillStyle=col;x.textAlign="center";x.font=`900 ${Math.round(size*0.5)}px ${F_DISPLAY}`;x.fillText(String(Math.round(grade)),0,size*0.16);x.font=`700 ${Math.max(9,Math.round(size*0.09))}px ${F_MONO}`;cardSpaced(x,label||"INDEX GRADE",0,size*0.34,1.5,"center");x.restore();x.textAlign="left";}
+function cardPill(x,px,py,txt,bg,fg,padX,h,font){x.font=font||("700 11px "+F_MONO);const w=x.measureText(txt).width+padX*2;x.fillStyle=bg;x.fillRect(px,py,w,h);x.fillStyle=fg;x.textAlign="left";x.fillText(txt,px+padX,py+h*0.7);return w;}
+function cardFrame(x,{kicker,title,sub}){
+  x.fillStyle=T.bg;x.fillRect(0,0,CARD_W,CARD_H);
+  // faint newsprint grain
+  x.fillStyle="rgba(35,31,25,0.035)";for(let i=0;i<220;i++){x.fillRect((i*7919)%CARD_W,(i*104729)%CARD_H,1.5,1.5);}
+  x.strokeStyle=T.border;x.lineWidth=2;x.strokeRect(18,18,CARD_W-36,CARD_H-36);
+  x.strokeStyle=T.borderLt;x.lineWidth=1;x.strokeRect(26,26,CARD_W-52,CARD_H-52);
+  // nameplate
+  x.fillStyle=T.ink;x.font="400 34px "+F_FELL;x.textAlign="left";x.fillText("USA Footy ",48,74);const w1=x.measureText("USA Footy ").width;x.fillStyle=T.accent;x.fillText("Index",48+w1,74);
+  x.fillStyle=T.textMute;x.font="700 10px "+F_MONO;cardSpaced(x,"STORIES LEAD. STATS INFORM.",CARD_W-48,58,1.6,"right");
+  const upd=DATA_GENERATED?("UPDATED "+fmtETTime(DATA_GENERATED)).toUpperCase():"";if(upd)cardSpaced(x,upd,CARD_W-48,76,1.2,"right");
+  x.fillStyle=T.ink;x.fillRect(48,92,CARD_W-96,2);x.fillRect(48,97,CARD_W-96,1);
+  let y=132;
+  if(kicker){x.fillStyle=T.accent;x.font="700 12px "+F_MONO;cardSpaced(x,kicker.toUpperCase(),48,y,2.2);y+=40;}
+  if(title){x.fillStyle=T.ink;x.font="700 42px "+F_DISPLAY;x.fillText(cardTrunc(x,title,CARD_W-96),48,y);y+=14;}
+  if(sub){x.fillStyle=T.textDim;x.font="italic 17px "+F_SERIF;x.fillText(cardTrunc(x,sub,CARD_W-96),48,y+22);y+=28;}
+  // footer
+  x.fillStyle=T.ink;x.fillRect(0,CARD_H-44,CARD_W,44);
+  x.fillStyle=T.bg;x.font="700 12px "+F_MONO;cardSpaced(x,"USFOOTYINDEX.COM",48,CARD_H-17,2);
+  x.fillStyle=T.borderLt;x.font="400 10px "+F_MONO;cardSpaced(x,"DATA: ESPN \u00b7 AMERICAN SOCCER ANALYSIS \u00b7 MLS OFFICIAL (OPTA)",CARD_W-48,CARD_H-17,1,"right");
+  return{x:48,y:y+18,w:CARD_W-96,bottom:CARD_H-60};
+}
+function cardDownload(c,name){let url;try{url=c.toDataURL("image/png");}catch(e){alert("Couldn't export the card: an external image blocked it. Try once more.");return;}const a=document.createElement("a");a.download=name;a.href=url;a.click();}
+async function makeCard(name,draw){await cardFonts();const c=document.createElement("canvas");c.width=CARD_W;c.height=CARD_H;const x=c.getContext("2d");x.textBaseline="alphabetic";await draw(x);cardDownload(c,name);}
+const cardFile=(s)=>slugify(s)+"-usa-footy-index.png";
+const cardResult=(m,abbr)=>{const home=m.home===abbr;const gf=home?+(m.homeScore||0):+(m.awayScore||0),ga=home?+(m.awayScore||0):+(m.homeScore||0);return gf>ga?"W":gf===ga?"D":"L";};
+function drawFormPills(x,px,py,res,size){res.forEach((r,i)=>{x.fillStyle=r==="W"?T.green:r==="D"?T.textDim:T.red;x.fillRect(px+i*(size+4),py,size,size);x.fillStyle=T.bg;x.font=`700 ${Math.round(size*0.55)}px ${F_MONO}`;x.textAlign="center";x.fillText(r,px+i*(size+4)+size/2,py+size*0.7);});x.textAlign="left";}
+
+// 1) PLAYER — wide
+async function cardPlayer(p){
+  const[head,logo]=await Promise.all([cardLoadImg(p.localHeadshot||p.headshot),cardLoadImg(p.teamLogo)]);
+  await makeCard(cardFile(p.name+"-card"),(x)=>{
+    const b=cardFrame(x,{kicker:"Player Grade \u00b7 "+(p.position||""),title:p.name,sub:(p.teamName||p.team)+(p.age?" \u00b7 Age "+Math.floor(+p.age):"")+" \u00b7 "+(p.mins||0)+" minutes"});
+    // headshot
+    const hx=48,hy=b.y,hs=196;x.fillStyle=T.card;x.fillRect(hx,hy,hs,hs);x.strokeStyle=T.border;x.lineWidth=1;x.strokeRect(hx,hy,hs,hs);
+    if(head){try{x.save();x.beginPath();x.rect(hx+1,hy+1,hs-2,hs-2);x.clip();const s=Math.max((hs-2)/head.width,(hs-2)/head.height);x.drawImage(head,hx+1+((hs-2)-head.width*s)/2,hy+1+((hs-2)-head.height*s)/2,head.width*s,head.height*s);x.restore();}catch(e){}}
+    cardBadge(x,logo,p.team,hx+hs-6,hy+hs-6,54);
+    // grade stamp
+    if(p.overall!=null&&p.rated!==false)cardStamp(x,hx+hs+130,hy+hs/2+6,p.overall,"INDEX GRADE",150);
+    else{x.fillStyle=T.textMute;x.font="700 34px "+F_DISPLAY;x.fillText("NR",hx+hs+110,hy+hs/2+14);}
+    // sub-grades
+    const subs=[["ATTACK",p.attack],["PASSING",p.passing],["DEFENSE",p.defense],["CREATIVITY",p.creativity],["CARRYING",p.carrying]].filter(s=>s[1]!=null);
+    let sx=hx+hs+240,sy=hy+8;
+    x.fillStyle=T.textMute;x.font="700 10px "+F_MONO;cardSpaced(x,"SUB-GRADES",sx,sy,1.6);sy+=16;
+    subs.forEach((s,i)=>{const yy=sy+i*34;x.fillStyle=T.textDim;x.font="700 10px "+F_MONO;cardSpaced(x,s[0],sx,yy+16,1.2);x.fillStyle=T.borderLt;x.fillRect(sx+112,yy+7,220,10);x.fillStyle=gc(s[1]);x.fillRect(sx+112,yy+7,220*Math.max(0,Math.min(1,(s[1]-42)/57)),10);x.fillStyle=T.ink;x.font="700 16px "+F_DISPLAY;x.fillText(String(Math.round(s[1])),sx+342,yy+18);});
+    // season line
+    const ly=hy+hs+38;x.fillStyle=T.ink;x.fillRect(48,ly-22,CARD_W-96,1);
+    const stats=[["G",p.goals],["A",p.assists],["xG/90",p.xg90],["xA/90",p.xa90],["G+",(+p.totalGA>=0?"+":"")+p.totalGA]];
+    let cx=48;stats.forEach(([l,v])=>{x.fillStyle=T.ink;x.font="900 30px "+F_DISPLAY;x.fillText(String(dv(v)),cx,ly+18);const w=x.measureText(String(dv(v))).width;x.fillStyle=T.textMute;x.font="700 10px "+F_MONO;cardSpaced(x,l,cx+w+8,ly+18,1.2);cx+=w+8+x.measureText(l).width*1.3+44;});
+    // form
+    if(p.matchLog&&p.matchLog.length>=2){const f=computeForm(p.matchLog,p.position);const rs=f.ratings.slice(-8);const fx=760,fy=ly-8,bw=34,bh=56;x.fillStyle=T.textMute;x.font="700 10px "+F_MONO;cardSpaced(x,"MATCH FORM \u00b7 LAST "+rs.length,fx,fy-20,1.4);x.fillStyle=T.textDim;x.font="400 10px "+F_MONO;x.textAlign="right";x.fillText("last 5 avg "+Math.round(f.last5Avg)+" \u00b7 season "+Math.round(f.seasonAvg),CARD_W-48,fy-20);x.textAlign="left";rs.forEach((v,i)=>{const h=Math.max(6,((v-42)/57)*bh);const bx=fx+i*(bw+8);x.fillStyle=gc(v);x.fillRect(bx,fy+bh-h,bw,h);x.fillStyle=T.ink;x.font="700 11px "+F_MONO;x.textAlign="center";x.fillText(v,bx+bw/2,fy+bh-h-5);x.fillStyle=T.textMute;x.font="400 9px "+F_MONO;x.fillText((p.matchLog.slice(-8)[i].opp||""),bx+bw/2,fy+bh+13);});x.textAlign="left";}
+  });
+}
+
+// 2) PLAYER OF THE WEEK — spotlight + the XI
+async function cardTOTW({spot,xi,weekLabel,weekNo}){
+  const[head,logo]=await Promise.all([cardLoadImg(spot.player.localHeadshot||spot.player.headshot),cardLoadImg(spot.player.teamLogo)]);
+  await makeCard(cardFile("team-of-the-week-"+(weekLabel||"")),(x)=>{
+    const b=cardFrame(x,{kicker:"Team of the Week \u00b7 Matchweek "+weekNo+(weekLabel?" \u00b7 "+weekLabel:""),title:"Player of the Week: "+spot.player.name,sub:(spot.player.position||"")+" \u00b7 "+(spot.player.teamName||spot.player.team)+" \u00b7 "+(spot.ha==="A"?"at ":"vs ")+(spot.opp||"")+" \u00b7 "+(spot.mins||0)+"'"+(spot.g?" \u00b7 "+spot.g+" G":"")+(spot.a?" \u00b7 "+spot.a+" A":"")});
+    const hx=48,hy=b.y,hs=170;x.fillStyle=T.card;x.fillRect(hx,hy,hs,hs);x.strokeStyle=T.border;x.strokeRect(hx,hy,hs,hs);
+    if(head){try{x.save();x.beginPath();x.rect(hx+1,hy+1,hs-2,hs-2);x.clip();const s=Math.max((hs-2)/head.width,(hs-2)/head.height);x.drawImage(head,hx+1+((hs-2)-head.width*s)/2,hy+1+((hs-2)-head.height*s)/2,head.width*s,head.height*s);x.restore();}catch(e){}}
+    cardBadge(x,logo,spot.player.team,hx+hs-4,hy+hs-4,48);
+    cardStamp(x,hx+hs+100,hy+hs/2,spot.rating,"MATCH RATING",136);
+    // XI list, two columns
+    const lx=hx+hs+200,top=b.y-4,rowH=30;x.fillStyle=T.textMute;x.font="700 10px "+F_MONO;cardSpaced(x,"THE XI \u00b7 BEST MATCH RATINGS",lx,top,1.6);
+    xi.slice(0,11).forEach((s,i)=>{const col=i<6?0:1;const row=i<6?i:i-6;const px=lx+col*330,py=top+16+row*rowH;x.fillStyle=T.textMute;x.font="700 10px "+F_MONO;x.fillText(s.slot,px,py+14);x.fillStyle=T.ink;x.font="600 15px "+F_SERIF;x.fillText(cardTrunc(x,s.l.player.name,190),px+40,py+15);x.fillStyle=T.textDim;x.font="400 10px "+F_MONO;x.fillText(s.l.player.team,px+236,py+14);x.fillStyle=gc(s.l.rating);x.font="700 15px "+F_DISPLAY;x.textAlign="right";x.fillText(String(s.l.rating),px+310,py+15);x.textAlign="left";});
+    x.fillStyle=T.textDim;x.font="italic 12px "+F_SERIF;x.fillText("Match ratings are a box-score production proxy for one game, not the season Index grade.",48,CARD_H-60);
+  });
+}
+
+// 3) POWER RANKINGS — top 10
+async function cardPowerRankings({rows,moveLabel,logos}){
+  const imgs=await Promise.all(rows.slice(0,10).map(t=>cardLoadImg(logos[t.abbr])));
+  await makeCard(cardFile("power-rankings"),(x)=>{
+    const b=cardFrame(x,{kicker:"Power Rankings \u00b7 Top 10",title:"MLS Power Rankings",sub:"50% points \u00b7 30% team grade \u00b7 20% last-five form \u00b7 "+moveLabel});
+    const rowH=44,top=b.y-6;
+    rows.slice(0,10).forEach((t,i)=>{const col=i<5?0:1,row=i<5?i:i-5;const px=48+col*560,py=top+row*rowH;
+      x.fillStyle=T.card;x.fillRect(px,py,540,rowH-6);x.strokeStyle=T.borderLt;x.strokeRect(px,py,540,rowH-6);
+      x.fillStyle=i<3?T.accent:T.textMute;x.font="700 20px "+F_DISPLAY;x.fillText(String(t.powerRank||i+1),px+12,py+27);
+      cardBadge(x,imgs[i],t.abbr,px+62,py+(rowH-6)/2,30);
+      x.fillStyle=T.ink;x.font="600 16px "+F_SERIF;x.fillText(cardTrunc(x,t.name,220),px+86,py+25);
+      const mv=t.movement!=null?t.movement:t.vsTable;const mtxt=mv>0?"\u25b2"+mv:mv<0?"\u25bc"+Math.abs(mv):"\u2014";x.fillStyle=mv>0?T.green:mv<0?T.red:T.textMute;x.font="700 13px "+F_MONO;x.fillText(mtxt,px+320,py+25);
+      x.fillStyle=T.textDim;x.font="400 11px "+F_MONO;x.fillText((t.pts||0)+" pts",px+372,py+25);
+      x.fillStyle=gc(t.overall);x.font="700 16px "+F_DISPLAY;x.textAlign="right";x.fillText(String(Math.round(t.overall)),px+500,py+26);x.fillStyle=T.textMute;x.font="400 9px "+F_MONO;x.fillText("GRD",px+526,py+25);x.textAlign="left";
+    });
+  });
+}
+
+// 4) MOVERS — heating / cooling
+async function cardMovers({heating,cooling}){
+  await makeCard(cardFile("biggest-movers"),(x)=>{
+    const b=cardFrame(x,{kicker:"Form \u00b7 Last five vs season",title:"Biggest Movers",sub:"Match-rating average over the last five games against the full-season average"});
+    const draw=(list,px,label,col)=>{x.fillStyle=col;x.fillRect(px,b.y-10,4,18);x.fillStyle=T.ink;x.font="700 18px "+F_DISPLAY;x.fillText(label,px+14,b.y+5);
+      list.slice(0,6).forEach((p,i)=>{const py=b.y+22+i*40;x.fillStyle=T.card;x.fillRect(px,py,520,34);x.strokeStyle=T.borderLt;x.strokeRect(px,py,520,34);
+        x.fillStyle=T.textMute;x.font="700 12px "+F_MONO;x.fillText(String(i+1),px+12,py+22);
+        x.fillStyle=T.ink;x.font="600 15px "+F_SERIF;x.fillText(cardTrunc(x,p.name,220),px+36,py+22);
+        x.fillStyle=T.textDim;x.font="400 10px "+F_MONO;x.fillText((p.position||"").slice(0,3).toUpperCase()+" \u00b7 "+p.team,px+266,py+21);
+        x.fillStyle=T.textDim;x.font="400 11px "+F_MONO;x.fillText(p.seasonAvg+" \u2192 "+p.formAvg,px+360,py+22);
+        x.fillStyle=p.delta>0?T.green:T.red;x.font="700 15px "+F_DISPLAY;x.textAnchor="end";x.textAlign="right";x.fillText((p.delta>0?"+":"")+p.delta,px+506,py+23);x.textAlign="left";});};
+    draw(heating,48,"Heating Up",T.green);draw(cooling,48+552,"Cooling Down",T.red);
+  });
+}
+
+// 5) MATCH PREVIEW — measured only (grade, points, form); no projection
+async function cardMatchPreview({m,teams,logos,matches}){
+  const H=teams.find(t=>t.abbr===m.home)||{abbr:m.home,name:m.home},A=teams.find(t=>t.abbr===m.away)||{abbr:m.away,name:m.away};
+  const[hl,al]=await Promise.all([cardLoadImg(logos[m.home]),cardLoadImg(logos[m.away])]);
+  const last5=(abbr)=>matches.filter(g=>g.completed&&(g.home===abbr||g.away===abbr)).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,5).reverse().map(g=>cardResult(g,abbr));
+  await makeCard(cardFile(H.abbr+"-v-"+A.abbr+"-preview"),(x)=>{
+    const when=fmtETTime(m.date);
+    const b=cardFrame(x,{kicker:"Match Preview \u00b7 "+when,title:H.name+" v "+A.name,sub:"Team grade, points and last-five form from the Index record \u00b7 no projections"});
+    const side=(t,logo,px,align)=>{const cx=align==="left"?px+70:px+CARD_W/2-118;cardBadge(x,logo,t.abbr,cx,b.y+60,120);
+      const tx=align==="left"?px+150:px+40;x.fillStyle=T.ink;x.font="700 26px "+F_DISPLAY;x.fillText(cardTrunc(x,t.name,330),tx,b.y+38);
+      x.fillStyle=T.textDim;x.font="400 12px "+F_MONO;x.fillText((t.conf||"")+(t.pts!=null?" \u00b7 "+t.pts+" pts":"")+(t.w!=null?" \u00b7 "+t.w+"-"+t.dr+"-"+t.l:""),tx,b.y+62);
+      const res=last5(t.abbr);x.fillStyle=T.textMute;x.font="700 10px "+F_MONO;cardSpaced(x,res.length?"LAST "+res.length+(res.length===1?" RESULT":" RESULTS"):"NO RECENT RESULTS ON RECORD",tx,b.y+96,1.4);drawFormPills(x,tx,b.y+104,res,22);
+      if(t.overall!=null)cardStamp(x,tx+300,b.y+80,t.overall,"TEAM GRADE",92);};
+    side(H,hl,48,"left");side(A,al,48+CARD_W/2-48,"left");
+    x.fillStyle=T.ink;x.font="900 40px "+F_DISPLAY;x.textAlign="center";x.fillText("v",CARD_W/2,b.y+80);x.textAlign="left";
+    // edge line (measured)
+    const dg=(H.overall!=null&&A.overall!=null)?Math.round(H.overall-A.overall):null;
+    const ey=b.y+200;x.fillStyle=T.ink;x.fillRect(48,ey-22,CARD_W-96,1);
+    x.fillStyle=T.textMute;x.font="700 10px "+F_MONO;cardSpaced(x,"MEASURED EDGE",48,ey,1.6);
+    x.fillStyle=T.ink;x.font="600 16px "+F_SERIF;const edge=dg==null?"Team grades unavailable":dg===0?"Even on team grade":(dg>0?H.name:A.name)+" by "+Math.abs(dg)+" on team grade";x.fillText(edge+(H.pts!=null&&A.pts!=null?" \u00b7 "+(H.pts===A.pts?"level":( (H.pts>A.pts?H.abbr:A.abbr)+" +"+Math.abs(H.pts-A.pts)))+" on points":""),48,ey+26);
+  });
+}
+
+function CardButton({onClick,label,small}){
+  return <button onClick={onClick} title="Download a 1200\u00d7630 share card" style={{background:"none",border:`1px solid ${T.border}`,color:T.textDim,padding:small?"4px 9px":"7px 14px",borderRadius:0,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:small?10:11,letterSpacing:.3,whiteSpace:"nowrap"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gold} onMouseLeave={e=>e.currentTarget.style.borderColor=T.border}>{"\u2193 "+(label||"Share card")}</button>;
+}
+
+function MiniSparkline({matchLog,pos,w=40,h=14}){
   if(!matchLog||matchLog.length<2)return null;
   const last5=matchLog.slice(-5);
-  const rates=last5.map(m=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));});
+  const rates=last5.map(m=>matchRating(m,pos));
   const mn=Math.min(...rates),mx=Math.max(...rates),rng=mx-mn||1;
   const pts=rates.map((v,i)=>[i*(w/(rates.length-1)),h-2-((v-mn)/rng)*(h-4)]);
   const d="M"+pts.map(p=>p.join(",")).join("L");
@@ -964,18 +1157,39 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
         </div>
       </div>}
 
+      {/* ── FORM ── */}
+      {p.matchLog&&p.matchLog.length>=2&&(()=>{
+        const f=computeForm(p.matchLog,p.position);if(!f)return null;
+        const dl=f.delta==null?null:Math.round(f.delta*10)/10;
+        const tile=(label,val,sub,color)=><div style={{background:T.card,border:`1px solid ${T.borderLt}`,padding:"10px 12px",minWidth:0}}>
+          <div style={{fontFamily:T.display,fontWeight:900,fontSize:24,lineHeight:1,color:color||T.ink,letterSpacing:-.5}}>{val}</div>
+          <div style={{fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:1.2,textTransform:"uppercase",fontFamily:T.sans,marginTop:5}}>{label}</div>
+          {sub&&<div style={{fontSize:9.5,color:T.textDim,fontFamily:T.sans,marginTop:2}}>{sub}</div>}
+        </div>;
+        const pill=(r,i)=><span key={i} aria-label={r==="W"?"win":r==="D"?"draw":"loss"} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:22,height:22,fontFamily:T.mono,fontWeight:700,fontSize:11,color:T.bg,background:r==="W"?T.green:r==="D"?T.textDim:T.red}}>{r}</span>;
+        return <div style={{padding:"16px 28px",borderTop:`1px solid ${T.borderLt}`}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,gap:10,flexWrap:"wrap"}}>
+            <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase"}}>Form {"\u00b7"} last {Math.min(5,f.count)} of {f.count}</div>
+            <div style={{display:"flex",gap:4}}>{f.res.map(pill)}</div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(104px,1fr))",gap:8,marginBottom:12}}>
+            {tile("Last 5 avg",f.last5Avg!=null?Math.round(f.last5Avg):"\u2014",null,f.last5Avg!=null?gc(f.last5Avg):null)}
+            {tile("Season avg",f.seasonAvg!=null?Math.round(f.seasonAvg):"\u2014",f.count+" games")}
+            {tile("Movement",dl==null?"\u2014":(dl>0?"+":"")+dl,f.basis==="prev"?"vs previous five":"vs season average",dl==null?null:dl>0?T.green:dl<0?T.red:T.textDim)}
+            {tile("G / A",f.g+" / "+f.a,"last five")}
+            {tile("Minutes",f.mins,"last five")}
+            {tile("Record",f.w+"-"+f.d+"-"+f.l,"W-D-L, last five")}
+          </div>
+          <FormTrend matchLog={p.matchLog} pos={p.position}/>
+          <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:11,color:T.textDim,marginTop:6,lineHeight:1.5}}>Match ratings are a production proxy built from each game's box score (goals, assists, shots, discipline, minutes; clean sheets and goals conceded for defenders and keepers). They are not the full Index grade, which is percentile-based across the season.</div>
+        </div>;
+      })()}
+
       {/* ── MATCH LOG TABLE ── */}
       {p.matchLog&&p.matchLog.length>0&&<div style={{padding:"16px 28px",borderTop:`1px solid ${T.borderLt}`}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
           <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase"}}>Match Log</div>
-          {p.matchLog.length>=5&&<div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>
-            Last 5 avg: <span style={{fontFamily:T.mono,fontWeight:700,color:T.ink}}>
-              {(()=>{const last5=p.matchLog.slice(-5);const ratings=last5.map(m=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*0.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));});return Math.round(ratings.reduce((s,v)=>s+v,0)/ratings.length);})()}
-            </span>
-            {" "}| Season avg: <span style={{fontFamily:T.mono,fontWeight:700,color:T.ink}}>
-              {(()=>{const ratings=p.matchLog.map(m=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*0.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));});return Math.round(ratings.reduce((s,v)=>s+v,0)/ratings.length);})()}
-            </span>
-          </div>}
+          <div style={{fontSize:9,color:T.textDim,fontFamily:T.sans}}>Most recent first</div>
         </div>
         <div style={{maxHeight:200,overflowY:"auto",overflowX:"auto",borderRadius:0,border:`1px solid ${T.borderLt}`,WebkitOverflowScrolling:"touch"}}>
           <div style={{display:"grid",gridTemplateColumns:"64px 40px 36px 36px 30px 30px 36px 1fr",fontSize:9,color:T.textMute,fontWeight:600,letterSpacing:.5,fontFamily:T.sans,textTransform:"uppercase",padding:"6px 10px",background:T.card,borderBottom:`1px solid ${T.border}`,position:"sticky",top:0}}>
@@ -984,7 +1198,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
           {[...p.matchLog].reverse().map((m,i)=>{
             const dt=m.date?new Date(m.date):null;
             const dateStr=dt?`${dt.getMonth()+1}/${dt.getDate()}`:"—";
-            let rating=55;rating+=(m.g||0)*12;rating+=(m.a||0)*8;rating+=(m.sot||0)*2;rating+=(m.sh||0)*0.5;rating-=(m.fl||0)*1;rating-=(m.yc||0)*3;rating-=(m.rc||0)*10;rating+=(m.mins||0)>=80?3:1;rating=Math.max(42,Math.min(99,Math.round(rating)));
+            const rating=matchRating(m,p.position);
             const isWin=m.ha==="H"?(m.hs||0)>(m.as||0):(m.as||0)>(m.hs||0);
             const isDraw=(m.hs||0)===(m.as||0);
             const resultColor=isWin?T.green:isDraw?T.textDim:T.red;
@@ -1076,7 +1290,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             if(p.matchLog&&p.matchLog.length>=2){
               x.fillStyle=MUTE;x.font="bold 9px Inter,sans-serif";x.fillText("MATCH FORM",30,678);
               const last10=p.matchLog.slice(-10);
-              const rates=last10.map(m2=>{let r2=55;r2+=(m2.g||0)*12;r2+=(m2.a||0)*8;r2+=(m2.sot||0)*2;r2+=(m2.sh||0)*.5;r2-=(m2.fl||0)*1;r2-=(m2.yc||0)*3;r2-=(m2.rc||0)*10;r2+=(m2.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r2)));});
+              const rates=last10.map(m2=>matchRating(m2,p.position));
               const mn2=Math.min(...rates),mx2=Math.max(...rates),rng2=mx2-mn2||1;const sparkH=50,sparkY=695;
               const barW2=(W-60)/rates.length-4;
               rates.forEach((v,i)=>{const barH=((v-mn2)/rng2)*sparkH+6;const bx=30+i*(barW2+4);const by=sparkY+sparkH-barH;x.fillStyle=gcC(v);x.beginPath();x.roundRect(bx,by,barW2,barH,2);x.fill();x.fillStyle=INK;x.font="bold 9px Inter,sans-serif";x.textAlign="center";x.fillText(v,bx+barW2/2,by-4);if(last10[i].opp){x.fillStyle=MUTE;x.font="7px Inter,sans-serif";x.fillText(last10[i].opp,bx+barW2/2,sparkY+sparkH+12);}});x.textAlign="left";
@@ -1107,6 +1321,7 @@ function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,fo
             x.fillStyle=INK;x.fillRect(0,H-44,W,44);x.fillStyle=MUTE;x.font="9px Inter,sans-serif";x.textAlign="center";x.fillText("Data: ESPN · American Soccer Analysis · MLS Official (Opta)",W/2,H-20);x.textAlign="left";
             const link=document.createElement("a");link.download=`${p.name.replace(/\s+/g,"-").toLowerCase()}-ufi-card.png`;link.href=c.toDataURL("image/png");link.click();
           }} style={{background:"none",border:`1px solid ${T.border}`,color:T.textDim,padding:"7px 16px",borderRadius:0,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.3,transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gold} onMouseLeave={e=>e.currentTarget.style.borderColor=T.border}>↓ Player Card</button>
+          <CardButton label="Wide card" onClick={()=>cardPlayer(p)}/>
           {onCompare&&<button onClick={()=>{onCompare(p);onClose();}} disabled={isInCompare} style={{background:isInCompare?"transparent":T.bg,border:`1px solid ${isInCompare?T.borderLt:T.accent}`,color:isInCompare?T.textMute:T.accent,padding:"7px 16px",borderRadius:0,cursor:isInCompare?"default":"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,opacity:isInCompare?.5:1}}>{isInCompare?"In Compare":"+ Compare"}</button>}
           <button onClick={onClose} style={{background:T.ink,border:"none",color:T.bg,padding:"7px 20px",borderRadius:0,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,letterSpacing:.5}}>Close</button>
         </div>
@@ -1246,6 +1461,7 @@ function MLSAnalytics(){
       if(!res.ok)throw new Error(`Server returned ${res.status}`);
       setLoadProgress(50);
       const cache=await res.json();
+      DATA_GENERATED=cache.generated||null;
       setCacheMeta({generated:cache.generated||null,sources:cache.dataSources||[],players:(cache.players||[]).length,season:cache.season||season});
       fetch("./data/rank-history.json").then(r=>r.ok?r.json():null).then(h=>setRankHistory(Array.isArray(h)?h:null)).catch(()=>setRankHistory(null));
       fetch("./data/pipeline-status.json").then(r=>r.ok?r.json():null).then(s=>setPipeStatus(s&&typeof s==="object"?s:null)).catch(()=>setPipeStatus(null));
@@ -1336,19 +1552,7 @@ function MLSAnalytics(){
     // REAL DATA PATH: if player has match-level data, compute per-game ratings
     if(log.length>=2){
       return log.map((m,i)=>{
-        // Per-game rating: base 55 + contributions from goals, assists, shots, clean behavior
-        let rating=55;
-        rating+=(m.g||0)*12; // goals are huge
-        rating+=(m.a||0)*8;  // assists
-        rating+=(m.sot||0)*2; // shots on target
-        rating+=(m.sh||0)*0.5; // shots
-        rating-=(m.fl||0)*1; // fouls hurt
-        rating-=(m.yc||0)*3; // yellow cards
-        rating-=(m.rc||0)*10; // red cards
-        // Minutes bonus: full 90 = +3, sub appearance = +1
-        rating+=(m.mins||0)>=80?3:(m.mins||0)>=45?2:1;
-        // Clamp
-        rating=Math.round(Math.max(42,Math.min(99,rating)));
+        const rating=matchRating(m,p.position); // shared, position-aware
         const dt=m.date?new Date(m.date):null;
         const label=dt?`${dt.getMonth()+1}/${dt.getDate()}`:`GW${i+1}`;
         return{match:i+1,grade:rating,label,date:m.date,opp:m.opp||"?",ha:m.ha||"",g:m.g||0,a:m.a||0,mins:m.mins||0};
@@ -1945,9 +2149,8 @@ function MLSAnalytics(){
           const leadArticle=sortedArt[0]||null;const restArticles=sortedArt.slice(1,3);
           const leadTeam=(enrichedTeams||[]).find(t=>t.count>0)||enrichedTeams[0];
           const completed=[...matchesData].filter(m=>m.completed).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,8);
-          const rateGame=(m)=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));};
           const movers=graded.filter(p=>p.matchLog&&p.matchLog.length>=2).map(p=>{
-            const rs=p.matchLog.map(rateGame);const rec=rs.slice(-2),pri=rs.slice(0,-2).length?rs.slice(0,-2):rs.slice(0,1);
+            const rs=p.matchLog.map(m=>matchRating(m,p.position));const rec=rs.slice(-2),pri=rs.slice(0,-2).length?rs.slice(0,-2):rs.slice(0,1);
             const d=(rec.reduce((a,b)=>a+b,0)/rec.length)-(pri.reduce((a,b)=>a+b,0)/pri.length);
             return Object.assign({},p,{delta:+d.toFixed(1)});
           }).filter(Boolean);
@@ -2033,9 +2236,9 @@ function MLSAnalytics(){
                 <div>
                   {colHead(slateTitle)}
                   {slate.length?slate.map((m,i)=>(
-                    <div key={i} style={Object.assign({},rowStyle,{color:T.text})}>
+                    <div key={i} style={Object.assign({},rowStyle,{color:T.text,alignItems:"center"})}>
                       <span>{m.home}{upcoming.length?" v ":` ${m.homeScore||0}\u2013${m.awayScore||0} `}{m.away}</span>
-                      <span style={{color:T.textMute}}>{fmtD(m.date)}</span>
+                      <span style={{color:T.textMute,display:"flex",alignItems:"center",gap:8}}>{fmtD(m.date)}{upcoming.length>0&&<button title="Download match preview card" aria-label={"Download preview card for "+m.home+" v "+m.away} onClick={()=>{const st={};standingsData.forEach(s=>{st[s.team]=s;});const teams=enrichedTeams.map(t=>{const s=st[t.abbr]||{};return{...t,pts:s.pts,w:s.w,dr:s.d,l:s.l};});cardMatchPreview({m,teams,logos:teamLogos,matches:matchesData});}} style={{background:"none",border:`1px solid ${T.borderLt}`,color:T.textDim,width:22,height:20,padding:0,cursor:"pointer",fontFamily:T.mono,fontSize:11,lineHeight:1,borderRadius:0}}>{"\u2193"}</button>}</span>
                     </div>)):<div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim}}>Nothing on the wire.</div>}
                 </div>
                 <div>
@@ -2200,7 +2403,7 @@ function MLSAnalytics(){
             </div>}
             {filtered.map((p,i)=>isMobile?<MobilePlayerCard key={p.id} p={p} i={i} onOpen={()=>setSel(p)}/>:<div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"grid",gridTemplateColumns:tbl,alignItems:"center",padding:isMobile?"12px 10px":"16px 14px",minHeight:isMobile?44:56,borderBottom:`1px solid ${T.borderLt}`,background:i%2===0?"transparent":T.surface,alignItems:"center",cursor:"pointer",animation:`fadeUp .25s ease both`,animationDelay:`${Math.min(i*12,250)}ms`}}>
               <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:i<3?T.accent:T.textMute,textAlign:"center"}}>{i+1}</div>
-              <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0,flex:1}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div>{!isMobile&&p.matchLog?.length>=2&&<MiniSparkline matchLog={p.matchLog} w={48} h={16}/>}</div>
+              <div style={{display:"flex",alignItems:"center",gap:isMobile?6:12,marginLeft:isMobile?0:6,minWidth:0}}><TeamBadge abbr={p.team} size={isMobile?24:36} logo={p.teamLogo}/><div style={{minWidth:0,flex:1}}><div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:20,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{shortName(p.name)}</div><div style={{fontSize:isMobile?10:14,color:T.textDim,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.position} · {p.team}</div></div>{!isMobile&&p.matchLog?.length>=2&&<MiniSparkline matchLog={p.matchLog} pos={p.position} w={48} h={16}/>}</div>
               <div style={{textAlign:"center"}}>{p.rated===false||p.overall==null?<span style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.textMute}}>NR</span>:<span style={{display:"inline-flex",flexDirection:"column",alignItems:"center"}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:isMobile?20:28,color:T.ink,lineHeight:1,letterSpacing:-.5}}>{Math.round(p.overall)}</span><span style={{width:isMobile?20:26,height:3,background:gc(p.overall),marginTop:4,display:"block"}}></span></span>}</div>
               <div style={{fontSize:isMobile?11:13,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono,fontWeight:500}}>{p.age||"—"}</div>
               <div style={{fontFamily:T.mono,fontWeight:500,fontSize:isMobile?12:14,color:T.textDim,textAlign:"center"}}>{p.goals}</div>
@@ -2279,8 +2482,7 @@ function MLSAnalytics(){
               }).map(p=>{
                 const pl=players.find(x=>x.id===p.id);
                 const logs=pl.matchLog;
-                const rateGame=(m)=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));};
-                const allRatings=logs.map(rateGame);
+                const allRatings=logs.map(m=>matchRating(m,pl.position));
                 const recent=allRatings.slice(-2);
                 const prior=allRatings.slice(0,-2);
                 if(prior.length<1)return null;
@@ -2893,6 +3095,7 @@ function MLSAnalytics(){
                   <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>Power Rankings</div>
                   <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Composite score: 50% points + 30% team grade + 20% recent form \u00b7 {moveLabel}</div>
                 </div>
+                <CardButton label="Share card" onClick={()=>cardPowerRankings({rows:powerRanked,moveLabel:snapWk?"movement since "+fmtET(snapWk.date):"arrows vs points table",logos:teamLogos})}/>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:0}}>
                 {powerRanked.slice(0,12).map((t,i)=>(
@@ -3172,11 +3375,7 @@ function MLSAnalytics(){
               (pl.matchLog||[]).forEach(m=>{
                 if(!m.date)return;
                 const dateKey=m.date.slice(0,10);
-                let rating=55;
-                rating+=(m.g||0)*12;rating+=(m.a||0)*8;rating+=(m.sot||0)*2;
-                rating+=(m.sh||0)*0.5;rating-=(m.fl||0)*1;rating-=(m.yc||0)*3;
-                rating-=(m.rc||0)*10;rating+=(m.mins||0)>=80?3:(m.mins||0)>=45?2:1;
-                rating=Math.max(42,Math.min(99,Math.round(rating)));
+                const rating=matchRating(m,pl.position);
                 allLogs.push({player:pl,dateKey,rating,...m});
               });
             });
@@ -3229,6 +3428,7 @@ function MLSAnalytics(){
                   <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>Best per-match ratings · Matchweek {weekIdx+1} · {weekLabel}</div>
                 </div>
                 <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  {topUnique.length>0&&<CardButton label="Player of the Week card" onClick={()=>cardTOTW({spot:topUnique[0],xi:totwXi,weekLabel,weekNo:weekIdx+1})}/>}
                   <button onClick={()=>setTotwWeek(Math.max(1,weekIdx))} disabled={weekIdx<=0} style={{background:"none",border:`1px solid ${weekIdx<=0?T.borderLt:T.border}`,borderRadius:0,color:weekIdx<=0?T.textMute:T.ink,width:28,height:28,cursor:weekIdx<=0?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>‹</button>
                   <span style={{fontFamily:T.mono,fontSize:12,fontWeight:600,color:T.textDim,minWidth:50,textAlign:"center"}}>MW {weekIdx+1}</span>
                   <button onClick={()=>setTotwWeek(Math.min(weeks.length,weekIdx+2))} disabled={weekIdx>=weeks.length-1} style={{background:"none",border:`1px solid ${weekIdx>=weeks.length-1?T.borderLt:T.border}`,borderRadius:0,color:weekIdx>=weeks.length-1?T.textMute:T.ink,width:28,height:28,cursor:weekIdx>=weeks.length-1?"default":"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:T.sans}}>›</button>
@@ -3281,8 +3481,7 @@ function MLSAnalytics(){
           {leadersView==="movers"&&(()=>{
             const withForm=players.filter(p=>p.matchLog&&p.matchLog.length>=5).map(p=>{
               const logs=p.matchLog;
-              const rateGame=(m)=>{let r=55;r+=(m.g||0)*12;r+=(m.a||0)*8;r+=(m.sot||0)*2;r+=(m.sh||0)*.5;r-=(m.fl||0)*1;r-=(m.yc||0)*3;r-=(m.rc||0)*10;r+=(m.mins||0)>=80?3:1;return Math.max(42,Math.min(99,Math.round(r)));};
-              const allRatings=logs.map(rateGame);
+              const allRatings=logs.map(m=>matchRating(m,p.position));
               const last5=allRatings.slice(-5);
               const seasonAvg=Math.round(allRatings.reduce((s,v)=>s+v,0)/allRatings.length);
               const formAvg=Math.round(last5.reduce((s,v)=>s+v,0)/last5.length);
@@ -3301,6 +3500,7 @@ function MLSAnalytics(){
                     <div style={{fontFamily:T.display,fontWeight:700,fontSize:16,color:T.ink}}>Heating Up</div>
                     <div style={{fontSize:9,color:T.textMute,fontFamily:T.sans}}>Last 5 matches well above season average</div>
                   </div>
+                  <div style={{marginLeft:"auto"}}><CardButton small label="Movers card" onClick={()=>cardMovers({heating,cooling})}/></div>
                 </div>
                 {heating.map((p,i)=>(
                   <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:"10px 18px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer"}}>
