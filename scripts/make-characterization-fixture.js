@@ -13,7 +13,7 @@ const { execSync } = require("child_process");
 
 const args = process.argv.slice(2);
 let srcPath = args.includes("--src") ? args[args.indexOf("--src") + 1] : null;
-if (!srcPath) { srcPath = "/tmp/usfi-prerewritten.js"; execSync(`node scripts/split-source.js --dry --emit-src ${srcPath}`, { stdio: "pipe" }); }
+if (!srcPath) { srcPath = path.join(require("os").tmpdir(), "usfi-prerewritten.js"); execSync(`node scripts/split-source.js --dry --emit-src ${srcPath}`, { stdio: "pipe" }); }
 const src = fs.readFileSync(srcPath, "utf8");
 
 function extract(fn) { const i = src.indexOf("function " + fn + "("); if (i < 0) throw new Error(fn + " not found"); let d = 0, j = src.indexOf("{", i); for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } } }
