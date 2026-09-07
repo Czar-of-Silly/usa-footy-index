@@ -23,6 +23,8 @@ const SECTIONS = {
   "/season": "/season-ratings",
   "/defense": ["MLS Defensive Grades", "Defensive grades, tackles, aerials, pressures and clearances for every MLS player."],
   "/passing": ["MLS Passing Grades", "Passing grades, completion vs expected, progressive and final-third passing for every MLS player."],
+  "/methodology": ["Methodology & Data Status \u2014 How the Index Works", "How USA Footy Index grades MLS players: per-90 rates, shrinkage, percentile ranks, position weights, the 42\u201399 scale, team grade vs table vs power rank, sources, update schedule and limitations."],
+  "/data-status": "/methodology", "/about-the-index": "/methodology",
 };
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 

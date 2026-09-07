@@ -103,9 +103,9 @@ function pickWeekAgo(hist,generated){if(!Array.isArray(hist)||!hist.length)retur
 // ─── ROUTES (Phase 3) ─────────────────────────────────────────────────
 // slugify must stay identical to build-routes.js (server-side) so /players/<slug> resolves the same player.
 function slugify(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");}
-const ROUTE_PATHS={front:"/",ask:"/ask",players:"/players",season:"/season-ratings",defense:"/defense",passing:"/passing",teams:"/teams",rankings:"/power-rankings",leaders:"/leaders",valuations:"/values",positions:"/positions",compare:"/compare",trade:"/trade-machine",matchup:"/matchup"};
+const ROUTE_PATHS={front:"/",ask:"/ask",players:"/players",season:"/season-ratings",defense:"/defense",passing:"/passing",teams:"/teams",rankings:"/power-rankings",leaders:"/leaders",valuations:"/values",positions:"/positions",compare:"/compare",trade:"/trade-machine",matchup:"/matchup",methodology:"/methodology"};
 const PATH_TABS=Object.fromEntries(Object.entries(ROUTE_PATHS).map(([k,v])=>[v,k]));
-PATH_TABS["/table"]="rankings";PATH_TABS["/standings"]="rankings";PATH_TABS["/valuations"]="valuations";PATH_TABS["/trade"]="trade";PATH_TABS["/season"]="season";
+PATH_TABS["/table"]="rankings";PATH_TABS["/standings"]="rankings";PATH_TABS["/valuations"]="valuations";PATH_TABS["/trade"]="trade";PATH_TABS["/season"]="season";PATH_TABS["/data-status"]="methodology";PATH_TABS["/about-the-index"]="methodology";
 const SITE_TITLE="USA Footy Index \u2014 MLS Player Analytics & Grades for Every Player";
 const MLS_TEAMS = [
   {abbr:"ATL",name:"Atlanta United FC",conf:"Eastern",c1:"#80000A",c2:"#221F1F"},
@@ -1008,6 +1008,97 @@ function MyClubDesk({abbr,teams,standings,matches,players,logos,isMobile,onChang
       </div>
     </div>
   </section>;
+}
+
+// ─── METHODOLOGY & DATA STATUS (Phase 4e) ─────────────────────────────
+// Next scheduled data refresh: cron '0 11 * * 0,3,4,6' (Sun/Wed/Thu/Sat 11:00 UTC)
+function nextRefreshUTC(from){const days=[0,3,4,6];const d=new Date(from||Date.now());for(let i=0;i<8;i++){const c=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+i,11,0,0));if(c>d&&days.includes(c.getUTCDay()))return c;}return null;}
+function MethodologyView({cacheMeta,pipeStatus,rankHistory,players,teams,isMobile,onTab,onGrading}){
+  const gen=cacheMeta&&cacheMeta.generated?Date.parse(cacheMeta.generated):null;
+  const ageH=gen?Math.round((Date.now()-gen)/36e5):null;
+  const graded=players.filter(p=>p.rated!==false&&p.overall!=null).length;
+  const departed=players.filter(p=>p.departed).length;
+  const withMV=players.filter(p=>+p.marketValue>0).length;
+  const withLog=players.filter(p=>p.matchLog&&p.matchLog.length>=5).length;
+  const snaps=Array.isArray(rankHistory)?rankHistory:[];
+  const nxt=nextRefreshUTC();
+  const steps=pipeStatus&&pipeStatus.steps?pipeStatus.steps:null;
+  const stale=ageH!=null&&ageH>96;
+  const H=(t,id)=><h3 id={id} style={{fontFamily:T.display,fontWeight:700,fontSize:isMobile?22:26,color:T.ink,margin:"34px 0 10px",lineHeight:1.15,scrollMarginTop:80}}>{t}</h3>;
+  const P=(c)=><p style={{fontFamily:T.serif,fontSize:15,lineHeight:1.65,color:T.text,margin:"0 0 12px"}}>{c}</p>;
+  const K=(c)=><code style={{fontFamily:T.mono,fontSize:12.5,background:T.card,padding:"1px 5px",border:`1px solid ${T.borderLt}`}}>{c}</code>;
+  const Row=(l,v,ok)=><div style={{display:"flex",justifyContent:"space-between",gap:12,padding:"7px 0",borderBottom:`1px dotted ${T.borderLt}`,fontFamily:T.mono,fontSize:12}}><span style={{color:T.textDim}}>{l}</span><span style={{color:ok===false?T.red:ok===true?T.green:T.ink,fontWeight:700,textAlign:"right"}}>{v}</span></div>;
+  const W=(rows)=><div style={{overflowX:"auto"}}><table style={{borderCollapse:"collapse",width:"100%",fontFamily:T.mono,fontSize:12,margin:"6px 0 12px"}}><thead><tr>{["Position","Attack","Creativity","Goals Added","Carrying","Passing","Defense"].map(h=><th key={h} style={{textAlign:h==="Position"?"left":"right",padding:"6px 8px",borderBottom:`2px solid ${T.ink}`,fontWeight:700,fontSize:10,letterSpacing:1,color:T.textDim}}>{h.toUpperCase()}</th>)}</tr></thead><tbody>{rows.map(r=><tr key={r[0]}>{r.map((c,i)=><td key={i} style={{textAlign:i?"right":"left",padding:"6px 8px",borderBottom:`1px dotted ${T.borderLt}`,fontWeight:i?400:700,color:T.ink}}>{i?(c*100).toFixed(0)+"%":c}</td>)}</tr>)}</tbody></table></div>;
+  const toc=[["status","Data status"],["grade","How a grade is built"],["weights","Position weights"],["gk","Goalkeepers"],["team","Team grade, table, power rank"],["form","Match ratings & form"],["articles","Articles"],["sources","Sources"],["schedule","Update schedule"],["limits","Limitations"]];
+  return <div style={{maxWidth:820,margin:"0 auto"}}>
+    <div style={{fontFamily:T.mono,fontSize:10,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:T.accent}}>Methodology {"·"} Data status</div>
+    <h2 style={{fontFamily:T.display,fontWeight:700,fontSize:isMobile?30:40,color:T.ink,margin:"6px 0 8px",lineHeight:1.05,letterSpacing:-.5}}>How the Index works</h2>
+    <p style={{fontFamily:T.serif,fontStyle:"italic",fontSize:16,color:T.textDim,margin:"0 0 18px"}}>What the numbers mean, where they come from, when they update, and where they fall short.</p>
+    <nav aria-label="On this page" style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:6}}>{toc.map(([id,l])=><a key={id} href={"#"+id} onClick={e=>{e.preventDefault();const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}} style={{fontFamily:T.mono,fontSize:10.5,letterSpacing:.5,color:T.ink,border:`1px solid ${T.border}`,padding:"4px 9px",textDecoration:"none",background:T.card}}>{l}</a>)}</nav>
+
+    {H("Data status","status")}
+    <div style={{border:`1px solid ${stale?T.red:T.border}`,background:T.surface,padding:isMobile?"12px 14px":"14px 18px"}}>
+      {Row("Last successful update",gen?fmtETTime(gen)+(ageH!=null?` (${ageH<1?"under an hour":ageH+" h"} ago)`:""):"—",gen?!stale:false)}
+      {Row("Players in the record",cacheMeta?String(cacheMeta.players):"—")}
+      {Row("Players graded (minutes > 0)",String(graded))}
+      {Row("Players with 5+ match logs",String(withLog))}
+      {Row("Players with a market value",String(withMV))}
+      {Row("Flagged departed",String(departed))}
+      {Row("Clubs graded",String(teams.filter(t=>t.overall!=null).length)+" / 30")}
+      {Row("Sources on last run",cacheMeta&&cacheMeta.sources&&cacheMeta.sources.length?cacheMeta.sources.join(" · "):"—",cacheMeta?cacheMeta.sources.length>=3:null)}
+      {steps&&Object.entries(steps).map(([k,v])=>Row("Pipeline · "+k,v+(k==="articles"&&pipeStatus.articleReasonLabel?" — "+pipeStatus.articleReasonLabel:""),v==="ok"))}
+      {Row("Ranking snapshots on file",snaps.length?`${snaps.length} (since ${fmtET(snaps[0].date)})`:"none yet")}
+      {Row("Next scheduled refresh",nxt?fmtETTime(nxt):"—")}
+    </div>
+    {P(<>The masthead shows the same update time. If the record is more than four days old, or a source fails, a warning strip appears at the top of every page rather than presenting stale numbers as current.</>)}
+
+    {H("How a grade is built","grade")}
+    {P(<><b>1. Rates, not totals.</b> Every counting stat is converted to a per-90 rate so a 1,200-minute player and a 2,400-minute player are judged on the same footing.</>)}
+    {P(<><b>2. Shrinkage toward the league.</b> Small samples are pulled toward the league mean: {K("rate′ = (rate × n90 + mean × 8) / (n90 + 8)")}. A player with two games is mostly league-average until he proves otherwise; after twenty games the shrinkage barely registers. Anyone with zero minutes is treated as having 90.</>)}
+    {P(<><b>3. Percentile ranks.</b> Each shrunk rate is ranked against every outfield player in the record (goalkeepers against goalkeepers). Sub-grades — Attack, Passing, Defense, Creativity, Carrying, and a Goals Added component — are weighted blends of those percentiles.</>)}
+    {P(<><b>4. A position-weighted composite.</b> The sub-grades are combined with weights that depend on position (table below), then that composite is ranked <i>within the position</i>, so a centre-back is graded against centre-backs.</>)}
+    {P(<><b>5. The 42–99 scale.</b> The within-position rank is mapped with {K("grade = 42 + rank^1.5 × 57")}. The exponent makes the top of the scale steep: 99 is reserved for the very best at a position, the median lands in the mid-60s, and nobody who has played scores below 42. Grades are recomputed from scratch on every update, so they can move even when a player doesn't play — the pool moved.</>)}
+    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button onClick={onGrading} style={{background:"none",border:`1px solid ${T.border}`,padding:"6px 12px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.accent,borderRadius:0}}>Open the sub-grade definitions</button><button onClick={()=>onTab("players")} style={{background:"none",border:`1px solid ${T.border}`,padding:"6px 12px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.textDim,borderRadius:0}}>See the grades {"→"}</button></div>
+
+    {H("Position weights","weights")}
+    {W([["Forward",.30,.20,.25,.10,.10,.05],["Midfielder",.15,.20,.20,.10,.20,.15],["Defender",.05,.10,.25,.10,.20,.30]])}
+    {P(<>Forwards are judged first on attacking output and creation; defenders on defensive actions and their Goals Added; midfielders on a balanced mix with passing and creativity carrying the most weight. Goals Added (from American Soccer Analysis) is the one component every position shares because it values actions by how much they change scoring probability, whoever performs them.</>)}
+
+    {H("Goalkeepers","gk")}
+    {P(<>Keepers live in their own pool. Shot-stopping uses Opta's goals-prevented efficiency and saves per 90 with clean-sheet rate; distribution uses passing performance, completion and difficult-pass share. The composite is ranked among keepers and mapped to the same 42–99 look with a slightly different curve so the best keeper can still reach 99.</>)}
+
+    {H("Team grade, points table, power rank","team")}
+    {P(<>These are three different questions and the site keeps them apart on purpose.</>)}
+    {P(<><b>Team grade</b> is the minutes-weighted average of the roster's Overall grades (departed players excluded). It measures the <i>quality of the players who actually play</i> — it knows nothing about results.</>)}
+    {P(<><b>The table</b> is the official standings: points, goal difference, goals for. It measures results, whoever produced them.</>)}
+    {P(<><b>Power rank</b> blends the two with recent form: {K("50% points share + 30% team grade + 20% last-five form")}. It is the site's ranking of who is strongest <i>right now</i>.</>)}
+    {P(<>They disagree often, and that is information: a club with the best grade and a mid-table record is underperforming its talent, or its best players are missing. The front page labels its lead as a <b>Team Grade Leader</b> for exactly this reason; the Power Rankings live on the Table tab. Movement arrows on the Table only show week-over-week change once a genuine prior snapshot exists ({snaps.length} on file); until then they compare against the points table and say so.</>)}
+
+    {H("Match ratings & form","form")}
+    {P(<>Player pages show a rating for each match. This is a <b>box-score production proxy</b>, not the Index grade: goals, assists, shots, discipline and minutes; defenders and keepers are also credited for clean sheets and debited for goals conceded while on the pitch. It exists to show direction — form panels, Risers &amp; Fallers, Team of the Week — and the same function feeds every one of those, so a player's form means the same thing everywhere. Match previews add a clearly labelled <i>projection</i> built from the grade gap, points per game and a fixed home-advantage term; it is boxed and marked as an estimate, and it is the only number on the site that is not a measurement.</>)}
+
+    {H("Articles","articles")}
+    {P(<>Front-page briefs are generated from a fact packet built out of the record — results, races, standings, verified roster moves — by a language model that is instructed to use only those facts and to search the web before naming any transfer destination. Every brief then passes a validator that checks each player name against the record and rejects speculation. Only approved briefs are shown; anything the validator holds back stays out of sight. A brief also expires: nothing older than seven days, or more than seven days behind the data it sits next to, is displayed. If generation fails, the pipeline status above says why.</>)}
+
+    {H("Sources","sources")}
+    {P(<><b>ESPN</b> — rosters, standings, schedule, box scores (goals, assists, shots, fouls, cards, saves), headshots and club logos. <b>American Soccer Analysis</b> — expected goals and assists, Goals Added, expected passing, salaries. <b>MLS Official (Opta)</b> — chances created, key passes, aerials, clearances, pressures, goalkeeper save quality and distribution. <b>MLS Players Association</b> — the salary guide. <b>Transfermarkt</b> — market values, refreshed weekly and carried forward from a cached file when the live source is unreachable.</>)}
+    {P(<>The Index is independent and not affiliated with Major League Soccer, its clubs, or any data provider.</>)}
+
+    {H("Update schedule","schedule")}
+    {P(<>The record refreshes the morning after each MLS match day: <b>Sunday, Wednesday, Thursday and Saturday at 7:00 AM ET</b>. Each run re-fetches every source, validates the cache (bad dates, duplicates, missing fields, impossible tables and fixtures wrongly marked upcoming all block the publish), snapshots the rankings, regenerates player and match pages, rebuilds the sitemap and then attempts the briefs. A separate Tuesday job drafts the newsletter. Next refresh: <b>{nxt?fmtETTime(nxt):"—"}</b>.</>)}
+
+    {H("Limitations","limits")}
+    <ul style={{fontFamily:T.serif,fontSize:15,lineHeight:1.65,color:T.text,paddingLeft:22,margin:"0 0 12px"}}>
+      <li>Grades are relative. A 75 is a 75 against this season's pool, not an absolute standard, and the pool moves every update.</li>
+      <li>Low-minute players are shrunk hard toward the mean; their grades are placeholders until they play.</li>
+      <li>Match ratings are a proxy from box-score events. Off-ball work, positioning and errors that don't produce an event are invisible to them.</li>
+      <li>Not every player has every source. Where a provider has no row for a player, that component falls back to the league mean rather than zero, and the player page shows a dash instead of a number.</li>
+      <li>Market values cover most regular starters but not every squad player; ages come from roster feeds and may be approximate.</li>
+      <li>Postponed and suspended fixtures stay on the schedule with their original date and are labelled as such.</li>
+      <li>The projection on match previews does not use injuries, lineups, travel or odds.</li>
+    </ul>
+    <div style={{marginTop:24,padding:"12px 14px",border:`1px dashed ${T.border}`,fontFamily:T.serif,fontStyle:"italic",fontSize:13,color:T.textDim}}>Found a number that looks wrong? The fastest fix is a note with the player or club and the page it appears on — every figure here can be traced to a source row.</div>
+  </div>;
 }
 
 function MiniSparkline({matchLog,pos,w=40,h=14}){
@@ -1967,6 +2058,7 @@ function MLSAnalytics(){
     if(sel)return `${sel.name} \u2014 ${sel.position}, ${sel.teamName||sel.team}${sel.overall!=null?" \u00b7 Grade "+Math.round(sel.overall):""} | USA Footy Index`;
     if(tab==="teams"&&expandTeam){const t=MLS_TEAMS.find(x=>x.abbr===expandTeam);return `${t?t.name:expandTeam} \u2014 Team Grade & Roster | USA Footy Index`;}
     if(tab==="matchup"&&matchup){const n=(ab)=>{const t=MLS_TEAMS.find(x=>x.abbr===ab);return t?t.name:ab;};return `${n(matchup.home)} v ${n(matchup.away)} \u2014 Match Preview | USA Footy Index`;}
+    if(tab==="methodology")return "Methodology & Data Status \u2014 How the Index Works | USA Footy Index";
     if(tab==="front")return SITE_TITLE;
     const l=(TABS.find(x=>x.id===tab)||{}).l||"";return `${l.replace(/ \(\d+\)$/,"")} \u2014 MLS | USA Footy Index`;
   };
@@ -2058,7 +2150,7 @@ function MLSAnalytics(){
             const srcOk=cacheMeta&&Array.isArray(cacheMeta.sources)&&cacheMeta.sources.length>=3;
             const graded=players&&players.length?players.filter(p=>p.rated).length||players.length:0;
             const txt=Number.isFinite(gen)?("Updated "+fmtETTime(gen)+" \u00b7 "+graded+" players graded \u00b7 "+(srcOk?"Data sources healthy":"Sources: "+((cacheMeta&&cacheMeta.sources)||[]).join(", ")||"unknown")):"Loading the record\u2026";
-            return <span title={cacheMeta&&cacheMeta.sources?"Sources: "+cacheMeta.sources.join(", "):""} style={{color:(ageDays!=null&&ageDays>4)||!srcOk?T.red:T.textDim}}>{txt}</span>;
+            return <span role="link" tabIndex={0} onClick={()=>goTab("methodology")} onKeyDown={e=>{if(e.key==="Enter")goTab("methodology");}} title={cacheMeta&&cacheMeta.sources?"Sources: "+cacheMeta.sources.join(", ")+" \u2014 open data status":"Open data status"} style={{color:(ageDays!=null&&ageDays>4)||!srcOk?T.red:T.textDim,cursor:"pointer",textDecoration:"underline dotted",textUnderlineOffset:3}}>{txt}</span>;
           })()}
           <span>{new Date().toLocaleDateString("en-US",{timeZone:ET,weekday:"long",month:"long",day:"numeric"})}</span>
         </div>
@@ -2086,6 +2178,7 @@ function MLSAnalytics(){
             {!loading&&<PlayerSearch players={players} onSelect={p=>setSel(p)}/>}
             <button onClick={()=>setShowGrading(true)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:0,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.accent,letterSpacing:.5,transition:"border-color .2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=T.border}>How We Grade</button>
             <button onClick={()=>setShowAbout(true)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:0,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.textDim,letterSpacing:.5}}>About</button>
+            <button onClick={()=>goTab("methodology")} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:0,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:11,color:T.textDim,letterSpacing:.5}}>Methodology</button>
             <MyClubPicker value={myClub} onChange={setMyClub} compact/>
             
           </div>
@@ -2281,6 +2374,7 @@ function MLSAnalytics(){
         <div style={{display:"flex",gap:8,marginTop:12}}>
           <button onClick={()=>{setMoreOpen(false);setShowGrading(true);}} style={{flex:1,background:"none",border:`1px solid ${T.border}`,padding:"10px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,color:T.accent,borderRadius:0}}>How We Grade</button>
           <button onClick={()=>{setMoreOpen(false);setShowAbout(true);}} style={{flex:1,background:"none",border:`1px solid ${T.border}`,padding:"10px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,color:T.textDim,borderRadius:0}}>About</button>
+          <button onClick={()=>{setMoreOpen(false);goTab("methodology");}} style={{flex:1,background:"none",border:`1px solid ${T.border}`,padding:"10px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,color:T.textDim,borderRadius:0}}>Methodology</button>
         </div>
       </BottomSheet>
 
@@ -2290,7 +2384,7 @@ function MLSAnalytics(){
       </BottomSheet>
 
       <main style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px"}}>
-        {!loading&&<h2 className="sr-only">{(TABS.find(x=>x.id===tab)||{}).l||(tab==="matchup"?"Match Preview":"Section")}</h2>}
+        {!loading&&<h2 className="sr-only">{(TABS.find(x=>x.id===tab)||{}).l||(tab==="matchup"?"Match Preview":tab==="methodology"?"Methodology":"Section")}</h2>}
         {/* Loading */}
         {loading&&<div style={{padding:"64px 0",textAlign:"center",animation:"fadeUp .5s ease"}}>
           <style>{`
@@ -2512,7 +2606,7 @@ function MLSAnalytics(){
                     <span style={{fontWeight:700,color:T.blue}}>{t.overall}</span>
                   </div>;
                 })}
-                <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12.5,color:T.textDim,marginTop:12,marginBottom:34,lineHeight:1.5}}>Minutes-weighted composite team grades. Every player counted. <span onClick={()=>setTab("rankings")} style={{color:T.accent,cursor:"pointer",fontStyle:"normal",fontFamily:T.mono,fontSize:10,letterSpacing:"0.1em",textTransform:"uppercase"}}>Power Rankings are on the Table tab \u2192</span></div>
+                <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12.5,color:T.textDim,marginTop:12,marginBottom:34,lineHeight:1.5}}>Minutes-weighted composite team grades. Every player counted. <span onClick={()=>setTab("rankings")} style={{color:T.accent,cursor:"pointer",fontStyle:"normal",fontFamily:T.mono,fontSize:10,letterSpacing:"0.1em",textTransform:"uppercase"}}>Power Rankings are on the Table tab {"\u2192"}</span></div>
                 {(()=>{
                   const fw=[...graded].filter(p=>p.position==="FW").sort((a,b)=>b.overall-a.overall)[0]||sortedG[0];
                   const gk=[...graded].filter(p=>(p.saves||0)>0).sort((a,b)=>(b.saves||0)-(a.saves||0))[0];
@@ -4088,6 +4182,9 @@ function MLSAnalytics(){
         </div>;})()}
 
         {/* ═══ COMPARE TAB ═══════════════════════════════════════════════════ */}
+        {/* ═══ METHODOLOGY & DATA STATUS (Phase 4e) ═══ */}
+        {!loading&&tab==="methodology"&&<MethodologyView cacheMeta={cacheMeta} pipeStatus={pipeStatus} rankHistory={rankHistory} players={players} teams={enrichedTeams} isMobile={isMobile} onTab={goTab} onGrading={()=>setShowGrading(true)}/>}
+
         {/* ═══ MATCHUP PREVIEW (Phase 4c) ═══ */}
         {!loading&&tab==="matchup"&&matchup&&<MatchupView home={matchup.home} away={matchup.away} teams={enrichedTeams} standings={standingsData} matches={matchesData} players={players} logos={teamLogos} isMobile={isMobile}
           onPlayer={p=>setSel(p)} onTeam={ab=>{setExpandTeam(ab);setTeamLevel(1);goTab("teams");}}
