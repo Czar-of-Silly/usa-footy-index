@@ -98,7 +98,7 @@ export function MethodologyView({cacheMeta,pipeStatus,rankHistory,players,teams,
       <li>Low-minute players are shrunk hard toward the mean; their grades are placeholders until they play.</li>
       <li>Players under 450 minutes are marked <b>PROV</b> (provisional) wherever grades are shown. This is a display label only — they remain in the same comparison pool and percentile calculations as everyone else, so a provisional grade is directly comparable to a non-provisional one; the tag just flags that the sample behind it is still small.</li>
       <li>Match ratings are a proxy from box-score events. Off-ball work, positioning and errors that don't produce an event are invisible to them.</li>
-      <li>Not every player has every source. Where a provider has no row for a player, that component falls back to the league mean rather than zero, and the player page shows a dash instead of a number.</li>
+      <li>Not every player has every source. For some inputs, unavailable data can still be difficult to distinguish from a recorded zero; this remains a disclosed limitation of the current model, and the player page shows a dash instead of a number where a source has no row at all.</li>
       <li>Market values cover most regular starters but not every squad player; ages come from roster feeds and may be approximate.</li>
       <li>Postponed and suspended fixtures stay on the schedule with their original date and are labelled as such.</li>
       <li>The projection on match previews does not use injuries, lineups, travel or odds.</li>
