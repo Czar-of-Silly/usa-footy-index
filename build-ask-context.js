@@ -16,24 +16,24 @@
  * next run automatically. Run from repo root (in the Action, after fetch).
  */
 
+// Phase 5.3: the engine lives in src/grading/engine.mjs (canonical). Loaded synchronously via createRequire
+// (Node ≥ 22.12 supports require(esm)); falls back to extracting from a source file for older Node.
+function loadEngine() {
+  const { createRequire } = require("module");
+  try { const e = createRequire(__filename)("./src/grading/engine.mjs"); if (e && e.computeGrades) return e; } catch (err) { /* older Node: fall through */ }
+  const fs = require("fs");
+  const src = fs.readFileSync("src/grading/engine.mjs", "utf8").replace(/^export\s+/gm, "");
+  const extract = (fn) => { const i = src.indexOf("function " + fn + "("); if (i < 0) throw new Error(fn + " not found"); let d = 0, j = src.indexOf("{", i); for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } } };
+  return eval(extract("pct") + "\n" + extract("normPos") + "\n" + extract("toG") + "\n" + extract("computeGrades") + "\n;({pct,normPos,computeGrades})");
+}
 const fs = require("fs");
 
 const IDX = "public/index.html";
 const CACHE = "public/data/mls-cache.json";
 const OUT = "public/data/ask-context.json";
-if (!fs.existsSync(IDX) || !fs.existsSync(CACHE)) { console.log("❌ Run from repo root after a fetch."); process.exit(1); }
+if (!fs.existsSync(CACHE)) { console.log("❌ Run from repo root after a fetch."); process.exit(1); }
 
-function extract(src, fn) {
-  const i = src.indexOf("function " + fn);
-  if (i < 0) throw new Error(fn + " not found in index.html");
-  let d = 0, j = src.indexOf("{", i);
-  for (let k = j; k < src.length; k++) {
-    if (src[k] === "{") d++;
-    else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); }
-  }
-}
-const src = fs.readFileSync(IDX, "utf8");
-const engine = eval(extract(src, "pct") + "\n" + extract(src, "normPos") + "\n" + extract(src, "computeGrades") + "\n;({pct,normPos,computeGrades})");
+const engine = loadEngine();
 
 const cache = JSON.parse(fs.readFileSync(CACHE, "utf8"));
 const ps = cache.players.filter(r => r && r.n && (r.m || 0) > 0).map((r, i) => {

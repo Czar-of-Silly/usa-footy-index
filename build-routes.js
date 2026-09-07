@@ -1,22 +1,24 @@
 // build-routes.js — emits public/data/routes.json and public/sitemap.xml from the cache.
 // Grades are computed with the live engine (same extraction as build-ask-context.js).
 // slugify is identical to the one in public/index.html — keep them in sync.
+// Phase 5.3: the engine lives in src/grading/engine.mjs (canonical). Loaded synchronously via createRequire
+// (Node ≥ 22.12 supports require(esm)); falls back to extracting from a source file for older Node.
+function loadEngine() {
+  const { createRequire } = require("module");
+  try { const e = createRequire(__filename)("./src/grading/engine.mjs"); if (e && e.computeGrades) return e; } catch (err) { /* older Node: fall through */ }
+  const fs = require("fs");
+  const src = fs.readFileSync("src/grading/engine.mjs", "utf8").replace(/^export\s+/gm, "");
+  const extract = (fn) => { const i = src.indexOf("function " + fn + "("); if (i < 0) throw new Error(fn + " not found"); let d = 0, j = src.indexOf("{", i); for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } } };
+  return eval(extract("pct") + "\n" + extract("normPos") + "\n" + extract("toG") + "\n" + extract("computeGrades") + "\n;({pct,normPos,computeGrades})");
+}
 const fs = require("fs");
 const IDX = "public/index.html", CACHE = "public/data/mls-cache.json";
-if (!fs.existsSync(IDX) || !fs.existsSync(CACHE)) { console.log("❌ Run from repo root after a fetch."); process.exit(1); }
+if (!fs.existsSync(CACHE)) { console.log("❌ Run from repo root after a fetch."); process.exit(1); }
 const SITE = "https://usfootyindex.com";
 const slugify = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
-function extract(src, fn) {
-  const i = src.indexOf("function " + fn);
-  if (i < 0) throw new Error(fn + " not found in index.html");
-  let d = 0, j = src.indexOf("{", i);
-  for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } }
-}
-const src = fs.readFileSync(IDX, "utf8");
-const engine = eval(extract(src, "pct") + "\n" + extract(src, "normPos") + "\n" + extract(src, "computeGrades") + "\n;({pct,normPos,computeGrades})");
-const teamsSrc = src.match(/const MLS_TEAMS = \[([\s\S]*?)\];/);
-const MLS_TEAMS = teamsSrc ? eval("[" + teamsSrc[1] + "]") : [];
+const engine = loadEngine();
+const MLS_TEAMS = (() => { try { return require("module").createRequire(__filename)("./src/data/teams.mjs").MLS_TEAMS; } catch (e) { const t = require("fs").readFileSync("src/data/teams.mjs", "utf8"); const m = t.match(/const MLS_TEAMS = \[([\s\S]*?)\];/); return m ? eval("[" + m[1] + "]") : []; } })();
 const cache = JSON.parse(fs.readFileSync(CACHE, "utf8"));
 
 const ps = cache.players.filter(r => r && r.n).map((r, i) => {

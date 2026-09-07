@@ -3,18 +3,21 @@
 // and the same power formula as the Table tab: 50% points + 30% team grade + 20% last-5 form.
 // The front end shows week-over-week arrows only when a snapshot >= 5 days old exists.
 // One entry per calendar day (ET); re-running on the same day replaces that day's entry.
+// Phase 5.3: the engine lives in src/grading/engine.mjs (canonical). Loaded synchronously via createRequire
+// (Node ≥ 22.12 supports require(esm)); falls back to extracting from a source file for older Node.
+function loadEngine() {
+  const { createRequire } = require("module");
+  try { const e = createRequire(__filename)("./src/grading/engine.mjs"); if (e && e.computeGrades) return e; } catch (err) { /* older Node: fall through */ }
+  const fs = require("fs");
+  const src = fs.readFileSync("src/grading/engine.mjs", "utf8").replace(/^export\s+/gm, "");
+  const extract = (fn) => { const i = src.indexOf("function " + fn + "("); if (i < 0) throw new Error(fn + " not found"); let d = 0, j = src.indexOf("{", i); for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } } };
+  return eval(extract("pct") + "\n" + extract("normPos") + "\n" + extract("toG") + "\n" + extract("computeGrades") + "\n;({pct,normPos,computeGrades})");
+}
 const fs = require("fs");
 const IDX = "public/index.html", CACHE = "public/data/mls-cache.json", OUT = "public/data/rank-history.json";
-if (!fs.existsSync(IDX) || !fs.existsSync(CACHE)) { console.log("❌ Run from repo root after a fetch."); process.exit(1); }
+if (!fs.existsSync(CACHE)) { console.log("❌ Run from repo root after a fetch."); process.exit(1); }
 
-function extract(src, fn) {
-  const i = src.indexOf("function " + fn);
-  if (i < 0) throw new Error(fn + " not found in index.html");
-  let d = 0, j = src.indexOf("{", i);
-  for (let k = j; k < src.length; k++) { if (src[k] === "{") d++; else if (src[k] === "}") { d--; if (d === 0) return src.slice(i, k + 1); } }
-}
-const src = fs.readFileSync(IDX, "utf8");
-const engine = eval(extract(src, "pct") + "\n" + extract(src, "normPos") + "\n" + extract(src, "computeGrades") + "\n;({pct,normPos,computeGrades})");
+const engine = loadEngine();
 const cache = JSON.parse(fs.readFileSync(CACHE, "utf8"));
 
 // same per-player shaping as build-ask-context.js

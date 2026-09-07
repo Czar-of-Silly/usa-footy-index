@@ -6,10 +6,12 @@
   "scripts": {
     "fetch": "node fetch-data.js",
     "start": "node server.js",
-    "dev": "node server.js",
+    "dev": "node build.js --dev",
     "test": "node --test \"test/*.test.js\"",
     "validate": "node validate-cache.js",
-    "check": "node validate-cache.js && node --test \"test/*.test.js\""
+    "check": "node validate-cache.js && node --test \"test/*.test.js\" && node build.js",
+    "build": "node build.js",
+    "make-fixture": "node scripts/make-characterization-fixture.js"
   },
   "dependencies": {
     "cheerio": "^1.2.0",
@@ -20,7 +22,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-react": "^7.28.5",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.24.0",
     "sharp": "^0.35.3"
   }
 }

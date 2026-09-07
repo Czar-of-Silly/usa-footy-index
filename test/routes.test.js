@@ -19,10 +19,7 @@ test("slugify parity between client and build-routes.js", () => {
   for (const n of ["Léo Afonso", "Kévin Denkey", "Dániel Gazdag", "Przemysław Płacheta", "Junior Alonso"]) assert.equal(server(n), E.slugify(n), n);
 });
 test("client route tables: aliases resolve", () => {
-  const src = fs.readFileSync(path.join(ROOT, fs.existsSync(path.join(ROOT, "src/app.jsx")) ? "src/app.jsx" : "public/index.html"), "utf8");
-  const rp = src.match(/const ROUTE_PATHS=\{[^\n]*\};/)[0]; const pt = src.match(/const PATH_TABS=[^\n]*\n(?:PATH_TABS\[[^\n]*\n)*/)[0];
-  const ctx = {}; new Function(rp + "\n" + pt + "\nreturn {ROUTE_PATHS,PATH_TABS};").call(ctx);
-  const { ROUTE_PATHS, PATH_TABS } = new Function(rp + "\n" + pt + "\nreturn {ROUTE_PATHS,PATH_TABS};")();
+  const { ROUTE_PATHS, PATH_TABS } = require("./_engine").req("src/routing/routes.mjs");
   assert.equal(PATH_TABS["/table"], "rankings"); assert.equal(PATH_TABS["/data-status"], "methodology"); assert.equal(PATH_TABS["/valuations"], "valuations");
   for (const [tab, p] of Object.entries(ROUTE_PATHS)) assert.equal(PATH_TABS[p], tab, p);
 });
