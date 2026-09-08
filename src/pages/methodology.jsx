@@ -17,7 +17,11 @@ export function GradeFlow({isMobile}){
   </div>;
 }
 
-export function MethodologyView({cacheMeta,pipeStatus,rankHistory,players,teams,isMobile,onTab,onGrading}){
+export function MethodologyView({season,currentSeason,cacheMeta,pipeStatus,rankHistory,players,teams,isMobile,onTab,onGrading}){
+  // 6B preflight: pipeline health and ranking snapshots describe the CURRENT cache. Under an archive
+  // season they are not merely stale — they are about a different season entirely.
+  const isArchive=season!=null&&currentSeason!=null&&season!==currentSeason;/*6B-METHARCHIVE*/
+  if(isArchive){pipeStatus=null;rankHistory=null;}
   const gen=cacheMeta&&cacheMeta.generated?Date.parse(cacheMeta.generated):null;
   const ageH=gen?Math.round((Date.now()-gen)/36e5):null;
   const graded=players.filter(p=>p.rated!==false&&p.overall!=null).length;

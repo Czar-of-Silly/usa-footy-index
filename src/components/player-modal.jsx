@@ -8,7 +8,88 @@ import { useEffect, useState } from "../ui/runtime.jsx";
 import { dv, fv, sv } from "../util/format.mjs";
 
 // ─── PLAYER MODAL ────────────────────────────────────────────────────────────
-export function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
+
+// ─── CAREER AT A GLANCE (Phase 6B) ────────────────────────────────────────
+// One panel for a player's tracked seasons. Design rules, all deliberate:
+//   • A season with no row is an explicit gap ("not in the record"), never a zero.
+//   • Assists that the source never had are "n/a", never 0 (see Phase 6A).
+//   • Archive-season grades carry a coverage caveat — they are NOT presented as
+//     directly comparable to the current season, because the inputs differ.
+//   • Positional rank is within that season and that position group only.
+//   • Seasons are joined by player NAME; that limitation is stated here rather
+//     than left for a reader to discover.
+function CareerAtAGlance({player,history,seasonCoverage,allSeasons,currentSeason,isMobile}){
+  const seasons=Array.isArray(history)?history:[];
+  if(!seasons.length)return null;
+  const byYear={};seasons.forEach(s=>{byYear[s.year]=s;});
+  const years=(allSeasons&&allSeasons.length?allSeasons:seasons.map(s=>s.year)).slice().sort((a,b)=>a-b);
+  const tracked=years.filter(y=>byYear[y]);
+  const archiveYears=tracked.filter(y=>y!==currentSeason);
+  const clubs=tracked.map(y=>byYear[y].team).filter(Boolean);
+  const movedClub=clubs.length>1&&new Set(clubs).size>1;
+  const SUBS=[["ATT","attack"],["PAS","passing"],["DEF","defense"],["CRE","creativity"],["CAR","carrying"]];
+  const posLabel={FW:"forwards",MF:"midfielders",DF:"defenders",GK:"goalkeepers"};
+  const head=(t)=><div style={{fontFamily:T.mono,fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:T.textMute,marginBottom:8}}>{t}</div>;
+
+  return <div style={{padding:"16px 32px",borderBottom:`1px solid ${T.borderLt}`}}>
+    <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:10}}>
+      {head("Career at a glance")}
+      <div style={{fontFamily:T.sans,fontSize:11.5,color:T.textMute}}>{tracked.length} season{tracked.length===1?"":"s"} in the record</div>
+    </div>
+
+    <div style={{overflowX:"auto"}}>
+      <table style={{borderCollapse:"collapse",width:"100%",fontFamily:T.mono,fontSize:12}}>
+        <thead><tr>
+          {["Season","Club","Grade","Rank in position","Min","G","A",...SUBS.map(s=>s[0])].map(h=>
+            <th key={h} style={{textAlign:h==="Season"||h==="Club"||h==="Rank in position"?"left":"right",padding:"6px 8px",borderBottom:`2px solid ${T.ink}`,fontWeight:700,fontSize:10,letterSpacing:1,color:T.textDim,whiteSpace:"nowrap"}}>{h}</th>)}
+        </tr></thead>
+        <tbody>
+          {years.map(y=>{
+            const s=byYear[y];
+            if(!s){
+              // Explicit gap: this season exists in the record but this player does not appear in it.
+              return <tr key={y}>
+                <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,fontWeight:700,color:T.textMute}}>{y}</td>
+                <td colSpan={9} style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,color:T.textMute,fontFamily:T.serif,fontStyle:"italic",fontSize:12.5}}>Not in the record for this season</td>
+              </tr>;
+            }
+            const isArchive=y!==currentSeason;
+            const cov=seasonCoverage&&seasonCoverage[y];
+            const assistsKnown=s.assists!=null;
+            return <tr key={y}>
+              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,fontWeight:700,color:T.ink,whiteSpace:"nowrap"}}>
+                {y}{isArchive&&<span title="Archive season — different metric coverage" style={{marginLeft:6,fontSize:9,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 4px",letterSpacing:.5}}>ARCHIVE</span>}
+                {s.prov&&<span title="Provisional — under 450 minutes" style={{marginLeft:4,fontSize:9,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 4px",letterSpacing:.5}}>PROV</span>}
+              </td>
+              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,color:T.textDim,whiteSpace:"nowrap"}}>{s.team||"—"}</td>
+              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",fontWeight:700,color:gc(s.overall)}}>{s.overall}</td>
+              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,color:T.textDim,whiteSpace:"nowrap"}}>
+                {s.posRank?`#${s.posRank} of ${s.posOf} ${posLabel[s.posGroup]||""}`:"—"}
+              </td>
+              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",color:T.textDim}}>{sv(s.mins)}</td>
+              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",color:T.textDim}}>{sv(s.goals)}</td>
+              <td title={assistsKnown?undefined:"This season's source did not carry real assist counts"} style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",color:assistsKnown?T.textDim:T.textMute}}>{assistsKnown?s.assists:"n/a"}</td>
+              {SUBS.map(([l,k])=><td key={l} style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",color:gc(s[k])}}>{s[k]}</td>)}
+            </tr>;
+          })}
+        </tbody>
+      </table>
+    </div>
+
+    {movedClub&&<div style={{fontFamily:T.serif,fontSize:13,color:T.text,marginTop:10}}>
+      Club across tracked seasons: {tracked.map((y,i)=><span key={y}>{i>0&&<span style={{color:T.textMute}}> {"\u2192"} </span>}<b>{byYear[y].team}</b> <span style={{color:T.textMute,fontSize:12}}>({y})</span></span>)}
+    </div>}
+
+    <div style={{marginTop:10,padding:"10px 12px",border:`1px dashed ${T.border}`,fontFamily:T.sans,fontSize:12,color:T.textDim,lineHeight:1.55}}>
+      {archiveYears.length>0&&<div style={{marginBottom:6}}>
+        <b>Grades are not directly comparable across seasons.</b> {archiveYears.join(" and ")} {archiveYears.length===1?"is an archive season":"are archive seasons"} built from a smaller set of inputs than {currentSeason} — no Opta advanced metrics and no goalkeeper metrics — so a grade there reflects a different measurement basis, not simply a different level of play.
+      </div>}
+      <div>Seasons are matched by player name, so a player whose name is spelled differently between sources may show fewer seasons than they actually played.</div>
+    </div>
+  </div>;
+}
+
+export function PlayerModal({player:p,onClose,onCompare,isInCompare,seasonCoverage,allSeasons,currentSeason,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
   const[shareMsg,setShareMsg]=useState("");
   const[hsError,setHsError]=useState(false);
   useEffect(()=>setHsError(false),[p?.id]);
@@ -141,27 +222,8 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,his
           <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans,marginBottom:6}}>{history.length} season{history.length>1?"s":""} tracked</div>
           <SeasonSparkline seasons={history} height={56}/>
         </div>}
-        {history&&history.length>1&&<div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:8}}>Grade Breakdown by Season</div>
-          <div style={{display:"grid",gridTemplateColumns:`repeat(${history.length},1fr)`,gap:8,marginTop:4}}>
-            {history.map(s=>(
-              <div key={s.year} style={{textAlign:"center"}}>
-                <div style={{fontFamily:T.mono,fontSize:12,fontWeight:700,color:T.textMute,marginBottom:6}}>{s.year}</div>
-                {[{l:"OVR",v:s.overall},{l:"ATT",v:s.attack},{l:"PAS",v:s.passing},{l:"DEF",v:s.defense},{l:"CRE",v:s.creativity},{l:"CAR",v:s.carrying}].map(g=>(
-                  <div key={g.l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"2px 6px",marginBottom:2,borderRadius:0,background:g.l==="OVR"?`${gc(g.v)}08`:"transparent"}}>
-                    <span style={{fontSize:10,color:T.textMute,fontFamily:T.sans,fontWeight:600}}>{g.l}</span>
-                    <span style={{fontSize:11.5,fontFamily:T.mono,fontWeight:700,color:gc(g.v)}}>{g.v}</span>
-                  </div>
-                ))}
-                <div style={{marginTop:4,borderTop:`1px solid ${T.borderLt}`,paddingTop:4}}>
-                  <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{s.goals}G {sv(s.assists)}A</div>
-                  <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{s.mins} min</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>}
       </div>}
+      <CareerAtAGlance player={p} history={history} seasonCoverage={seasonCoverage} allSeasons={allSeasons} currentSeason={currentSeason} isMobile={typeof window!=="undefined"&&window.innerWidth<600}/>
 
       {/* Detailed Stats — 3x2 grid */}
       {(p.position==="GK"||p.position==="Goalkeeper")?

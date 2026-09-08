@@ -31,15 +31,22 @@ const DATA_URL_BASE = "./data/mls-cache";
 const SEASON_COVERAGE={
   2026:{sources:["ESPN","ASA","MLS Official (Opta)"],opta:true,asa:true,espn:true,gk:true,assists:"actual",
     limits:[]},
-  2025:{sources:["ASA","Sofascore (archived import)"],opta:false,asa:true,espn:false,gk:false,assists:"unavailable",
-    limits:["No Opta advanced metrics (official xG, chances created, clearances, aerial %, pressure resistance, escape rate, passing performance)","No goalkeeper metrics — keepers are graded on the limited outfield-style inputs that exist","Assists were synthesised from rounded expected assists in the original import and are withheld rather than shown as real"]},
-  2024:{sources:["ASA","Sofascore (archived import)"],opta:false,asa:true,espn:false,gk:false,assists:"unavailable",
-    limits:["No Opta advanced metrics (official xG, chances created, clearances, aerial %, pressure resistance, escape rate, passing performance)","No goalkeeper metrics — keepers are graded on the limited outfield-style inputs that exist","Assists were synthesised from rounded expected assists in the original import and are withheld rather than shown as real"]},
+  2025:{sources:["ESPN (rosters, standings)","ASA (player analytics)","Sofascore (archived import)"],opta:false,asa:true,espn:"rosters+standings",gk:false,assists:"unavailable",
+    limits:["ESPN supplied rosters, standings and player bio data, but not the per-match box scores the current season uses","No Opta advanced metrics (official xG, chances created, clearances, aerial %, pressure resistance, escape rate, passing performance)","No goalkeeper advanced metrics — keepers are graded on the limited outfield-style inputs that exist","Assists were synthesised from rounded expected assists in the original import and are withheld rather than shown as real"]},
+  2024:{sources:["ESPN (rosters, standings)","ASA (player analytics)","Sofascore (archived import)"],opta:false,asa:true,espn:"rosters+standings",gk:false,assists:"unavailable",
+    limits:["ESPN supplied rosters, standings and player bio data, but not the per-match box scores the current season uses","No Opta advanced metrics (official xG, chances created, clearances, aerial %, pressure resistance, escape rate, passing performance)","No goalkeeper advanced metrics — keepers are graded on the limited outfield-style inputs that exist","Assists were synthesised from rounded expected assists in the original import and are withheld rather than shown as real"]},
 };
 // Assists in the 2024/2025 caches are Math.round(xA) from the original importer, not real assists
 // (verified: 100% of rows in both). fetch-history-v2.js now reads ASA's authoritative
 // primary_assists, but the committed caches still hold the synthesised values — so until those are
 // re-imported, historical assists are reported as unavailable rather than mislabelled.
+// 6B: one place that maps a prepared player to its ranking group. Mirrors the engine's own
+// GK/FW/DF/MF split so ranks line up with how grades were actually computed.
+function posGroupKey(p){
+  if(p.isGK)return "GK";
+  const pos=p.pos||"Midfielder";
+  return pos==="Forward"?"FW":pos==="Defender"?"DF":"MF";
+}
 const SEASON_ASSISTS_OK={2026:true,2025:false,2024:false};
 const CURRENT_SEASON=2026;
 
@@ -161,12 +168,17 @@ function MLSAnalytics(){
       const cache=await res.json();
       setDataGenerated(cache.generated||null);
       setCacheMeta({generated:cache.generated||null,sources:cache.dataSources||[],players:(cache.players||[]).length,season:cache.season||season});
-      fetch("./data/rank-history.json").then(r=>r.ok?r.json():null).then(h=>setRankHistory(Array.isArray(h)?h:null)).catch(()=>setRankHistory(null));
-      fetch("./data/pipeline-status.json").then(r=>r.ok?r.json():null).then(s=>setPipeStatus(s&&typeof s==="object"?s:null)).catch(()=>setPipeStatus(null));
+      // 6B preflight: rank-history, pipeline-status and articles describe the CURRENT season only.
+      // Under an archive season they must not be fetched or retained — otherwise 2026 ranking movement
+      // and pipeline health can surface as though they belong to 2024/2025.
+      if(season===CURRENT_SEASON){/*6B-AUXGATE*/
+        fetch("./data/rank-history.json").then(r=>r.ok?r.json():null).then(h=>setRankHistory(Array.isArray(h)?h:null)).catch(()=>setRankHistory(null));
+        fetch("./data/pipeline-status.json").then(r=>r.ok?r.json():null).then(s=>setPipeStatus(s&&typeof s==="object"?s:null)).catch(()=>setPipeStatus(null));
+      }else{setRankHistory(null);setPipeStatus(null);}
       (cache.standings||[]).forEach(s=>{if(s.logo)_logos[s.team]=s.logo;});
       setStandingsData(cache.standings||[]);
       setMatchesData(cache.matches||[]);
-      fetch("./data/articles.json").then(r=>r.ok?r.json():[]).then(a=>setArticles(Array.isArray(a)?a.filter(x=>x.status==="approved"):[])).catch(()=>setArticles([]));
+      if(season===CURRENT_SEASON){/*6B-ARTGATE*/fetch("./data/articles.json").then(r=>r.ok?r.json():[]).then(a=>setArticles(Array.isArray(a)?a.filter(x=>x.status==="approved"):[])).catch(()=>setArticles([]));}else setArticles([]);
       allRaw=cache.players||[];
       if(!allRaw.length)throw new Error("No players in cache. Run: npm run fetch");
     }catch(e){
@@ -183,7 +195,7 @@ function MLSAnalytics(){
       const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players from pools
       setLoadProgress(95);
       const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:SEASON_ASSISTS_OK[season]===false?null:(r.as||0),/*Phase 6A: 2024/25 cache assists are Math.round(xA), not real assists — withheld rather than mislabelled. null renders as an em dash via sv(), the same convention already used for tackles/shots/clearances.*/xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:("oxg" in r)?+(r.oxg||0):null,chances:("chc" in r)?(r.chc||0):null,goalOpps:r.gop||0,aerialPct:("arlPct" in r)?(r.arlPct||0):null,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:("clr" in r)?(r.clr||0):null,pressureRes:("presR" in r)?+(r.presR||0):null,escapeRate:("esc" in r)?+(r.esc||0):null,distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",/*6B-ZERO*/overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:SEASON_ASSISTS_OK[season]===false?null:(r.as||0),/*Phase 6A: 2024/25 cache assists are Math.round(xA), not real assists — withheld rather than mislabelled. null renders as an em dash via sv(), the same convention already used for tackles/shots/clearances.*/xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk??null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh??null,shotsOnTarget:r.so??null,fouls:r.fl??null,yellowCards:r.yc??null,redCards:r.rc??null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp??null,sca:r.sca??null,prgPasses:r.prgp??null,ftPasses:r.ftp??null,pressures:r.prs??null,interceptions:r.intc??null,aerials:r.arl??null,dribbles:r.drb??null,prgCarries:r.prgc??null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:("oxg" in r)?+(r.oxg||0):null,chances:("chc" in r)?(r.chc||0):null,goalOpps:r.gop||0,aerialPct:("arlPct" in r)?(r.arlPct||0):null,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:("clr" in r)?(r.clr||0):null,pressureRes:("presR" in r)?+(r.presR||0):null,escapeRate:("esc" in r)?+(r.esc||0):null,distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}
@@ -210,9 +222,22 @@ function MLSAnalytics(){
           const validated=raw.filter(r=>r&&r.n&&r.t&&typeof r.n==="string").map(validatePlayer);
           const inter=validated.map(preparePlayerForGrading);
           const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players
+          // 6B: within-season positional rank, computed once per season here rather than recomputed
+          // league-wide every time a modal opens. Uses ONLY this season's players and only the
+          // player's own normalised position group. Standard competition ranking (1,2,2,4) so tied
+          // Overall grades share a rank instead of depending on array order.
+          const rankRows=inter.filter(p=>grades[p.id]).map(p=>({n:p.raw.n,pos:posGroupKey(p),ov:grades[p.id].overall}));/*6B-RANKS*/
+          const rankByName={},posTotals={};
+          for(const grp of ["FW","MF","DF","GK"]){
+            const sub=rankRows.filter(r=>r.pos===grp).sort((a,b)=>b.ov-a.ov);
+            posTotals[grp]=sub.length;
+            let lastOv=null,lastRank=0;
+            sub.forEach((r,i)=>{const rank=(lastOv!==null&&r.ov===lastOv)?lastRank:i+1;rankByName[r.n]={rank,pos:grp,of:sub.length};lastOv=r.ov;lastRank=rank;});
+          }
           const byName={};
           inter.forEach(p=>{const r=p.raw,g=grades[p.id];if(!g)return;
-            byName[r.n]={overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,isGK:!!g.isGK,goals:r.g,assists:SEASON_ASSISTS_OK[yr]===false?null:r.as,mins:r.m,team:r.t,marketValue:r.mv};
+            const rk=rankByName[r.n]||null;
+            byName[r.n]={overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,isGK:!!g.isGK,goals:r.g,assists:SEASON_ASSISTS_OK[yr]===false?null:r.as,mins:r.m,team:r.t,marketValue:r.mv,posRank:rk?rk.rank:null,posGroup:rk?rk.pos:null,posOf:rk?rk.of:null,prov:(r.m||0)<450,assistsKnown:SEASON_ASSISTS_OK[yr]!==false};
           });
           results[yr]=byName;
         }catch(e){/* skip failed season */}
@@ -332,7 +357,11 @@ function MLSAnalytics(){
       const minsBonus=minsFactor*3;
 
       // G/A contribution bonus (up to +4)
-      const gaContrib=Math.min(4,((p.goals||0)+(p.assists||0))*0.25);
+      // 6B preflight: assists===null means UNKNOWN (2024/25 archive), not zero. Scoring it as 0 would
+      // quietly penalise every archive player. Use goals alone and rescale so the bonus keeps the same
+      // ceiling rather than silently shrinking a player's rating for missing data.
+      const gaKnown=p.assists!=null;/*6B-GA*/
+      const gaContrib=gaKnown?Math.min(4,((p.goals||0)+(p.assists||0))*0.25):Math.min(4,(p.goals||0)*0.25*1.5);
 
       let seasonRaw=rawComposite+gaBonus+minsBonus+gaContrib;
       const seasonGrade=Math.round(Math.max(42,Math.min(99,seasonRaw)));
@@ -344,7 +373,8 @@ function MLSAnalytics(){
       const consistency=Math.round(Math.max(0,Math.min(100,100-(stddev*1.5))));
 
       // Impact per 90
-      const impactPer90=gamesPlayed>0?((p.goals||0)+(p.assists||0)+(p.tackles||0)+(p.keyPasses||0)+(p.interceptions||0))/gamesPlayed:0;
+      // 6B preflight: omit the unknown assist term entirely rather than counting it as 0.
+      const impactPer90=gamesPlayed>0?((p.goals||0)+(p.assists!=null?p.assists:0)+(p.tackles||0)+(p.keyPasses||0)+(p.interceptions||0))/gamesPlayed:0;/*6B-IMPACT*/
 
       // Value efficiency: season grade per $1M market value
       const valueEff=p.marketValue>0?(seasonGrade/(p.marketValue/1e6)).toFixed(1):null;
@@ -645,7 +675,7 @@ function MLSAnalytics(){
               {name:"Passing",weight:"25% Completion % + 20% Passing vs Expected + 15% Difficult Passes/90 + 15% Pass G+ + 15% Key Passes/90 + 10% Pressure Resistance",desc:"Beyond completion rate: rewards passers who beat the expected-completion model and complete difficult, line-breaking passes — not sideways recyclers."},
               {name:"Defense",weight:"20% Defensive G+ + 15% Tackles/90 + 15% Pressures/90 + 10% Interceptions/90 + 10% Clearances/90 + 10% Aerials Won/90 + 7.5% Aerial Win % + 7.5% Tackle Success % + 5% Blocked Shots/90",desc:"Combines defensive value added (Goals Added) with active defending: tackles won and their success rate, pressures applied, interceptions, clearances, blocked shots, and aerial dominance for set pieces and crosses."},
               {name:"Creativity",weight:"40% Key Passes/90 + 25% xA/90 + 20% Chances/90 + 15% Shot-Creating Actions/90",desc:"Isolates playmaking: passes that set up shots, expected assists, and overall chance involvement. A player can rate low on Attack but high here by creating for others."},
-              {name:"Carrying",weight:"35% Dribbling G+ + 20% Escape Rate + 15% Progressive Carries/90 + 10% Dribbles/90 + 10% Difficult Passes/90 + 10% Fouls Drawn/90",desc:"Ball progression with the feet, measured by ASA dribbling Goals Added (the value a carry adds), how often a player escapes pressure, and a touch of flair. MLS event data has no raw take-on count, so we grade carrying value rather than raw dribble attempts."},
+              {name:"Carrying",weight:"43% Dribbling G+ + 25% Escape Rate + 10% Dribbles/90 + 12% Difficult Passes/90 + 10% Fouls Drawn/90",desc:"Ball progression with the feet, measured by ASA dribbling Goals Added (the value a carry adds), how often a player escapes pressure, and a touch of flair. MLS event data has no raw take-on count, so we grade carrying value rather than raw dribble attempts."},
             ].map(cat=>(
               <div key={cat.name} style={{marginBottom:16,padding:"14px 18px",background:T.surface,border:`1px solid ${T.borderLt}`,borderRadius:0}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
@@ -729,7 +759,7 @@ function MLSAnalytics(){
             <div style={{fontSize:11.5,color:T.ink,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:10}}>WHAT MAKES US DIFFERENT</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:24}}>
               {[
-                {title:"Composite Grades",desc:"Six-category grading system (42-99) that distills complex stats into a single, comparable score per player."},
+                {title:"Composite Grades",desc:"Six-category grading system on a 0-99 scale (most graded players land between 40 and 99) that distills complex stats into a single, comparable score per player."},
                 {title:"Full Transparency",desc:"Every grade weight is published. No black boxes — you can see exactly why a player scored what they did."},
                 {title:"Per-90 Normalization",desc:"Stats are adjusted per 90 minutes played, so a 2,000-minute starter and a 600-minute rotation player can be fairly compared."},
                 {title:"Percentile Context",desc:"Raw numbers mean nothing without context. We show where every stat ranks against the entire league."},
@@ -887,7 +917,7 @@ function MLSAnalytics(){
             leadTeam?`TOP CLUB: ${tname(leadTeam.abbr).toUpperCase()} ${leadTeam.overall}`:null,
             graded.length?`${graded.length} PLAYERS GRADED`:null,
             (()=>{const tg=[...graded].sort((a,b)=>(b.goals||0)-(a.goals||0))[0];return tg&&tg.goals?`GOLDEN BOOT: ${(tg.name||"").toUpperCase()} ${tg.goals}G`:null;})(),
-            (()=>{const ta=[...graded].sort((a,b)=>(b.assists||0)-(a.assists||0))[0];return ta&&ta.assists?`ASSISTS: ${(ta.name||"").toUpperCase()} ${sv(ta.assists)}`:null;})(),
+            (()=>{const withA=graded.filter(x=>x.assists!=null);const ta=withA.length?[...withA].sort((a,b)=>(b.assists||0)-(a.assists||0))[0]:null;/*6B-STATLINE*/return ta&&ta.assists?`ASSISTS: ${(ta.name||"").toUpperCase()} ${sv(ta.assists)}`:null;})(),
           ].filter(Boolean);
           const wireStr=wireItems.join("  \u00b7\u00b7\u2014  ");
           const kicker={fontFamily:T.mono,fontSize:11.5,letterSpacing:"0.18em",textTransform:"uppercase",color:T.accent,fontWeight:700};
@@ -1009,7 +1039,7 @@ function MLSAnalytics(){
               const leaders=[
                 {l:"Top Grade",p:sortedG[0],v:sortedG[0]&&sortedG[0].overall},
                 {l:"Most Goals",p:[...graded].sort((a,b)=>(b.goals||0)-(a.goals||0))[0],v:(()=>{const x=[...graded].sort((a,b)=>(b.goals||0)-(a.goals||0))[0];return x&&x.goals;})()},
-                {l:"Most Assists",p:[...graded].sort((a,b)=>(b.assists||0)-(a.assists||0))[0],v:(()=>{const x=[...graded].sort((a,b)=>(b.assists||0)-(a.assists||0))[0];return x&&x.assists;})()},
+                {l:"Most Assists",p:(()=>{const w=graded.filter(y=>y.assists!=null);return w.length?[...w].sort((a,b)=>(b.assists||0)-(a.assists||0))[0]:null;})(),/*6B-LEADERS*/v:(()=>{const x=[...graded.filter(y=>y.assists!=null)].sort((a,b)=>(b.assists||0)-(a.assists||0))[0];return x&&x.assists;})()},
                 {l:"Top xG",p:[...graded].sort((a,b)=>(parseFloat(b.xGoals)||0)-(parseFloat(a.xGoals)||0))[0],v:(()=>{const x=[...graded].sort((a,b)=>(parseFloat(b.xGoals)||0)-(parseFloat(a.xGoals)||0))[0];return x&&x.xGoals;})()},
               ].filter(x=>x.p&&x.v);
               return <div style={{padding:"34px 0 8px"}}>
@@ -2290,10 +2320,11 @@ function MLSAnalytics(){
           {leadersView==="awards"&&(()=>{
             const mvpCandidates=[...players].filter(p=>p.position!=="GK"&&p.position!=="Goalkeeper"&&(p.mins||0)>=200).map(p=>{
               const minFactor=Math.min((p.mins||0)/450,1);
-              const score=Math.round((p.overall*0.4+((p.goals||0)*3+(p.assists||0)*2)*2+(+p.totalGA>=0?+p.totalGA*8:+p.totalGA*4))*minFactor*10)/10;
+              const score=Math.round((p.overall*0.4+((p.goals||0)*3+(p.assists!=null?p.assists*2:0))*2+(+p.totalGA>=0?+p.totalGA*8:+p.totalGA*4))*minFactor*10)/10;/*6B-AWARD*/
               return{...p,mvpScore:score};
             }).sort((a,b)=>b.mvpScore-a.mvpScore).slice(0,10);
-            const bootRace=[...players].filter(p=>(p.goals||0)>=1).sort((a,b)=>(b.goals||0)-(a.goals||0)||(b.assists||0)-(a.assists||0)).slice(0,10);
+            // 6B preflight: unknown assists sort last among equal goals rather than tying with 0.
+            const bootRace=[...players].filter(p=>(p.goals||0)>=1).sort((a,b)=>(b.goals||0)-(a.goals||0)||((b.assists!=null?b.assists:-1)-(a.assists!=null?a.assists:-1))).slice(0,10);/*6B-BOOT*/
             const doyRace=[...players].filter(p=>(p.position==="Defender"||p.position==="DF"||p.position==="DEF")&&(p.mins||0)>=200).sort((a,b)=>b.defense-a.defense).slice(0,10);
             const gkRace=[...players].filter(p=>(p.position==="GK"||p.position==="Goalkeeper")&&(p.mins||0)>=200).sort((a,b)=>b.overall-a.overall).slice(0,10);
             const youngRace=[...players].filter(p=>p.age&&+p.age<23&&(p.mins||0)>=200).sort((a,b)=>b.overall-a.overall).slice(0,10);
@@ -2413,7 +2444,7 @@ function MLSAnalytics(){
             posData[pg].players.push(p);
             posData[pg].grades.push(p.overall);
             posData[pg].goals+=(p.goals||0);
-            posData[pg].assists+=(p.assists||0);
+            if(p.assists!=null){posData[pg].assists+=p.assists;posData[pg].assistsKnown=(posData[pg].assistsKnown||0)+1;}/*6B-POSTOT*/
             posData[pg].tackles+=(p.tackles||0);
             posData[pg].totalMins+=(p.mins||0);
             posData[pg].totalMV+=(p.marketValue||0);
@@ -2647,7 +2678,7 @@ function MLSAnalytics(){
           onCard={fx=>{const st={};standingsData.forEach(s=>{st[s.team]=s;});const teams=enrichedTeams.map(t=>{const s=st[t.abbr]||{};return{...t,pts:s.pts,w:s.w,dr:s.d,l:s.l};});cardMatchPreview({m:fx,teams,logos:teamLogos,matches:matchesData});}}/>}
 
         {/* ═══ METHODOLOGY & DATA STATUS (Phase 4e) ═══ */}
-        {!loading&&tab==="methodology"&&<MethodologyView cacheMeta={cacheMeta} pipeStatus={pipeStatus} rankHistory={rankHistory} players={players} teams={enrichedTeams} isMobile={isMobile} onTab={goTab} onGrading={()=>setShowGrading(true)}/>}
+        {!loading&&tab==="methodology"&&<MethodologyView season={season} currentSeason={CURRENT_SEASON} cacheMeta={cacheMeta} pipeStatus={pipeStatus} rankHistory={rankHistory} players={players} teams={enrichedTeams} isMobile={isMobile} onTab={goTab} onGrading={()=>setShowGrading(true)}/>}
 
         {/* ═══ MATCHUP PREVIEW (Phase 4c) ═══ */}
         {!loading&&tab==="matchup"&&matchup&&<MatchupView home={matchup.home} away={matchup.away} teams={enrichedTeams} standings={standingsData} matches={matchesData} players={players} logos={teamLogos} isMobile={isMobile}
@@ -2960,7 +2991,7 @@ function MLSAnalytics(){
         </div>
       </footer>
 
-      {sel&&<PlayerModal player={sel} onClose={()=>setSel(null)} onCompare={addCompare} isInCompare={comparePlayers.some(c=>c.id===sel.id)} pctRanks={pctRanks[sel.id]} history={playerHistory[sel.id]} formCurve={genFormCurve(sel)} seasonInfo={seasonRatings.ratings.find(r=>r.id===sel.id)||null} similarPlayers={findSimilar(sel.id)} onSelectPlayer={setSel} dark={dark}/>}
+      {sel&&<PlayerModal player={sel} onClose={()=>setSel(null)} onCompare={addCompare} isInCompare={comparePlayers.some(c=>c.id===sel.id)} seasonCoverage={SEASON_COVERAGE} allSeasons={[2024,2025,2026]} currentSeason={CURRENT_SEASON} pctRanks={pctRanks[sel.id]} history={playerHistory[sel.id]} formCurve={genFormCurve(sel)} seasonInfo={seasonRatings.ratings.find(r=>r.id===sel.id)||null} similarPlayers={findSimilar(sel.id)} onSelectPlayer={setSel} dark={dark}/>}
     </div>
   );
 }
