@@ -119,7 +119,7 @@ async function fetchSeason(year) {
     for (const p of d) {
       const n = asaNames[p.player_id] || p.player_id;
       asaXG[n] = {
-        xg: p.xgoals || 0, xa: p.xassists || 0, g: p.goals || 0,
+        xg: p.xgoals || 0, xa: p.xassists || 0, g: p.goals || 0, as: p.primary_assists || 0,
         sh: p.shots || 0, so: p.shots_on_target || 0, kp: p.key_passes || 0,
         m: p.minutes_played || 0, team: asaTeamMap[p.team_id] || "UNK",
         pos: normPos(p.general_position),
@@ -264,7 +264,7 @@ async function fetchSeason(year) {
       wt: roster?.wt || (find(name, sofaWeights)) || null,
       m: mins,
       g: xg.g || 0,
-      as: Math.round(xg.xa || 0),
+      as: xg.as || 0, // Phase 6A: ASA primary_assists — the authoritative field, same one fetch-data.js uses for 2026. Was Math.round(xg.xa), i.e. rounded EXPECTED assists presented as real assists.
       sh: xg.sh || 0,
       so: xg.so || 0,
       fl: 0,
@@ -289,7 +289,9 @@ async function fetchSeason(year) {
       prs: sofa.prs || 0,
       sca: sofa.sca || 0,
       prgp: sofa.ftp || 0,
-      prgc: sofa.drb || 0,
+      // prgc intentionally not written (Phase 6A): it was `sofa.drb` — the exact same field as `drb`
+      // (verified 100% identical across both historical caches), so it was one signal counted twice.
+      // The live Carrying formula already dropped its prgc term during Grading Integrity.
       ftp: sofa.ftp || 0,
       mv: mv,
       salary: 0,

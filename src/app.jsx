@@ -19,6 +19,30 @@ import { ET, fmtET, fmtETTime, fv, hm, pickWeekAgo, sv } from "./util/format.mjs
 
 const DATA_URL_BASE = "./data/mls-cache";
 
+// ─── SEASON DATA COVERAGE (Phase 6A) ──────────────────────────────────────
+// Historical seasons do NOT have the same metric coverage as the current one, and the site should
+// never imply they do. Verified against the committed caches, not assumed.
+//   2026: ESPN + ASA + MLS Official (Opta) — full advanced coverage.
+//   2024/2025: imported by fetch-history-v2.js from ASA + an archived Sofascore pull. No Opta
+//   advanced metrics at all (no official xG, chances created, clearances, aerial %, pressure
+//   resistance, escape rate, passing performance) and no goalkeeper metrics (saves, clean sheets,
+//   goals conceded, keeper efficiency). Grades for those seasons are computed from the subset that
+//   does exist, so they are directionally useful but not directly comparable to 2026 grades.
+const SEASON_COVERAGE={
+  2026:{sources:["ESPN","ASA","MLS Official (Opta)"],opta:true,asa:true,espn:true,gk:true,assists:"actual",
+    limits:[]},
+  2025:{sources:["ASA","Sofascore (archived import)"],opta:false,asa:true,espn:false,gk:false,assists:"unavailable",
+    limits:["No Opta advanced metrics (official xG, chances created, clearances, aerial %, pressure resistance, escape rate, passing performance)","No goalkeeper metrics — keepers are graded on the limited outfield-style inputs that exist","Assists were synthesised from rounded expected assists in the original import and are withheld rather than shown as real"]},
+  2024:{sources:["ASA","Sofascore (archived import)"],opta:false,asa:true,espn:false,gk:false,assists:"unavailable",
+    limits:["No Opta advanced metrics (official xG, chances created, clearances, aerial %, pressure resistance, escape rate, passing performance)","No goalkeeper metrics — keepers are graded on the limited outfield-style inputs that exist","Assists were synthesised from rounded expected assists in the original import and are withheld rather than shown as real"]},
+};
+// Assists in the 2024/2025 caches are Math.round(xA) from the original importer, not real assists
+// (verified: 100% of rows in both). fetch-history-v2.js now reads ASA's authoritative
+// primary_assists, but the committed caches still hold the synthesised values — so until those are
+// re-imported, historical assists are reported as unavailable rather than mislabelled.
+const SEASON_ASSISTS_OK={2026:true,2025:false,2024:false};
+const CURRENT_SEASON=2026;
+
 const CY = new Date().getFullYear();
 
 // ─── MAIN ────────────────────────────────────────────────────────────────────
@@ -159,7 +183,7 @@ function MLSAnalytics(){
       const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players from pools
       setLoadProgress(95);
       const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:r.as||0,xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:("oxg" in r)?+(r.oxg||0):null,chances:("chc" in r)?(r.chc||0):null,goalOpps:r.gop||0,aerialPct:("arlPct" in r)?(r.arlPct||0):null,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:("clr" in r)?(r.clr||0):null,pressureRes:("presR" in r)?+(r.presR||0):null,escapeRate:("esc" in r)?+(r.esc||0):null,distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:SEASON_ASSISTS_OK[season]===false?null:(r.as||0),/*Phase 6A: 2024/25 cache assists are Math.round(xA), not real assists — withheld rather than mislabelled. null renders as an em dash via sv(), the same convention already used for tackles/shots/clearances.*/xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk||null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh||null,shotsOnTarget:r.so||null,fouls:r.fl||null,yellowCards:r.yc||null,redCards:r.rc||null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp||null,sca:r.sca||null,prgPasses:r.prgp||null,ftPasses:r.ftp||null,pressures:r.prs||null,interceptions:r.intc||null,aerials:r.arl||null,dribbles:r.drb||null,prgCarries:r.prgc||null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:("oxg" in r)?+(r.oxg||0):null,chances:("chc" in r)?(r.chc||0):null,goalOpps:r.gop||0,aerialPct:("arlPct" in r)?(r.arlPct||0):null,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:("clr" in r)?(r.clr||0):null,pressureRes:("presR" in r)?+(r.presR||0):null,escapeRate:("esc" in r)?+(r.esc||0):null,distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
     }catch(e){setErrMsg("Processing error: "+e.message);}
@@ -169,7 +193,6 @@ function MLSAnalytics(){
   useEffect(()=>{
     async function loadHistory(){
       const years=[2024,2025,2026];
-      const safe=(v,min,max,def)=>{const n=Number(v);return isNaN(n)?def:Math.max(min,Math.min(max,n));};
       const results={};
       for(const yr of years){
         try{
@@ -179,23 +202,17 @@ function MLSAnalytics(){
           const cache=await res.json();
           const raw=cache.players||[];
           if(!raw.length)continue;
-          // Process grades for this season
-          const validated=raw.filter(r=>r&&r.n&&r.t).map(r=>({
-            n:String(r.n).slice(0,40),t:String(r.t).slice(0,5),p:normPos(r.p),
-            m:safe(r.m,0,3000,600),g:safe(r.g,0,40,0),as:safe(r.as,0,30,0),
-            xg:safe(r.xg,0,20,0),xa:safe(r.xa,0,15,0),
-            pp:safe(r.pp,30,99,75),xpp:safe(r.xpp,30,99,75),
-            gs:safe(r.gs,-3,5,0),gp:safe(r.gp,-3,5,0),gdr:safe(r.gdr,-3,5,0),gdf:safe(r.gdf,-3,5,0),gi:safe(r.gi,-3,5,0),
-            mv:safe(r.mv,0,50e6,0),tk:safe(r.tk,0,80,0),kp:safe(r.kp,0,80,0),
-            sca:safe(r.sca,0,120,0),prgp:safe(r.prgp,0,200,0),ftp:safe(r.ftp,0,100,0),
-            prs:safe(r.prs,0,500,0),intc:safe(r.intc,0,60,0),arl:safe(r.arl,0,80,0),
-            drb:safe(r.drb,0,80,0),prgc:safe(r.prgc,0,100,0),
-          }));
-          const inter=validated.map((r,i)=>{const m=r.m||600,p90=m/90;return{id:"h"+i,xg90:(r.xg||0)/p90,xa90:(r.xa||0)/p90,pc:r.pp||75,pga:r.gp||0,tga:(r.gs||0)+(r.gp||0)+(r.gdr||0)+(r.gdf||0)+(r.gi||0),dga:(r.gdf||0)+(r.gi||0),kp90:(r.kp||0)/p90,sca90:(r.sca||0)/p90,prgp90:(r.prgp||0)/p90,ftp90:(r.ftp||0)/p90,prs90:(r.prs||0)/p90,intc90:(r.intc||0)/p90,arl90:(r.arl||0)/p90,drb90:(r.drb||0)/p90,prgc90:(r.prgc||0)/p90,clr90:(r.clr||0)/p90,flSuf90:(r.flSuf||0)/p90,arlPctV:(r.arlPct||0),n90s:(r.m||600)/90,raw:r};});
+          // Phase 6A: canonical path — identical to the selected-season loader above. The previous
+          // hand-written historical mapper supplied only 21 of the 45 fields computeGrades reads
+          // (no isGK, so every historical keeper was graded as an outfielder; no oxg90/chc90/tk90/
+          // gdrV; and cumulative Goals Added instead of per-90). Season History and the season
+          // selector therefore disagreed for ~99% of players. One path now, so they cannot diverge.
+          const validated=raw.filter(r=>r&&r.n&&r.t&&typeof r.n==="string").map(validatePlayer);
+          const inter=validated.map(preparePlayerForGrading);
           const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players
           const byName={};
-          inter.forEach(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};
-            byName[r.n]={overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,goals:r.g,assists:r.as,mins:r.m,team:r.t,marketValue:r.mv};
+          inter.forEach(p=>{const r=p.raw,g=grades[p.id];if(!g)return;
+            byName[r.n]={overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,isGK:!!g.isGK,goals:r.g,assists:SEASON_ASSISTS_OK[yr]===false?null:r.as,mins:r.m,team:r.t,marketValue:r.mv};
           });
           results[yr]=byName;
         }catch(e){/* skip failed season */}
@@ -561,7 +578,7 @@ function MLSAnalytics(){
             const ageDays=Number.isFinite(gen)?(Date.now()-gen)/864e5:null;
             const srcOk=cacheMeta&&Array.isArray(cacheMeta.sources)&&cacheMeta.sources.length>=3;
             const graded=players&&players.length?players.filter(p=>p.rated).length||players.length:0;
-            const txt=Number.isFinite(gen)?("Updated "+fmtETTime(gen)+" \u00b7 "+graded+" players graded \u00b7 "+(srcOk?"Data sources healthy":"Sources: "+((cacheMeta&&cacheMeta.sources)||[]).join(", ")||"unknown")):"Loading the record\u2026";
+            const txt=season!==CURRENT_SEASON?("Archive \u00b7 "+season+" season \u00b7 "+graded+" players graded"):Number.isFinite(gen)?("Updated "+fmtETTime(gen)+" \u00b7 "+graded+" players graded \u00b7 "+(srcOk?"Data sources healthy":"Sources: "+((cacheMeta&&cacheMeta.sources)||[]).join(", ")||"unknown")):"Loading the record\u2026";
             return <span role="link" tabIndex={0} onClick={()=>goTab("methodology")} onKeyDown={e=>{if(e.key==="Enter")goTab("methodology");}} title={cacheMeta&&cacheMeta.sources?"Sources: "+cacheMeta.sources.join(", ")+" \u2014 open data status":"Open data status"} style={{color:(ageDays!=null&&ageDays>4)||!srcOk?T.red:T.textDim,cursor:"pointer",textDecoration:"underline dotted",textUnderlineOffset:3}}>{txt}</span>;
           })()}
           <span>{new Date().toLocaleDateString("en-US",{timeZone:ET,weekday:"long",month:"long",day:"numeric"})}</span>
@@ -571,6 +588,7 @@ function MLSAnalytics(){
         const gen=cacheMeta&&cacheMeta.generated?Date.parse(cacheMeta.generated):NaN;
         const ageDays=Number.isFinite(gen)?(Date.now()-gen)/864e5:null;
         const srcOk=cacheMeta&&Array.isArray(cacheMeta.sources)&&cacheMeta.sources.length>=3;
+        if(season!==CURRENT_SEASON)return null; // Phase 6A: staleness and pipeline health describe the CURRENT cache; they say nothing about an archive season and would read as a warning about it.
         const warn=[];
         if(ageDays!=null&&ageDays>4)warn.push("Data last refreshed "+Math.floor(ageDays)+" days ago; grades and the table may trail live results.");
         if(cacheMeta&&!srcOk)warn.push("One or more data sources were unavailable on the last run; some stats may be incomplete.");
@@ -846,7 +864,9 @@ function MLSAnalytics(){
           const sortedG=[...graded].sort((a,b)=>b.overall-a.overall);const topPlayer=sortedG.find(p=>p.localHeadshot||p.headshot)||sortedG[0];
           // Editorial freshness gate: an article must be <= 7 days old AND no more than 7 days behind the data it sits next to
           const FRESH_MS=7*864e5;const dataT=cacheMeta&&cacheMeta.generated?Date.parse(cacheMeta.generated):Date.now();
-          const freshArticles=articles.filter(a=>{const t=a.created?Date.parse(a.created):NaN;return Number.isFinite(t)&&(Date.now()-t)<=FRESH_MS&&(dataT-t)<=FRESH_MS;});
+          // Phase 6A: articles.json only ever holds current-season reporting. Under an archive season
+          // the lead story and secondary cards would present 2026 news as though it were that season's.
+          const freshArticles=season!==CURRENT_SEASON?[]:articles.filter(a=>{const t=a.created?Date.parse(a.created):NaN;return Number.isFinite(t)&&(Date.now()-t)<=FRESH_MS&&(dataT-t)<=FRESH_MS;});
           const sortedArt=[...freshArticles].sort((a,b)=>(b.created||"").localeCompare(a.created||""));
           const leadArticle=sortedArt[0]||null;const restArticles=sortedArt.slice(1,3);
           const leadTeam=(enrichedTeams||[]).find(t=>t.count>0)||enrichedTeams[0];
@@ -867,7 +887,7 @@ function MLSAnalytics(){
             leadTeam?`TOP CLUB: ${tname(leadTeam.abbr).toUpperCase()} ${leadTeam.overall}`:null,
             graded.length?`${graded.length} PLAYERS GRADED`:null,
             (()=>{const tg=[...graded].sort((a,b)=>(b.goals||0)-(a.goals||0))[0];return tg&&tg.goals?`GOLDEN BOOT: ${(tg.name||"").toUpperCase()} ${tg.goals}G`:null;})(),
-            (()=>{const ta=[...graded].sort((a,b)=>(b.assists||0)-(a.assists||0))[0];return ta&&ta.assists?`ASSISTS: ${(ta.name||"").toUpperCase()} ${ta.assists}`:null;})(),
+            (()=>{const ta=[...graded].sort((a,b)=>(b.assists||0)-(a.assists||0))[0];return ta&&ta.assists?`ASSISTS: ${(ta.name||"").toUpperCase()} ${sv(ta.assists)}`:null;})(),
           ].filter(Boolean);
           const wireStr=wireItems.join("  \u00b7\u00b7\u2014  ");
           const kicker={fontFamily:T.mono,fontSize:11.5,letterSpacing:"0.18em",textTransform:"uppercase",color:T.accent,fontWeight:700};
@@ -879,7 +899,7 @@ function MLSAnalytics(){
               {meta&&<div style={{fontFamily:T.mono,fontSize:11.5,letterSpacing:"0.1em",textTransform:"uppercase",color:T.textDim,fontWeight:600,marginTop:8}}>{meta}</div>}
             </div>);
           return <div style={{maxWidth:1200,margin:"0 auto",padding:"0 24px",animation:"fadeUp .4s ease"}}>
-            {wireItems.length>0&&<div style={{display:"flex",alignItems:"center",overflow:"hidden",border:`1px solid ${T.border}`,borderTop:"none",marginBottom:28,background:T.surface}}>
+            {season===CURRENT_SEASON&&wireItems.length>0&&<div style={{display:"flex",alignItems:"center",overflow:"hidden",border:`1px solid ${T.border}`,borderTop:"none",marginBottom:28,background:T.surface}}>
               <span style={{flex:"none",fontFamily:T.mono,fontSize:11.5,fontWeight:700,letterSpacing:"0.2em",color:T.bg,background:T.ink,padding:"7px 14px 6px"}}>THE WIRE</span>
               <div className="wire-track" style={{flex:1,overflow:"hidden",whiteSpace:"nowrap"}}>
                 <div className="wire-inner" style={{display:"inline-block",whiteSpace:"nowrap",fontFamily:T.mono,fontSize:12,letterSpacing:"0.12em",textTransform:"uppercase",color:T.textDim,padding:"7px 0 6px",animation:"wireScroll 36s linear infinite"}}>
@@ -922,13 +942,29 @@ function MLSAnalytics(){
                 </div>
               </div>}
             </div>}
+            {/* ═══ HISTORICAL SEASON NOTICE (Phase 6A) ═══ */}
+            {/* HISTORICAL_NOTICE: articles, the wire ticker, ranking history, pipeline status and the
+                fixture slate are all current-season data. When an archive season is selected we say so
+                and hide them, rather than letting 2026 content read as though it belongs to 2024/2025. */}
+            {season!==CURRENT_SEASON&&<div role="note" style={{margin:"18px 0 4px",padding:isMobile?"12px 14px":"14px 18px",border:`1px solid ${T.border}`,borderLeft:`3px solid ${T.accent}`,background:T.surface}}>
+              <div style={{fontFamily:T.mono,fontSize:11,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:T.accent}}>Archive · {season} season</div>
+              <div style={{fontFamily:T.serif,fontSize:15,color:T.text,lineHeight:1.6,marginTop:6}}>
+                You are viewing the <b>{season}</b> archive. Grades are computed from that season's record. News, the wire, match previews, power-ranking movement and pipeline status are current-season features and are hidden here rather than shown with {season} data they don't belong to.
+              </div>
+              {SEASON_COVERAGE[season]&&<div style={{fontFamily:T.sans,fontSize:12.5,color:T.textDim,lineHeight:1.55,marginTop:8}}>
+                <b>Sources for {season}:</b> {SEASON_COVERAGE[season].sources.join(" · ")}.
+                {SEASON_COVERAGE[season].limits.length>0&&<ul style={{margin:"6px 0 0",paddingLeft:20}}>{SEASON_COVERAGE[season].limits.map((l,i)=><li key={i} style={{marginBottom:2}}>{l}</li>)}</ul>}
+              </div>}
+              <div style={{marginTop:10}}><button onClick={()=>setSeason(CURRENT_SEASON)} style={{background:T.ink,border:"none",color:T.bg,padding:"7px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,borderRadius:0}}>Back to {CURRENT_SEASON} {"\u2192"}</button></div>
+            </div>}
+
             {/* ═══ MY CLUB (Phase 4d) ═══ */}
             {myClub?<MyClubDesk abbr={myClub} teams={enrichedTeams} standings={standingsData} matches={matchesData} players={players} logos={teamLogos} isMobile={isMobile} onChange={setMyClub}
               onPlayer={p=>setSel(p)} onTeam={ab=>{setExpandTeam(ab);setTeamLevel(1);goTab("teams");}} onMatchup={(h,a)=>openMatchup(h,a)}
               onCard={fx=>{const st={};standingsData.forEach(s=>{st[s.team]=s;});const teams=enrichedTeams.map(t=>{const s=st[t.abbr]||{};return{...t,pts:s.pts,w:s.w,dr:s.d,l:s.l};});cardMatchPreview({m:fx,teams,logos:teamLogos,matches:matchesData});}}/>
             :<FollowClubCTA onPick={setMyClub} isMobile={isMobile}/>}
             {/* ═══ DESK ROW: slate · movers · subscribe ═══ */}
-            {(()=>{
+            {season===CURRENT_SEASON&&(()=>{
               const upcoming=[...matchesData].filter(m=>!m.completed&&m.date&&new Date(m.date)>=new Date()).sort((a,b)=>(a.date||"").localeCompare(b.date||"")).slice(0,6);
               const latest=[...matchesData].filter(m=>m.completed).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,6);
               const slate=upcoming.length?upcoming:latest;
@@ -1087,7 +1123,7 @@ function MLSAnalytics(){
             </div>
             <Badge grade={best.overall} rated={best.rated} size="lg"/>
             <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"4px 18px"}}>
-              <StatChip label="G/A" value={`${best.goals}/${best.assists}`} color={T.ink}/>
+              <StatChip label="G/A" value={`${best.goals}/${sv(best.assists)}`} color={T.ink}/>
               <StatChip label="xG" value={best.xGoals} color={T.textDim}/>
               <StatChip label="G+" value={best.totalGA} color={+best.totalGA>=0?T.green:T.red}/>
               <StatChip label="TKL" value={best.tackles!=null?best.tackles:"—"} color={T.textDim}/>
@@ -1114,7 +1150,7 @@ function MLSAnalytics(){
               <div style={{textAlign:"center"}}>{p.rated===false||p.overall==null?<span style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.textMute}}>NR</span>:<span style={{display:"inline-flex",flexDirection:"column",alignItems:"center"}}><span style={{fontFamily:T.display,fontWeight:900,fontSize:isMobile?20:28,color:T.ink,lineHeight:1,letterSpacing:-.5}}>{Math.round(p.overall)}</span><span style={{width:isMobile?20:26,height:3,background:gc(p.overall),marginTop:4,display:"block"}}></span></span>}</div>
               <div style={{fontSize:isMobile?12:13,color:p.age&&+p.age<23?T.green:p.age&&+p.age>32?T.red:T.textDim,textAlign:"center",fontFamily:T.mono,fontWeight:500}}>{p.age||"—"}</div>
               <div style={{fontFamily:T.mono,fontWeight:500,fontSize:isMobile?12:14,color:T.textDim,textAlign:"center"}}>{p.goals}</div>
-              <div style={{fontFamily:T.mono,fontWeight:500,fontSize:isMobile?12:14,color:T.textDim,textAlign:"center"}}>{p.assists}</div>
+              <div style={{fontFamily:T.mono,fontWeight:500,fontSize:isMobile?12:14,color:T.textDim,textAlign:"center"}}>{sv(p.assists)}</div>
               {!isMobile&&<div style={{fontSize:12,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.xg90}</div>}
               {!isMobile&&<div style={{fontSize:14,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.passComp}%</div>}
               {!isMobile&&<div style={{fontSize:14,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{sv(p.clearances)}</div>}
@@ -1330,7 +1366,7 @@ function MLSAnalytics(){
                   {isMobile?formIcon(p.formTrend):<span style={{display:"inline-flex",alignItems:"center",gap:6}}><MiniSpark data={genFormCurve(p)} width={68} height={22} color={gc(p.seasonGrade)}/><span style={{fontSize:12}}>{formIcon(p.formTrend)}</span></span>}
                 </div>
                 <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.goals,20),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.goals}</div>
-                <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.assists,15),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{p.assists}</div>
+                <div style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?13:16,color:T.ink,background:hm(p.assists,15),borderRadius:0,textAlign:"center",padding:"2px 0"}}>{sv(p.assists)}</div>
                 <div style={{textAlign:"center"}}>
                   <span style={{fontFamily:T.mono,fontWeight:600,fontSize:isMobile?12:12,color:p.consistency>=80?T.green:p.consistency>=60?T.blue:T.red,background:`${p.consistency>=80?T.green:p.consistency>=60?T.blue:T.red}10`,padding:"2px 6px",borderRadius:0}}>{p.consistency}%</span>
                 </div>
@@ -1621,7 +1657,7 @@ function MLSAnalytics(){
                         <Badge grade={p.overall} rated={p.rated} size="sm"/>
                         <div style={{fontSize:12,color:T.textDim,fontFamily:T.mono,textAlign:"center"}}>{p.age||"—"}</div>
                         <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink}}>{p.goals}</div>
-                        <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink}}>{p.assists}</div>
+                        <div style={{fontFamily:T.serif,fontWeight:700,fontSize:12,color:T.ink}}>{sv(p.assists)}</div>
                         <div style={{fontSize:12,color:T.textDim,fontFamily:T.mono}}>{p.passComp}%</div>
                         <div style={{fontSize:11.5,color:T.ink,fontWeight:600}}>{sv(p.clearances)}</div>
                         <div style={{fontSize:12,color:T.textDim}}>{sv(p.fouls)}</div>
@@ -2273,7 +2309,7 @@ function MLSAnalytics(){
                     <TeamBadge abbr={p.team} size={i===0?34:26} logo={p.teamLogo}/>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontFamily:T.serif,fontWeight:700,fontSize:i===0?17:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
-                      <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.teamName||p.team}{i===0&&p.goals>0?` · ${p.goals}G ${p.assists}A`:""}</div>
+                      <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans}}>{p.position} · {p.teamName||p.team}{i===0&&p.goals>0?` · ${p.goals}G ${sv(p.assists)}A`:""}</div>
                     </div>
                     {gradeFn&&<Badge grade={gradeFn(p)} size="sm"/>}
                     <div style={{textAlign:"right",minWidth:50}}>
@@ -2291,7 +2327,7 @@ function MLSAnalytics(){
               </div>
               <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:16}}>
                 <RaceCard title="MVP Race" candidates={mvpCandidates} metricLabel="MVP Score" metricFn={p=>p.mvpScore} gradeFn={p=>p.overall}/>
-                <RaceCard title="Golden Boot" candidates={bootRace} metricLabel="Goals" metricFn={p=>`${p.goals}G ${p.assists}A`} gradeFn={p=>p.overall}/>
+                <RaceCard title="Golden Boot" candidates={bootRace} metricLabel="Goals" metricFn={p=>`${p.goals}G ${sv(p.assists)}A`} gradeFn={p=>p.overall}/>
                 <RaceCard title="Defender of the Year" candidates={doyRace} metricLabel="DEF Grade" metricFn={p=>p.defense} gradeFn={p=>p.defense}/>
                 <RaceCard title="Young Player" candidates={youngRace} metricLabel="Grade" metricFn={p=>p.overall} gradeFn={p=>p.overall}/>
                 <RaceCard title="GK of the Year" candidates={gkRace} metricLabel="GK Grade" metricFn={p=>p.overall} gradeFn={p=>p.overall}/>
@@ -2319,7 +2355,7 @@ function MLSAnalytics(){
               <div style={{textAlign:"center"}}><span style={{fontFamily:T.serif,fontWeight:700,fontSize:isMobile?12:15,color:vc(p.marketValue)}}>{fv(p.marketValue)}</span></div>
               <div style={{textAlign:"center"}}><Badge grade={p.overall} rated={p.rated} size={isMobile?"sm":"md"}/></div>
               {!isMobile&&<div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,textAlign:"center"}}>{p.goals}</div>}
-              {!isMobile&&<div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,textAlign:"center"}}>{p.assists}</div>}
+              {!isMobile&&<div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:T.ink,textAlign:"center"}}>{sv(p.assists)}</div>}
               {!isMobile&&<div style={{fontSize:13,color:T.textDim,fontFamily:T.mono,fontWeight:600,textAlign:"center"}}>{p.mins?.toLocaleString()}</div>}
             </div>)}
           </div></TableWrap>
@@ -2438,7 +2474,7 @@ function MLSAnalytics(){
                     <PosGlyph pos={pe.pos} h={30}/>
                     <div>
                       <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink}}>{pe.pos}s</div>
-                      <div style={{fontSize:11.5,color:T.textMute,fontFamily:T.sans}}>{pe.count} players · {pe.goals} goal{pe.goals===1?"":"s"} · {pe.assists} assist{pe.assists===1?"":"s"}{pe.tackles>0?" · "+pe.tackles+" tackles":""}</div>
+                      <div style={{fontSize:11.5,color:T.textMute,fontFamily:T.sans}}>{pe.count} players · {pe.goals} goal{pe.goals===1?"":"s"} · {sv(pe.assists)} assist{pe.assists===1?"":"s"}{pe.tackles>0?" · "+pe.tackles+" tackles":""}</div>
                     </div>
                   </div>
                   <Badge grade={pe.avg} size="lg"/>
@@ -2500,7 +2536,7 @@ function MLSAnalytics(){
                       <TeamBadge abbr={p.team} size={26} logo={p.teamLogo}/>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontFamily:T.serif,fontWeight:600,fontSize:13,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
-                        <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>{p.team} · {p.goals}G {p.assists}A · {p.mins} min</div>
+                        <div style={{fontSize:10,color:T.textDim,fontFamily:T.sans}}>{p.team} · {p.goals}G {sv(p.assists)}A · {p.mins} min</div>
                       </div>
                       <Badge grade={p.overall} rated={p.rated} size="sm"/>
                     </div>

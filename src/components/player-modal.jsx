@@ -154,7 +154,7 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,pctRanks,his
                   </div>
                 ))}
                 <div style={{marginTop:4,borderTop:`1px solid ${T.borderLt}`,paddingTop:4}}>
-                  <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{s.goals}G {s.assists}A</div>
+                  <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{s.goals}G {sv(s.assists)}A</div>
                   <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>{s.mins} min</div>
                 </div>
               </div>
