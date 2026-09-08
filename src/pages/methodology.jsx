@@ -1,4 +1,5 @@
 // pages/methodology.jsx — extracted verbatim from the former inline app (Phase 5.3). Do not edit behaviour here without tests.
+import { archiveAuxiliary } from "../analytics/archive.mjs";
 import { T } from "../theme.mjs";
 import { fmtET, fmtETTime, nextRefreshUTC } from "../util/format.mjs";
 
@@ -20,8 +21,9 @@ export function GradeFlow({isMobile}){
 export function MethodologyView({season,currentSeason,cacheMeta,pipeStatus,rankHistory,players,teams,isMobile,onTab,onGrading}){
   // 6B preflight: pipeline health and ranking snapshots describe the CURRENT cache. Under an archive
   // season they are not merely stale — they are about a different season entirely.
-  const isArchive=season!=null&&currentSeason!=null&&season!==currentSeason;/*6B-METHARCHIVE*/
-  if(isArchive){pipeStatus=null;rankHistory=null;}
+  const _aux=archiveAuxiliary(season,currentSeason,{pipeStatus,rankHistory});/*6B-METHARCHIVE*/
+  const isArchive=_aux.isArchive;
+  pipeStatus=_aux.pipeStatus;rankHistory=_aux.rankHistory;
   const gen=cacheMeta&&cacheMeta.generated?Date.parse(cacheMeta.generated):null;
   const ageH=gen?Math.round((Date.now()-gen)/36e5):null;
   const graded=players.filter(p=>p.rated!==false&&p.overall!=null).length;
@@ -74,7 +76,7 @@ export function MethodologyView({season,currentSeason,cacheMeta,pipeStatus,rankH
     {P(<>Forwards are judged first on attacking output and creation; defenders on defensive actions and their Goals Added; midfielders on a balanced mix with passing and creativity carrying the most weight. Goals Added (from American Soccer Analysis) is the one component every position shares because it values actions by how much they change scoring probability, whoever performs them.</>)}
 
     {H("Goalkeepers","gk")}
-    {P(<>Keepers live in their own pool. Shot-stopping uses Opta's goals-prevented efficiency and saves per 90 with clean-sheet rate; distribution uses passing performance, completion and difficult-pass share. The composite is measured against a reference point for the position (not ranked) and mapped to the same 42–99 look with a slightly different curve so the best keeper can still reach 99. Roughly 60% of keepers with a qualifying sample get the full MLS-advanced treatment above; keepers without a qualifying MLS-advanced row fall back to a simpler save percentage and clean-sheet-rate basis. Both land on the same 42–99 scale, but they are not measured identically.</>)}
+    {P(<>Keepers live in their own pool. Shot-stopping uses Opta's goals-prevented efficiency and saves per 90 with clean-sheet rate; distribution uses passing performance, completion and difficult-pass share. The composite is measured against a reference point for the position (not ranked) and mapped onto the same 0–99 scale with a slightly different curve so the best keeper can still reach 99. Roughly 60% of keepers with a qualifying sample get the full MLS-advanced treatment above; keepers without a qualifying MLS-advanced row fall back to a simpler save percentage and clean-sheet-rate basis. Both land on the same scale, but they are not measured identically.</>)}
 
     {H("Team grade, points table, power rank","team")}
     {P(<>These are three different questions and the site keeps them apart on purpose.</>)}

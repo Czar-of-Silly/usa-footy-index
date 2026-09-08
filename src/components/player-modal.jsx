@@ -1,95 +1,16 @@
 // components/player-modal.jsx — extracted verbatim from the former inline app (Phase 5.3). Do not edit behaviour here without tests.
 import { computeForm, matchRating } from "../analytics/form.mjs";
 import { cardPlayer } from "../cards/share-cards.jsx";
+import { CareerAtAGlance } from "./career.jsx";
 import { FormSparkline, FormTrend, RadarChart } from "./charts.jsx";
-import { Badge, CardButton, PctBadge, SeasonSparkline, TeamBadge } from "./ui.jsx";
+import { Badge, CardButton, PctBadge, TeamBadge } from "./ui.jsx";
 import { T, gc, gl, vc } from "../theme.mjs";
 import { useEffect, useState } from "../ui/runtime.jsx";
 import { dv, fv, sv } from "../util/format.mjs";
 
 // ─── PLAYER MODAL ────────────────────────────────────────────────────────────
 
-// ─── CAREER AT A GLANCE (Phase 6B) ────────────────────────────────────────
-// One panel for a player's tracked seasons. Design rules, all deliberate:
-//   • A season with no row is an explicit gap ("not in the record"), never a zero.
-//   • Assists that the source never had are "n/a", never 0 (see Phase 6A).
-//   • Archive-season grades carry a coverage caveat — they are NOT presented as
-//     directly comparable to the current season, because the inputs differ.
-//   • Positional rank is within that season and that position group only.
-//   • Seasons are joined by player NAME; that limitation is stated here rather
-//     than left for a reader to discover.
-function CareerAtAGlance({player,history,seasonCoverage,allSeasons,currentSeason,isMobile}){
-  const seasons=Array.isArray(history)?history:[];
-  if(!seasons.length)return null;
-  const byYear={};seasons.forEach(s=>{byYear[s.year]=s;});
-  const years=(allSeasons&&allSeasons.length?allSeasons:seasons.map(s=>s.year)).slice().sort((a,b)=>a-b);
-  const tracked=years.filter(y=>byYear[y]);
-  const archiveYears=tracked.filter(y=>y!==currentSeason);
-  const clubs=tracked.map(y=>byYear[y].team).filter(Boolean);
-  const movedClub=clubs.length>1&&new Set(clubs).size>1;
-  const SUBS=[["ATT","attack"],["PAS","passing"],["DEF","defense"],["CRE","creativity"],["CAR","carrying"]];
-  const posLabel={FW:"forwards",MF:"midfielders",DF:"defenders",GK:"goalkeepers"};
-  const head=(t)=><div style={{fontFamily:T.mono,fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:T.textMute,marginBottom:8}}>{t}</div>;
-
-  return <div style={{padding:"16px 32px",borderBottom:`1px solid ${T.borderLt}`}}>
-    <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",flexWrap:"wrap",gap:8,marginBottom:10}}>
-      {head("Career at a glance")}
-      <div style={{fontFamily:T.sans,fontSize:11.5,color:T.textMute}}>{tracked.length} season{tracked.length===1?"":"s"} in the record</div>
-    </div>
-
-    <div style={{overflowX:"auto"}}>
-      <table style={{borderCollapse:"collapse",width:"100%",fontFamily:T.mono,fontSize:12}}>
-        <thead><tr>
-          {["Season","Club","Grade","Rank in position","Min","G","A",...SUBS.map(s=>s[0])].map(h=>
-            <th key={h} style={{textAlign:h==="Season"||h==="Club"||h==="Rank in position"?"left":"right",padding:"6px 8px",borderBottom:`2px solid ${T.ink}`,fontWeight:700,fontSize:10,letterSpacing:1,color:T.textDim,whiteSpace:"nowrap"}}>{h}</th>)}
-        </tr></thead>
-        <tbody>
-          {years.map(y=>{
-            const s=byYear[y];
-            if(!s){
-              // Explicit gap: this season exists in the record but this player does not appear in it.
-              return <tr key={y}>
-                <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,fontWeight:700,color:T.textMute}}>{y}</td>
-                <td colSpan={9} style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,color:T.textMute,fontFamily:T.serif,fontStyle:"italic",fontSize:12.5}}>Not in the record for this season</td>
-              </tr>;
-            }
-            const isArchive=y!==currentSeason;
-            const cov=seasonCoverage&&seasonCoverage[y];
-            const assistsKnown=s.assists!=null;
-            return <tr key={y}>
-              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,fontWeight:700,color:T.ink,whiteSpace:"nowrap"}}>
-                {y}{isArchive&&<span title="Archive season — different metric coverage" style={{marginLeft:6,fontSize:9,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 4px",letterSpacing:.5}}>ARCHIVE</span>}
-                {s.prov&&<span title="Provisional — under 450 minutes" style={{marginLeft:4,fontSize:9,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 4px",letterSpacing:.5}}>PROV</span>}
-              </td>
-              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,color:T.textDim,whiteSpace:"nowrap"}}>{s.team||"—"}</td>
-              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",fontWeight:700,color:gc(s.overall)}}>{s.overall}</td>
-              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,color:T.textDim,whiteSpace:"nowrap"}}>
-                {s.posRank?`#${s.posRank} of ${s.posOf} ${posLabel[s.posGroup]||""}`:"—"}
-              </td>
-              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",color:T.textDim}}>{sv(s.mins)}</td>
-              <td style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",color:T.textDim}}>{sv(s.goals)}</td>
-              <td title={assistsKnown?undefined:"This season's source did not carry real assist counts"} style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",color:assistsKnown?T.textDim:T.textMute}}>{assistsKnown?s.assists:"n/a"}</td>
-              {SUBS.map(([l,k])=><td key={l} style={{padding:"7px 8px",borderBottom:`1px dotted ${T.borderLt}`,textAlign:"right",color:gc(s[k])}}>{s[k]}</td>)}
-            </tr>;
-          })}
-        </tbody>
-      </table>
-    </div>
-
-    {movedClub&&<div style={{fontFamily:T.serif,fontSize:13,color:T.text,marginTop:10}}>
-      Club across tracked seasons: {tracked.map((y,i)=><span key={y}>{i>0&&<span style={{color:T.textMute}}> {"\u2192"} </span>}<b>{byYear[y].team}</b> <span style={{color:T.textMute,fontSize:12}}>({y})</span></span>)}
-    </div>}
-
-    <div style={{marginTop:10,padding:"10px 12px",border:`1px dashed ${T.border}`,fontFamily:T.sans,fontSize:12,color:T.textDim,lineHeight:1.55}}>
-      {archiveYears.length>0&&<div style={{marginBottom:6}}>
-        <b>Grades are not directly comparable across seasons.</b> {archiveYears.join(" and ")} {archiveYears.length===1?"is an archive season":"are archive seasons"} built from a smaller set of inputs than {currentSeason} — no Opta advanced metrics and no goalkeeper metrics — so a grade there reflects a different measurement basis, not simply a different level of play.
-      </div>}
-      <div>Seasons are matched by player name, so a player whose name is spelled differently between sources may show fewer seasons than they actually played.</div>
-    </div>
-  </div>;
-}
-
-export function PlayerModal({player:p,onClose,onCompare,isInCompare,seasonCoverage,allSeasons,currentSeason,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
+export function PlayerModal({player:p,onClose,onCompare,isInCompare,allSeasons,currentSeason,viewingSeason,onDrillSeason,canDrillSeason,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
   const[shareMsg,setShareMsg]=useState("");
   const[hsError,setHsError]=useState(false);
   useEffect(()=>setHsError(false),[p?.id]);
@@ -160,9 +81,14 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,seasonCovera
           <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1,marginTop:3,fontFamily:T.sans}}>CONSISTENCY</div>
         </div>
         <div style={{flex:1,padding:"12px 16px",textAlign:"center"}}>
-          <div style={{fontFamily:T.mono,fontWeight:700,fontSize:16,color:T.ink,lineHeight:1}}>{seasonInfo.impactPer90}</div>
+          <div title={seasonInfo.impactIncluded&&seasonInfo.impactIncluded.length?"Counts "+seasonInfo.impactIncluded.join(", ")+" per game played":undefined} style={{fontFamily:T.mono,fontWeight:700,fontSize:16,color:T.ink,lineHeight:1}}>{sv(seasonInfo.impactPer90)}{seasonInfo.impactReduced&&<span style={{color:T.accent}}>*</span>}</div>
           <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1,marginTop:3,fontFamily:T.sans}}>IMPACT/90</div>
         </div>
+      </div>}
+      {/* 6B.1: when an input the label implies is unavailable, say so rather than leaving the same
+          label over a quietly different calculation. No proxy is substituted for the missing term. */}
+      {seasonInfo&&(seasonInfo.seasonGradeReduced||seasonInfo.impactReduced)&&<div style={{padding:"8px 32px",borderBottom:`1px solid ${T.border}`,background:T.card,fontFamily:T.sans,fontSize:11.5,color:T.textDim,lineHeight:1.5}}>
+        <b style={{color:T.accent}}>*</b> Reduced inputs for this season: {seasonInfo.missingInputs&&seasonInfo.missingInputs.length?seasonInfo.missingInputs.join(", "):"assists"} {seasonInfo.missingInputs&&seasonInfo.missingInputs.length>1?"are":"is"} unavailable in the source, so the assist-dependent terms are omitted rather than counted as zero or replaced by an estimate. The Season Grade and Impact/90 above are therefore built from fewer inputs than a season where those values exist, and are not directly comparable to one.
       </div>}
 
       {/* Stats — 3x2 grid */}
@@ -185,8 +111,10 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,seasonCovera
         </div>
       </div>
 
-      {/* ── FORM & HISTORY SPARKLINES ── */}
-      {(formCurve||history)&&<div className="resp-col" style={{padding:"16px 32px",display:"flex",gap:20,borderBottom:`1px solid ${T.borderLt}`,alignItems:"stretch"}}>
+      {/* ── FORM SPARKLINE ──
+          6B.1: the tiny Season History sparkline that used to sit beside this has been replaced by
+          the fuller, gap-preserving chart inside Career at a glance, next to the coverage warning. */}
+      {formCurve&&<div className="resp-col" style={{padding:"16px 32px",display:"flex",gap:20,borderBottom:`1px solid ${T.borderLt}`,alignItems:"stretch"}}>
         {formCurve&&formCurve.length>1&&<div style={{flex:2,minWidth:0}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
             <div>
@@ -217,13 +145,8 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,seasonCovera
             <span style={{fontSize:10,color:T.textMute,fontFamily:T.sans}}>Current</span>
           </div>}
         </div>}
-        {history&&history.length>0&&<div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:8}}>Season History</div>
-          <div style={{fontSize:10,color:T.textMute,fontFamily:T.sans,marginBottom:6}}>{history.length} season{history.length>1?"s":""} tracked</div>
-          <SeasonSparkline seasons={history} height={56}/>
-        </div>}
       </div>}
-      <CareerAtAGlance player={p} history={history} seasonCoverage={seasonCoverage} allSeasons={allSeasons} currentSeason={currentSeason} isMobile={typeof window!=="undefined"&&window.innerWidth<600}/>
+      <CareerAtAGlance player={p} history={history} allSeasons={allSeasons} currentSeason={currentSeason} viewingSeason={viewingSeason} onDrill={onDrillSeason?(y)=>onDrillSeason(y,p.name):null} canDrill={canDrillSeason}/>
 
       {/* Detailed Stats — 3x2 grid */}
       {(p.position==="GK"||p.position==="Goalkeeper")?
@@ -383,7 +306,7 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,seasonCovera
       {/* ── SIMILAR PLAYERS ── */}
       {similarPlayers&&similarPlayers.length>0&&<div style={{padding:"16px 28px",borderTop:`1px solid ${T.borderLt}`}}>
         <div style={{fontSize:11.5,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:4}}>Similar Players</div>
-        <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,marginBottom:10}}>Most statistically similar {p.position}s based on percentile profile distance</div>
+        <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,marginBottom:10}}>Most statistically similar {p.position}s based on percentile profile distance{similarPlayers.some(sp=>sp.simMissing&&sp.simMissing.length)?` · a metric this season has no data for (${[...new Set(similarPlayers.flatMap(sp=>sp.simMissing||[]))].join(", ")}) is left out of the comparison rather than scored as zero`:""}</div>
         <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4}}>
           {similarPlayers.map((sp,i)=>(
             <div key={sp.id} onClick={()=>onSelectPlayer&&onSelectPlayer(sp)} style={{minWidth:110,padding:"12px 10px",background:T.card,borderRadius:0,border:`1px solid ${T.borderLt}`,textAlign:"center",cursor:"pointer",flexShrink:0,transition:"border-color .15s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=T.borderLt}>
@@ -436,7 +359,7 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,seasonCovera
             x.fillStyle=BORDER;x.fillRect(30,240,W-60,1);
             x.fillStyle=MUTE;x.font="bold 9px Inter,sans-serif";x.fillText("KEY STATS",30,268);
             const stats=[["Goals",p.goals],["Assists",p.assists],["xG",p.xGoals],["xA",p.xAssists],["Goals Added",p.totalGA],["Pass %",p.passComp+"%"],["Tackles",p.tackles||"—"],["Shots/On Target",p.shots!=null?p.shots+"/"+p.shotsOnTarget:"—"],["Market Value",p.marketValue>0?"$"+(p.marketValue/1e6).toFixed(1)+"M":"—"]];
-            stats.forEach((s,i)=>{const sy=290+i*28;x.fillStyle=DIM;x.font="12px Inter,sans-serif";x.fillText(s[0],30,sy);x.fillStyle=INK;x.font="bold 14px 'Source Serif 4',Georgia,serif";x.textAlign="right";x.fillText(String(s[1]),310,sy);x.textAlign="left";x.fillStyle=BORDER;x.fillRect(30,sy+8,290,0.5);});
+            stats.forEach((s,i)=>{const sy=290+i*28;x.fillStyle=DIM;x.font="12px Inter,sans-serif";x.fillText(s[0],30,sy);x.fillStyle=INK;x.font="bold 14px 'Source Serif 4',Georgia,serif";x.textAlign="right";x.fillText(String(dv(s[1])),310,sy);/*6B.1: unavailable values print an em dash, never the string "null"*/x.textAlign="left";x.fillStyle=BORDER;x.fillRect(30,sy+8,290,0.5);});
             const radarX=520,radarY=395,radarR=115;
             const rCats=[p.attack,p.passing,p.defense,p.creativity,p.carrying,p.overall];const rLabels=["ATT","PAS","DEF","CRE","CAR","OVR"];
             for(let ring=1;ring<=4;ring++){x.beginPath();const rr=radarR*(ring/4);for(let i=0;i<6;i++){const a=Math.PI*2*i/6-Math.PI/2;x.lineTo(radarX+rr*Math.cos(a),radarY+rr*Math.sin(a));}x.closePath();x.strokeStyle=BORDER;x.lineWidth=0.5;x.stroke();}
