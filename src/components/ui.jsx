@@ -2,7 +2,7 @@
 import { matchRating } from "../analytics/form.mjs";
 import { tcm } from "../data/teams.mjs";
 import { T, gb, gc, gl } from "../theme.mjs";
-import { Line, LineChart, ResponsiveContainer, XAxis, useEffect, useMemo, useRef, useState } from "../ui/runtime.jsx";
+import { useEffect, useMemo, useRef, useState } from "../ui/runtime.jsx";
 import { dv } from "../util/format.mjs";
 
 export function PosGlyph({pos,h=28,line,dot}){const L=line||T.ink,D=dot||T.accent,W=Math.round(h*40/56),cy=({Forward:11,Midfielder:28,Defender:41,Goalkeeper:49}[pos]||28);return <svg width={W} height={h} viewBox="0 0 40 56" role="img" aria-label={pos+" position"} style={{display:"block",flexShrink:0}}><g fill="none" stroke={L} strokeWidth={1.6} opacity={0.6}><rect x="3" y="3" width="34" height="50" rx="2"/><line x1="3" y1="28" x2="37" y2="28"/><circle cx="20" cy="28" r="5"/><rect x="12" y="3" width="16" height="8"/><rect x="12" y="45" width="16" height="8"/></g><circle cx="20" cy={cy} r="4.5" fill={D}/></svg>;}
@@ -178,20 +178,9 @@ export function MiniSparkline({matchLog,pos,w=40,h=14}){
   return <svg width={w} height={h} style={{display:"block",flexShrink:0}}><path d={d} fill="none" stroke={col} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/><circle cx={pts[pts.length-1][0]} cy={pts[pts.length-1][1]} r={2} fill={col}/></svg>;
 }
 
-export function SeasonSparkline({seasons,width=180,height=60}){
-  if(!seasons||seasons.length<1)return <span style={{fontSize:11,color:T.textMute,fontFamily:T.sans,fontStyle:"italic"}}>No history</span>;
-  return <div>
-    <ResponsiveContainer width="100%" height={height}>
-      <LineChart data={seasons} margin={{top:8,right:12,bottom:4,left:12}}>
-        <XAxis dataKey="year" tick={{fontSize:11,fill:T.textMute,fontFamily:"Inter,sans-serif"}} axisLine={false} tickLine={false}/>
-        <Line type="monotone" dataKey="overall" stroke={T.ink} strokeWidth={2.5} dot={{r:4,fill:T.ink,stroke:T.bg,strokeWidth:2}} isAnimationActive={false}/>
-      </LineChart>
-    </ResponsiveContainer>
-    <div style={{display:"flex",justifyContent:"center",gap:12,marginTop:2}}>
-      {seasons.map(s=><span key={s.year} style={{fontFamily:T.mono,fontSize:11.5,fontWeight:700,color:gc(s.overall)}}>{s.overall}</span>)}
-    </div>
-  </div>;
-}
+// 6B.1: SeasonSparkline removed. It smoothed a monotone line across every season it was given,
+// which drew a straight run through seasons the Index has no row for. Its replacement is
+// SeasonHistoryChart in components/career.jsx, which breaks the line at a missing season.
 
 // Tiny inline SVG sparkline for table rows (no Recharts overhead)
 export function MiniSpark({data,width=60,height=20,color}){

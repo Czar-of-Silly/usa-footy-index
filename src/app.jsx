@@ -1,4 +1,5 @@
 // src/app.jsx — application root (Phase 5.3 source split). Built to public/app.js by `npm run build`.
+import { assistsCoverageComplete, buildNameIndex, buildPercentiles, canDrillThrough, compareUnknownLast, goalContribution, goldenBootOrder, impactPerGame, mvpScore, posGroupKey, positionalRanks, profileSimilarity, resolveExactName, sumStrict } from "./analytics/archive.mjs";
 import { matchRating } from "./analytics/form.mjs";
 import { cardMatchPreview, cardMovers, cardPowerRankings, cardTOTW, setDataGenerated } from "./cards/share-cards.jsx";
 import { PlayerModal } from "./components/player-modal.jsx";
@@ -40,14 +41,11 @@ const SEASON_COVERAGE={
 // (verified: 100% of rows in both). fetch-history-v2.js now reads ASA's authoritative
 // primary_assists, but the committed caches still hold the synthesised values — so until those are
 // re-imported, historical assists are reported as unavailable rather than mislabelled.
-// 6B: one place that maps a prepared player to its ranking group. Mirrors the engine's own
-// GK/FW/DF/MF split so ranks line up with how grades were actually computed.
-function posGroupKey(p){
-  if(p.isGK)return "GK";
-  const pos=p.pos||"Midfielder";
-  return pos==="Forward"?"FW":pos==="Defender"?"DF":"MF";
-}
+// 6B: posGroupKey (the prepared-player → ranking-group map that mirrors the engine's own
+// GK/FW/DF/MF split) and the rest of the archive/unknown-value semantics now live in
+// analytics/archive.mjs so they can be tested as behaviour rather than as source text.
 const SEASON_ASSISTS_OK={2026:true,2025:false,2024:false};
+const ALL_SEASONS=[2024,2025,2026];
 const CURRENT_SEASON=2026;
 
 const CY = new Date().getFullYear();
@@ -89,7 +87,10 @@ function MLSAnalytics(){
   const[srView,setSrView]=useState("table");
   const[srMinMins,setSrMinMins]=useState(0);
   const[trA,setTrA]=useState("");const[trB,setTrB]=useState("");const[trOutA,setTrOutA]=useState([]);const[trOutB,setTrOutB]=useState([]);const[trSug,setTrSug]=useState(false);const[trAstA,setTrAstA]=useState({gam:0,intl:0,picks:0});const[trAstB,setTrAstB]=useState({gam:0,intl:0,picks:0});/*TMASSETS*/
-  const[histData,setHistData]=useState({}); // {2024:{name->grades}, 2025:{...}, 2026:{...}}
+  const[histData,setHistData]=useState({}); // {2024:{byId,byName,counts}, 2025:{...}, 2026:{...}}
+  // A requested cross-season jump: {year,name}. Applied once that season's cache has loaded, and
+  // only if the exact name resolves to exactly one player there. Never a fuzzy or team-based match.
+  const drillPending=useRef(null);/*6B.1-DRILL*/
   const[h2hHome,setH2hHome]=useState("");
   const[h2hAway,setH2hAway]=useState("");
   const[totwWeek,setTotwWeek]=useState(0); // 0 = latest
@@ -198,6 +199,15 @@ function MLSAnalytics(){
         return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",/*6B-ZERO*/overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:SEASON_ASSISTS_OK[season]===false?null:(r.as||0),/*Phase 6A: 2024/25 cache assists are Math.round(xA), not real assists — withheld rather than mislabelled. null renders as an em dash via sv(), the same convention already used for tackles/shots/clearances.*/xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk??null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh??null,shotsOnTarget:r.so??null,fouls:r.fl??null,yellowCards:r.yc??null,redCards:r.rc??null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp??null,sca:r.sca??null,prgPasses:r.prgp??null,ftPasses:r.ftp??null,pressures:r.prs??null,interceptions:r.intc??null,aerials:r.arl??null,dribbles:r.drb??null,prgCarries:r.prgc??null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:("oxg" in r)?+(r.oxg||0):null,chances:("chc" in r)?(r.chc||0):null,goalOpps:r.gop||0,aerialPct:("arlPct" in r)?(r.arlPct||0):null,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:("clr" in r)?(r.clr||0):null,pressureRes:("presR" in r)?+(r.presR||0):null,escapeRate:("esc" in r)?+(r.esc||0):null,distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
+      // 6B.1 drill-through landing: reopen the same player in the destination season, but only on a
+      // unique exact-name match. Zero matches or more than one match means the jump silently lands
+      // on the season with no player selected rather than opening the wrong person.
+      const pend=drillPending.current;/*6B.1-DRILLLAND*/
+      if(pend&&pend.year===season){
+        drillPending.current=null;
+        const hits=final.filter(x=>x.name===pend.name);
+        setSel(hits.length===1?hits[0]:null);
+      }
     }catch(e){setErrMsg("Processing error: "+e.message);}
     setLoading(false);}load();},[season]);
 
@@ -226,20 +236,20 @@ function MLSAnalytics(){
           // league-wide every time a modal opens. Uses ONLY this season's players and only the
           // player's own normalised position group. Standard competition ranking (1,2,2,4) so tied
           // Overall grades share a rank instead of depending on array order.
-          const rankRows=inter.filter(p=>grades[p.id]).map(p=>({n:p.raw.n,pos:posGroupKey(p),ov:grades[p.id].overall}));/*6B-RANKS*/
-          const rankByName={},posTotals={};
-          for(const grp of ["FW","MF","DF","GK"]){
-            const sub=rankRows.filter(r=>r.pos===grp).sort((a,b)=>b.ov-a.ov);
-            posTotals[grp]=sub.length;
-            let lastOv=null,lastRank=0;
-            sub.forEach((r,i)=>{const rank=(lastOv!==null&&r.ov===lastOv)?lastRank:i+1;rankByName[r.n]={rank,pos:grp,of:sub.length};lastOv=r.ov;lastRank=rank;});
-          }
-          const byName={};
+          // 6B.1: ranks are keyed by the prepared player's id, not by name. Keying by name let two
+          // players who share an exact name overwrite each other's rank.
+          const rankRows=inter.filter(p=>grades[p.id]).map(p=>({key:p.id,pos:posGroupKey(p),ov:grades[p.id].overall}));/*6B-RANKS*/
+          const {ranks:rankById}=positionalRanks(rankRows);
+          const rows=[];
           inter.forEach(p=>{const r=p.raw,g=grades[p.id];if(!g)return;
-            const rk=rankByName[r.n]||null;
-            byName[r.n]={overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,isGK:!!g.isGK,goals:r.g,assists:SEASON_ASSISTS_OK[yr]===false?null:r.as,mins:r.m,team:r.t,marketValue:r.mv,posRank:rk?rk.rank:null,posGroup:rk?rk.pos:null,posOf:rk?rk.of:null,prov:(r.m||0)<450,assistsKnown:SEASON_ASSISTS_OK[yr]!==false};
+            const rk=rankById[p.id]||null;
+            rows.push({id:p.id,name:r.n,overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,isGK:!!g.isGK,goals:r.g,assists:SEASON_ASSISTS_OK[yr]===false?null:r.as,mins:r.m,team:r.t,marketValue:r.mv,posRank:rk?rk.rank:null,posGroup:rk?rk.pos:null,posOf:rk?rk.of:null,prov:(r.m||0)<450,assistsKnown:SEASON_ASSISTS_OK[yr]!==false});
           });
-          results[yr]=byName;
+          // Exact-name index that KEEPS the duplicate count, so an ambiguous name can be refused
+          // instead of silently resolving to whichever row happened to be written last.
+          const {counts,byName}=buildNameIndex(rows,r=>r.name);/*6B.1-NAMEIDX*/
+          const byId={};rows.forEach(r=>{byId[r.id]=r;});
+          results[yr]={byId,byName,counts};
         }catch(e){/* skip failed season */}
       }
       setHistData(results);
@@ -283,58 +293,87 @@ function MLSAnalytics(){
     const tp=players.filter(p=>p.team===t.abbr&&!p.departed);const n=tp.length||1;
     const sum=(k)=>tp.reduce((s,p)=>s+(parseFloat(p[k])||0),0);
     const avg=(k)=>Math.round(sum(k)/n);const wAvg=(k)=>{let ws=0,wt=0;for(const p of tp){const w=parseFloat(p.mins)||0;if(w<=0)continue;ws+=(parseFloat(p[k])||0)*w;wt+=w;}return wt>0?Math.round(ws/wt):55;};
-    return{...t,overall:tp.length?wAvg("overall"):55,attack:tp.length?wAvg("attack"):55,passing:tp.length?wAvg("passing"):55,defense:tp.length?wAvg("defense"):55,creativity:tp.length?wAvg("creativity"):55,carrying:tp.length?wAvg("carrying"):55,squadValue:sum("marketValue"),count:tp.length,totalGoals:sum("goals"),totalAssists:sum("assists"),avgAge:tp.length?(sum("age")/n).toFixed(1):null,totalTackles:sum("tackles"),topScorer:tp.length?[...tp].sort((a,b)=>b.goals-a.goals)[0]:null,topRated:tp.length?[...tp].sort((a,b)=>b.overall-a.overall)[0]:null};
+    // 6B.1: club assist totals use a strict sum. The generic helper coerces an unknown assist to 0,
+    // which turned an archive season with no assist data at all into a published "Total Assists: 0".
+    // If any squad member's assists are unknown the club total is unknown (null → em dash).
+    return{...t,overall:tp.length?wAvg("overall"):55,attack:tp.length?wAvg("attack"):55,passing:tp.length?wAvg("passing"):55,defense:tp.length?wAvg("defense"):55,creativity:tp.length?wAvg("creativity"):55,carrying:tp.length?wAvg("carrying"):55,squadValue:sum("marketValue"),count:tp.length,totalGoals:sum("goals"),totalAssists:sumStrict(tp,"assists"),/*6B.1-TEAMA*/avgAge:tp.length?(sum("age")/n).toFixed(1):null,totalTackles:sum("tackles"),topScorer:tp.length?[...tp].sort((a,b)=>b.goals-a.goals)[0]:null,topRated:tp.length?[...tp].sort((a,b)=>b.overall-a.overall)[0]:null};
   }).sort((a,b)=>b.overall-a.overall),[players]);
   const teamOpts=useMemo(()=>[["All","All Teams"],...MLS_TEAMS.map(t=>[t.abbr,t.name])],[]);
   const POS={All:null,Forward:["Forward","FW"],Midfielder:["Midfielder","MF"],Defender:["Defender","DF","DEF"],GK:["GK","Goalkeeper"]};
   const _keyMap={};
   const toggleSort=(key)=>{if(sortKey===key){setSortDir(d=>d==="desc"?"asc":"desc");}else{setSortKey(key);setSortDir(key==="age"?"asc":"desc");}};
-  const filtered=useMemo(()=>{const c=POS[posFilter];const dir=sortDir==="asc"?1:-1;return[...players].filter(p=>(!c||c.includes(p.position))&&(teamFilter==="All"||p.team===teamFilter)&&(p.mins||0)>=minMins).sort((a,b)=>{if(sortKey==="team")return dir*(a.team||"").localeCompare(b.team||"");if(sortKey==="age")return dir*(parseFloat(a.age||99)-parseFloat(b.age||99));const av=Number(a[sortKey])||0,bv=Number(b[sortKey])||0;return dir*(av-bv);}).slice(0,100);},[players,posFilter,teamFilter,sortKey,sortDir,minMins]);
+  const filtered=useMemo(()=>{const c=POS[posFilter];const dir=sortDir==="asc"?1:-1;return[...players].filter(p=>(!c||c.includes(p.position))&&(teamFilter==="All"||p.team===teamFilter)&&(p.mins||0)>=minMins).sort((a,b)=>{if(sortKey==="team")return dir*(a.team||"").localeCompare(b.team||"");if(sortKey==="age")return dir*(parseFloat(a.age||99)-parseFloat(b.age||99));return compareUnknownLast(a[sortKey],b[sortKey],dir);/*6B.1-SORT*/}).slice(0,100);},[players,posFilter,teamFilter,sortKey,sortDir,minMins]);
   const posBuckets=useMemo(()=>{const b={};players.forEach(p=>{if(!b[p.position])b[p.position]=[];b[p.position].push(p.overall);});return Object.entries(b).filter(([,g])=>g.length>=2).map(([pos,gr])=>({pos,avg:Math.round(gr.reduce((a,b)=>a+b,0)/gr.length),count:gr.length,top:Math.max(...gr),grades:gr})).sort((a,b)=>b.avg-a.avg);},[players]);
   const teamLogos=useMemo(()=>{const m={};players.forEach(p=>{if(p.teamLogo&&!m[p.team])m[p.team]=p.teamLogo;});return m;},[players]);
   const best=filtered.length?[...filtered].sort((a,b)=>b.overall-a.overall)[0]:null;
 
-  // Percentile ranks per player
-  const pctRanks=useMemo(()=>{
-    if(!players.length)return{};
-    const keys=["overall","attack","passing","defense","creativity","carrying","goals","assists","tackles","pressures","keyPasses","sca","dribbles","prgCarries","prgPasses","interceptions","aerials"];
-    const sorted={};keys.forEach(k=>{sorted[k]=[...players].map(p=>parseFloat(p[k])||0).sort((a,b)=>a-b);});
-    const rank=(arr,v)=>Math.round((arr.filter(x=>x<v).length/Math.max(arr.length-1,1))*100);
-    const out={};players.forEach(p=>{const r={};keys.forEach(k=>{r[k]=rank(sorted[k],parseFloat(p[k])||0);});out[p.id]=r;});
-    return out;
-  },[players]);
+  // Percentile ranks per player.
+  // 6B.1: an unavailable metric no longer becomes a 0 percentile. buildPercentiles keeps the same
+  // rank formula for valid metrics but builds each pool from known values only and returns null for
+  // a player whose value the season does not carry.
+  const PCT_KEYS=["overall","attack","passing","defense","creativity","carrying","goals","assists","tackles","pressures","keyPasses","sca","dribbles","prgCarries","prgPasses","interceptions","aerials"];
+  const pctRanks=useMemo(()=>buildPercentiles(players,PCT_KEYS),[players]);/*6B.1-PCT*/
 
   // ── SIMILAR PLAYERS: find statistically closest matches ─────────────────
   const findSimilar=useMemo(()=>{
     if(!players.length||!Object.keys(pctRanks).length)return()=>[];
+    // 6B.1: a metric neither player has (archive assists) is excluded from the distance and the
+    // remaining dimensions are rescaled, instead of both players being scored a fake 0 percentile
+    // — which made every archive player look artificially alike on that axis.
     const keys=["overall","attack","passing","defense","creativity","carrying","goals","assists","tackles","keyPasses","dribbles","pressures"];
     return(pid)=>{
       const src=pctRanks[pid];if(!src)return[];
       const srcPlayer=players.find(p=>p.id===pid);if(!srcPlayer)return[];
       return players.filter(p=>p.id!==pid&&p.position===srcPlayer.position).map(p=>{
         const pr=pctRanks[p.id];if(!pr)return null;
-        const dist=Math.sqrt(keys.reduce((s,k)=>s+((src[k]||0)-(pr[k]||0))**2,0));
-        return{...p,similarity:Math.round(Math.max(0,100-dist/keys.length*1.5))};
+        const s=profileSimilarity(src,pr,keys);/*6B.1-SIM*/
+        if(!s)return null;
+        return{...p,similarity:s.similarity,simUsed:s.used,simOf:s.of,simMissing:s.missing};
       }).filter(Boolean).sort((a,b)=>b.similarity-a.similarity).slice(0,5);
     };
   },[players,pctRanks]);
 
-  // ── PLAYER HISTORY: cross-season grade lookup ───────────────────────────
+  // ── PLAYER HISTORY: cross-season lookup ─────────────────────────────────
+  // Two join rules, both exact:
+  //   • the season currently loaded joins by prepared-player id. Both loaders read the same cache
+  //     and run the same deterministic pipeline, so index i is the same player in both; the name is
+  //     re-checked before the join is accepted, and a mismatch falls back to the name rule.
+  //   • every other season joins only on an exact name that occurs exactly once there. Zero matches
+  //     is a gap; more than one is ambiguous and is shown as such, never guessed.
   const playerHistory=useMemo(()=>{
     if(!players.length||!Object.keys(histData).length)return{};
     const out={};
     players.forEach(p=>{
       const seasons=[];
-      [2024,2025,2026].forEach(yr=>{
-        const yrData=histData[yr];
-        if(!yrData)return;
-        const match=yrData[p.name];
-        if(match)seasons.push({year:yr,...match});
+      ALL_SEASONS.forEach(yr=>{
+        const idx=histData[yr];
+        if(!idx)return;
+        if(yr===season){
+          const byId=idx.byId[p.id];
+          if(byId&&byId.name===p.name){seasons.push({year:yr,...byId,join:"id"});return;}
+        }
+        const status=resolveExactName(idx.counts,p.name);/*6B.1-JOIN*/
+        if(status==="ambiguous"){seasons.push({year:yr,ambiguous:true});return;}
+        if(status==="unique"){const m=idx.byName[p.name];if(m)seasons.push({year:yr,...m,join:"name"});}
       });
       if(seasons.length>0)out[p.id]=seasons;
     });
     return out;
-  },[players,histData]);
+  },[players,histData,season]);
+
+  // Can this player be reopened in that season? Only on a unique exact-name match there.
+  const canDrillSeason=useMemo(()=>(yr,name)=>{
+    const idx=histData[yr];
+    return !!idx&&yr!==season&&canDrillThrough(idx.counts,name);
+  },[histData,season]);
+  // Switch the global season and reopen the same player there. Refuses rather than guessing.
+  const drillToSeason=(yr,name)=>{
+    if(yr===season||!canDrillSeason(yr,name))return;
+    drillPending.current={year:yr,name};
+    setSel(null);
+    setSeason(yr);
+    try{window.scrollTo({top:0,left:0,behavior:"auto"});}catch(e){}
+  };
 
   // ── SEASON RATINGS ─────────────────────────────────────────────────────────
   const seasonRatings=useMemo(()=>{
@@ -357,11 +396,12 @@ function MLSAnalytics(){
       const minsBonus=minsFactor*3;
 
       // G/A contribution bonus (up to +4)
-      // 6B preflight: assists===null means UNKNOWN (2024/25 archive), not zero. Scoring it as 0 would
-      // quietly penalise every archive player. Use goals alone and rescale so the bonus keeps the same
-      // ceiling rather than silently shrinking a player's rating for missing data.
-      const gaKnown=p.assists!=null;/*6B-GA*/
-      const gaContrib=gaKnown?Math.min(4,((p.goals||0)+(p.assists||0))*0.25):Math.min(4,(p.goals||0)*0.25*1.5);
+      // 6B.1: assists===null means UNKNOWN (2024/25 archive), not zero — and it is not a licence to
+      // invent production either. The earlier 6B patch multiplied the goals-only term by 1.5 to keep
+      // the same ceiling; that manufactured an assist proxy out of nothing. The assist term is now
+      // simply absent, and the resulting Season Grade is disclosed as built from reduced inputs.
+      const gc_=goalContribution(p.goals,p.assists);/*6B.1-GA*/
+      const gaContrib=gc_.value;
 
       let seasonRaw=rawComposite+gaBonus+minsBonus+gaContrib;
       const seasonGrade=Math.round(Math.max(42,Math.min(99,seasonRaw)));
@@ -372,9 +412,10 @@ function MLSAnalytics(){
       const stddev=Math.sqrt(subGrades.reduce((s,g)=>s+(g-subMean)**2,0)/subGrades.length);
       const consistency=Math.round(Math.max(0,Math.min(100,100-(stddev*1.5))));
 
-      // Impact per 90
-      // 6B preflight: omit the unknown assist term entirely rather than counting it as 0.
-      const impactPer90=gamesPlayed>0?((p.goals||0)+(p.assists!=null?p.assists:0)+(p.tackles||0)+(p.keyPasses||0)+(p.interceptions||0))/gamesPlayed:0;/*6B-IMPACT*/
+      // Impact per 90.
+      // 6B.1: an unavailable term is dropped AND reported, so the figure is never presented under
+      // the full definition when it was not computed from the full definition.
+      const impact=impactPerGame(p,gamesPlayed);/*6B.1-IMPACT*/
 
       // Value efficiency: season grade per $1M market value
       const valueEff=p.marketValue>0?(seasonGrade/(p.marketValue/1e6)).toFixed(1):null;
@@ -392,7 +433,9 @@ function MLSAnalytics(){
       const posGroup=p.position==="Forward"||p.position==="FW"?"FW":p.position==="Midfielder"||p.position==="MF"?"MF":p.position==="Defender"||p.position==="DF"||p.position==="DEF"?"DF":(p.position==="GK"||p.position==="Goalkeeper")?"GK":"MF";
 
       return{
-        ...p,seasonGrade,consistency,impactPer90:impactPer90.toFixed(1),
+        ...p,seasonGrade,consistency,impactPer90:impact.value==null?null:impact.value.toFixed(1),
+        impactReduced:impact.reduced,impactIncluded:impact.included,impactMissing:impact.missing,
+        seasonGradeReduced:gc_.reduced,missingInputs:[...new Set([...(gc_.reduced?["assists"]:[]),...impact.missing])],
         valueEff,profile,formTrend,gamesPlayed,posGroup,
         gaBonus:gaBonus.toFixed(1),minsBonus:minsBonus.toFixed(1),
         gaContrib:gaContrib.toFixed(1),rawComposite:rawComposite.toFixed(1),
@@ -660,9 +703,10 @@ function MLSAnalytics(){
 
             <div style={{fontSize:11.5,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:8}}>GRADE SCALE</div>
             <div style={{display:"flex",gap:8,marginBottom:24,flexWrap:"wrap"}}>
-              {[{min:85,label:"ELITE",c:T.gold},{min:75,label:"GREAT",c:T.green},{min:65,label:"ABOVE AVG",c:T.blue},{min:55,label:"AVERAGE",c:T.textDim},{min:42,label:"POOR",c:T.red}].map(g=>(
+              {/*6B.1: the engine can produce values below 42, so the bottom tier is described as "below 55" rather than implying a 42 floor.*/}
+              {[{disp:"85+",label:"ELITE",c:T.gold},{disp:"75+",label:"GREAT",c:T.green},{disp:"65+",label:"ABOVE AVG",c:T.blue},{disp:"55+",label:"AVERAGE",c:T.textDim},{disp:"Below 55",label:"POOR",c:T.red}].map(g=>(
                 <div key={g.label} style={{display:"flex",alignItems:"center",gap:6,padding:"4px 12px",background:`${g.c}10`,border:`1px solid ${g.c}25`,borderRadius:0}}>
-                  <span style={{fontFamily:T.serif,fontWeight:700,fontSize:14,color:g.c}}>{g.min}+</span>
+                  <span style={{fontFamily:T.serif,fontWeight:700,fontSize:14,color:g.c}}>{g.disp}</span>
                   <span style={{fontSize:11,fontWeight:600,color:g.c,letterSpacing:.8}}>{g.label}</span>
                 </div>
               ))}
@@ -1205,7 +1249,7 @@ function MLSAnalytics(){
             const dir=srDir==="asc"?1:-1;
             if(srSort==="age")return dir*(parseFloat(a.age||99)-parseFloat(b.age||99));
             if(srSort==="name")return dir*(a.name||"").localeCompare(b.name||"");
-            return dir*((parseFloat(a[srSort])||0)-(parseFloat(b[srSort])||0));
+            return compareUnknownLast(a[srSort],b[srSort],dir);/*6B.1-SORT*/
           });
 
           const formIcon=(t)=>t==="up"?"▲":t==="down"?"▼":"—";
@@ -1342,7 +1386,7 @@ function MLSAnalytics(){
                       <div style={{fontSize:10,color:T.textMute,letterSpacing:.5,marginTop:2}}>CONSIST</div>
                     </div>
                     <div style={{textAlign:"center",padding:"6px 4px",background:T.card,borderRadius:0}}>
-                      <div style={{fontFamily:T.mono,fontSize:12,fontWeight:700,color:T.ink}}>{p.impactPer90}</div>
+                      <div title={p.impactReduced?"Reduced inputs \u2014 "+(p.impactMissing||[]).join(", ")+" unavailable this season":undefined} style={{fontFamily:T.mono,fontSize:12,fontWeight:700,color:T.ink}}>{sv(p.impactPer90)}{p.impactReduced?"*":""}</div>
                       <div style={{fontSize:10,color:T.textMute,letterSpacing:.5,marginTop:2}}>IMP/90</div>
                     </div>
                     <div style={{textAlign:"center",padding:"6px 4px",background:T.card,borderRadius:0}}>
@@ -1400,7 +1444,7 @@ function MLSAnalytics(){
                 <div style={{textAlign:"center"}}>
                   <span style={{fontFamily:T.mono,fontWeight:600,fontSize:isMobile?12:12,color:p.consistency>=80?T.green:p.consistency>=60?T.blue:T.red,background:`${p.consistency>=80?T.green:p.consistency>=60?T.blue:T.red}10`,padding:"2px 6px",borderRadius:0}}>{p.consistency}%</span>
                 </div>
-                {!isMobile&&<div style={{fontSize:13,color:T.ink,fontWeight:600,fontFamily:T.mono,textAlign:"center"}}>{p.impactPer90}</div>}
+                {!isMobile&&<div title={p.impactReduced?"Reduced inputs \u2014 "+(p.impactMissing||[]).join(", ")+" unavailable this season":undefined} style={{fontSize:13,color:T.ink,fontWeight:600,fontFamily:T.mono,textAlign:"center"}}>{sv(p.impactPer90)}{p.impactReduced?"*":""}</div>}
                 {!isMobile&&<div style={{fontSize:14,color:+p.totalGA>=0?T.green:T.red,fontWeight:700,fontFamily:T.mono,textAlign:"center"}}>{+p.totalGA>=0?"+":""}{p.totalGA}</div>}
               </div>)}
               </>})()}
@@ -1511,7 +1555,7 @@ function MLSAnalytics(){
             <div style={{marginTop:28,padding:"18px 22px",background:T.card,border:`1px solid ${T.borderLt}`,borderRadius:0}}>
               <div style={{fontSize:11.5,color:T.textMute,fontWeight:700,letterSpacing:2,fontFamily:T.sans,marginBottom:8}}>HOW SEASON RATING WORKS</div>
               <div style={{fontSize:12,color:T.textDim,fontFamily:T.sans,lineHeight:1.7}}>
-                The Season Rating is a cumulative performance index built from real match-level data. When per-game boxscore data is available (via ESPN), each player gets a per-match rating based on goals (+12), assists (+8), shots on target (+2), shots (+0.5), minutes played, fouls (-1), cards (-3/-10). The form sparkline shows this real game-by-game trajectory. The cumulative grade combines the weighted composite of all six grade categories (30% Overall, 15% Attack, 15% Passing, 15% Defense, 12.5% Creativity, 12.5% Carrying), plus bonuses for Goals Added contribution, minutes durability, and goal involvement. Players with fewer than 450 minutes are tagged as provisional (PROV). Use the Min. Mins filter to focus on established starters or see the full roster.
+                The Season Rating is a cumulative performance index built from real match-level data. When per-game boxscore data is available (via ESPN), each player gets a per-match rating based on goals (+12), assists (+8), shots on target (+2), shots (+0.5), minutes played, fouls (-1), cards (-3/-10). The form sparkline shows this real game-by-game trajectory. The cumulative grade combines the weighted composite of all six grade categories (30% Overall, 15% Attack, 15% Passing, 15% Defense, 12.5% Creativity, 12.5% Carrying), plus bonuses for Goals Added contribution, minutes durability, and goal involvement. Players with fewer than 450 minutes are tagged as provisional (PROV). Use the Min. Mins filter to focus on established starters or see the full roster.{SEASON_ASSISTS_OK[season]===false?" This season's source carries no real assist counts, so the goal-involvement term is computed from goals alone and Impact/90 omits its assist term. Nothing is substituted for the missing value — the figures on this page are therefore built from fewer inputs than a season where assists exist, and are marked with an asterisk where that applies.":""}
               </div>
             </div>
           </div>;
@@ -1630,13 +1674,13 @@ function MLSAnalytics(){
                   <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>
                     {[
                       {l:"Total Goals",v:t.totalGoals,c:T.ink},
-                      {l:"Total Assists",v:t.totalAssists,c:T.ink},
+                      {l:"Total Assists",v:sv(t.totalAssists),c:T.ink,t:t.totalAssists==null?"No assist data in this season's source \u2014 unavailable, not zero":null},/*6B.1-TEAMA*/
                       {l:"Avg Age",v:t.avgAge||"—",c:T.textDim},
                       {l:"Total Tackles",v:t.totalTackles,c:T.ink},
                       {l:"Squad Value",v:fv(t.squadValue),c:vc(t.squadValue)},
                       {l:"Players",v:t.count,c:T.textDim},
                     ].map(s=>(
-                      <div key={s.l} style={{textAlign:"center",padding:"8px 4px",background:T.bg,borderRadius:0,border:`1px solid ${T.borderLt}`}}>
+                      <div key={s.l} title={s.t||undefined} style={{textAlign:"center",padding:"8px 4px",background:T.bg,borderRadius:0,border:`1px solid ${T.borderLt}`}}>
                         <div style={{fontFamily:T.serif,fontWeight:700,fontSize:16,color:s.c,lineHeight:1}}>{s.v}</div>
                         <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:.8,marginTop:4,fontFamily:T.sans,textTransform:"uppercase"}}>{s.l}</div>
                       </div>
@@ -1763,7 +1807,7 @@ function MLSAnalytics(){
                 <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:1,fontFamily:T.sans,marginBottom:10}}>KEY PLAYER BATTLES</div>
                 <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>{matchup(hBestFW,aBestDF)}{matchup(hBestMF,aBestMF)}{matchup(hBestDF,aBestFW)}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:16}}>
-                  {[{l:"Total Goals",h:tH.totalGoals,a:tA.totalGoals},{l:"Total Assists",h:tH.totalAssists,a:tA.totalAssists},{l:"Squad Value",h:fv(tH.squadValue),a:fv(tA.squadValue)},{l:"Avg Age",h:tH.avgAge||"—",a:tA.avgAge||"—"}].map(s=>(
+                  {[{l:"Total Goals",h:tH.totalGoals,a:tA.totalGoals},{l:"Total Assists",h:sv(tH.totalAssists),a:sv(tA.totalAssists)},{l:"Squad Value",h:fv(tH.squadValue),a:fv(tA.squadValue)},{l:"Avg Age",h:tH.avgAge||"—",a:tA.avgAge||"—"}].map(s=>(
                     <div key={s.l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 12px",background:T.card,borderRadius:0}}>
                       <span style={{fontFamily:T.mono,fontWeight:700,fontSize:13,color:T.ink}}>{s.h}</span>
                       <span style={{fontSize:11,color:T.textMute,fontFamily:T.sans,fontWeight:600}}>{s.l}</span>
@@ -1786,7 +1830,7 @@ function MLSAnalytics(){
             return{...t,pts:st.pts||0,w:st.w||0,dr:st.d||0,l:st.l||0,gf:st.gf||0,ga:st.ga||0,gd:(st.gf||0)-(st.ga||0)};
           }).sort((a,b)=>{
             const dir=sortDir==="asc"?1:-1;
-            if(["overall","attack","passing","defense","totalGoals","totalAssists"].includes(sortKey))return dir*(Number(a[sortKey]||0)-Number(b[sortKey]||0));
+            if(["overall","attack","passing","defense","totalGoals","totalAssists"].includes(sortKey))return compareUnknownLast(a[sortKey],b[sortKey],dir);/*6B.1-SORT*/
             if(b.pts!==a.pts)return b.pts-a.pts;if(b.gd!==a.gd)return b.gd-a.gd;return b.gf-a.gf;
           }).map((t,i)=>({...t,rank:i+1}));
           return <div style={{animation:"fadeUp .4s ease"}}>
@@ -2318,13 +2362,20 @@ function MLSAnalytics(){
 
           {/* ── AWARD RACES ── */}
           {leadersView==="awards"&&(()=>{
-            const mvpCandidates=[...players].filter(p=>p.position!=="GK"&&p.position!=="Goalkeeper"&&(p.mins||0)>=200).map(p=>{
-              const minFactor=Math.min((p.mins||0)/450,1);
-              const score=Math.round((p.overall*0.4+((p.goals||0)*3+(p.assists!=null?p.assists*2:0))*2+(+p.totalGA>=0?+p.totalGA*8:+p.totalGA*4))*minFactor*10)/10;/*6B-AWARD*/
-              return{...p,mvpScore:score};
-            }).sort((a,b)=>b.mvpScore-a.mvpScore).slice(0,10);
-            // 6B preflight: unknown assists sort last among equal goals rather than tying with 0.
-            const bootRace=[...players].filter(p=>(p.goals||0)>=1).sort((a,b)=>(b.goals||0)-(a.goals||0)||((b.assists!=null?b.assists:-1)-(a.assists!=null?a.assists:-1))).slice(0,10);/*6B-BOOT*/
+            // 6B.1: assist coverage is a property of the season, not of an individual row. If any
+            // candidate's assists are unknown, the assist term is removed from the basis for the
+            // WHOLE field and the card says so — rather than scoring the unknown rows as zero,
+            // which silently punishes exactly the players whose source is incomplete.
+            const mvpPool=[...players].filter(p=>p.position!=="GK"&&p.position!=="Goalkeeper"&&(p.mins||0)>=200);
+            const mvpUsesAssists=assistsCoverageComplete(mvpPool);/*6B.1-AWARD*/
+            const mvpCandidates=mvpPool.map(p=>({...p,mvpScore:mvpScore(p,{useAssists:mvpUsesAssists})})).sort((a,b)=>b.mvpScore-a.mvpScore).slice(0,10);
+            // 6B.1: assists are a Golden Boot tiebreak only where assist coverage exists. Without it
+            // the earlier sentinel (-1) invented an ordering; equal-goal players now fall back to a
+            // deterministic non-performance key (name), which makes no claim about who is ahead.
+            const bootPool=[...players].filter(p=>(p.goals||0)>=1);
+            const bootUsesAssists=assistsCoverageComplete(bootPool);
+            const bootRace=goldenBootOrder(bootPool,{useAssists:bootUsesAssists}).slice(0,10);/*6B.1-BOOT*/
+            const archiveAwardNote=(!mvpUsesAssists||!bootUsesAssists)?`Assists are unavailable in the ${season} record, so the MVP score is computed without its assist term for every candidate and the Golden Boot does not use assists as a tiebreak. These archive races therefore run on reduced inputs and are not comparable to a season where assists exist.`:null;
             const doyRace=[...players].filter(p=>(p.position==="Defender"||p.position==="DF"||p.position==="DEF")&&(p.mins||0)>=200).sort((a,b)=>b.defense-a.defense).slice(0,10);
             const gkRace=[...players].filter(p=>(p.position==="GK"||p.position==="Goalkeeper")&&(p.mins||0)>=200).sort((a,b)=>b.overall-a.overall).slice(0,10);
             const youngRace=[...players].filter(p=>p.age&&+p.age<23&&(p.mins||0)>=200).sort((a,b)=>b.overall-a.overall).slice(0,10);
@@ -2355,6 +2406,7 @@ function MLSAnalytics(){
               <div style={{marginBottom:16}}>
                 <div style={{fontFamily:T.display,fontWeight:700,fontSize:22,color:T.ink}}>Award Races</div>
                 <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Data-driven predictions based on composite grades, production, and minutes played. Updated daily.</div>
+                {archiveAwardNote&&<div role="note" style={{marginTop:8,padding:"8px 12px",border:`1px dashed ${T.border}`,fontFamily:T.sans,fontSize:11.5,color:T.textDim,lineHeight:1.5}}>{archiveAwardNote}</div>}
               </div>
               <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:16}}>
                 <RaceCard title="MVP Race" candidates={mvpCandidates} metricLabel="MVP Score" metricFn={p=>p.mvpScore} gradeFn={p=>p.overall}/>
@@ -2444,7 +2496,8 @@ function MLSAnalytics(){
             posData[pg].players.push(p);
             posData[pg].grades.push(p.overall);
             posData[pg].goals+=(p.goals||0);
-            if(p.assists!=null){posData[pg].assists+=p.assists;posData[pg].assistsKnown=(posData[pg].assistsKnown||0)+1;}/*6B-POSTOT*/
+            // 6B.1: a group total is only a total if every member contributed a known value.
+            if(p.assists!=null)posData[pg].assists+=p.assists;else posData[pg].assistsUnknown=true;/*6B.1-POSTOT*/
             posData[pg].tackles+=(p.tackles||0);
             posData[pg].totalMins+=(p.mins||0);
             posData[pg].totalMV+=(p.marketValue||0);
@@ -2472,7 +2525,7 @@ function MLSAnalytics(){
             const avgDef=Math.round(d.players.reduce((s,p)=>s+p.defense,0)/n);
             const avgCre=Math.round(d.players.reduce((s,p)=>s+p.creativity,0)/n);
             const avgCar=Math.round(d.players.reduce((s,p)=>s+p.carrying,0)/n);
-            return{pos,count:d.players.length,avg,top,bot,avgAge,avgMV,top5,topScorers,goals:d.goals,assists:d.assists,tackles:d.tackles,elite,great,above,average,poor,grades:d.grades,avgAtt,avgPas,avgDef,avgCre,avgCar};
+            return{pos,count:d.players.length,avg,top,bot,avgAge,avgMV,top5,topScorers,goals:d.goals,assists:d.assistsUnknown?null:d.assists,tackles:d.tackles,elite,great,above,average,poor,grades:d.grades,avgAtt,avgPas,avgDef,avgCre,avgCar};
           });
           const totalPlayers=players.length;
 
@@ -2689,15 +2742,16 @@ function MLSAnalytics(){
           const cp=comparePlayers;
           const compColors=["#C1272D","#264653","#B68D40"];
           const compBar=(label,key,max,unit)=>{
-            const vals=cp.map(p=>parseFloat(p[key])||0);const mx=Math.max(max,...vals)||1;
+            /*6B.1-COMPARE: an unavailable metric renders as an em dash with no bar, never as 0.*/
+            const vals=cp.map(p=>(p[key]==null||p[key]===""||isNaN(parseFloat(p[key])))?null:parseFloat(p[key]));const mx=Math.max(max,...vals.filter(v=>v!=null))||1;
             return <div style={{marginBottom:10}}>
               <div style={{fontSize:11.5,color:T.textDim,fontWeight:600,fontFamily:T.sans,marginBottom:5}}>{label}</div>
               {cp.map((p,i)=><div key={p.id} style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
                 <div style={{width:6,height:6,borderRadius:"50%",background:compColors[i],flexShrink:0}}/>
                 <div style={{flex:1,height:5,background:T.borderLt,borderRadius:0,overflow:"hidden"}}>
-                  <div style={{width:`${Math.min(100,Math.max(1,(vals[i]/mx)*100))}%`,height:"100%",background:compColors[i],borderRadius:0,opacity:.7,transition:"width .5s ease"}}/>
+                  <div style={{width:vals[i]==null?0:`${Math.min(100,Math.max(1,(vals[i]/mx)*100))}%`,height:"100%",background:compColors[i],borderRadius:0,opacity:.7,transition:"width .5s ease"}}/>
                 </div>
-                <span style={{fontFamily:T.mono,fontWeight:600,fontSize:12,color:T.ink,width:40,textAlign:"right"}}>{vals[i]}{unit||""}</span>
+                <span style={{fontFamily:T.mono,fontWeight:600,fontSize:12,color:vals[i]==null?T.textMute:T.ink,width:40,textAlign:"right"}}>{vals[i]==null?"\u2014":(String(vals[i])+(unit||""))}</span>
               </div>)}
             </div>;
           };
@@ -2991,7 +3045,7 @@ function MLSAnalytics(){
         </div>
       </footer>
 
-      {sel&&<PlayerModal player={sel} onClose={()=>setSel(null)} onCompare={addCompare} isInCompare={comparePlayers.some(c=>c.id===sel.id)} seasonCoverage={SEASON_COVERAGE} allSeasons={[2024,2025,2026]} currentSeason={CURRENT_SEASON} pctRanks={pctRanks[sel.id]} history={playerHistory[sel.id]} formCurve={genFormCurve(sel)} seasonInfo={seasonRatings.ratings.find(r=>r.id===sel.id)||null} similarPlayers={findSimilar(sel.id)} onSelectPlayer={setSel} dark={dark}/>}
+      {sel&&<PlayerModal player={sel} onClose={()=>setSel(null)} onCompare={addCompare} isInCompare={comparePlayers.some(c=>c.id===sel.id)} allSeasons={ALL_SEASONS} currentSeason={CURRENT_SEASON} viewingSeason={season} onDrillSeason={drillToSeason} canDrillSeason={canDrillSeason} pctRanks={pctRanks[sel.id]} history={playerHistory[sel.id]} formCurve={genFormCurve(sel)} seasonInfo={seasonRatings.ratings.find(r=>r.id===sel.id)||null} similarPlayers={findSimilar(sel.id)} onSelectPlayer={setSel} dark={dark}/>}
     </div>
   );
 }
