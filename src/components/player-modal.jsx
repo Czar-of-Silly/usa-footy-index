@@ -10,7 +10,7 @@ import { dv, fv, sv } from "../util/format.mjs";
 
 // ─── PLAYER MODAL ────────────────────────────────────────────────────────────
 
-export function PlayerModal({player:p,onClose,onCompare,isInCompare,allSeasons,currentSeason,viewingSeason,onDrillSeason,canDrillSeason,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
+export function PlayerModal({player:p,onClose,onCompare,isInCompare,allSeasons,currentSeason,viewingSeason,gkCoverage,onDrillSeason,canDrillSeason,pctRanks,history,formCurve,seasonInfo,similarPlayers,onSelectPlayer,dark:isDarkMode}){
   const[shareMsg,setShareMsg]=useState("");
   const[hsError,setHsError]=useState(false);
   useEffect(()=>setHsError(false),[p?.id]);
@@ -146,7 +146,7 @@ export function PlayerModal({player:p,onClose,onCompare,isInCompare,allSeasons,c
           </div>}
         </div>}
       </div>}
-      <CareerAtAGlance player={p} history={history} allSeasons={allSeasons} currentSeason={currentSeason} viewingSeason={viewingSeason} onDrill={onDrillSeason?(y)=>onDrillSeason(y,p.name):null} canDrill={canDrillSeason}/>
+      <CareerAtAGlance player={p} history={history} allSeasons={allSeasons} currentSeason={currentSeason} viewingSeason={viewingSeason} gkCoverage={gkCoverage} onDrill={onDrillSeason?(y)=>onDrillSeason(y,p.name):null} canDrill={canDrillSeason}/>
 
       {/* Detailed Stats — 3x2 grid */}
       {(p.position==="GK"||p.position==="Goalkeeper")?

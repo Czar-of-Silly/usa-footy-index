@@ -92,10 +92,17 @@ test("historical goalkeepers are graded as goalkeepers, not as outfielders", () 
 // ── 7. historical mode does not mislabel current-season auxiliary content ───
 test("current-season-only modules are gated on the selected season", () => {
   const app = fs.readFileSync(path.join(ROOT, "src/app.jsx"), "utf8");
-  assert.match(app, /const CURRENT_SEASON=2026;/, "CURRENT_SEASON defined");
+  // 6C: CURRENT_SEASON moved out of app.jsx into analytics/archive.mjs so the selector, the router,
+  // the loaders and the career axis all read one list. Assert the value functionally and assert the
+  // app consumes it, which is strictly stronger than matching the old inline literal.
+  const A = require(path.join(ROOT, "src/analytics/archive.mjs"));
+  assert.equal(A.CURRENT_SEASON, 2026, "current data season");
+  assert.deepEqual(A.AVAILABLE_SEASONS, [2026, 2025, 2024], "the one canonical season list");
+  assert.match(app, /import \{[^}]*CURRENT_SEASON[^}]*\} from "\.\/analytics\/archive\.mjs"/, "app imports it rather than redefining it");
+  assert.doesNotMatch(app, /const CURRENT_SEASON\s*=/, "app no longer keeps a second definition");
   assert.match(app, /\{season!==CURRENT_SEASON&&<div role="note"/, "archive notice shown for historical seasons");
   assert.match(app, /\{season===CURRENT_SEASON&&wireItems\.length>0&&/, "wire ticker gated to the current season");
-  assert.match(app, /DESK ROW: slate · movers · subscribe ═══ \*\/\}\n\s*\{season===CURRENT_SEASON&&/, "fixture slate / movers / subscribe gated to the current season");
+  assert.match(app, /DESK ROW: slate · movers · subscribe ═══ \*\/\}\s*\{season===CURRENT_SEASON&&/, "fixture slate / movers / subscribe gated to the current season");
 });
 
 // ── 8. historical assists are never synthesized from xA and shown as real ───

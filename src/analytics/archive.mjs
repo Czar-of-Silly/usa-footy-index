@@ -11,6 +11,54 @@
 
 export const UNAVAILABLE = "—"; // the site-wide "no value" glyph (em dash)
 
+// ─── SEASONS: ONE SOURCE OF TRUTH (Phase 6C) ─────────────────────────────────
+// Every season list in the app derives from this array — the selector, the router, the career
+// panel's axis and the loaders. Nothing reads the wall-clock year: `new Date().getFullYear()` used
+// to seed the season, which meant that on 1 January the app would request a cache that does not
+// exist. Data seasons are a property of the committed caches, not of today's date.
+export const AVAILABLE_SEASONS = [2026, 2025, 2024]; // newest first — display order
+export const CURRENT_SEASON = AVAILABLE_SEASONS[0];
+export const SEASONS_OLDEST_FIRST = [...AVAILABLE_SEASONS].sort((a, b) => a - b);
+
+export function isAvailableSeason(v, available) {
+  const list = available || AVAILABLE_SEASONS;
+  const n = Number(v);
+  return Number.isInteger(n) && list.indexOf(n) >= 0;
+}
+
+// Accepts a location.search string, a URLSearchParams, or a bare value. Anything unrecognised —
+// a future year, a typo, a missing param — falls back to the current season rather than throwing
+// or requesting a cache that is not there.
+export function parseSeasonParam(input, opts) {
+  const available = (opts && opts.available) || AVAILABLE_SEASONS;
+  const fallback = (opts && opts.fallback !== undefined) ? opts.fallback : CURRENT_SEASON;
+  let raw = input;
+  if (input && typeof input === "object" && typeof input.get === "function") raw = input.get("season");
+  else if (typeof input === "string" && (input.indexOf("=") >= 0 || input.charAt(0) === "?")) {
+    const q = input.charAt(0) === "?" ? input.slice(1) : input;
+    raw = null;
+    for (const part of q.split("&")) {
+      const eq = part.indexOf("=");
+      if (eq > 0 && decodeURIComponent(part.slice(0, eq)) === "season") raw = decodeURIComponent(part.slice(eq + 1));
+    }
+  }
+  return isAvailableSeason(raw, available) ? Number(raw) : fallback;
+}
+
+// The current season is the default, so its URLs stay clean (`/players` not `/players?season=2026`)
+// and existing links keep working. Any other season is pinned in the query so the page survives a
+// refresh, a share and Back/Forward. Other query params are preserved in place, unencoded, so the
+// compare URL keeps its readable `?players=a,b` form.
+export function withSeason(path, season, opts) {
+  const current = (opts && opts.current !== undefined) ? opts.current : CURRENT_SEASON;
+  const p = String(path || "/");
+  const i = p.indexOf("?");
+  const base = i < 0 ? p : p.slice(0, i);
+  const parts = i < 0 ? [] : p.slice(i + 1).split("&").filter(x => x && x.slice(0, 7) !== "season=");
+  if (isAvailableSeason(season) && Number(season) !== current) parts.push("season=" + Number(season));
+  return parts.length ? base + "?" + parts.join("&") : base;
+}
+
 // ─── UNKNOWN-VS-ZERO PRIMITIVES ──────────────────────────────────────────────
 
 // A value is "known" only if it is an actual finite number. null / undefined / NaN are UNKNOWN.
@@ -242,17 +290,27 @@ export const POS_GROUP_LABEL = { FW: "forwards", MF: "midfielders", DF: "defende
 // Best RECORDED values across the seasons the Index actually holds. Deliberately not a trend:
 // coverage differs between the archive and the current season, so "best recorded" is the strongest
 // claim the data supports. Ties keep the earliest season, so the summary is deterministic.
+// `gkCoverage(year) => boolean` is optional. For a GOALKEEPER it gates the Peak Skill claim only:
+// 2024/2025 carry no goalkeeper-specific source metrics at all, so "Command 99 · 2025" would be a
+// claim about a number the same panel warns has no keeper data behind it. Those years are excluded
+// from the peak-skill search; if that leaves nothing, the tile reports no full-coverage season
+// rather than falling back to a figure it just disqualified. Grades themselves are untouched, the
+// other summary tiles are untouched, and outfield behaviour is unchanged.
 export function careerSummary(seasons, opts) {
   const isGK = !!(opts && opts.isGK);
+  const gkCoverage = opts && typeof opts.gkCoverage === "function" ? opts.gkCoverage : null;
   const rows = (seasons || []).filter(s => s && s.year != null && !s.ambiguous && s.overall != null);
   if (!rows.length) return null;
   const ordered = [...rows].sort((a, b) => a.year - b.year);
   const latest = ordered[ordered.length - 1];
+  const peakEligible = (s) => !isGK || !gkCoverage || gkCoverage(s.year) !== false;
   let bestOverall = null, bestRank = null, mostMins = null, peakSub = null;
+  const peakSkipped = [];
   for (const s of ordered) {
     if (s.overall != null && (bestOverall == null || s.overall > bestOverall.value)) bestOverall = { value: s.overall, year: s.year };
     if (s.posRank != null && (bestRank == null || s.posRank < bestRank.rank)) bestRank = { rank: s.posRank, group: s.posGroup || null, of: s.posOf != null ? s.posOf : null, year: s.year };
     if (isKnown(s.mins) && (mostMins == null || Number(s.mins) > mostMins.value)) mostMins = { value: Number(s.mins), year: s.year };
+    if (!peakEligible(s)) { peakSkipped.push(s.year); continue; }
     for (const [, key, full] of careerSubgradeLabels(isGK)) {
       const v = s[key];
       if (v == null) continue;
@@ -264,6 +322,8 @@ export function careerSummary(seasons, opts) {
     latestYear: latest.year,
     latestClub: latest.team || null,
     bestOverall, bestRank, mostMins, peakSub,
+    peakSkippedYears: peakSkipped,
+    peakSubUnavailable: (peakSub == null && peakSkipped.length > 0) ? "no-gk-coverage" : null,
   };
 }
 
@@ -312,6 +372,142 @@ export function comparabilityWarning(archiveYears, currentSeason) {
     detail: `${ys.join(" and ")} ${ys.length === 1 ? "is an archive season" : "are archive seasons"} built from a smaller set of inputs than ${currentSeason} — no Opta advanced metrics and no goalkeeper metrics — so a grade there reflects a different measurement basis, not simply a different level of play.`,
     identity: IDENTITY_NOTE,
   };
+}
+
+// ─── SEASON LEADERBOARDS (Phase 6C) ──────────────────────────────────────────
+// Built from the canonical grades the selected season already produced. There is no second
+// historical grading path here and no recomputation — these functions only order and label what
+// computeGrades already returned for that season.
+
+// Loose position string → ranking group. The engine's normPos has usually run already, but the
+// caches spell positions differently between seasons ("Defender" in 2024, "defense" in 2026), so
+// this stays permissive.
+export function normalizeGroup(position) {
+  const t = String(position || "").toLowerCase().trim();
+  if (t === "gk" || t === "g" || t.indexOf("goal") >= 0 || t.indexOf("keep") >= 0) return "GK";
+  if (t === "df" || t === "d" || t === "def" || t.indexOf("defen") >= 0 || t.indexOf("back") >= 0) return "DF";
+  if (t === "fw" || t === "f" || t === "st" || t.indexOf("forw") >= 0 || t.indexOf("atta") >= 0 || t.indexOf("strik") >= 0 || t.indexOf("wing") >= 0 || t.indexOf("off") >= 0) return "FW";
+  return "MF";
+}
+
+export const GROUP_LABEL = { ALL: "Overall", FW: "Forwards", MF: "Midfielders", DF: "Defenders", GK: "Goalkeepers" };
+export const GROUP_SINGULAR = { FW: "forward", MF: "midfielder", DF: "defender", GK: "goalkeeper" };
+
+// Eligibility mirrors the grading pool exactly: >= 1 minute, and actually graded. PROV (<450
+// minutes) stays in — it is a display label, never a pool gate. Zero-minute players stay out.
+export function isRankEligible(p) {
+  return !!p && p.rated !== false && (p.mins || 0) >= 1 && p.overall != null;
+}
+
+// Standard competition ranking (1,2,2,4) on Overall, with a deterministic name tiebreak for the
+// order tied players appear in. Two players on the same grade share a rank; neither is claimed to
+// be ahead of the other.
+export function seasonLeaderboard(players, opts) {
+  const group = (opts && opts.group) || "ALL";
+  const limit = opts && opts.limit !== undefined ? opts.limit : 25;
+  const pool = (players || []).filter(p => isRankEligible(p) && (group === "ALL" || normalizeGroup(p.position) === group));
+  const sorted = [...pool].sort((a, b) => (b.overall - a.overall) || String(a.name || "").localeCompare(String(b.name || "")));
+  let lastOv = null, lastRank = 0;
+  const rows = sorted.map((p, i) => {
+    const rank = (lastOv !== null && p.overall === lastOv) ? lastRank : i + 1;
+    lastOv = p.overall; lastRank = rank;
+    return { ...p, rank, group: normalizeGroup(p.position), prov: (p.mins || 0) < 450, poolSize: sorted.length };
+  });
+  return limit ? rows.slice(0, limit) : rows;
+}
+
+// The player's own best sub-grade, named in the vocabulary that fits the position. For a keeper
+// that is Shot-Stop / Distribution / Command / Sweeping / Handling — never the outfield names,
+// which mean something else over the same fields.
+export function strongestSubgrade(p, isGK) {
+  const keeper = isGK === undefined ? normalizeGroup(p && p.position) === "GK" : !!isGK;
+  let best = null;
+  for (const [short, key, full] of careerSubgradeLabels(keeper)) {
+    const v = p ? p[key] : null;
+    if (v == null) continue;
+    if (best == null || Number(v) > best.value) best = { value: Number(v), key, short, label: full };
+  }
+  return best;
+}
+
+// Clubs ordered by Team Grade within one season, tied grades sharing a rank.
+export function teamGradeRanking(teams) {
+  const pool = (teams || []).filter(t => t && (t.count || 0) > 0 && t.overall != null);
+  const sorted = [...pool].sort((a, b) => (b.overall - a.overall) || String(a.abbr || "").localeCompare(String(b.abbr || "")));
+  const ranks = {};
+  let lastOv = null, lastRank = 0;
+  sorted.forEach((t, i) => {
+    const rank = (lastOv !== null && t.overall === lastOv) ? lastRank : i + 1;
+    ranks[t.abbr] = { rank, of: sorted.length };
+    lastOv = t.overall; lastRank = rank;
+  });
+  return { ranks, of: sorted.length, ordered: sorted };
+}
+
+// Power Rankings blend points, team grade and recent form. The archive caches carry no fixture
+// list at all, so there is no form to read. Rather than feeding the blend a neutral 50 — a number
+// nobody measured, worth 20% of the published score — the form term is dropped and the remaining
+// weights are renormalised, and the caller is told to say so.
+export const POWER_WEIGHTS = { points: 0.50, grade: 0.30, form: 0.20 };
+export function powerScore(inputs) {
+  const pts = Number(inputs && inputs.normPts) || 0;
+  const grade = Number(inputs && inputs.normGrade) || 0;
+  const hasForm = inputs && inputs.formScore != null && isKnown(inputs.formScore);
+  if (hasForm) {
+    return { value: Math.round(pts * POWER_WEIGHTS.points + grade * POWER_WEIGHTS.grade + Number(inputs.formScore) * POWER_WEIGHTS.form), reduced: false, weights: POWER_WEIGHTS };
+  }
+  const denom = POWER_WEIGHTS.points + POWER_WEIGHTS.grade;
+  const weights = { points: POWER_WEIGHTS.points / denom, grade: POWER_WEIGHTS.grade / denom, form: 0 };
+  return { value: Math.round(pts * weights.points + grade * weights.grade), reduced: true, weights };
+}
+
+// A compact league-level summary for an archive season. Everything here is read off structures the
+// season already produced; nothing is inferred. The stored standings are reported as a points
+// leader, never as a champion — the cache does not establish that these are final standings.
+export function seasonOverview(players, teams, standings, opts) {
+  const season = opts && opts.season;
+  const graded = (players || []).filter(isRankEligible);
+  const top = seasonLeaderboard(graded, { group: "ALL", limit: 1 })[0] || null;
+  const byGroup = {};
+  for (const g of POS_GROUPS) byGroup[g] = seasonLeaderboard(graded, { group: g, limit: 1 })[0] || null;
+  const { ordered } = teamGradeRanking(teams);
+  const gradeLeader = ordered[0] || null;
+  const table = (standings || []).filter(s => s && s.team);
+  const pointsLeader = table.length
+    ? [...table].sort((a, b) => ((b.pts || 0) - (a.pts || 0)) || (((b.gf || 0) - (b.ga || 0)) - ((a.gf || 0) - (a.ga || 0))) || ((b.gf || 0) - (a.gf || 0)))[0]
+    : null;
+  return {
+    season,
+    gradedPlayers: graded.length,
+    clubs: ordered.length,
+    topOverall: top,
+    byGroup,
+    gradeLeader,
+    pointsLeader,
+    assistsKnown: graded.length ? graded.every(p => p.assists != null) : false,
+  };
+}
+
+// ─── BEST XI (Phase 6C) ──────────────────────────────────────────────────────
+// Lifted out of the Leaders JSX unchanged so it can be tested rather than re-implemented in a test.
+// The rule is exactly what the site already shipped: highest Overall at each slot of a 4-3-3, no
+// second quality formula, no assist term, no metric the archive lacks. Because `players` is already
+// the selected season's array, running it under 2024 yields a 2024 XI with nothing else to change.
+// Ties are left to fall back to cache order, exactly as before — deliberately not "improved" here,
+// since that would silently alter a shipped XI.
+export const BEST_XI_FORMATION = [
+  { slot: "LW", group: "FW", pick: 0, x: 15, y: 18 }, { slot: "ST", group: "FW", pick: 1, x: 50, y: 10 }, { slot: "RW", group: "FW", pick: 2, x: 85, y: 18 },
+  { slot: "LCM", group: "MF", pick: 0, x: 25, y: 42 }, { slot: "CM", group: "MF", pick: 1, x: 50, y: 36 }, { slot: "RCM", group: "MF", pick: 2, x: 75, y: 42 },
+  { slot: "LB", group: "DF", pick: 0, x: 12, y: 65 }, { slot: "LCB", group: "DF", pick: 1, x: 35, y: 68 }, { slot: "RCB", group: "DF", pick: 2, x: 65, y: 68 }, { slot: "RB", group: "DF", pick: 3, x: 88, y: 65 },
+  { slot: "GK", group: "GK", pick: 0, x: 50, y: 90 },
+];
+
+export function bestXI(players) {
+  const by = {};
+  for (const g of POS_GROUPS) by[g] = (players || []).filter(p => normalizeGroup(p.position) === g).sort((a, b) => b.overall - a.overall);
+  return BEST_XI_FORMATION
+    .map(f => ({ slot: f.slot, x: f.x, y: f.y, p: by[f.group][f.pick] || by[f.group][0] }))
+    .filter(s => s.p);
 }
 
 // ─── ARCHIVE-MODE AUXILIARY SCRUB ────────────────────────────────────────────

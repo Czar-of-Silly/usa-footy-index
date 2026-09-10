@@ -21,7 +21,11 @@ const head = (t) => <div style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 
 // Lightweight inline SVG: three seasons do not justify a charting library. No fixed pixel width —
 // the viewBox scales to the container, so it stays readable on a phone. Points are individual and
 // a missing season breaks the line rather than being interpolated across.
-export function SeasonHistoryChart({ series, currentSeason }) {
+// 6C: the emphasised point is the season the reader is actually looking at (`viewingSeason`), not
+// whichever season happens to be the newest. Browsing 2024 and seeing 2026 highlighted implied the
+// selection was somewhere it wasn't. ARCHIVE labelling still keys off `currentSeason`, because that
+// is a fact about coverage rather than about where the reader is.
+export function SeasonHistoryChart({ series, currentSeason, viewingSeason }) {
   const { years, points, segments } = series;
   if (!years.length) return null;
   const recorded = points.filter(p => p.recorded);
@@ -65,12 +69,13 @@ export function SeasonHistoryChart({ series, currentSeason }) {
             <text x={px} y={H - padB + 20} fontSize="12" fontWeight="700" fill={T.textMute} textAnchor="middle" fontFamily="JetBrains Mono,monospace">{p.year}</text>
           </g>;
         }
-        const s = p.season, py = y(s.overall), isCur = s.year === currentSeason;
+        const s = p.season, py = y(s.overall), isViewing = viewingSeason != null && s.year === viewingSeason;
         return <g key={p.year}>
-          <title>{seasonDescription(s)}</title>
-          <circle cx={px} cy={py} r={isCur ? 6 : 5} fill={gc(s.overall)} stroke={T.bg} strokeWidth="2" />
+          <title>{seasonDescription(s) + (isViewing ? " · viewing" : "")}</title>
+          {isViewing && <circle cx={px} cy={py} r={10} fill="none" stroke={T.accent} strokeWidth="1.5" opacity=".55" />}
+          <circle cx={px} cy={py} r={isViewing ? 6.5 : 4.5} fill={isViewing ? gc(s.overall) : T.bg} stroke={isViewing ? T.bg : gc(s.overall)} strokeWidth={isViewing ? 2 : 2.5} />
           <text x={px} y={py - 12} fontSize="13" fontWeight="700" fill={T.ink} textAnchor="middle" fontFamily="JetBrains Mono,monospace">{s.overall}</text>
-          <text x={px} y={H - padB + 20} fontSize="12" fontWeight="700" fill={T.ink} textAnchor="middle" fontFamily="JetBrains Mono,monospace">{s.year}</text>
+          <text x={px} y={H - padB + 20} fontSize="12" fontWeight="700" fill={isViewing ? T.accent : T.ink} textAnchor="middle" fontFamily="JetBrains Mono,monospace">{s.year}</text>
           {s.posRank != null && <text x={px} y={H - padB + 34} fontSize="10" fill={T.textDim} textAnchor="middle" fontFamily="JetBrains Mono,monospace">#{s.posRank} {s.posGroup || ""}</text>}
           {s.year !== currentSeason && <text x={px} y={padT - 12} fontSize="9" fill={T.textMute} textAnchor="middle" letterSpacing="1">ARCHIVE</text>}
         </g>;
@@ -93,14 +98,20 @@ function SummaryTile({ label, value, sub }) {
 
 export function CareerSummary({ summary }) {
   if (!summary) return null;
-  const { seasons, latestClub, latestYear, bestOverall, bestRank, mostMins, peakSub } = summary;
+  const { seasons, latestClub, latestYear, bestOverall, bestRank, mostMins, peakSub, peakSubUnavailable } = summary;
+  // 6C: a keeper whose only recorded seasons are archive years has no full-coverage keeper season
+  // to draw a peak from. Say that, rather than quoting a number from a season the panel itself
+  // flags as having no goalkeeper source data.
+  const peakValue = peakSub ? peakSub.value : "—";
+  const peakSub2 = peakSub ? peakSub.label + " · " + peakSub.year
+    : peakSubUnavailable === "no-gk-coverage" ? "No full-coverage goalkeeper season in the record" : null;
   return <div style={{ marginBottom: 12 }}>
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(122px,1fr))", gap: 8 }}>
       <SummaryTile label="Seasons in Index" value={seasons} sub={seasons === 1 ? "one recorded season" : "recorded seasons"} />
       <SummaryTile label="Latest club" value={latestClub || "—"} sub={latestYear != null ? String(latestYear) : null} />
       <SummaryTile label="Best grade" value={bestOverall ? bestOverall.value : "—"} sub={bestOverall ? bestOverall.year + " · best recorded" : null} />
       <SummaryTile label="Best rank" value={bestRank ? "#" + bestRank.rank : "—"} sub={bestRank ? `${bestRank.year} · ${bestRank.of != null ? "of " + bestRank.of + " " : ""}${POS_GROUP_LABEL[bestRank.group] || ""}`.trim() : null} />
-      <SummaryTile label="Peak skill" value={peakSub ? peakSub.value : "—"} sub={peakSub ? peakSub.label + " · " + peakSub.year : null} />
+      <SummaryTile label="Peak skill" value={peakValue} sub={peakSub2} />
       <SummaryTile label="Most minutes" value={mostMins ? mostMins.value.toLocaleString() : "—"} sub={mostMins ? mostMins.year + " · in one season" : null} />
     </div>
     <div style={{ fontFamily: T.serif, fontStyle: "italic", fontSize: 12, color: T.textDim, marginTop: 6, lineHeight: 1.5 }}>
@@ -110,7 +121,7 @@ export function CareerSummary({ summary }) {
 }
 
 // ─── CAREER AT A GLANCE ──────────────────────────────────────────────────────
-export function CareerAtAGlance({ player, history, allSeasons, currentSeason, viewingSeason, onDrill, canDrill }) {
+export function CareerAtAGlance({ player, history, allSeasons, currentSeason, viewingSeason, gkCoverage, onDrill, canDrill }) {
   const seasons = Array.isArray(history) ? history : [];
   if (!seasons.length) return null;
   const byYear = {}; seasons.forEach(s => { byYear[s.year] = s; });
@@ -123,7 +134,7 @@ export function CareerAtAGlance({ player, history, allSeasons, currentSeason, vi
 
   const isGK = !!(player && (player.position === "GK" || player.position === "Goalkeeper")) || rows.some(s => s.isGK);
   const SUBS = careerSubgradeLabels(isGK);
-  const summary = careerSummary(rows, { isGK });
+  const summary = careerSummary(rows, { isGK, gkCoverage });
   const series = historySeries(years, rows);
   const warn = comparabilityWarning(archiveYears, currentSeason);
 
@@ -140,7 +151,7 @@ export function CareerAtAGlance({ player, history, allSeasons, currentSeason, vi
 
     <CareerSummary summary={summary} />
 
-    <div style={{ margin: "6px 0 14px" }}><SeasonHistoryChart series={series} currentSeason={currentSeason} /></div>
+    <div style={{ margin: "6px 0 14px" }}><SeasonHistoryChart series={series} currentSeason={currentSeason} viewingSeason={viewingSeason} /></div>
 
     <div style={{ overflowX: "auto" }}>
       <table style={{ borderCollapse: "collapse", width: "100%", fontFamily: T.mono, fontSize: 12 }}>

@@ -1,5 +1,5 @@
 // src/app.jsx — application root (Phase 5.3 source split). Built to public/app.js by `npm run build`.
-import { assistsCoverageComplete, buildNameIndex, buildPercentiles, canDrillThrough, compareUnknownLast, goalContribution, goldenBootOrder, impactPerGame, mvpScore, posGroupKey, positionalRanks, profileSimilarity, resolveExactName, sumStrict } from "./analytics/archive.mjs";
+import { assistsCoverageComplete, AVAILABLE_SEASONS, bestXI, buildNameIndex, buildPercentiles, canDrillThrough, compareUnknownLast, CURRENT_SEASON, goalContribution, goldenBootOrder, GROUP_LABEL, GROUP_SINGULAR, impactPerGame, mvpScore, normalizeGroup, parseSeasonParam, posGroupKey, positionalRanks, POS_GROUPS, powerScore, profileSimilarity, resolveExactName, seasonLeaderboard, seasonOverview, SEASONS_OLDEST_FIRST, strongestSubgrade, sumStrict, teamGradeRanking, withSeason } from "./analytics/archive.mjs";
 import { matchRating } from "./analytics/form.mjs";
 import { cardMatchPreview, cardMovers, cardPowerRankings, cardTOTW, setDataGenerated } from "./cards/share-cards.jsx";
 import { PlayerModal } from "./components/player-modal.jsx";
@@ -45,10 +45,15 @@ const SEASON_COVERAGE={
 // GK/FW/DF/MF split) and the rest of the archive/unknown-value semantics now live in
 // analytics/archive.mjs so they can be tested as behaviour rather than as source text.
 const SEASON_ASSISTS_OK={2026:true,2025:false,2024:false};
-const ALL_SEASONS=[2024,2025,2026];
-const CURRENT_SEASON=2026;
-
-const CY = new Date().getFullYear();
+// 6C: AVAILABLE_SEASONS / CURRENT_SEASON / SEASONS_OLDEST_FIRST all come from analytics/archive.mjs
+// so the selector, the router, the loaders and the career axis cannot drift apart. The season is a
+// property of the committed caches — nothing here reads the wall-clock year, which used to seed it
+// and would have asked for a cache that does not exist the moment the calendar rolled over.
+const ALL_SEASONS=SEASONS_OLDEST_FIRST;
+const GK_COVERAGE=(yr)=>!(SEASON_COVERAGE[yr]&&SEASON_COVERAGE[yr].gk===false);/*6C-GKCOV*/
+// The wall clock is good for exactly one thing here: the copyright line. It must never decide which
+// data season to request — that is AVAILABLE_SEASONS' job.
+const COPYRIGHT_YEAR=new Date().getFullYear();/*6C-WALLCLOCK*/
 
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 function MLSAnalytics(){
@@ -59,7 +64,9 @@ function MLSAnalytics(){
   const[loadMsg,setLoadMsg]=useState("Initializing...");
   const[loadProgress,setLoadProgress]=useState(0);
   const[errMsg,setErrMsg]=useState(null);
-  const[season,setSeason]=useState(CY); // only current year until backend
+  // 6C: the URL is the source of the initial season. Unknown or unsupported years fall back to
+  // CURRENT_SEASON rather than requesting a cache that does not exist.
+  const[season,setSeason]=useState(()=>parseSeasonParam(typeof window!=="undefined"?window.location.search:"",{available:AVAILABLE_SEASONS,fallback:CURRENT_SEASON}));/*6C-SEASONINIT*/
   const[posFilter,setPosFilter]=useState("All");
   const[teamFilter,setTeamFilter]=useState("All");
   const[sortKey,setSortKey]=useState("overall");
@@ -91,14 +98,19 @@ function MLSAnalytics(){
   // A requested cross-season jump: {year,name}. Applied once that season's cache has loaded, and
   // only if the exact name resolves to exactly one player there. Never a fuzzy or team-based match.
   const drillPending=useRef(null);/*6B.1-DRILL*/
+  const loadedSeason=useRef(null);           // the season the current `players` array came from
+  const compareRef=useRef([]);               // latest Compare selection, readable from the loader
+  const[compareNotice,setCompareNotice]=useState(null);
   const[h2hHome,setH2hHome]=useState("");
   const[h2hAway,setH2hAway]=useState("");
   const[totwWeek,setTotwWeek]=useState(0); // 0 = latest
   const[leadersView,setLeadersView]=useState("overview"); // overview, bestxi, totw, movers
   const[emailInput,setEmailInput]=useState("");
   const[emailStatus,setEmailStatus]=useState("idle"); // idle, sending, done
-  const addCompare=(p)=>{if(comparePlayers.length<3&&!comparePlayers.find(c=>c.id===p.id))setComparePlayers(prev=>[...prev,p]);};
+  const addCompare=(p)=>{setCompareNotice(null);if(comparePlayers.length<3&&!comparePlayers.find(c=>c.id===p.id))setComparePlayers(prev=>[...prev,p]);};
   const removeCompare=(id)=>setComparePlayers(prev=>prev.filter(p=>p.id!==id));
+
+  compareRef.current=comparePlayers; // read by the season loader, which cannot see render state
 
   // Mobile detection
   const[isMobile,setIsMobile]=useState(()=>typeof window!=="undefined"&&window.matchMedia("(max-width:768px)").matches);
@@ -149,6 +161,9 @@ function MLSAnalytics(){
   },[tab,players]);
 
   const shortName=(name)=>{if(!name||!isMobile)return name;const parts=name.trim().split(/\s+/);if(parts.length<2)return name;return parts[0][0]+". "+parts.slice(1).join(" ");};
+  // 6C: one place asks "is the reader in the archive?" — used for labelling, coverage notes and
+  // for withholding current-season-only modules.
+  const isArchiveSeason=season!==CURRENT_SEASON;/*6C-ISARCHIVE*/
 
 
   // Swap theme at render time — all subcomponents read from T
@@ -205,8 +220,24 @@ function MLSAnalytics(){
       const pend=drillPending.current;/*6B.1-DRILLLAND*/
       if(pend&&pend.year===season){
         drillPending.current=null;
-        const hits=final.filter(x=>x.name===pend.name);
-        setSel(hits.length===1?hits[0]:null);
+        if(pend.slug){
+          // 6C: a URL that names another season resolves against THAT season's slug index, built
+          // here exactly the way the router builds it, so a shared archive link opens the right
+          // player instead of whoever happens to sit at that slug in the season still in memory.
+          const seen={};final.forEach(x=>{const k=slugify(x.name);seen[k]=(seen[k]||0)+1;});
+          const bySlug={};final.forEach(x=>{const base=slugify(x.name);const sl=seen[base]>1?base+"-"+slugify(x.team):base;if(!bySlug[sl])bySlug[sl]=x;});
+          setSel(bySlug[pend.slug]||null);/*6C-SLUGLAND*/
+        }else{
+          const hits=final.filter(x=>x.name===pend.name);
+          setSel(hits.length===1?hits[0]:null);
+        }
+      }
+      // 6C: a Compare list belongs to the season it was built in. Rather than guess an equivalent
+      // player in the destination season, the list is cleared and the reason is stated.
+      const prevLoaded=loadedSeason.current;loadedSeason.current=season;/*6C-COMPARESEASON*/
+      if(prevLoaded!=null&&prevLoaded!==season&&compareRef.current.length){
+        setComparePlayers([]);
+        setCompareNotice(`Compare was cleared: those players were from the ${prevLoaded} season. Add ${season} players to compare within one season — cross-season comparison needs stable player identities, which is a later phase.`);
       }
     }catch(e){setErrMsg("Processing error: "+e.message);}
     setLoading(false);}load();},[season]);
@@ -214,7 +245,7 @@ function MLSAnalytics(){
   // ── BACKGROUND: Load all seasons for historical sparklines ─────────────
   useEffect(()=>{
     async function loadHistory(){
-      const years=[2024,2025,2026];
+      const years=SEASONS_OLDEST_FIRST;
       const results={};
       for(const yr of years){
         try{
@@ -298,6 +329,9 @@ function MLSAnalytics(){
     // If any squad member's assists are unknown the club total is unknown (null → em dash).
     return{...t,overall:tp.length?wAvg("overall"):55,attack:tp.length?wAvg("attack"):55,passing:tp.length?wAvg("passing"):55,defense:tp.length?wAvg("defense"):55,creativity:tp.length?wAvg("creativity"):55,carrying:tp.length?wAvg("carrying"):55,squadValue:sum("marketValue"),count:tp.length,totalGoals:sum("goals"),totalAssists:sumStrict(tp,"assists"),/*6B.1-TEAMA*/avgAge:tp.length?(sum("age")/n).toFixed(1):null,totalTackles:sum("tackles"),topScorer:tp.length?[...tp].sort((a,b)=>b.goals-a.goals)[0]:null,topRated:tp.length?[...tp].sort((a,b)=>b.overall-a.overall)[0]:null};
   }).sort((a,b)=>b.overall-a.overall),[players]);
+  // 6C: clubs ranked by Team Grade inside the selected season, tied grades sharing a rank. Reads
+  // the season's own enrichedTeams — no cross-season pooling.
+  const teamRank=useMemo(()=>teamGradeRanking(enrichedTeams),[enrichedTeams]);/*6C-TEAMRANK*/
   const teamOpts=useMemo(()=>[["All","All Teams"],...MLS_TEAMS.map(t=>[t.abbr,t.name])],[]);
   const POS={All:null,Forward:["Forward","FW"],Midfielder:["Midfielder","MF"],Defender:["Defender","DF","DEF"],GK:["GK","Goalkeeper"]};
   const _keyMap={};
@@ -370,9 +404,23 @@ function MLSAnalytics(){
   const drillToSeason=(yr,name)=>{
     if(yr===season||!canDrillSeason(yr,name))return;
     drillPending.current={year:yr,name};
+    // 6C: push the destination URL up front — one history entry for one click. The state→URL sync
+    // stands down while the drill is in flight, so Back returns to the season you came from.
+    const dest=withSeason("/players/"+slugify(name),yr,{current:CURRENT_SEASON});/*6C-DRILLURL*/
+    try{window.history.pushState({u:dest},"",dest);}catch(e){}
     setSel(null);
     setSeason(yr);
     try{window.scrollTo({top:0,left:0,behavior:"auto"});}catch(e){}
+  };
+  // Changing the season from the global selector. If a player is open and resolves uniquely in the
+  // destination season, this is the same jump the career panel makes; otherwise the modal closes
+  // rather than showing one season's player under another season's numbers.
+  const changeSeason=(yr)=>{/*6C-SEASONSWITCH*/
+    const y=Number(yr);
+    if(!AVAILABLE_SEASONS.includes(y)||y===season)return;
+    if(sel&&canDrillSeason(y,sel.name)){drillToSeason(y,sel.name);return;}
+    setSel(null);
+    setSeason(y);
   };
 
   // ── SEASON RATINGS ─────────────────────────────────────────────────────────
@@ -532,22 +580,35 @@ function MLSAnalytics(){
   applyRouteRef.current=(loc)=>{
     const path=(loc.pathname||"/").replace(/\/+$/,"")||"/";const q=new URLSearchParams(loc.search||"");
     const seg=path.split("/").filter(Boolean);
+    // 6C: the season travels in the URL, so Back/Forward and a refresh restore it. A URL for a
+    // different season cannot be resolved against the season currently in memory — the player
+    // index belongs to the loaded cache — so the selection is deferred until that cache arrives.
+    const wantSeason=parseSeasonParam(loc.search||"",{available:AVAILABLE_SEASONS,fallback:CURRENT_SEASON});/*6C-ROUTESEASON*/
+    const crossSeason=wantSeason!==season;
+    if(crossSeason)setSeason(wantSeason);
     let t="front";
-    if(seg[0]==="players"&&seg[1]){t="players";setSel(slugIndex.fromSlug[decodeURIComponent(seg[1])]||null);}
+    if(seg[0]==="players"&&seg[1]){t="players";const slug=decodeURIComponent(seg[1]);
+      if(crossSeason){drillPending.current={year:wantSeason,slug};setSel(null);}
+      else setSel(slugIndex.fromSlug[slug]||null);}
     else if(seg[0]==="teams"&&seg[1]){t="teams";const tm=teamFromSlug(decodeURIComponent(seg[1]));if(tm){setExpandTeam(tm.abbr);setTeamLevel(1);}setSel(null);}
     else if(seg[0]==="matchup"&&seg[1]){const parts=decodeURIComponent(seg[1]).split("-v-");const a=parts[0]?teamFromSlug(parts[0].toLowerCase()):null,b=parts[1]?teamFromSlug(parts[1].toLowerCase()):null;if(a&&b){t="matchup";setMatchup({home:a.abbr,away:b.abbr});}else t="front";setSel(null);}
     else{t=PATH_TABS[path]||(seg[0]?PATH_TABS["/"+seg[0]]:null)||"front";setSel(null);if(t==="teams"){setExpandTeam(null);setTeamLevel(0);}}
-    if(t==="compare"){const raw=q.get("players");if(raw){const ps=raw.split(",").map(s=>slugIndex.fromSlug[s.trim()]).filter(Boolean).slice(0,3);setComparePlayers(ps);}}
+    if(t==="compare"){const raw=q.get("players");if(raw&&!crossSeason){const ps=raw.split(",").map(s=>slugIndex.fromSlug[s.trim()]).filter(Boolean).slice(0,3);setComparePlayers(ps);}}
     if(t!==tab){const s=sortMemo.current[t]||TAB_SORT[t];if(s){setSortKey(s[0]);setSortDir(s[1]);}setTab(t);}
     setMoreOpen(false);setSearchOpen(false);
   };
   const openMatchup=(home,away)=>{setMatchup({home,away});goTab("matchup");};
   const currentUrl=()=>{
-    if(sel&&slugIndex.toSlug[sel.id])return "/players/"+slugIndex.toSlug[sel.id];
-    if(tab==="teams"&&expandTeam)return "/teams/"+teamSlug(expandTeam);
-    if(tab==="matchup"&&matchup)return "/matchup/"+matchup.home.toLowerCase()+"-v-"+matchup.away.toLowerCase();
-    if(tab==="compare"&&comparePlayers.length){const ss=comparePlayers.map(p=>slugIndex.toSlug[p.id]).filter(Boolean);if(ss.length)return "/compare?players="+ss.join(",");}
-    return ROUTE_PATHS[tab]||"/";
+    // 6C: one wrapper, so no route can forget the season. The current season stays implicit, which
+    // keeps today's URLs byte-identical to the ones already shared.
+    const base=(()=>{
+      if(sel&&slugIndex.toSlug[sel.id])return "/players/"+slugIndex.toSlug[sel.id];
+      if(tab==="teams"&&expandTeam)return "/teams/"+teamSlug(expandTeam);
+      if(tab==="matchup"&&matchup)return "/matchup/"+matchup.home.toLowerCase()+"-v-"+matchup.away.toLowerCase();
+      if(tab==="compare"&&comparePlayers.length){const ss=comparePlayers.map(p=>slugIndex.toSlug[p.id]).filter(Boolean);if(ss.length)return "/compare?players="+ss.join(",");}
+      return ROUTE_PATHS[tab]||"/";
+    })();
+    return withSeason(base,season,{current:CURRENT_SEASON});/*6C-URLSEASON*/
   };
   const pageTitle=()=>{
     if(sel)return `${sel.name} \u2014 ${sel.position}, ${sel.teamName||sel.team}${sel.overall!=null?" \u00b7 Grade "+Math.round(sel.overall):""} | USA Footy Index`;
@@ -560,17 +621,26 @@ function MLSAnalytics(){
   };
   // initial URL → state, once the player index exists
   const syncSkip=useRef(false);
-  useEffect(()=>{if(loading||!players.length||routeReady.current)return;routeReady.current=true;syncSkip.current=true;applyRouteRef.current(window.location);},[loading,players]);
+  // 6C: how the NEXT url write should happen. A URL the user did not type — the initial route, or a
+  // Back/Forward — is normalised in place (a bad ?season=2031 becomes the clean current-season URL)
+  // instead of pushing an entry the user never asked for and would have to press Back twice to leave.
+  const navMode=useRef("replace");/*6C-NAVMODE*/
+  useEffect(()=>{if(loading||!players.length||routeReady.current)return;routeReady.current=true;syncSkip.current=true;navMode.current="replace";applyRouteRef.current(window.location);},[loading,players]);
   // back / forward
-  useEffect(()=>{const onPop=()=>{if(routeReady.current)applyRouteRef.current(window.location);};window.addEventListener("popstate",onPop);return()=>window.removeEventListener("popstate",onPop);},[]);
+  useEffect(()=>{const onPop=()=>{if(routeReady.current){navMode.current="replace";applyRouteRef.current(window.location);}};window.addEventListener("popstate",onPop);return()=>window.removeEventListener("popstate",onPop);},[]);
   // state → URL, title, canonical
   useEffect(()=>{
     if(!routeReady.current)return;
     if(syncSkip.current){syncSkip.current=false;return;} // same commit as the initial URL→state sync: state is still pre-route
+    // 6C: a cross-season jump pushes its destination URL once, up front. While that load is in
+    // flight the intermediate states (player cleared, cache swapping) must not write history, or a
+    // single click would leave two or three entries behind and Back would stutter.
+    if(drillPending.current)return;/*6C-NOCHURN*/
     const u=currentUrl();const cur=window.location.pathname+window.location.search;
-    if(u!==cur){try{window.history.pushState({u},"",u);}catch(e){}}
+    if(u!==cur){const write=navMode.current==="replace"?"replaceState":"pushState";try{window.history[write]({u},"",u);}catch(e){}}
+    navMode.current="push";
     try{document.title=pageTitle();const abs=window.location.origin+u;const c=document.querySelector('link[rel="canonical"]');if(c)c.setAttribute("href",abs);const og=document.querySelector('meta[property="og:url"]');if(og)og.setAttribute("content",abs);}catch(e){}
-  },[tab,sel,expandTeam,comparePlayers,slugIndex,matchup]);
+  },[tab,sel,expandTeam,comparePlayers,slugIndex,matchup,season]);
   const tbl=isMobile?"28px 1fr 40px 42px 34px 34px 50px":"34px 1fr 48px 54px 46px 46px 56px 60px 52px 60px 48px 60px";
 
   return (
@@ -677,7 +747,7 @@ function MLSAnalytics(){
           <div onClick={()=>goTab("front")} role="link" tabIndex={0} onKeyDown={e=>{if(e.key==="Enter")goTab("front");}} aria-label="USA Footy Index home" style={{display:"inline-block",cursor:"pointer"}}><Logo size={68} dark={dark}/></div>
           <h1 className="sr-only">USA Footy Index {"\u2014"} MLS player grades and analytics</h1>
           <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:6,flexWrap:"wrap"}}>
-            <select value={season} onChange={e=>{setSeason(Number(e.target.value));}} style={{padding:"4px 14px",background:T.card,border:`1px solid ${T.border}`,borderRadius:0,fontSize:14,fontFamily:T.mono,fontWeight:700,color:T.ink,cursor:"pointer",appearance:"none",WebkitAppearance:"none",paddingRight:24,backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A09A90'/%3E%3C/svg%3E")`,backgroundRepeat:"no-repeat",backgroundPosition:"right 8px center"}}><option value={2026}>2026</option><option value={2025}>2025</option><option value={2024}>2024</option></select>
+            <select aria-label="Season" value={season} onChange={e=>{changeSeason(Number(e.target.value));}} style={{padding:"4px 14px",background:T.card,border:`1px solid ${T.border}`,borderRadius:0,fontSize:14,fontFamily:T.mono,fontWeight:700,color:T.ink,cursor:"pointer",appearance:"none",WebkitAppearance:"none",paddingRight:24,backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A09A90'/%3E%3C/svg%3E")`,backgroundRepeat:"no-repeat",backgroundPosition:"right 8px center"}}>{AVAILABLE_SEASONS.map(y=><option key={y} value={y}>{y}</option>)}</select>
             {!loading&&<PlayerSearch players={players} onSelect={p=>setSel(p)}/>}
             <button onClick={()=>setShowGrading(true)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:0,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,color:T.accent,letterSpacing:.5,transition:"border-color .2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.accent} onMouseLeave={e=>e.currentTarget.style.borderColor=T.border}>How We Grade</button>
             <button onClick={()=>setShowAbout(true)} style={{background:"none",border:`1px solid ${T.border}`,borderRadius:0,padding:"4px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,color:T.textDim,letterSpacing:.5}}>About</button>
@@ -844,7 +914,7 @@ function MLSAnalytics(){
             </div>
           </div>
           <div style={{padding:"14px 32px",borderTop:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>© {CY} USA Footy Index</div>
+            <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>© {COPYRIGHT_YEAR} USA Footy Index</div>
             <button onClick={()=>setShowAbout(false)} style={{background:T.ink,border:"none",color:T.bg,padding:"8px 22px",borderRadius:0,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12}}>Close</button>
           </div>
         </div>
@@ -1626,9 +1696,12 @@ function MLSAnalytics(){
         {/* ═══ TEAMS ═════════════════════════════════════════════════════════ */}
         {!loading&&tab==="teams"&&<div style={{animation:"fadeUp .4s ease"}}>
           <div style={{marginBottom:16}}>
-            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Team Analytics</div>
-            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Composite team grades averaged across each roster. Click to expand team stats and full roster breakdowns.</div>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>{season} Team Analytics{isArchiveSeason&&<span style={{marginLeft:10,fontSize:10,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"3px 7px",letterSpacing:1,verticalAlign:"middle"}}>ARCHIVE</span>}</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Composite team grades averaged across each {season} roster. Click to expand team stats and full roster breakdowns.</div>
           </div>
+          {isArchiveSeason&&<div role="note" style={{marginBottom:16,padding:"10px 14px",border:`1px dashed ${T.border}`,borderLeft:`3px solid ${T.accent}`,background:T.surface,fontFamily:T.sans,fontSize:12,color:T.textDim,lineHeight:1.55}}>
+            <b style={{color:T.ink}}>Archive · {season}.</b> Club grades are built from the {season} record only. Metrics that season{"\u2019"}s sources never carried show as {"\u2014"} rather than zero, and current-season features {"\u2014"} freshness, ranking movement and pipeline status {"\u2014"} are not shown here because they describe a different season.
+          </div>}
           <div style={{marginBottom:16}}><Select label="Conference" value={confFilter} onChange={setConfFilter} width={150} options={["All","Eastern","Western"]}/>
             </div>
           <TableWrap><div>
@@ -1671,8 +1744,9 @@ function MLSAnalytics(){
                   </div>
 
                   {/* Key stats row */}
-                  <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(92px,1fr))",gap:8}}>
                     {[
+                      {l:`Grade rank ${season}`,v:teamRank.ranks[t.abbr]?`#${teamRank.ranks[t.abbr].rank}`:"—",c:T.ink,t:teamRank.ranks[t.abbr]?`#${teamRank.ranks[t.abbr].rank} of ${teamRank.ranks[t.abbr].of} graded clubs by Team Grade in ${season}`:null},/*6C-TEAMRANKTILE*/
                       {l:"Total Goals",v:t.totalGoals,c:T.ink},
                       {l:"Total Assists",v:sv(t.totalAssists),c:T.ink,t:t.totalAssists==null?"No assist data in this season's source \u2014 unavailable, not zero":null},/*6B.1-TEAMA*/
                       {l:"Avg Age",v:t.avgAge||"—",c:T.textDim},
@@ -1836,10 +1910,12 @@ function MLSAnalytics(){
           return <div style={{animation:"fadeUp .4s ease"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:16,flexWrap:"wrap",gap:10}}>
             <div>
-              <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>MLS Table</div>
-              <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Official MLS standings with composite team grades. Points-based ranking with goal difference and grade overlays.</div>
+              <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>{season} MLS Table{isArchiveSeason&&<span style={{marginLeft:10,fontSize:10,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"3px 7px",letterSpacing:1,verticalAlign:"middle"}}>ARCHIVE</span>}</div>
+              <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>{isArchiveSeason?`The ${season} standings as stored in the archive, with that season's composite team grades. Points-based ranking with goal difference and grade overlays.`:"Official MLS standings with composite team grades. Points-based ranking with goal difference and grade overlays."}</div>
             </div>
-            <div style={{display:"flex",gap:8}}>
+            {/* 6C: pre-existing mobile defect — two fixed-width selects in a non-wrapping row pushed
+                the page 45px wider than a 390px viewport. Wrapping them is the whole fix. */}
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               <Select label="Conference" value={confFilter} onChange={setConfFilter} width={130} options={["All","Eastern","Western"]}/>
               <Select label="Sort" value={sortKey} onChange={v=>{setSortKey(v);setSortDir("desc");}} width={140} options={[["pts","By Points"],["overall","By OVR"],["attack","By ATT"],["passing","By PAS"],["defense","By DEF"],["totalGoals","By Goals"],["totalAssists","By Assists"]]}/>
             </div>
@@ -1890,10 +1966,12 @@ function MLSAnalytics(){
                 const drew=hs===as;
                 formPts+=won?3:drew?1:0;
               });
-              const formScore=teamMatches.length>0?(formPts/(teamMatches.length*3))*100:50;
-              const power=Math.round(normPts*.50+normGrade*.30+formScore*.20);
-              // Movement arrow: compare power rank to pure points rank
-              return{...t,power,formScore:Math.round(formScore),recentRecord:teamMatches.length};
+              // 6C: a season with no fixture list has no form to read. Feeding the blend a neutral
+              // 50 invented a fifth of the published score; the term is dropped and the remaining
+              // weights renormalised instead, and the header says so.
+              const formScore=teamMatches.length>0?(formPts/(teamMatches.length*3))*100:null;/*6C-POWERFORM*/
+              const ps=powerScore({normPts,normGrade,formScore});
+              return{...t,power:ps.value,powerReduced:ps.reduced,formScore:formScore==null?null:Math.round(formScore),recentRecord:teamMatches.length};
             }).sort((a,b)=>b.power-a.power).map((t,i)=>({...t,powerRank:i+1}));
             // Points-table rank computed independently of the user's current sort
             const ptsOrder=[...standingsData].sort((a,b)=>(b.pts||0)-(a.pts||0)||((b.gf||0)-(b.ga||0))-((a.gf||0)-(a.ga||0))||(b.gf||0)-(a.gf||0)).map(s=>s.team);
@@ -1905,12 +1983,18 @@ function MLSAnalytics(){
               const prev=snapWk&&snapWk.power&&snapWk.power[t.abbr];
               t.movement=Number.isFinite(prev)?prev-t.powerRank:null; // null = no real history yet
             });
-            const moveLabel=snapWk?("Arrows: movement since "+fmtET(snapWk.date)):"Arrows: vs points table (week-over-week appears once ranking history accrues)";
+            const powerReduced=powerRanked.some(t=>t.powerReduced);
+            const moveLabel=snapWk?("Arrows: movement since "+fmtET(snapWk.date))
+              :isArchiveSeason?("Arrows: power rank vs the "+season+" points table \u00b7 week-over-week movement is a current-season measure")
+              :"Arrows: vs points table (week-over-week appears once ranking history accrues)";
+            const powerBasis=powerReduced
+              ?"Composite score: 62.5% points + 37.5% team grade \u2014 the "+season+" archive carries no fixture list, so the recent-form term is omitted rather than filled in"
+              :"Composite score: 50% points + 30% team grade + 20% recent form";
             return <div style={{marginBottom:20,background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,overflow:"hidden"}}>
               <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
                   <div style={{fontFamily:T.display,fontWeight:700,fontSize:18,color:T.ink}}>Power Rankings</div>
-                  <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>Composite score: 50% points + 30% team grade + 20% recent form \u00b7 {moveLabel}</div>
+                  <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>{powerBasis} {"\u00b7"} {moveLabel}</div>
                 </div>
                 <CardButton label="Share card" onClick={()=>cardPowerRankings({rows:powerRanked,moveLabel:snapWk?"movement since "+fmtET(snapWk.date):"arrows vs points table",logos:teamLogos})}/>
               </div>
@@ -2100,31 +2184,119 @@ function MLSAnalytics(){
 
         {/* ═══ LEADERS TAB ═══════════════════════════════════════════════════ */}
         {!loading&&tab==="leaders"&&(()=>{
-          // Best XI: top rated at each position slot (4-3-3)
-          const byPos=(pos)=>[...players].filter(p=>pos.includes(p.position)).sort((a,b)=>b.overall-a.overall);
-          const fws=byPos(["Forward","FW"]);const mfs=byPos(["Midfielder","MF"]);const dfs=byPos(["Defender","DF","DEF"]);const gks=byPos(["GK","Goalkeeper"]);
-          const xi=[
-            {slot:"LW",p:fws[0],x:15,y:18},{slot:"ST",p:fws[1]||fws[0],x:50,y:10},{slot:"RW",p:fws[2]||fws[0],x:85,y:18},
-            {slot:"LCM",p:mfs[0],x:25,y:42},{slot:"CM",p:mfs[1]||mfs[0],x:50,y:36},{slot:"RCM",p:mfs[2]||mfs[0],x:75,y:42},
-            {slot:"LB",p:dfs[0],x:12,y:65},{slot:"LCB",p:dfs[1]||dfs[0],x:35,y:68},{slot:"RCB",p:dfs[2]||dfs[0],x:65,y:68},{slot:"RB",p:dfs[3]||dfs[0],x:88,y:65},
-            {slot:"GK",p:gks[0],x:50,y:90},
-          ].filter(s=>s.p);
+          // Best XI: unchanged rule (top-graded at each slot of a 4-3-3), moved into
+          // analytics/archive.mjs so it is testable. `players` is already the selected season, so
+          // the XI is season-aware for free — nothing about the selection changed.
+          const xi=bestXI(players);/*6C-BESTXI*/
           const xiAvg=xi.length?Math.round(xi.reduce((s,x)=>s+x.p.overall,0)/xi.length):0;
+
+          // 6C: one row renderer for both historical boards. Ranks come from seasonLeaderboard, so
+          // ties share a rank and PROV players stay in the pool — a display label never gates
+          // eligibility. Each player's strongest sub-grade is named in the vocabulary of their
+          // position, so a keeper reads "Command", not "Defense".
+          const leaderRow=(p,i,showGroup)=>{
+            const ss=strongestSubgrade(p,p.group==="GK");
+            return <div key={p.id} onClick={()=>setSel(p)} className="rh" style={{display:"flex",alignItems:"center",gap:10,padding:isMobile?"9px 10px":"10px 16px",borderBottom:`1px solid ${T.borderLt}`,cursor:"pointer",background:i%2===0?"transparent":T.card}}>
+              <div style={{fontFamily:T.display,fontWeight:900,fontSize:p.rank<=3?21:15,color:p.rank<=3?T.gold:T.textMute,width:26,textAlign:"center",flexShrink:0}}>{p.rank}</div>
+              <TeamBadge abbr={p.team} size={26} logo={p.teamLogo}/>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:T.serif,fontWeight:700,fontSize:14,color:T.ink,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                  {p.name}{p.prov&&<span title="Provisional — under 450 minutes played" style={{marginLeft:6,fontSize:9,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 4px",letterSpacing:.5}}>PROV</span>}
+                </div>
+                <div style={{fontSize:11,color:T.textDim,fontFamily:T.sans,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                  {p.team} {"\u00b7"} {showGroup?(GROUP_SINGULAR[p.group]||p.position):p.position}{ss?<span style={{color:T.textMute}}> {"\u00b7"} best: {ss.label} <b style={{color:gc(ss.value),fontFamily:T.mono}}>{ss.value}</b></span>:null}
+                </div>
+              </div>
+              {!isMobile&&<div style={{fontFamily:T.mono,fontSize:11.5,color:T.textDim,width:66,textAlign:"right",flexShrink:0}}>{sv(p.mins)}<span style={{color:T.textMute}}> min</span></div>}
+              <div style={{flexShrink:0}}><Badge grade={p.overall} rated={p.rated} size="sm"/></div>
+            </div>;
+          };
 
           return <div style={{animation:"fadeUp .4s ease"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:16,flexWrap:"wrap",gap:10}}>
             <div>
-              <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>Season Leaders</div>
-              <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Top performers, formations, and weekly highlights across the MLS season.</div>
+              <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5}}>{season} Season Leaders{isArchiveSeason&&<span style={{marginLeft:10,fontSize:10,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"3px 7px",letterSpacing:1,verticalAlign:"middle"}}>ARCHIVE</span>}</div>
+              <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginTop:4}}>Top performers, formations, and weekly highlights across the {season} MLS season.</div>
             </div>
           </div>
 
           {/* Sub-view pills */}
           <div style={{display:"flex",gap:6,marginBottom:20,flexWrap:"wrap"}}>
-            {[{id:"overview",l:"Stat Leaders"},{id:"bestxi",l:"Best XI"},{id:"totw",l:"Team of the Week"},{id:"movers",l:"Movers"},{id:"awards",l:"Award Races"}].map(v=>(
+            {[{id:"index",l:"Index Top 25"},{id:"posboards",l:"By Position"},{id:"overview",l:"Stat Leaders"},{id:"bestxi",l:"Best XI"},{id:"totw",l:"Team of the Week"},{id:"movers",l:"Movers"},{id:"awards",l:"Award Races"}].map(v=>(
               <button key={v.id} onClick={()=>setLeadersView(v.id)} style={{background:leadersView===v.id?T.ink:"transparent",color:leadersView===v.id?T.bg:T.textDim,border:`1px solid ${leadersView===v.id?T.ink:T.border}`,padding:"7px 18px",borderRadius:0,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,letterSpacing:.5,transition:"all .15s"}}>{v.l}</button>
             ))}
           </div>
+
+          {/* ═══ 6C: ARCHIVE HONESTY + SEASON EXPLORATION ═══════════════════ */}
+          {/* One concise coverage note per historical league screen — enough to discover the limit,
+              not a banner on every module. Ranks WITHIN a season are valid; grades ACROSS seasons
+              are not comparable, because the inputs differ. */}
+          {isArchiveSeason&&<div role="note" style={{marginBottom:16,padding:"10px 14px",border:`1px dashed ${T.border}`,borderLeft:`3px solid ${T.accent}`,background:T.surface,fontFamily:T.sans,fontSize:12,color:T.textDim,lineHeight:1.55}}>
+            <b style={{color:T.ink}}>Archive · {season}.</b> These grades reflect the data available in {season} and are not directly comparable to the current full-coverage model — {season} has no Opta advanced metrics, no goalkeeper metrics and no authoritative assists. Ranks and order <i>within</i> {season} are valid; a grade gap <i>between</i> seasons is a difference in measurement, not in play. <button onClick={()=>goTab("methodology")} style={{background:"none",border:"none",padding:0,color:T.accent,cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12,textDecoration:"underline"}}>How the grades work</button>
+          </div>}
+
+          {/* Season at a Glance — the archive entry point. Every figure is read off structures the
+              season already produced; the stored table is reported as a points leader, never as a
+              champion, because the cache does not establish that these standings are final. */}
+          {isArchiveSeason&&(()=>{
+            const ov=seasonOverview(players,enrichedTeams,standingsData,{season});
+            if(!ov.gradedPlayers)return null;
+            const cell=(label,value,sub)=><div style={{padding:"10px 12px",border:`1px solid ${T.borderLt}`,background:T.card,minWidth:0}}>
+              <div style={{fontFamily:T.sans,fontSize:10,fontWeight:700,letterSpacing:1.1,textTransform:"uppercase",color:T.textMute}}>{label}</div>
+              <div style={{fontFamily:T.display,fontWeight:700,fontSize:19,color:T.ink,lineHeight:1.15,marginTop:3,overflowWrap:"anywhere"}}>{value}</div>
+              {sub&&<div style={{fontFamily:T.sans,fontSize:10.5,color:T.textDim,marginTop:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{sub}</div>}
+            </div>;
+            const nm=(p)=>p?p.name:"—";
+            return <div style={{marginBottom:20}}>
+              <div style={{fontFamily:T.mono,fontSize:11,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:T.accent,marginBottom:8}}>{season} season at a glance</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:8}}>
+                {cell("Players graded",ov.gradedPlayers.toLocaleString(),"minutes played > 0")}
+                {cell("Clubs graded",ov.clubs,"with a graded squad")}
+                {cell("Top Overall",nm(ov.topOverall),ov.topOverall?`${ov.topOverall.overall} · ${ov.topOverall.team}`:null)}
+                {cell("Team Grade leader",ov.gradeLeader?ov.gradeLeader.name:"—",ov.gradeLeader?`${ov.gradeLeader.overall} · minutes-weighted squad grade`:null)}
+                {cell("Points leader (stored table)",ov.pointsLeader?(ov.pointsLeader.name||ov.pointsLeader.team):"—",ov.pointsLeader?`${ov.pointsLeader.pts} pts · ${ov.pointsLeader.w}-${ov.pointsLeader.d}-${ov.pointsLeader.l}`:null)}
+                {POS_GROUPS.map(g=>ov.byGroup[g]?<div key={g} style={{padding:"10px 12px",border:`1px solid ${T.borderLt}`,background:T.card,minWidth:0}}>
+                  <div style={{fontFamily:T.sans,fontSize:10,fontWeight:700,letterSpacing:1.1,textTransform:"uppercase",color:T.textMute}}>Top {GROUP_SINGULAR[g]}</div>
+                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:17,color:T.ink,lineHeight:1.15,marginTop:3,overflowWrap:"anywhere"}}>{ov.byGroup[g].name}</div>
+                  <div style={{fontFamily:T.sans,fontSize:10.5,color:T.textDim,marginTop:2}}>{ov.byGroup[g].overall} · {ov.byGroup[g].team}</div>
+                </div>:null)}
+              </div>
+              <div style={{fontFamily:T.serif,fontStyle:"italic",fontSize:12,color:T.textDim,marginTop:6}}>
+                Read off the {season} record only. The table row is the stored standings' points leader — the archive does not establish whether those standings are final, so no championship is claimed{ov.assistsKnown?"":", and assists are unavailable for this season"}.
+              </div>
+            </div>;
+          })()}
+
+          {/* ═══ INDEX TOP 25 ═══ */}
+          {leadersView==="index"&&(()=>{
+            const rows=seasonLeaderboard(players,{group:"ALL",limit:25});
+            if(!rows.length)return <div style={{padding:40,textAlign:"center",color:T.textMute,fontFamily:T.sans}}>No graded players in the {season} record.</div>;
+            return <div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,overflow:"hidden"}}>
+              <div style={{padding:"14px 18px",borderBottom:`2px solid ${T.ink}`,display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:8}}>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink,letterSpacing:-.3}}>{season} Index {"·"} Top 25</div>
+                <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>By Overall grade, {season} season only {"·"} {rows[0].poolSize.toLocaleString()} graded players {"·"} equal grades share a rank</div>
+              </div>
+              {rows.map((p,i)=>leaderRow(p,i,true))}
+            </div>;
+          })()}
+
+          {/* ═══ BY POSITION ═══ */}
+          {leadersView==="posboards"&&(()=>{
+            const boards=POS_GROUPS.map(g=>({g,rows:seasonLeaderboard(players,{group:g,limit:10})})).filter(b=>b.rows.length);
+            if(!boards.length)return <div style={{padding:40,textAlign:"center",color:T.textMute,fontFamily:T.sans}}>No graded players in the {season} record.</div>;
+            return <div>
+              <div style={{fontFamily:T.sans,fontSize:12,color:T.textMute,marginBottom:12}}>Each board ranks within its own position group for {season} only. Goalkeepers are graded and named on their own terms {"—"} Shot-Stop, Distribution, Command, Sweeping, Handling {"—"} because those five grades do not mean what the outfield names mean.</div>
+              <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:16}}>
+                {boards.map(({g,rows})=><div key={g} style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,overflow:"hidden"}}>
+                  <div style={{padding:"12px 16px",borderBottom:`2px solid ${T.ink}`,display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+                    <div style={{fontFamily:T.display,fontWeight:700,fontSize:17,color:T.ink}}>{GROUP_LABEL[g]}</div>
+                    <div style={{fontSize:10.5,color:T.textMute,fontFamily:T.sans}}>{season} {"·"} top 10 of {rows[0].poolSize}</div>
+                  </div>
+                  {rows.map((p,i)=>leaderRow(p,i,false))}
+                </div>)}
+              </div>
+            </div>;
+          })()}
 
           {/* ═══ OVERVIEW: Stat Leader Categories ═══ */}
           {leadersView==="overview"&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:14}}>
@@ -2156,8 +2328,8 @@ function MLSAnalytics(){
           {leadersView==="bestxi"&&xi.length>=11&&<div style={{background:T.surface,border:`1px solid ${T.border}`,borderRadius:0,overflow:"hidden"}}>
             <div style={{padding:"16px 22px",borderBottom:`1px solid ${T.borderLt}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div>
-                <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>Best XI</div>
-                <div style={{fontSize:11.5,color:T.textMute,fontFamily:T.sans}}>Top-graded player at each position · 4-3-3 formation</div>
+                <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink}}>{season} Best XI{isArchiveSeason&&<span style={{marginLeft:8,fontSize:9,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"2px 6px",letterSpacing:1,verticalAlign:"middle"}}>ARCHIVE</span>}</div>
+                <div style={{fontSize:11.5,color:T.textMute,fontFamily:T.sans}}>Top-graded player at each position · 4-3-3 formation · {season} players only</div>
               </div>
               <div style={{textAlign:"right"}}>
                 <div style={{fontFamily:T.display,fontWeight:700,fontSize:24,color:gc(xiAvg)}}>{xiAvg}</div>
@@ -2196,7 +2368,12 @@ function MLSAnalytics(){
                 allLogs.push({player:pl,dateKey,rating,...m});
               });
             });
-            if(allLogs.length<11)return <div style={{padding:40,textAlign:"center",color:T.textMute,fontFamily:T.sans}}>Match log data needed — run <code>npm run fetch</code> with v5 script to populate.</div>;
+            // 6C: the archive caches carry no per-match box scores at all, so a Team of the Week
+            // cannot be built for 2024/2025. Say that plainly instead of showing a build instruction
+            // that implies the data is one command away.
+            if(allLogs.length<11)return <div style={{padding:36,textAlign:"center",color:T.textMute,fontFamily:T.sans,fontSize:13,lineHeight:1.6}}>{isArchiveSeason
+              ?<>Team of the Week is built from per-match box scores, and the {season} archive does not carry them. It is available for the current season only.<div style={{marginTop:10}}><button onClick={()=>changeSeason(CURRENT_SEASON)} style={{background:T.ink,border:"none",color:T.bg,padding:"7px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12}}>Go to {CURRENT_SEASON} {"\u2192"}</button></div></>
+              :<>Match log data needed — run <code>npm run fetch</code> with v5 script to populate.</>}</div>;
             const byDate={};allLogs.forEach(l=>{if(!byDate[l.dateKey])byDate[l.dateKey]=[];byDate[l.dateKey].push(l);});
             const dateKeys=Object.keys(byDate).sort();
             const weeks=[];let current=[];
@@ -2296,6 +2473,10 @@ function MLSAnalytics(){
 
           {/* ═══ MOVERS: Heating Up / Cooling Down ═══ */}
           {leadersView==="movers"&&(()=>{
+            // 6C: form movement is computed from per-match ratings, which the archive caches do not
+            // contain. No archive season can produce a mover; showing an empty board would read as
+            // "nobody moved" rather than "this was never measured".
+            if(isArchiveSeason)return <div style={{padding:36,textAlign:"center",color:T.textMute,fontFamily:T.sans,fontSize:13,lineHeight:1.6}}>Risers &amp; Fallers compares each player{"\u2019"}s recent match ratings to their season average, and the {season} archive carries no per-match box scores. Form movement is a current-season measure.<div style={{marginTop:10}}><button onClick={()=>changeSeason(CURRENT_SEASON)} style={{background:T.ink,border:"none",color:T.bg,padding:"7px 14px",cursor:"pointer",fontFamily:T.sans,fontWeight:600,fontSize:12}}>Go to {CURRENT_SEASON} {"\u2192"}</button></div></div>;/*6C-MOVERS*/
             const withForm=players.filter(p=>p.matchLog&&p.matchLog.length>=5).map(p=>{
               const logs=p.matchLog;
               const allRatings=logs.map(m=>matchRating(m,p.position));
@@ -2741,6 +2922,12 @@ function MLSAnalytics(){
         {!loading&&tab==="compare"&&(()=>{
           const cp=comparePlayers;
           const compColors=["#C1272D","#264653","#B68D40"];
+          // 6C: five grades, two vocabularies. If every compared player is a keeper the rows are
+          // named on keeper terms; a mixed set keeps the outfield names and says so above, because
+          // one row cannot honestly carry both meanings at once.
+          const compHasKeeper=cp.some(p=>normalizeGroup(p.position)==="GK");
+          const compKeepersOnly=cp.length>0&&cp.every(p=>normalizeGroup(p.position)==="GK");
+          const compSubLabel={attack:compKeepersOnly?"Shot-Stop":"Attack",passing:compKeepersOnly?"Distribution":"Passing",defense:compKeepersOnly?"Command":"Defense",creativity:compKeepersOnly?"Sweeping":"Creativity",carrying:compKeepersOnly?"Handling":"Carrying"};/*6C-COMPGK*/
           const compBar=(label,key,max,unit)=>{
             /*6B.1-COMPARE: an unavailable metric renders as an em dash with no bar, never as 0.*/
             const vals=cp.map(p=>(p[key]==null||p[key]===""||isNaN(parseFloat(p[key])))?null:parseFloat(p[key]));const mx=Math.max(max,...vals.filter(v=>v!=null))||1;
@@ -2771,8 +2958,12 @@ function MLSAnalytics(){
           };
 
           return <div style={{animation:"fadeUp .4s ease"}}>
-            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5,marginBottom:4}}>Player Comparison</div>
-            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginBottom:20}}>Select up to 3 players for a side-by-side breakdown of grades, stats, physical attributes, and value.</div>
+            <div style={{fontFamily:T.display,fontWeight:700,fontSize:26,color:T.ink,letterSpacing:-.5,marginBottom:4}}>{season} Player Comparison{isArchiveSeason&&<span style={{marginLeft:10,fontSize:10,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"3px 7px",letterSpacing:1,verticalAlign:"middle"}}>ARCHIVE</span>}</div>
+            <div style={{fontSize:12,color:T.textMute,fontFamily:T.sans,marginBottom:12}}>Select up to 3 players for a side-by-side breakdown of grades, stats, physical attributes, and value. Everyone here is compared <b>within {season}</b> — grades from different seasons rest on different inputs, so the site does not put them in one table.</div>
+            {/* 6C: switching season clears the selection rather than guessing an equivalent player
+                in the destination season. The reason is stated where the players used to be. */}
+            {compareNotice&&<div role="status" style={{marginBottom:16,padding:"10px 14px",border:`1px dashed ${T.accent}`,background:T.surface,fontFamily:T.sans,fontSize:12,color:T.text,lineHeight:1.55}}>{compareNotice}</div>}
+            {isArchiveSeason&&cp.length>0&&<div style={{marginBottom:16,padding:"8px 12px",border:`1px dashed ${T.border}`,fontFamily:T.sans,fontSize:11.5,color:T.textDim,lineHeight:1.5}}>Metrics the {season} sources never carried show as {"\u2014"} with no bar. They are unavailable, not zero.{compKeepersOnly?" Sub-grades are named on goalkeeper terms because every player here is a keeper.":compHasKeeper?" One of these players is a goalkeeper: for them the five sub-grades mean Shot-Stop, Distribution, Command, Sweeping and Handling, not the outfield names shown.":""}</div>}
 
             {/* Player slots */}
             <div className="resp-grid3" style={{display:"grid",gridTemplateColumns:cp.length<3?"1fr 1fr 1fr":"1fr 1fr 1fr",gap:12,marginBottom:24}}>
@@ -2783,10 +2974,11 @@ function MLSAnalytics(){
                     <div style={{width:8,height:8,borderRadius:"50%",background:compColors[i]}}/>
                     {(p.localHeadshot||p.headshot)?<img src={p.localHeadshot||p.headshot} alt={p.name} style={{width:48,height:48,borderRadius:"50%",objectFit:"cover",border:`2px solid ${compColors[i]}40`,flexShrink:0}} onError={e=>{e.target.style.display="none"}}/>:<TeamBadge abbr={p.team} size={28} logo={p.teamLogo}/>}
                   </div>
-                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink,lineHeight:1,marginBottom:4}}>{p.name}</div>
+                  <div style={{fontFamily:T.display,fontWeight:700,fontSize:20,color:T.ink,lineHeight:1,marginBottom:4}}>{p.name}{(p.mins||0)<450&&<span title="Provisional — under 450 minutes played" style={{marginLeft:6,fontSize:9,fontFamily:T.sans,fontWeight:700,color:T.textMute,background:`${T.textMute}15`,padding:"1px 4px",letterSpacing:.5,verticalAlign:"middle"}}>PROV</span>}</div>
                   <div style={{fontSize:11.5,color:T.textDim,fontFamily:T.sans,marginBottom:10}}>{p.position} · {p.teamName}</div>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5}}>
-                    {[{l:"Overall",v:p.overall,c:gc(p.overall)},{l:"Attack",v:p.attack,c:gc(p.attack)},{l:"Passing",v:p.passing,c:gc(p.passing)},{l:"Defense",v:p.defense,c:gc(p.defense)},{l:"Creative",v:p.creativity,c:gc(p.creativity)},{l:"Carry",v:p.carrying,c:gc(p.carrying)}].map(g=>(
+                    {/*6C: a keeper's five sub-grades carry keeper names on their own card, whatever the rest of the comparison contains.*/}
+                    {(normalizeGroup(p.position)==="GK"?[{l:"Overall",v:p.overall},{l:"Shot-Stop",v:p.attack},{l:"Distribution",v:p.passing},{l:"Command",v:p.defense},{l:"Sweeping",v:p.creativity},{l:"Handling",v:p.carrying}]:[{l:"Overall",v:p.overall},{l:"Attack",v:p.attack},{l:"Passing",v:p.passing},{l:"Defense",v:p.defense},{l:"Creative",v:p.creativity},{l:"Carry",v:p.carrying}]).map(x=>({...x,c:gc(x.v)})).map(g=>(
                       <div key={g.l} style={{textAlign:"center",padding:"6px 4px",background:T.card,borderRadius:0}}>
                         <div style={{fontFamily:T.serif,fontWeight:700,fontSize:18,color:g.c,lineHeight:1}}>{g.v}</div>
                         <div style={{fontSize:10,color:T.textMute,fontWeight:600,letterSpacing:.8,marginTop:2}}>{g.l.toUpperCase()}</div>
@@ -2816,7 +3008,9 @@ function MLSAnalytics(){
               </div>
               {typeof window!=="undefined"&&window.Recharts&&(()=>{
                 const {ResponsiveContainer,RadarChart,PolarGrid,PolarAngleAxis,PolarRadiusAxis,Radar}=window.Recharts;
-                const axes=[["Overall","overall"],["Attack","attack"],["Passing","passing"],["Defense","defense"],["Creative","creativity"],["Carry","carrying"]];
+                // 6C: the radar axes follow the same rule as the bars — keeper terms when every
+                // compared player is a keeper, outfield terms otherwise (with the mix disclosed above).
+                const axes=[["Overall","overall"],[compKeepersOnly?"Shot-Stop":"Attack","attack"],[compKeepersOnly?"Distribution":"Passing","passing"],[compKeepersOnly?"Command":"Defense","defense"],[compKeepersOnly?"Sweeping":"Creative","creativity"],[compKeepersOnly?"Handling":"Carry","carrying"]];/*6C-RADARGK*/
                 const data=axes.map(([label,key])=>{const row={axis:label};cp.forEach((p,i)=>{const n=parseFloat(p[key]);row["p"+i]=Number.isFinite(n)&&n>0?Math.max(40,Math.min(99,n)):42;});return row;});
                 return <div style={{marginBottom:20}}>
                   <div style={{fontSize:11,color:T.textMute,fontWeight:600,letterSpacing:1.5,fontFamily:T.sans,textTransform:"uppercase",marginBottom:4}}>The Shape of the Player · Grade Radar</div>
@@ -2854,7 +3048,7 @@ function MLSAnalytics(){
                   </div>
                   <div>
                     <div style={{fontSize:11.5,color:T.ink,fontWeight:700,letterSpacing:2,marginBottom:12,fontFamily:T.sans,borderBottom:`1px solid ${T.borderLt}`,paddingBottom:6}}>GRADES</div>
-                    {compBar("Overall","overall",99)}{compBar("Attack","attack",99)}{compBar("Passing","passing",99)}{compBar("Defense","defense",99)}{compBar("Creativity","creativity",99)}{compBar("Carrying","carrying",99)}
+                    {compBar("Overall","overall",99)}{compBar(compSubLabel.attack,"attack",99)}{compBar(compSubLabel.passing,"passing",99)}{compBar(compSubLabel.defense,"defense",99)}{compBar(compSubLabel.creativity,"creativity",99)}{compBar(compSubLabel.carrying,"carrying",99)}
                   </div>
                 </div>
                 {/* Physical comparison */}
@@ -3039,13 +3233,13 @@ function MLSAnalytics(){
             </div>
           </div>
           <div style={{borderTop:`1px solid ${T.borderLt}`,marginTop:16,paddingTop:12,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
-            <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>© {CY} USA Footy Index. All rights reserved.</div>
+            <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>© {COPYRIGHT_YEAR} USA Footy Index. All rights reserved.</div>
             <div style={{fontSize:11,color:T.textMute,fontFamily:T.sans}}>Created by Czar of Silly</div>
           </div>
         </div>
       </footer>
 
-      {sel&&<PlayerModal player={sel} onClose={()=>setSel(null)} onCompare={addCompare} isInCompare={comparePlayers.some(c=>c.id===sel.id)} allSeasons={ALL_SEASONS} currentSeason={CURRENT_SEASON} viewingSeason={season} onDrillSeason={drillToSeason} canDrillSeason={canDrillSeason} pctRanks={pctRanks[sel.id]} history={playerHistory[sel.id]} formCurve={genFormCurve(sel)} seasonInfo={seasonRatings.ratings.find(r=>r.id===sel.id)||null} similarPlayers={findSimilar(sel.id)} onSelectPlayer={setSel} dark={dark}/>}
+      {sel&&<PlayerModal player={sel} onClose={()=>setSel(null)} onCompare={addCompare} isInCompare={comparePlayers.some(c=>c.id===sel.id)} allSeasons={ALL_SEASONS} currentSeason={CURRENT_SEASON} viewingSeason={season} gkCoverage={GK_COVERAGE} onDrillSeason={drillToSeason} canDrillSeason={canDrillSeason} pctRanks={pctRanks[sel.id]} history={playerHistory[sel.id]} formCurve={genFormCurve(sel)} seasonInfo={seasonRatings.ratings.find(r=>r.id===sel.id)||null} similarPlayers={findSimilar(sel.id)} onSelectPlayer={setSel} dark={dark}/>}
     </div>
   );
 }
