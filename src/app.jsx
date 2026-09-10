@@ -1,5 +1,5 @@
 // src/app.jsx — application root (Phase 5.3 source split). Built to public/app.js by `npm run build`.
-import { assistsCoverageComplete, AVAILABLE_SEASONS, bestXI, buildNameIndex, buildPercentiles, canDrillThrough, compareUnknownLast, CURRENT_SEASON, goalContribution, goldenBootOrder, GROUP_LABEL, GROUP_SINGULAR, impactPerGame, mvpScore, normalizeGroup, parseSeasonParam, posGroupKey, positionalRanks, POS_GROUPS, powerScore, profileSimilarity, resolveExactName, seasonLeaderboard, seasonOverview, SEASONS_OLDEST_FIRST, strongestSubgrade, sumStrict, teamGradeRanking, withSeason } from "./analytics/archive.mjs";
+import { assistsCoverageComplete, AVAILABLE_SEASONS, bestXI, classifySeasonParam, compareClearedNotice, planSeasonChange, buildNameIndex, buildPercentiles, canDrillThrough, compareUnknownLast, CURRENT_SEASON, goalContribution, goldenBootOrder, GROUP_LABEL, GROUP_SINGULAR, impactPerGame, mvpScore, normalizeGroup, parseSeasonParam, posGroupKey, positionalRanks, POS_GROUPS, powerScore, profileSimilarity, resolveExactName, seasonLeaderboard, seasonOverview, SEASONS_OLDEST_FIRST, strongestSubgrade, sumStrict, teamGradeRanking, withSeason } from "./analytics/archive.mjs";
 import { matchRating } from "./analytics/form.mjs";
 import { cardMatchPreview, cardMovers, cardPowerRankings, cardTOTW, setDataGenerated } from "./cards/share-cards.jsx";
 import { PlayerModal } from "./components/player-modal.jsx";
@@ -237,7 +237,7 @@ function MLSAnalytics(){
       const prevLoaded=loadedSeason.current;loadedSeason.current=season;/*6C-COMPARESEASON*/
       if(prevLoaded!=null&&prevLoaded!==season&&compareRef.current.length){
         setComparePlayers([]);
-        setCompareNotice(`Compare was cleared: those players were from the ${prevLoaded} season. Add ${season} players to compare within one season — cross-season comparison needs stable player identities, which is a later phase.`);
+        setCompareNotice(compareClearedNotice(prevLoaded,season));
       }
     }catch(e){setErrMsg("Processing error: "+e.message);}
     setLoading(false);}load();},[season]);
@@ -416,11 +416,17 @@ function MLSAnalytics(){
   // destination season, this is the same jump the career panel makes; otherwise the modal closes
   // rather than showing one season's player under another season's numbers.
   const changeSeason=(yr)=>{/*6C-SEASONSWITCH*/
-    const y=Number(yr);
-    if(!AVAILABLE_SEASONS.includes(y)||y===season)return;
-    if(sel&&canDrillSeason(y,sel.name)){drillToSeason(y,sel.name);return;}
+    const plan=planSeasonChange({season,target:yr,available:AVAILABLE_SEASONS,playerName:sel?sel.name:null,canDrill:canDrillSeason,compareCount:comparePlayers.length});
+    if(plan.kind==="ignore")return;
+    if(plan.kind==="drill"){drillToSeason(plan.year,plan.name);return;}
+    // 6C.1: clear Compare HERE, in the same commit as the season change, not in the destination
+    // loader. Clearing late left one render where the app claimed the new season while still holding
+    // the old season's selections, and the URL sync published that pairing as its own history entry
+    // — a URL that, on Back, no longer looked cross-season and would have had the router resolve the
+    // previous season's slugs against the new index.
+    if(plan.clearCompare){setComparePlayers([]);setCompareNotice(compareClearedNotice(plan.from,plan.year));}/*6C.1-COMPARESYNC*/
     setSel(null);
-    setSeason(y);
+    setSeason(plan.year);
   };
 
   // ── SEASON RATINGS ─────────────────────────────────────────────────────────
@@ -583,7 +589,18 @@ function MLSAnalytics(){
     // 6C: the season travels in the URL, so Back/Forward and a refresh restore it. A URL for a
     // different season cannot be resolved against the season currently in memory — the player
     // index belongs to the loaded cache — so the selection is deferred until that cache arrives.
-    const wantSeason=parseSeasonParam(loc.search||"",{available:AVAILABLE_SEASONS,fallback:CURRENT_SEASON});/*6C-ROUTESEASON*/
+    const seasonParam=classifySeasonParam(loc.search||"",{available:AVAILABLE_SEASONS,fallback:CURRENT_SEASON});/*6C-ROUTESEASON*/
+    const wantSeason=seasonParam.season;
+    // 6C.1: a URL that names a season we do not hold (`?season=2031`, `?season=abc`) loaded the
+    // current season but left the false query sitting in the address bar, so the URL disagreed with
+    // the page and sharing it passed the lie on. Rewrite it in place — replaceState, never push, so
+    // Back is not polluted and there is no loop: the rewritten URL is already canonical, so a second
+    // pass finds nothing to change. Everything else in the query survives untouched.
+    if(seasonParam.status==="invalid"){/*6C.1-NORMALISE*/
+      const here=(loc.pathname||"/")+(loc.search||"");
+      const canonical=withSeason(here,wantSeason,{current:CURRENT_SEASON});
+      if(canonical!==here){try{window.history.replaceState({u:canonical},"",canonical);}catch(e){}}
+    }
     const crossSeason=wantSeason!==season;
     if(crossSeason)setSeason(wantSeason);
     let t="front";

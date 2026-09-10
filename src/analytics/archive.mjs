@@ -26,23 +26,43 @@ export function isAvailableSeason(v, available) {
   return Number.isInteger(n) && list.indexOf(n) >= 0;
 }
 
-// Accepts a location.search string, a URLSearchParams, or a bare value. Anything unrecognised —
-// a future year, a typo, a missing param — falls back to the current season rather than throwing
-// or requesting a cache that is not there.
-export function parseSeasonParam(input, opts) {
+// One parser. `classifySeasonParam` is the whole implementation; `parseSeasonParam` is a thin
+// accessor over it, so there is never a second, subtly different way to read the season.
+//
+// 6C.1: the caller sometimes needs to know WHY it got the current season back. "No season in the
+// URL" is a clean URL that should be left alone; "?season=2031" is a URL that lied and has to be
+// rewritten in place. Collapsing both to a number made those indistinguishable.
+//   missing → the param is absent entirely
+//   valid   → the param names a season we hold a cache for
+//   invalid → the param is present but unusable (unknown year, empty, junk)
+export function classifySeasonParam(input, opts) {
   const available = (opts && opts.available) || AVAILABLE_SEASONS;
   const fallback = (opts && opts.fallback !== undefined) ? opts.fallback : CURRENT_SEASON;
-  let raw = input;
-  if (input && typeof input === "object" && typeof input.get === "function") raw = input.get("season");
-  else if (typeof input === "string" && (input.indexOf("=") >= 0 || input.charAt(0) === "?")) {
+  let raw;
+  if (input && typeof input === "object" && typeof input.get === "function") {
+    const got = input.get("season");
+    raw = got === null ? undefined : got;
+  } else if (typeof input === "string" && (input.indexOf("=") >= 0 || input.charAt(0) === "?")) {
     const q = input.charAt(0) === "?" ? input.slice(1) : input;
-    raw = null;
     for (const part of q.split("&")) {
       const eq = part.indexOf("=");
-      if (eq > 0 && decodeURIComponent(part.slice(0, eq)) === "season") raw = decodeURIComponent(part.slice(eq + 1));
+      const key = eq < 0 ? part : part.slice(0, eq);
+      if (decodeURIComponent(key) === "season") raw = eq < 0 ? "" : decodeURIComponent(part.slice(eq + 1));
     }
+  } else if (input === "" ) {
+    raw = undefined; // no query string at all — that is a clean URL, not a malformed one
+  } else {
+    raw = input;
   }
-  return isAvailableSeason(raw, available) ? Number(raw) : fallback;
+  if (raw === undefined || raw === null) return { status: "missing", raw: null, season: fallback };
+  if (isAvailableSeason(raw, available)) return { status: "valid", raw: String(raw), season: Number(raw) };
+  return { status: "invalid", raw: String(raw), season: fallback };
+}
+
+// Anything unrecognised — a future year, a typo, an empty param — falls back to the current season
+// rather than throwing or requesting a cache that is not there.
+export function parseSeasonParam(input, opts) {
+  return classifySeasonParam(input, opts).season;
 }
 
 // The current season is the default, so its URLs stay clean (`/players` not `/players?season=2026`)
@@ -57,6 +77,34 @@ export function withSeason(path, season, opts) {
   const parts = i < 0 ? [] : p.slice(i + 1).split("&").filter(x => x && x.slice(0, 7) !== "season=");
   if (isAvailableSeason(season) && Number(season) !== current) parts.push("season=" + Number(season));
   return parts.length ? base + "?" + parts.join("&") : base;
+}
+
+// ─── SEASON CHANGE (Phase 6C.1) ──────────────────────────────────────────────
+// What a click on the season selector should do, decided in one pure place so the outcome can be
+// tested rather than inferred from the router.
+//
+// The bug this closes: the Compare list used to be cleared by the DESTINATION loader, i.e. after
+// the new cache arrived. Between the click and that moment the app still held the previous season's
+// selections while already reporting the new season, so the state→URL sync could publish an
+// intermediate URL pairing one season with another season's player slugs
+// (`/compare?players=<2026 slugs>&season=2024`). That cost a second history entry, and pressing Back
+// onto it landed on a URL the router no longer saw as cross-season — so it would try to resolve
+// 2026 slugs against the 2024 index, which is exactly the cross-season guess the whole design
+// refuses to make. Clearing has to happen in the same commit as the season change.
+export function planSeasonChange(state) {
+  const available = (state && state.available) || AVAILABLE_SEASONS;
+  const from = state && state.season;
+  const target = Number(state && state.target);
+  if (!isAvailableSeason(target, available) || target === from) return { kind: "ignore" };
+  const name = state && state.playerName;
+  const canDrill = state && typeof state.canDrill === "function" ? state.canDrill : null;
+  if (name && canDrill && canDrill(target, name)) return { kind: "drill", year: target, name };
+  return { kind: "switch", year: target, from, clearCompare: !!(state && state.compareCount > 0) };
+}
+
+// One string for both paths that can clear Compare, so the explanation cannot drift.
+export function compareClearedNotice(from, to) {
+  return `Compare was cleared: those players were from the ${from} season. Add ${to} players to compare within one season — cross-season comparison needs stable player identities, which is a later phase.`;
 }
 
 // ─── UNKNOWN-VS-ZERO PRIMITIVES ──────────────────────────────────────────────
