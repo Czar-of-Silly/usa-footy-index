@@ -131,7 +131,10 @@ test("the canonical list and the caches on disk agree", () => {
 test("the season is applied through one wrapper, so no route can forget it", () => {
   const s = app();
   assert.match(s, /return withSeason\(base,season,\{current:CURRENT_SEASON\}\);/, "currentUrl wraps every route");
-  assert.match(s, /const wantSeason=parseSeasonParam\(loc\.search\|\|""/, "applyRoute reads the season back");
+  // 6C.1: applyRoute now reads through the classifying parser (same single parser, richer result),
+  // so it can tell a clean URL from one naming a season we do not hold.
+  assert.match(s, /const seasonParam=classifySeasonParam\(loc\.search\|\|""/, "applyRoute reads the season back");
+  assert.match(s, /const wantSeason=seasonParam\.season;/, "and uses the season it resolved to");
   assert.match(s, /\},\[tab,sel,expandTeam,comparePlayers,slugIndex,matchup,season\]\);/, "and a season change re-syncs the URL");
 });
 test("a cross-season URL defers player selection until that season's cache is loaded", () => {
