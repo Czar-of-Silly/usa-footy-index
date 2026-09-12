@@ -240,7 +240,10 @@ test("the data-quality gates are unchanged, so an outage cannot publish a thin c
   assert.doesNotMatch(s, /const p=await get\(url\);/, "the old hand-rolled directory loop is gone");
   assert.doesNotMatch(s, /if\(p\.length<1000\)break; \/\/ last page/, "and so is its page-size assumption");
   assert.match(s, /console\.log\(get\.report\(\)\);/, "and the run reports its request counts");
-  // nothing about matching, identity or cache semantics moved in this patch
-  assert.match(s, /const _claims = new Map\(\)/, "the 6D join rule is still here");
+  // nothing about matching, identity or cache semantics moved in the reliability patch. The join
+  // rule itself has since moved into src/data/roster-join.js, where a claimant is a roster identity
+  // rather than a display name — assert the rule is wired in, not which file holds it.
+  assert.match(s, /const \{ createFinder \} = require\("\.\/src\/data\/roster-join\.js"\);/, "the join rule is still enforced");
+  assert.match(s, /find = createFinder\(mlsRoster,/, "and still built from the roster");
   assert.match(s, /if\(xg&&xg\.asaId\)o\.asa=xg\.asaId/, "and so is 6D identity capture");
 });
