@@ -300,28 +300,15 @@ async function main() {
   // folding (a differently spelled name may be a different person, and only the source can say), no
   // surname heuristics, and a name held by two source rows resolves to nothing. _claims then enforces
   // one source row per roster player across the whole run, so a row can never serve two players.
-  const _claims = new Map();            // sourceMap -> Map<value, rosterName>
-  let _joinRefused = 0;
-  function find(rosterName, ...maps) {
-    if (rosterName == null || rosterName === "") return null;
-    for (const m of maps) {
-      if (!m) continue;
-      if (!Object.prototype.hasOwnProperty.call(m, rosterName)) continue;
-      const v = m[rosterName];
-      if (v === undefined || v === null) continue;
-      let seen = _claims.get(m);
-      if (!seen) { seen = new Map(); _claims.set(m, seen); }
-      const prior = seen.get(v);
-      if (prior !== undefined && prior !== rosterName) {
-        _joinRefused++;
-        console.warn(`  [JOIN] refused: a source row already claimed by "${prior}" was also requested by "${rosterName}"`);
-        return null;
-      }
-      seen.set(v, rosterName);
-      return v;
-    }
-    return null;
-  }
+  // The 6D version of this compared claimants by DISPLAY NAME, so two roster players who share one
+  // were treated as the same claimant and both received the row. That put the single ASA record
+  // XVqKLXRaQ0 — its stats and its identity — on both "Tiago" entries, who are two distinct Opta
+  // players. createFinder identifies a claimant by its sportecId and refuses a name held by more
+  // than one roster row; see src/data/roster-join.js.
+  const { createFinder } = require("./src/data/roster-join.js");
+  // built AFTER mlsRoster is populated (below) — the duplicate-name counts are derived from it, and
+  // constructing it here against an empty array would silently disable rule 2.
+  let find;
 
   // ─── DATA PRESERVATION: load existing cache to fall back on if sources fail ───
   let existingPlayers = {};
@@ -329,7 +316,9 @@ async function main() {
     const existingPath = path.join(__dirname, "data", "mls-cache.json");
     if (fs.existsSync(existingPath)) {
       const existing = JSON.parse(fs.readFileSync(existingPath, "utf8"));
-      for (const p of existing.players || []) existingPlayers[p.n] = p;
+      // 6D.1: keyed by sportecId, not display name — a name shared by two roster players would
+      // otherwise hand both of them the same previous-cache row (today: market value).
+      for (const p of existing.players || []) { if (p.sportecId) existingPlayers["sportec:" + p.sportecId] = p; else if (p.n) existingPlayers["name:" + p.n] = p; }
       console.log(`\n  💾 Loaded ${Object.keys(existingPlayers).length} players from existing cache (for fallback)`);
     }
   } catch(e) { console.log(`  ⚠️  Could not load existing cache: ${e.message}`); }
@@ -358,6 +347,9 @@ async function main() {
       _mls:    p
     }));
     console.log(`  💾 Loaded ${mlsRoster.length} MLS-rostered players from rosters-cache.json (Layer 1)`);
+    find = createFinder(mlsRoster, { nameOf: r => r && r.name, log: m => console.warn(m) });/*6D.1*/
+    const _dupNames = Object.entries(find.counts).filter(([, c]) => c > 1);
+    if (_dupNames.length) console.log(`  [JOIN] ${_dupNames.length} display name(s) shared by more than one roster player: ${_dupNames.map(([k, c]) => `"${k}" x${c}`).join(", ")} — these get no name-matched source data`);
   } catch (e) {
     console.error(`  ✗ FATAL: ${e.message}`);
     process.exit(1);
@@ -365,23 +357,24 @@ async function main() {
 
 
   let merged=0, partial=0, skipped=0, unavailable=0;
-  for (const rp of mlsRoster) {                              // [A.2] iterate MLS roster, not ESPN
-    const e = find(rp.name, espn) || {};                     // [A.2] fuzzy ESPN lookup
-    const xg = find(rp.name, asaXG) || {};
-    const ga = find(rp.name, asaGA) || {};
-    const pass = find(rp.name, asaPass) || {};
-    const sofa = find(rp.name, sofaStats) || {};
-    const ex = existingPlayers[rp.name] || {};
+  for (const [rpIndex, rp] of mlsRoster.entries()) {         // [A.2] iterate MLS roster, not ESPN
+    const e = find(rp, rpIndex, espn) || {};                     // [A.2] fuzzy ESPN lookup
+    const xg = find(rp, rpIndex, asaXG) || {};
+    const ga = find(rp, rpIndex, asaGA) || {};
+    const pass = find(rp, rpIndex, asaPass) || {};
+    const sofa = find(rp, rpIndex, sofaStats) || {};
+    const _exKey = (rp._mls && rp._mls.sportecId) ? ("sportec:" + rp._mls.sportecId) : ("name:" + rp.name);/*6D.1*/
+    const ex = existingPlayers[_exKey] || {};
     const sofaOK = !!sofa.tackles || !!sofa.interceptions || !!sofa.dribbles || !!sofa.aerialsWon;
-    const sal = find(rp.name, asaSalary) || {};
-    const mvVal = find(rp.name, sofaValues) || 0;
-    const sofaImg = typeof sofaImages !== 'undefined' ? (find(rp.name, sofaImages) || null) : null;
-    const sofaId = typeof sofaPlayerIds !== 'undefined' ? (find(rp.name, sofaPlayerIds) || null) : null;
+    const sal = find(rp, rpIndex, asaSalary) || {};
+    const mvVal = find(rp, rpIndex, sofaValues) || 0;
+    const sofaImg = typeof sofaImages !== 'undefined' ? (find(rp, rpIndex, sofaImages) || null) : null;
+    const sofaId = typeof sofaPlayerIds !== 'undefined' ? (find(rp, rpIndex, sofaPlayerIds) || null) : null;
 
     // [MLS STATS] official Opta stats, joined by sportecId (no name matching)
     const sid = rp._mls && rp._mls.sportecId ? rp._mls.sportecId : null;
     const ms = (sid && mlsStats[sid]) || {};
-    const ed = find(rp.name, espnDef) || {};   // [ESPN DEF] tackles/interceptions
+    const ed = find(rp, rpIndex, espnDef) || {};   // [ESPN DEF] tackles/interceptions
     const hasMLS = !!(ms.normalized_player_minutes);
 
     const hasESPN = (e.games || 0) > 0;
@@ -755,6 +748,7 @@ async function main() {
   }
   console.log(`  ASA directory: ${Object.keys(asaNames).length} names | xG data: ${Object.keys(asaXG).length} | G+ data: ${Object.keys(asaGA).length} | Pass data: ${Object.keys(asaPass).length}`);
   console.log(get.report());
+  console.log(`  [JOIN] name-matched ${find.stats.resolvedByName} · refused ${find.stats.duplicateRosterName} for a duplicate roster name · refused ${find.stats.alreadyClaimed} already-claimed source rows`);
   console.log(`  ASA      Salaries: ${withSalary}`);
   console.log(`  Now sourced from official MLS (Opta):`);
   console.log(`    chances, key passes, aerials, clearances, pressures, GK save quality`);
