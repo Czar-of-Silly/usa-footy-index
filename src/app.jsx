@@ -1,5 +1,6 @@
 // src/app.jsx — application root (Phase 5.3 source split). Built to public/app.js by `npm run build`.
 import { assistsCoverageComplete, AVAILABLE_SEASONS, bestXI, classifySeasonParam, compareClearedNotice, planSeasonChange, buildNameIndex, buildPercentiles, canDrillThrough, compareUnknownLast, CURRENT_SEASON, goalContribution, goldenBootOrder, GROUP_LABEL, GROUP_SINGULAR, impactPerGame, mvpScore, normalizeGroup, parseSeasonParam, posGroupKey, positionalRanks, POS_GROUPS, powerScore, profileSimilarity, resolveExactName, seasonLeaderboard, seasonOverview, SEASONS_OLDEST_FIRST, strongestSubgrade, sumStrict, teamGradeRanking, withSeason } from "./analytics/archive.mjs";
+import { buildIdentityIndex, canCompareAcrossSeasons, coverageWarning, gradeDifference, identityKey, JOIN, resolve as resolveIdentity, samePlayerAcrossSeasons } from "./analytics/identity.mjs";/*6D*/
 import { matchRating } from "./analytics/form.mjs";
 import { cardMatchPreview, cardMovers, cardPowerRankings, cardTOTW, setDataGenerated } from "./cards/share-cards.jsx";
 import { PlayerModal } from "./components/player-modal.jsx";
@@ -45,6 +46,15 @@ const SEASON_COVERAGE={
 // GK/FW/DF/MF split) and the rest of the archive/unknown-value semantics now live in
 // analytics/archive.mjs so they can be tested as behaviour rather than as source text.
 const SEASON_ASSISTS_OK={2026:true,2025:false,2024:false};
+// 6D: per-row assist availability. `assistSrc` is written by the enriched caches: "asa:primary_assists"
+// means the number is authoritative, "unknown" means the player could not be resolved and the value is
+// genuinely absent. A row with no `assistSrc` at all is a pre-6D cache, so the season flag decides —
+// which is why flipping SEASON_ASSISTS_OK is not needed and would overstate coverage anyway.
+const rowAssistsKnown=(r,yr)=>{
+  if(r&&typeof r.assistSrc==="string")return r.assistSrc!=="unknown"&&r.as!==null&&r.as!==undefined;
+  return SEASON_ASSISTS_OK[yr]!==false;
+};
+const rowAssists=(r,yr)=>rowAssistsKnown(r,yr)?(r.as??null):null;
 // 6C: AVAILABLE_SEASONS / CURRENT_SEASON / SEASONS_OLDEST_FIRST all come from analytics/archive.mjs
 // so the selector, the router, the loaders and the career axis cannot drift apart. The season is a
 // property of the committed caches — nothing here reads the wall-clock year, which used to seed it
@@ -205,13 +215,14 @@ function MLSAnalytics(){
     try{
       // Validate + sanitize each raw player object
       const safe=(v,min,max,def)=>{const n=Number(v);return isNaN(n)?def:Math.max(min,Math.min(max,n));};
-      const validated=allRaw.filter(r=>r&&r.n&&r.t&&typeof r.n==="string").map(validatePlayer);
+      const srcRows=allRaw.filter(r=>r&&r.n&&r.t&&typeof r.n==="string");/*6D-SRCROWS*/
+      const validated=srcRows.map(validatePlayer);
       setLoadProgress(85);
       const inter=validated.map(preparePlayerForGrading);
       const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players from pools
       setLoadProgress(95);
-      const final=inter.map(p=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
-        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",/*6B-ZERO*/overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:SEASON_ASSISTS_OK[season]===false?null:(r.as||0),/*Phase 6A: 2024/25 cache assists are Math.round(xA), not real assists — withheld rather than mislabelled. null renders as an em dash via sv(), the same convention already used for tackles/shots/clearances.*/xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk??null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh??null,shotsOnTarget:r.so??null,fouls:r.fl??null,yellowCards:r.yc??null,redCards:r.rc??null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp??null,sca:r.sca??null,prgPasses:r.prgp??null,ftPasses:r.ftp??null,pressures:r.prs??null,interceptions:r.intc??null,aerials:r.arl??null,dribbles:r.drb??null,prgCarries:r.prgc??null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:("oxg" in r)?+(r.oxg||0):null,chances:("chc" in r)?(r.chc||0):null,goalOpps:r.gop||0,aerialPct:("arlPct" in r)?(r.arlPct||0):null,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:("clr" in r)?(r.clr||0):null,pressureRes:("presR" in r)?+(r.presR||0):null,escapeRate:("esc" in r)?+(r.esc||0):null,distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
+      const final=inter.map((p,i)=>{const r=p.raw,g=grades[p.id]||{overall:55,attack:55,passing:55,defense:55,creativity:55,carrying:55};const tm=MLS_TEAMS.find(t=>t.abbr===r.t)||{};const pp=r.pp||0,xpp=r.xpp||0;
+        return{id:p.id,name:r.n,team:r.t,teamName:tm.name||r.t,position:r.p||"MF",/*6B-ZERO*/overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,mins:r.m||600,goals:r.g||0,assists:rowAssists(srcRows[i]||r,season),/*6D-ROWASSISTS*/ids:(srcRows[i]&&srcRows[i].ids)||null,identityJoin:(srcRows[i]&&srcRows[i].identityJoin)||null,/*Phase 6A: 2024/25 cache assists are Math.round(xA), not real assists — withheld rather than mislabelled. null renders as an em dash via sv(), the same convention already used for tackles/shots/clearances.*/xGoals:(r.xg||0).toFixed(1),xAssists:(r.xa||0).toFixed(1),xg90:p.xg90.toFixed(2),xa90:p.xa90.toFixed(2),totalGA:p.tga.toFixed(2),passGA:(r.gp||0).toFixed(2),passComp:pp.toFixed(1),xPassComp:xpp.toFixed(1),passAboveExp:pp>0&&xpp>0?(pp-xpp).toFixed(1):null,tackles:r.tk??null,tacklesWon:r.tkw||0,blocks:r.blk||0,departed:!!r.departed,tacklePct:(r.tk>=8?Math.round(100*(r.tkw||0)/r.tk):null),shots:r.sh??null,shotsOnTarget:r.so??null,fouls:r.fl??null,yellowCards:r.yc??null,redCards:r.rc??null,marketValue:r.mv||0,teamLogo:_logos[r.t]||null,age:r.a?((r.a||0)+((r.n||"A").split("").reduce((s,c)=>s+c.charCodeAt(0),0)%10)/10).toFixed(1):null,heightCm:r.ht||null,weightKg:r.wt||null,keyPasses:r.kp??null,sca:r.sca??null,prgPasses:r.prgp??null,ftPasses:r.ftp??null,pressures:r.prs??null,interceptions:r.intc??null,aerials:r.arl??null,dribbles:r.drb??null,prgCarries:r.prgc??null,headshot:r.headshot||null,matchLog:r.matchLog||[],salary:r.sal||0,saves:r.sv||0,cleanSheets:r.cs||0,goalsConceded:r.gaCon||0,officialXg:("oxg" in r)?+(r.oxg||0):null,chances:("chc" in r)?(r.chc||0):null,goalOpps:r.gop||0,aerialPct:("arlPct" in r)?(r.arlPct||0):null,aerialAtt:(r.arl||0)+(r.arlLost||0),clearances:("clr" in r)?(r.clr||0):null,pressureRes:("presR" in r)?+(r.presR||0):null,escapeRate:("esc" in r)?+(r.esc||0):null,distance:r.dist||0,topSpeed:+(r.spd||0),nutmegs:r.nut||0,foulsSuffered:r.flSuf||0,xSaves:+(r.xsv||0),keeperEff:+(r.gkEff||0),isDP:!!r.isDP,isU22:!!r.isU22,isInternational:!!r.isIntl,isHomegrown:!!r.isHG,isLoanedOut:!!r.isLoaned,rosterCategory:r.rosterCat,sportecId:r.sportecId,rated:(r.m||0)>0,prevTeam:r.prevTeam||null,localHeadshot:r.localHeadshot||null};});
       setLoadProgress(100);
       setPlayers(final);
       // 6B.1 drill-through landing: reopen the same player in the destination season, but only on a
@@ -260,7 +271,8 @@ function MLSAnalytics(){
           // (no isGK, so every historical keeper was graded as an outfielder; no oxg90/chc90/tk90/
           // gdrV; and cumulative Goals Added instead of per-90). Season History and the season
           // selector therefore disagreed for ~99% of players. One path now, so they cannot diverge.
-          const validated=raw.filter(r=>r&&r.n&&r.t&&typeof r.n==="string").map(validatePlayer);
+          const srcRows=raw.filter(r=>r&&r.n&&r.t&&typeof r.n==="string");/*6D-SRCROWS*/
+          const validated=srcRows.map(validatePlayer);
           const inter=validated.map(preparePlayerForGrading);
           const grades=computeGrades(inter.filter(p=>(p.raw.m||0)>=1)); // [GRADEFIX] exclude 0-min players
           // 6B: within-season positional rank, computed once per season here rather than recomputed
@@ -272,15 +284,20 @@ function MLSAnalytics(){
           const rankRows=inter.filter(p=>grades[p.id]).map(p=>({key:p.id,pos:posGroupKey(p),ov:grades[p.id].overall}));/*6B-RANKS*/
           const {ranks:rankById}=positionalRanks(rankRows);
           const rows=[];
-          inter.forEach(p=>{const r=p.raw,g=grades[p.id];if(!g)return;
+          inter.forEach((p,i)=>{const r=p.raw,g=grades[p.id];if(!g)return;
             const rk=rankById[p.id]||null;
-            rows.push({id:p.id,name:r.n,overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,isGK:!!g.isGK,goals:r.g,assists:SEASON_ASSISTS_OK[yr]===false?null:r.as,mins:r.m,team:r.t,marketValue:r.mv,posRank:rk?rk.rank:null,posGroup:rk?rk.pos:null,posOf:rk?rk.of:null,prov:(r.m||0)<450,assistsKnown:SEASON_ASSISTS_OK[yr]!==false});
+            const src=srcRows[i]||{};/*6D-SRC*/
+            rows.push({id:p.id,name:r.n,ids:src.ids||null,identityJoin:src.identityJoin||null,/*6D-IDS*/n:r.n,overall:g.overall,attack:g.attack,passing:g.passing,defense:g.defense,creativity:g.creativity,carrying:g.carrying,isGK:!!g.isGK,goals:r.g,assists:rowAssists(src,yr),mins:r.m,team:r.t,marketValue:r.mv,posRank:rk?rk.rank:null,posGroup:rk?rk.pos:null,posOf:rk?rk.of:null,prov:(r.m||0)<450,assistsKnown:rowAssistsKnown(src,yr)});
           });
           // Exact-name index that KEEPS the duplicate count, so an ambiguous name can be refused
           // instead of silently resolving to whichever row happened to be written last.
           const {counts,byName}=buildNameIndex(rows,r=>r.name);/*6B.1-NAMEIDX*/
+          // 6D: a second index, on verified provider identity. resolveIdentity() prefers it and only
+          // falls back to the exact-name index when a row carries no stable id — which is every row
+          // until the enriched caches are accepted, so behaviour is unchanged until then.
+          const idIndex=buildIdentityIndex(rows);/*6D-IDINDEX*/
           const byId={};rows.forEach(r=>{byId[r.id]=r;});
-          results[yr]={byId,byName,counts};
+          results[yr]={byId,byName,counts,idIndex};
         }catch(e){/* skip failed season */}
       }
       setHistData(results);
@@ -374,6 +391,26 @@ function MLSAnalytics(){
   //     re-checked before the join is accepted, and a mismatch falls back to the name rule.
   //   • every other season joins only on an exact name that occurs exactly once there. Zero matches
   //     is a gap; more than one is ambiguous and is shown as such, never guessed.
+  // ─── CROSS-SEASON COMPARE (Phase 6D §10) ─────────────────────────────────
+  // Deliberately one capability and no more: the SAME player, in seasons the user picks. Two
+  // different players from two different seasons is not offered, because nothing here makes that
+  // safe yet — and a season-over-season grade gap is a RECORDED DIFFERENCE, never an improvement or
+  // a decline, because the seasons were not measured with the same instruments.
+  const crossSeasonCareer=useMemo(()=>(player,years)=>{/*6D-XSEASON*/
+    if(!player||!identityKey(player))return{ok:false,refused:"no-stable-identity",rows:[],coverage:[],
+      reason:"This player has no verified cross-season identity, so the Index cannot prove which row in another season is the same person."};
+    const seasons={};
+    for(const yr of years||ALL_SEASONS){const idx=histData[yr];if(idx)seasons[yr]=Object.values(idx.byId);}
+    const res=samePlayerAcrossSeasons(player,years||ALL_SEASONS,seasons,(yr)=>({
+      gk:GK_COVERAGE(yr),
+      assists:SEASON_COVERAGE[yr]?SEASON_COVERAGE[yr].assists!=="unavailable":true,
+      opta:SEASON_COVERAGE[yr]?!!SEASON_COVERAGE[yr].opta:true,
+    }));
+    return{...res,warning:coverageWarning(years||ALL_SEASONS,res.coverage)};
+  },[histData]);
+  const compareAcrossSeasons=useMemo(()=>(a,b)=>canCompareAcrossSeasons(a,b),[]);
+  const recordedGradeDifference=gradeDifference;/*6D: never labelled improvement or decline*/
+
   const playerHistory=useMemo(()=>{
     if(!players.length||!Object.keys(histData).length)return{};
     const out={};
@@ -386,9 +423,22 @@ function MLSAnalytics(){
           const byId=idx.byId[p.id];
           if(byId&&byId.name===p.name){seasons.push({year:yr,...byId,join:"id"});return;}
         }
+        // 6D: prefer verified provider identity. A stable id survives a transfer and a change of
+        // spelling, and it keeps two players who share a name apart — none of which a name join can
+        // do. The exact-unique-name path below is kept for rows that carry no id, which is every row
+        // in a pre-6D cache, so nothing about today's behaviour changes until those caches land.
+        if(idx.idIndex&&identityKey(p)){/*6D-CAREERJOIN*/
+          const r=resolveIdentity(p,idx.idIndex);
+          if(r.join===JOIN.PROVIDER){seasons.push({year:yr,...r.row,join:"provider-id"});return;}
+          if(r.join===JOIN.AMBIGUOUS){seasons.push({year:yr,ambiguous:true,joinReason:r.reason});return;}
+          // A row with a stable id that the target season does not contain is simply absent from it.
+          // Falling through to the name index here would find whoever shares the name — the exact
+          // false join this phase exists to remove.
+          return;
+        }
         const status=resolveExactName(idx.counts,p.name);/*6B.1-JOIN*/
         if(status==="ambiguous"){seasons.push({year:yr,ambiguous:true});return;}
-        if(status==="unique"){const m=idx.byName[p.name];if(m)seasons.push({year:yr,...m,join:"name"});}
+        if(status==="unique"){const m=idx.byName[p.name];if(m)seasons.push({year:yr,...m,join:"exact-name"});}
       });
       if(seasons.length>0)out[p.id]=seasons;
     });

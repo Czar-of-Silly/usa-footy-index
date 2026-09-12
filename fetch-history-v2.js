@@ -96,6 +96,8 @@ async function fetchSeason(year) {
   // ── ASA: Players + Teams + xGoals + Goals Added + xPass ──
   console.log("  [ASA]  Player directory + teams...");
   const asaNames = {};
+  const asaIdsByName = {};   // 6D: display name -> every ASA player_id carrying it
+  const asaDupNames = new Set();
   const asaTeamMap = {};
   try {
     const teams = await get(`${ASA}/teams`);
@@ -104,7 +106,7 @@ async function fetchSeason(year) {
       try {
         const page = await get(`${ASA}/players?offset=${offset}`);
         if (!page.length) break;
-        for (const p of page) asaNames[p.player_id] = p.player_name;
+        for (const p of page) { asaNames[p.player_id] = p.player_name; /*6D*/ const _n = p.player_name; if (_n) { (asaIdsByName[_n] = asaIdsByName[_n] || []); if (!asaIdsByName[_n].includes(p.player_id)) asaIdsByName[_n].push(p.player_id); } }
         if (page.length < 1000) break;
       } catch { break; }
     }
@@ -118,8 +120,13 @@ async function fetchSeason(year) {
     const d = await get(`${ASA}/players/xgoals?season_name=${year}&stage_name=Regular+Season`);
     for (const p of d) {
       const n = asaNames[p.player_id] || p.player_id;
+      if ((asaIdsByName[n] || []).length > 1) { asaDupNames.add(n); continue; }   /*6D*/
       asaXG[n] = {
-        xg: p.xgoals || 0, xa: p.xassists || 0, g: p.goals || 0, as: p.primary_assists || 0,
+        asaId: p.player_id,
+        xg: p.xgoals || 0, xa: p.xassists || 0, g: p.goals || 0,
+        // 6D: an unreported assist total is UNKNOWN. `|| 0` turned that into "zero assists", which
+        // reads downstream as a real observation.
+        as: (typeof p.primary_assists === "number" ? p.primary_assists : null),
         sh: p.shots || 0, so: p.shots_on_target || 0, kp: p.key_passes || 0,
         m: p.minutes_played || 0, team: asaTeamMap[p.team_id] || "UNK",
         pos: normPos(p.general_position),
@@ -156,7 +163,10 @@ async function fetchSeason(year) {
     const d = await get(`${ASA}/players/xpass?season_name=${year}&stage_name=Regular+Season`);
     for (const p of d) {
       const n = asaNames[p.player_id] || p.player_id;
-      asaPass[n] = { pp: (p.pass_completion_percentage || 0) * 100, xpp: (p.pass_completion_percentage_expected || 0) * 100 };
+      // 6D: ASA calls this `xpass_completion_percentage`. The old name does not exist on the
+      // response, so `xpp` was 0 for 100% of rows in both committed caches (769/769 and 801/801).
+      const _xpp = p.xpass_completion_percentage;
+      asaPass[n] = { asaId: p.player_id, pp: (p.pass_completion_percentage || 0) * 100, xpp: typeof _xpp === "number" ? _xpp * 100 : null };
     }
     console.log(`          ✅ ${Object.keys(asaPass).length} players`);
   } catch (e) { console.error("          ❌", e.message); }
@@ -214,17 +224,27 @@ async function fetchSeason(year) {
 
   // ── Merge into 2026-compatible format ──
   console.log("  [Merge] Building players...");
+  // 6D: exact display name only, and one source row per player.
+  // The old fallback matched on surname + first initial and returned the first hit. That is how one
+  // player's season reached another player's card in the current-season cache. Surname plus one
+  // letter is not an identity, so it is gone. A source row already given to one player is refused
+  // for the next rather than handed out twice.
+  const _claimed = new Map();
   const find = (name, map) => {
-    if (map[name]) return map[name];
-    const last = name.split(" ").pop();
-    const first = name.charAt(0);
-    for (const [k, v] of Object.entries(map)) {
-      if (k.split(" ").pop() === last && k.charAt(0) === first) return v;
-    }
-    return null;
+    if (!map || name == null) return null;
+    if (!Object.prototype.hasOwnProperty.call(map, name)) return null;
+    const v = map[name];
+    if (v === undefined || v === null) return null;
+    let seen = _claimed.get(map);
+    if (!seen) { seen = new Map(); _claimed.set(map, seen); }
+    const prior = seen.get(v);
+    if (prior !== undefined && prior !== name) return null;
+    seen.set(v, name);
+    return v;
   };
 
   const seen = new Set();
+  let skippedNoMinutes = 0;   /*6D*/
   const allNames = [...new Set([...Object.keys(rosterData), ...Object.keys(asaXG)])];
   
   for (const name of allNames) {
@@ -243,7 +263,10 @@ async function fetchSeason(year) {
     if (team === "UNK" && !roster) continue;
     if (!name.includes(" ") && name.length < 15) continue; // skip unknown players without roster
     
-    const mins = xg.m || 600;
+    // 6D: was `xg.m || 600`. Minutes drive every per-90 in the engine and the PROV threshold, so a
+    // default invents a season for a player who has none. A row with no reported minutes is skipped.
+    const mins = Number(xg.m) > 0 ? Number(xg.m) : null;
+    if (mins === null) { skippedNoMinutes++; continue; }
     const pp = pass.pp || 0;
     const xpp = pass.xpp || 0;
     const totalGA = ((ga.gs||0)+(ga.gp||0)+(ga.gdr||0)+(ga.gdf||0)+(ga.gi||0)+(ga.gr||0));
@@ -264,7 +287,7 @@ async function fetchSeason(year) {
       wt: roster?.wt || (find(name, sofaWeights)) || null,
       m: mins,
       g: xg.g || 0,
-      as: xg.as || 0, // Phase 6A: ASA primary_assists — the authoritative field, same one fetch-data.js uses for 2026. Was Math.round(xg.xa), i.e. rounded EXPECTED assists presented as real assists.
+      as: (typeof xg.as === "number" ? xg.as : null), // 6D: null = UNKNOWN, never a synthesized 0. // Phase 6A: ASA primary_assists — the authoritative field, same one fetch-data.js uses for 2026. Was Math.round(xg.xa), i.e. rounded EXPECTED assists presented as real assists.
       sh: xg.sh || 0,
       so: xg.so || 0,
       fl: 0,
@@ -293,6 +316,11 @@ async function fetchSeason(year) {
       // (verified 100% identical across both historical caches), so it was one signal counted twice.
       // The live Carrying formula already dropped its prgc term during Grading Integrity.
       ftp: sofa.ftp || 0,
+      // 6D: provider identity travels with the row instead of being discarded after lookup.
+      ids: (function(){ const o = {}; if (xg && xg.asaId) o.asa = xg.asaId; return o; })(),
+      identityNote: (xg && xg.asaId) ? null : (asaDupNames.has(name) ? "ASA holds more than one player with this name" : "no ASA row matched this player"),
+      assistSrc: (typeof xg.as === "number") ? "asa:primary_assists" : "unknown",
+      xppSrc: (pass && typeof pass.xpp === "number") ? "asa:xpass_completion_percentage" : "unknown",
       mv: mv,
       salary: 0,
       headshot: roster?.headshot || img || null,
@@ -318,6 +346,7 @@ async function fetchSeason(year) {
   console.log(`  ═══════════════════════════════════════`);
   console.log(`  ✅ ${filename} (${size}KB)`);
   console.log(`  ${output.standings.length} teams · ${output.players.length} players`);
+  console.log(`  skipped (no reported minutes): ${skippedNoMinutes} · names ASA cannot disambiguate: ${asaDupNames.size}`);
   console.log(`  With team: ${withTeam} · G+: ${withGA} · Market Val: ${withMV} · Headshots: ${withHS}`);
 }
 

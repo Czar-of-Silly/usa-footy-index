@@ -137,6 +137,9 @@ async function main() {
 
   console.log("  [ASA]  Player directory (paginated)...");
   const asaNames={};
+  // 6D: display name -> every ASA player_id that carries it. A name held by two players must never
+  // resolve to one of them; the pair is refused below instead of quietly keeping whichever was last.
+  const asaIdsByName={};
   try{
     let offset=0, batch=0;
     while(true){
@@ -144,7 +147,7 @@ async function main() {
       const p=await get(url);
       if(!p||p.length===0)break;
       batch++;
-      for(const x of p)asaNames[x.player_id]=x.player_name;
+      for(const x of p){asaNames[x.player_id]=x.player_name;/*6D*/const _n=x.player_name;if(_n){asaIdsByName[_n]=asaIdsByName[_n]||[];if(!asaIdsByName[_n].includes(x.player_id))asaIdsByName[_n].push(x.player_id);}}
       if(p.length<1000)break; // last page
       offset+=1000;
       await sleep(300);
@@ -157,13 +160,14 @@ async function main() {
 
   console.log("  [ASA]  xGoals...");
   const asaXG={};
+  const asaDupNames=new Set();/*6D: names ASA itself cannot disambiguate*/
   try{
     let offset=0;
     while(true){
       const url=`${ASA}/players/xgoals?season_name=${CY}&stage_name=Regular+Season${offset?`&offset=${offset}`:""}`;
       const d=await get(url);
       if(!d||d.length===0)break;
-      for(const p of d){const n=asaNames[p.player_id]||p.player_id;asaXG[n]={xg:p.xgoals||0,xa:p.xassists||0,shots:p.shots||0,sot:p.shots_on_target||0,goals:p.goals||0,assists:p.primary_assists||0,kp:p.key_passes||0,mins:p.minutes_played||0,pos:p.general_position||""};}
+      for(const p of d){const n=asaNames[p.player_id]||p.player_id;/*6D*/if((asaIdsByName[n]||[]).length>1){asaDupNames.add(n);continue;}asaXG[n]={asaId:p.player_id,xg:p.xgoals||0,xa:p.xassists||0,shots:p.shots||0,sot:p.shots_on_target||0,goals:p.goals||0,assists:p.primary_assists||0,kp:p.key_passes||0,mins:p.minutes_played||0,pos:p.general_position||""};}
       if(d.length<1000)break;
       offset+=1000;await sleep(300);
     }
@@ -283,24 +287,35 @@ async function main() {
   // ═══════════════════════════════════════════════════════════════════════
   console.log("\n  [Merge] Building player objects...");
 
-  // Name matching — try exact, normalized, then last name + first initial
-  const stripAccents=(s)=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-  function find(name, ...maps) {
-    for (const m of maps) { if (m[name]) return m[name]; }
-    // Try accent-stripped exact match
-    const norm2 = stripAccents(name);
-    for (const m of maps) for (const [k, v] of Object.entries(m)) {
-      if (stripAccents(k) === norm2) return v;
-    }
-    // Try last name + first initial
-    const parts = name.split(" ");
-    if (parts.length >= 2) {
-      const last = stripAccents(parts[parts.length - 1]);
-      const fi = stripAccents(parts[0][0] || "");
-      for (const m of maps) for (const [k, v] of Object.entries(m)) {
-        const kp = k.split(" ");
-        if (stripAccents(kp[kp.length - 1] || "") === last && stripAccents(kp[0]?.[0] || "") === fi) return v;
+  // ─── SOURCE JOIN (Phase 6D) ───────────────────────────────────────────────
+  // The previous find() fell back to surname + first initial and took the first hit. That is not an
+  // identity, and it shipped: Cade Cowell's season landed on Chance Cowell's card, Neil Pierre's on
+  // Nelson Pierre's, Santiago Rodríguez's on Sebastián Rodríguez's — three byte-identical stat lines
+  // on the live site, each of which belongs to only one of the two players.
+  //
+  // A source row now reaches a roster player only on an exact, unique display name. No accent
+  // folding (a differently spelled name may be a different person, and only the source can say), no
+  // surname heuristics, and a name held by two source rows resolves to nothing. _claims then enforces
+  // one source row per roster player across the whole run, so a row can never serve two players.
+  const _claims = new Map();            // sourceMap -> Map<value, rosterName>
+  let _joinRefused = 0;
+  function find(rosterName, ...maps) {
+    if (rosterName == null || rosterName === "") return null;
+    for (const m of maps) {
+      if (!m) continue;
+      if (!Object.prototype.hasOwnProperty.call(m, rosterName)) continue;
+      const v = m[rosterName];
+      if (v === undefined || v === null) continue;
+      let seen = _claims.get(m);
+      if (!seen) { seen = new Map(); _claims.set(m, seen); }
+      const prior = seen.get(v);
+      if (prior !== undefined && prior !== rosterName) {
+        _joinRefused++;
+        console.warn(`  [JOIN] refused: a source row already claimed by "${prior}" was also requested by "${rosterName}"`);
+        return null;
       }
+      seen.set(v, rosterName);
+      return v;
     }
     return null;
   }
@@ -400,6 +415,11 @@ async function main() {
       jersey:         _m.jerseyNumber || null,
       sportecId:      _m.sportecId || null,
       optaId:         _m.optaId || null,
+      // 6D: provider identity, carried on the row instead of being used as a lookup key and thrown
+      // away. `ids.asa` is the only one stable across seasons — Opta and Sportec identify a player
+      // within this season only. A name ASA itself cannot disambiguate yields no asa id at all.
+      ids: (function(){const o={};if(_m.optaId)o.opta=String(_m.optaId);if(_m.sportecId)o.sportec=String(_m.sportecId);if(xg&&xg.asaId)o.asa=xg.asaId;return o;})(),
+      identityNote: (xg&&xg.asaId)?null:(asaDupNames.has(rp.name)?"ASA holds more than one player with this name":"no ASA row matched this player"),
       // ESPN
       matchLog: Array.isArray(e.matchLog) ? e.matchLog.slice().sort((x,y)=>String(x.date||"").localeCompare(String(y.date||""))) : [],
       g: e.goals || xg.goals || 0,
