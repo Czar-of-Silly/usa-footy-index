@@ -109,14 +109,24 @@ test("current-season-only modules are gated on the selected season", () => {
 test("the historical importer reads authoritative assists, not rounded xA", () => {
   const imp = fs.readFileSync(path.join(ROOT, "fetch-history-v2.js"), "utf8");
   assert.doesNotMatch(imp, /as:\s*Math\.round\(xg\.xa/, "importer no longer rounds xA into the assists field");
-  assert.match(imp, /as:\s*p\.primary_assists\s*\|\|\s*0/, "importer captures ASA primary_assists");
+  // 6D: the field is still ASA primary_assists, but a missing value is no longer coerced to 0 —
+  // "we did not observe this" and "it happened zero times" are different claims.
+  assert.match(imp, /as: \(typeof p\.primary_assists === "number" \? p\.primary_assists : null\)/, "importer captures ASA primary_assists, preserving UNKNOWN");
+  assert.doesNotMatch(imp, /as:\s*p\.primary_assists\s*\|\|\s*0/, "and no longer turns a missing total into zero");
 });
 test("committed historical caches still hold synthesized assists, so the app withholds them", () => {
   // The fix above is at the importer; the caches on disk predate it. Until they are re-imported the
   // app must report historical assists as unavailable rather than show rounded xA as real assists.
   const app = fs.readFileSync(path.join(ROOT, "src/app.jsx"), "utf8");
   assert.match(app, /const SEASON_ASSISTS_OK=\{2026:true,2025:false,2024:false\};/, "assist availability flagged per season");
-  assert.match(app, /assists:SEASON_ASSISTS_OK\[yr\]===false\?null:r\.as/, "history withholds assists for flagged seasons");
+  // 6D: withholding moved from a season-wide flag to per-row provenance, which is strictly stronger:
+  // a row is shown only when it says where its number came from, and a pre-6D row with no provenance
+  // still falls back to the season flag. Both halves are asserted.
+  assert.match(app, /assists:rowAssists\(src,yr\)/, "history assists go through the per-row rule");
+  assert.match(app, /const rowAssistsKnown=\(r,yr\)=>\{/, "the per-row rule exists");
+  assert.match(app, /return r\.assistSrc!=="unknown"&&r\.as!==null&&r\.as!==undefined;/, "a row must name its source to be shown");
+  assert.match(app, /return SEASON_ASSISTS_OK\[yr\]!==false;/, "and a row with no provenance still obeys the season flag");
+  assert.doesNotMatch(app, /assists:SEASON_ASSISTS_OK\[yr\]===false\?null:r\.as/, "the old season-only gate is gone, not bypassed");
   // and confirm the caches really are still synthesized, so this guard is still warranted
   for (const yr of [2024, 2025]) {
     const raw = rawFor(yr); if (!raw) continue;
@@ -136,10 +146,13 @@ test("historical assists are withheld on the selected-season path, which feeds e
   // The selected-season loader is the single source of `player.assists` for the grades table,
   // leaderboards, Season Rating, compare, the player modal and share cards. If it isn't gated,
   // gating Season History alone still leaves synthesised assists visible everywhere else.
-  assert.match(app, /assists:SEASON_ASSISTS_OK\[season\]===false\?null:\(r\.as\|\|0\)/,
-    "selected-season path withholds assists for flagged seasons");
-  assert.match(app, /assists:SEASON_ASSISTS_OK\[yr\]===false\?null:r\.as/,
-    "Season History path withholds assists for flagged seasons");
+  // 6D: both paths now run through rowAssists(), which withholds unless the ROW proves its value is
+  // authoritative — and falls back to the season flag for caches written before this phase.
+  assert.match(app, /assists:rowAssists\(srcRows\[i\]\|\|r,season\)/, "selected-season path withholds through the per-row rule");
+  assert.match(app, /assists:rowAssists\(src,yr\)/, "Season History path withholds through the same rule");
+  assert.equal((app.match(/rowAssists\(/g) || []).length, 2, "exactly two call sites — the two loaders, and no third ungated path");
+  assert.equal((app.match(/const rowAssists=/g) || []).length, 1, "and the rule itself is defined once, so the two paths cannot diverge");
+  assert.doesNotMatch(app, /assists:\(r\.as\|\|0\)/, "no path can emit a raw, ungated assist value");
 });
 test("withheld assists render as an em dash rather than blank or NaN", () => {
   const app = fs.readFileSync(path.join(ROOT, "src/app.jsx"), "utf8");

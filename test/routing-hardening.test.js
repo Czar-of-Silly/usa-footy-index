@@ -206,21 +206,28 @@ test("the router rewrites in place and never pushes for a bad season", () => {
 });
 
 // ── Methodology describes the basis the archive actually uses ──────────────
+// Line endings: these read the file as checked out, and Git hands Windows CRLF. Anchoring on a
+// literal "\n" therefore matched nothing there — the same trap Phase 6C hit in
+// historical-integrity.test.js. \r?\n keeps the assertion honest on both.
+const POWER_RANK_BRANCH = /isArchive\r?\n\s*\? P\(<><b>Power rank<\/b>/;
+const powerRankTernary = (src) => {
+  const m = src.match(POWER_RANK_BRANCH);
+  assert.ok(m, "the power-rank paragraph branches on isArchive");
+  return src.slice(m.index, src.indexOf("{H(", m.index));
+};
+
 test("Methodology states the current-season Power Rank formula for the current season", () => {
   const src = methodology();
-  const i = src.indexOf("isArchive\n      ? P(<><b>Power rank</b>");
-  assert.ok(i > 0, "the power-rank paragraph branches on isArchive");
-  const ternary = src.slice(i, src.indexOf("{H(", i));
-  const [, archiveBranch, currentBranch] = ternary.match(/\? (P\(<>[\s\S]*?)\n\s*: (P\(<>[\s\S]*)/);
+  const ternary = powerRankTernary(src);
+  const [, archiveBranch, currentBranch] = ternary.match(/\? (P\(<>[\s\S]*?)\r?\n\s*: (P\(<>[\s\S]*)/);
   assert.match(currentBranch, /50% points share \+ 30% team grade \+ 20% last-five form/, "current formula unchanged");
   assert.match(currentBranch, /right now/, "and still describes the present");
   assert.ok(archiveBranch.indexOf("50% points share") < 0, "the archive branch does not quote the current formula");
 });
 test("archive Methodology states the reduced basis and claims no recent form", () => {
   const src = methodology();
-  const i = src.indexOf("isArchive\n      ? P(<><b>Power rank</b>");
-  const ternary = src.slice(i, src.indexOf("{H(", i));
-  const archiveBranch = ternary.match(/\? (P\(<>[\s\S]*?)\n\s*: P\(<>/)[1];
+  const ternary = powerRankTernary(src);
+  const archiveBranch = ternary.match(/\? (P\(<>[\s\S]*?)\r?\n\s*: P\(<>/)[1];
   assert.match(archiveBranch, /62\.5% points share \+ 37\.5% team grade/, "the reduced basis is stated");
   assert.ok(archiveBranch.indexOf("last-five form") < 0, "no claim that last-five form is an input");
   assert.ok(archiveBranch.indexOf("20%") < 0, "no form weight at all");
