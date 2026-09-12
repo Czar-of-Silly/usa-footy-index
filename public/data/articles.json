@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Matchday · Results",
+  "headline": "Union Rout Cincy 5-0; Road Teams Win Six of 14",
+  "dek": "Philadelphia's demolition of FC Cincinnati headlined a wild midweek round that saw visitors collect six victories.",
+  "body": "Philadelphia crushed FC Cincinnati 5-0 at Subaru Park, the sharpest result of a 14-game slate split across Sept. 9-10. Road teams won six times in all. Orlando City took three points from Atlanta 3-2, Charlotte edged Montréal 2-1, Columbus fell at D.C. United 2-1, and Nashville lost at Toronto 2-1 despite holding the East's top record. Vancouver thumped LA Galaxy 3-0, LAFC beat Red Bull New York 2-0, and Houston held off Real Salt Lake 2-1. FC Dallas won at Minnesota 2-1. Austin-Colorado and Chicago-Inter Miami each finished 1-1; Portland and St. Louis drew 2-2; San Jose edged San Diego 3-2.",
+  "created": "2026-09-12T20:22:42.447Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Roster · Movement",
+  "headline": "Rapids Restock Attack; Three Players Leave MLS",
+  "dek": "Colorado added two European wingers at window's close while three clubs confirmed outbound transfers.",
+  "body": "Colorado Rapids signed English winger Morgan Whittaker from Middlesbrough on a Designated Player deal and added Ghanaian winger Ibrahim Sadiq from AZ Alkmaar. Charlotte FC's Kerwin Vargas, who logged 1,230 minutes this season, joined Athletico Paranaense of Brazil's Série A on a permanent transfer. Philadelphia Union's Olwethu Makhanya, 1,170 minutes played in 2026, moved to Rangers FC in the Scottish Premiership. Portland Timbers' Felipe Mora, 1,050 minutes this season, joined Liga MX side Atlético de San Luis.",
+  "created": "2026-09-12T20:22:42.447Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Stat Race · Goals & Assists",
+  "headline": "Musa Leads Boot Race at 18; Evander Doubles Up",
+  "dek": "FC Dallas's striker sits four clear at the top while FC Cincinnati's creator holds joint leads in two columns.",
+  "body": "Petar Musa of FC Dallas leads the Golden Boot race with 18 goals, four ahead of the next pack. Evander of FC Cincinnati and D.C. United's Tai Baribo both sit on 14. In assists, Evander is joint-top alongside San Diego FC's Anders Dreyer, each at 10. Son Heung-Min of LAFC is third with nine. Evander's dual 10-and-14 line makes him the closest thing to a one-man race in the creative column. Houston's Guilherme is the sharpest finisher by xG, scoring 13 goals against an expected total of 6.4, a gap of plus-6.6.",
+  "created": "2026-09-12T20:22:42.447Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Standings · Table",
+  "headline": "Nashville Lead East by Distance; Whitecaps Top West",
+  "dek": "Goal difference is doing as much talking as points as both conference leaders look locked in.",
+  "body": "Nashville SC lead the Eastern Conference with 53 points on a 16W-5D-3L record. Their 48 goals scored and 19 conceded give them the league's best defense. Vancouver Whitecaps top the West with 46 points at 14W-4D-5L, having scored 52 and conceded 21. Inter Miami CF own the league's best attack with 59 goals for. Nashville's 19 goals against is the stingiest mark in MLS, nine better than the Whitecaps, who backed that defensive record with a 3-0 win over LA Galaxy on Sept. 10.",
+  "created": "2026-09-12T20:22:42.447Z",
+  "status": "pending"
+ },
+ {
   "kicker": "Results · Sept. 4, 10",
   "headline": "Dallas edges SKC in seven-goal thriller; Portland tops nine",
   "dek": "A week of high-scoring results capped a run of 28 matches across the Eastern and Western conferences.",
@@ -62,37 +94,5 @@
   "body": "Nashville SC sit atop the Eastern Conference with 53 points on a 16W-5D-2L record, 47 goals scored and 17 conceded. That goals-against total is also the best in the entire league. Vancouver Whitecaps lead the Western Conference at 43 points, record 13W-4D-5L, with 49 goals for and 21 against. Inter Miami CF hold the league's most potent attack with 58 goals scored, 11 more than the next Western side.",
   "created": "2026-09-09T15:03:56.735Z",
   "status": "approved"
- },
- {
-  "kicker": "Roster · Movement",
-  "headline": "Three depart MLS; Walta, Abu Farkhi, Modesto arrive",
-  "dek": "A Utah homegrown heads to the Premier League while two clubs bring in reinforcements from Israel and Finland.",
-  "body": "Real Salt Lake homegrown winger Zavier Gozo, 19, has transferred to Crystal Palace of the English Premier League after logging 1,470 minutes this season. LA Galaxy defender Miki Yamane, 32, has joined J1 League side Urawa Red Diamonds after 1,380 minutes in 2026. Nashville SC forward Woobens Pacius has moved to Ligue 3's FC Rouen 1899 after 900 minutes this season. On the incoming side, Colorado Rapids acquired Israeli forward Sayed Abu Farkhi from Maccabi Tel Aviv as a U-22 initiative signing. LAFC added Finnish midfielder Leo Walta on loan from EFL Championship side Swansea City, with a purchase option. Vancouver Whitecaps have added Rui Modesto to their roster.",
-  "created": "2026-09-07T00:57:20.166Z",
-  "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa and Messi locked at 18; Evander trails by four",
-  "dek": "The top of the scoring chart is deadlocked heading into the final weeks of the regular season.",
-  "body": "Petar Musa of FC Dallas and Leo Messi of Inter Miami CF each sit on 18 goals, sharing the league lead. FC Cincinnati's Evander is third at 14. Evander also shares the assists lead at 10, alongside Messi and San Diego FC's Anders Dreyer. On the defensive side, Vancouver's Andrés Cubas leads all players in tackles with 90, well clear of D.C. United teammates Silvan Hefti (59) and João Peglow (55). The most pronounced finishing outliers: Guilherme of Houston and NYCFC's Nicolás Fernández both exceed their expected goals by 5.8, while St. Louis CITY SC's Rafael Navarro trails his xG by 4.3 goals.",
-  "created": "2026-09-07T00:57:20.166Z",
-  "status": "approved"
- },
- {
-  "kicker": "Standings · Snapshot",
-  "headline": "Nashville leads East; Vancouver holds West at 43 pts",
-  "dek": "Nashville's defense, the stingiest in the league, anchors a six-point cushion over the Western Conference leader.",
-  "body": "Nashville SC sit atop the Eastern Conference with 53 points on a 16W-5D-2L record, having conceded just 17 goals, the fewest in MLS. They have scored 47. In the West, Vancouver Whitecaps lead at 43 points, 13W-4D-5L, with 49 goals for and 21 against. Inter Miami CF carry the league's most potent attack at 58 goals scored. Nashville's defensive record doubles as the best in the league across both conferences.",
-  "created": "2026-09-07T00:57:20.166Z",
-  "status": "approved"
- },
- {
-  "kicker": "Roster Move · MLS",
-  "headline": "D.C. United land Ordaz from LAFC in $2.375M deal",
-  "dek": "The El Salvador international joins the Black-and-Red as a U22 Initiative player after 98 appearances in LAFC colors.",
-  "body": "D.C. United have acquired forward Nathan Ordaz from LAFC for $2.375 million, with up to an additional $500,000 available in performance incentives. LAFC also retains a sell-on percentage on any future trade. Ordaz, 22, made 98 appearances for the Black and Gold across all competitions since signing as the club's fourth homegrown player in 2022, recording 14 goals and 12 assists. He carries 14 caps for El Salvador into his new posting in the nation's capital.",
-  "created": "2026-07-15T12:16:40.282Z",
-  "status": "pending"
  }
 ]
