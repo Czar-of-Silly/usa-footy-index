@@ -160,33 +160,49 @@ test("every attempt clears its deadline — no timer outlives its request", asyn
 });
 
 // ── 8 ───────────────────────────────────────────────────────────────────────
-test("a provider that returns everything at offset 0 costs exactly one request", async () => {
+test("a provider that returns everything at offset 0 is walked correctly, and proves it with an empty page", async () => {
   // ASA's observed behaviour: offset skips N and returns the whole remainder.
   const all = Array.from({ length: 3588 }, (_, i) => ({ player_id: "p" + i }));
   const urls = [];
   const get = async (url) => { urls.push(url); const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]); return all.slice(off); };
-  const r = await H.collectPaged(get, off => off === 0 ? "/players" : `/players?offset=${off}`, x => x.player_id, { pageSize: 1000 });
-  assert.equal(r.rows.length, 3588);
-  assert.equal(r.requests, 1, "one request, not the four the old loop made");
-  assert.match(r.stop, /complete result set in one response/);
-  assert.deepEqual(urls, ["/players"]);
+  const r = await H.collectPaged(get, off => off === 0 ? "/players" : `/players?offset=${off}`, x => x.player_id, {});
+  assert.equal(r.rows.length, 3588, "every row");
+  assert.equal(r.requests, 2, "one for the data, one to see the empty page that proves it is complete");
+  assert.match(r.stop, /empty response/);
+  assert.deepEqual(urls, ["/players", "/players?offset=3588"], "the offset advanced by rows actually returned");
 });
 
 // ── 9 ───────────────────────────────────────────────────────────────────────
-test("ordinary fixed-size pagination still works if the provider switches to it", async () => {
-  const all = Array.from({ length: 2500 }, (_, i) => ({ player_id: "p" + i }));
-  const get = async (url) => { const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]); return all.slice(off, off + 1000); };
-  const r = await H.collectPaged(get, off => `/players?offset=${off}`, x => x.player_id, { pageSize: 1000 });
-  assert.equal(r.rows.length, 2500);
-  assert.equal(r.requests, 3, "1000 + 1000 + 500");
-  assert.match(r.stop, /short page/);
-  // and an exact multiple of the page size terminates on the following empty response
-  const exact = Array.from({ length: 2000 }, (_, i) => ({ player_id: "q" + i }));
-  const get2 = async (url) => { const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]); return exact.slice(off, off + 1000); };
-  const r2 = await H.collectPaged(get2, off => `/x?offset=${off}`, x => x.player_id, { pageSize: 1000 });
-  assert.equal(r2.rows.length, 2000);
-  assert.equal(r2.requests, 3);
-  assert.match(r2.stop, /empty response/);
+// The walk must not care what size the provider's pages are. Nothing is configured; every one of
+// these is driven purely by "did this response add anything new".
+test("fixed-size pagination works at any page size, with nothing configured", async () => {
+  for (const size of [1, 7, 250, 500, 999, 1000, 1001, 1500, 4000]) {
+    const all = Array.from({ length: 3588 }, (_, i) => ({ player_id: "p" + i }));
+    const urls = [];
+    const get = async (url) => { urls.push(url); const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]); return all.slice(off, off + size); };
+    const r = await H.collectPaged(get, off => `/players?offset=${off}`, x => x.player_id, { maxPages: 5000 });
+    assert.equal(r.rows.length, 3588, `page size ${size}: every row`);
+    assert.equal(r.duplicates, 0, `page size ${size}: no duplicates`);
+    assert.match(r.stop, /empty response/, `page size ${size}: terminates on the empty page`);
+    assert.equal(r.requests, Math.ceil(3588 / size) + 1, `page size ${size}: ${Math.ceil(3588 / size)} pages plus the empty one`);
+    // the ids came back in provider order, unbroken
+    assert.deepEqual(r.rows.map(x => x.player_id).slice(0, 3), ["p0", "p1", "p2"], `page size ${size}: order`);
+    assert.equal(r.rows[3587].player_id, "p3587", `page size ${size}: last row present`);
+  }
+});
+
+// ── 9b ──────────────────────────────────────────────────────────────────────
+test("the two page sizes that used to break it: 500 and 1500", async () => {
+  // 500 would have looked like a short final page (500 < the old pageSize of 1000) and stopped after
+  // one request. 1500 would have looked like a complete result set (1500 > 1000) and stopped too.
+  for (const [size, label] of [[500, "half the old assumed page"], [1500, "more than the old assumed page"]]) {
+    const all = Array.from({ length: 3588 }, (_, i) => ({ player_id: "p" + i }));
+    const get = async (url) => { const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]); return all.slice(off, off + size); };
+    const r = await H.collectPaged(get, off => `/players?offset=${off}`, x => x.player_id, { maxPages: 5000 });
+    assert.equal(r.rows.length, 3588, `${size} (${label}): all 3588 rows, not ${size}`);
+    assert.ok(r.requests > 1, `${size}: the walk did not stop after one page`);
+    assert.match(r.stop, /empty response/);
+  }
 });
 
 // ── 10 ──────────────────────────────────────────────────────────────────────
@@ -194,7 +210,7 @@ test("ids repeated across pages are stored once", async () => {
   const page = n => Array.from({ length: 1000 }, (_, i) => ({ player_id: "p" + ((n * 500) + i) }));  // 50% overlap
   let call = 0;
   const get = async () => (call < 3 ? page(call++) : []);
-  const r = await H.collectPaged(get, off => `/p?offset=${off}`, x => x.player_id, { pageSize: 1000 });
+  const r = await H.collectPaged(get, off => `/p?offset=${off}`, x => x.player_id, {});
   const ids = r.rows.map(x => x.player_id);
   assert.equal(new Set(ids).size, ids.length, "no id appears twice");
   assert.equal(r.rows.length, 2000, "1000 + 500 new + 500 new");
@@ -206,7 +222,7 @@ test("a page that adds no new ids ends the walk instead of looping forever", asy
   const same = Array.from({ length: 1000 }, (_, i) => ({ player_id: "p" + i }));
   let call = 0;
   const get = async () => { call++; return same; };     // the same page, forever
-  const r = await H.collectPaged(get, off => `/p?offset=${off}`, x => x.player_id, { pageSize: 1000 });
+  const r = await H.collectPaged(get, off => `/p?offset=${off}`, x => x.player_id, {});
   assert.equal(r.rows.length, 1000);
   assert.equal(r.requests, 2, "one to learn, one to discover there is nothing new");
   assert.match(r.stop, /added no new ids/);
@@ -215,10 +231,10 @@ test("a page that adds no new ids ends the walk instead of looping forever", asy
   // a provider that never repeats but never ends is stopped by the safety bound
   let k = 0;
   const endless = async () => Array.from({ length: 1000 }, (_, i) => ({ player_id: "z" + (k++) }));
-  const r2 = await H.collectPaged(endless, off => `/z?offset=${off}`, x => x.player_id, { pageSize: 1000, maxPages: 5 });
+  const r2 = await H.collectPaged(endless, off => `/z?offset=${off}`, x => x.player_id, { maxPages: 5 });
   assert.equal(r2.pages, 5);
   assert.match(r2.stop, /page safety bound/);
-  const r3 = await H.collectPaged(endless, off => `/z?offset=${off}`, x => x.player_id, { pageSize: 1000, maxRows: 2500 });
+  const r3 = await H.collectPaged(endless, off => `/z?offset=${off}`, x => x.player_id, { maxRows: 2500 });
   assert.ok(r3.rows.length >= 2500);
   assert.match(r3.stop, /row safety bound/);
 });
@@ -298,20 +314,25 @@ test("all four ASA walks use the shared helper, and no page-size assumption surv
   assert.doesNotMatch(s, /if\(d\.length<1000\)break;/, "no short-page assumption");
   assert.doesNotMatch(s, /offset\+=1000;await sleep\(300\);/, "no fixed-stride advance");
   assert.doesNotMatch(s, /let offset=0;\s*\n\s*while\(true\)\{/, "no hand-rolled walk remains");
+  // and the walk is no longer told what size a page is, because it no longer reasons about that
+  assert.doesNotMatch(s, /pageSize/, "no call site configures a page size");
+  const http = fs.readFileSync(path.join(ROOT, "src/data/http.js"), "utf8");
+  assert.doesNotMatch(http, /rows\.length [<>] o\.pageSize/, "the helper does not compare a response length to an assumed page size");
+  assert.match(http, /offset \+= rows\.length;/, "the offset advances by rows actually returned");
 });
 
 // ── 14 ──────────────────────────────────────────────────────────────────────
-test("each endpoint returns everything in one request under the provider's current behaviour", async () => {
+test("each endpoint is walked correctly under the provider's current behaviour", async () => {
   const sizes = { xgoals: 819, ga: 767, xpass: 819 };   // the real 2026 row counts
   for (const [key, count] of Object.entries(sizes)) {
     const rows = Array.from({ length: count }, (_, i) => ({ player_id: key + i }));
     const get = asaLike(rows);
-    const r = await H.collectPaged(get, URLS[key], (x) => x.player_id, { pageSize: 1000 });
+    const r = await H.collectPaged(get, URLS[key], (x) => x.player_id, {});
     assert.equal(r.rows.length, count, key + " row count");
-    assert.equal(r.requests, 1, key + " costs one request");
-    assert.match(r.stop, /short page|complete result set/, key + " stops for a stated reason");
-    assert.equal(get.urls.length, 1);
+    assert.equal(r.requests, 2, key + ": the data, then the empty page that confirms it");
+    assert.match(r.stop, /empty response/, key + " stops on evidence, not on an assumed page size");
     assert.ok(get.urls[0].indexOf("offset=") < 0, key + " asks for no offset on the first request");
+    assert.ok(get.urls[1].indexOf("offset=" + count) > 0, key + " advances by the rows it actually got");
   }
 });
 
@@ -320,9 +341,9 @@ test("each endpoint is correct past 1000 rows, which is the case the old loop go
   for (const key of ["xgoals", "ga", "xpass"]) {
     const rows = Array.from({ length: 2400 }, (_, i) => ({ player_id: key + i }));
     const get = asaLike(rows);
-    const r = await H.collectPaged(get, URLS[key], (x) => x.player_id, { pageSize: 1000 });
+    const r = await H.collectPaged(get, URLS[key], (x) => x.player_id, {});
     assert.equal(r.rows.length, 2400, key + ": every row, not the first 1000");
-    assert.equal(r.requests, 1, key + ": still one request, because the provider returned the lot");
+    assert.equal(r.requests, 2, key + ": the lot, then the empty page");
     assert.deepEqual(r.rows.map((x) => x.player_id).slice(0, 3), [key + "0", key + "1", key + "2"], key + ": order preserved");
     // the OLD walk on the same provider: 1000-stride until a short page
     let old = 0, off = 0, oldRows = 0;
@@ -332,15 +353,99 @@ test("each endpoint is correct past 1000 rows, which is the case the old loop go
 });
 
 // ── 16 ──────────────────────────────────────────────────────────────────────
-test("each endpoint still works if ASA switches to ordinary fixed-size pagination", async () => {
+test("each endpoint still works if ASA switches to fixed-size pagination, at any size", async () => {
   for (const key of ["xgoals", "ga", "xpass"]) {
-    const rows = Array.from({ length: 2350 }, (_, i) => ({ player_id: key + i }));
-    const get = pagingLike(rows, 1000);
-    const r = await H.collectPaged(get, URLS[key], (x) => x.player_id, { pageSize: 1000 });
-    assert.equal(r.rows.length, 2350, key + ": all rows across pages");
-    assert.equal(r.requests, 3, key + ": 1000 + 1000 + 350");
-    assert.match(r.stop, /short page/);
+    for (const size of [500, 1000, 1500]) {
+      const rows = Array.from({ length: 2350 }, (_, i) => ({ player_id: key + i }));
+      const r = await H.collectPaged(pagingLike(rows, size), URLS[key], (x) => x.player_id, {});
+      assert.equal(r.rows.length, 2350, `${key} @ ${size}: all rows across pages`);
+      assert.equal(r.requests, Math.ceil(2350 / size) + 1, `${key} @ ${size}: pages plus the empty one`);
+      assert.match(r.stop, /empty response/);
+    }
   }
+});
+
+// ── 16b ─────────────────────────────────────────────────────────────────────
+// A provider-reported total is metadata, never a stop condition. It can be stale, cached, computed
+// against a different filter, or simply wrong — and an under-reported one would silently truncate
+// the walk, which is the class of quiet data loss this helper exists to prevent.
+test("a provider-reported total is parsed and reported, and never terminates the walk", async () => {
+  const N = 1200;
+  const rows = Array.from({ length: N }, (_, i) => ({ player_id: "t" + i }));
+  const paged = (claimed, size) => async (url) => {
+    const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]);
+    return { total: claimed, data: rows.slice(off, off + size) };
+  };
+
+  // ACCURATE total — still walks to the empty page; the total buys no shortcut
+  const acc = await H.collectPaged(paged(N, 500), off => `/x?offset=${off}`, x => x.player_id, {});
+  assert.equal(acc.rows.length, N, "all rows");
+  assert.equal(acc.requests, 4, "500 + 500 + 200 + the empty page — an accurate total does not end it early");
+  assert.match(acc.stop, /empty response/);
+  assert.equal(acc.reportedTotal, N, "the total is reported");
+  assert.equal(acc.totalMismatch, null, "and agrees, so nothing is flagged");
+
+  // UNDER-reported total — the old rule stopped after one page. It must not.
+  const under = await H.collectPaged(paged(10, 500), off => `/y?offset=${off}`, x => x.player_id, {});
+  assert.equal(under.rows.length, N, "all 1200 rows, not the 10 the provider claimed");
+  assert.equal(under.requests, 4, "the walk ignored the bad count entirely");
+  assert.match(under.stop, /empty response/);
+  assert.equal(under.reportedTotal, 10);
+  assert.match(under.totalMismatch, /provider reported 10, walk collected 1200/, "the disagreement is surfaced, not acted on");
+
+  // OVER-reported total — must not cause extra requests, a loop, or a bogus stop reason
+  const over = await H.collectPaged(paged(999999, 500), off => `/z?offset=${off}`, x => x.player_id, {});
+  assert.equal(over.rows.length, N, "all rows, and no attempt to reach a total that does not exist");
+  assert.equal(over.requests, 4, "same request count as an accurate total");
+  assert.match(over.stop, /empty response/);
+  assert.match(over.totalMismatch, /provider reported 999999, walk collected 1200/);
+
+  // the total is still parsed from every accepted shape, for logging
+  for (const env of [{ total: N }, { meta: { total: N } }, { pagination: { count: N } }, { totalCount: N }, { total_count: N }]) {
+    const g = async (url) => {
+      const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]);
+      return { ...env, items: rows.slice(off, off + 600) };
+    };
+    const rr = await H.collectPaged(g, off => `/e?offset=${off}`, x => x.player_id, {});
+    assert.equal(rr.rows.length, N, JSON.stringify(env));
+    assert.equal(rr.reportedTotal, N, JSON.stringify(env) + ": total parsed");
+    assert.match(rr.stop, /empty response/, JSON.stringify(env) + ": still ends on evidence");
+  }
+
+  // and no stop reason anywhere can be a total
+  const http = fs.readFileSync(path.join(ROOT, "src/data/http.js"), "utf8");
+  assert.doesNotMatch(http, /stop = `provider-reported total/, "a total can never be the stop reason");
+  assert.doesNotMatch(http, /seen\.size >= total/, "and is never compared against progress");
+});
+
+// ── 16c ─────────────────────────────────────────────────────────────────────
+test("a conventional small page size completes under the DEFAULT safety bounds", async () => {
+  // 25-row pages over the real directory size needs 144 requests. A low maxPages would itself
+  // truncate a perfectly valid pagination scheme, so the default has to clear this comfortably.
+  const N = 3588;
+  const all = Array.from({ length: N }, (_, i) => ({ player_id: "d" + i }));
+  const get = async (url) => { const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]); return all.slice(off, off + 25); };
+  const r = await H.collectPaged(get, off => `/players?offset=${off}`, x => x.player_id, {});   // no options at all
+  assert.equal(r.rows.length, N, "every row at 25 per page");
+  assert.equal(r.requests, Math.ceil(N / 25) + 1, "144 pages plus the empty one");
+  assert.match(r.stop, /empty response/, "ended on evidence, not on a bound");
+  assert.doesNotMatch(r.stop, /safety bound/);
+  assert.equal(r.rows[N - 1].player_id, "d" + (N - 1), "the last row is present");
+
+  // 20-row pages too, the other end of your example
+  const get20 = async (url) => { const off = Number((url.match(/offset=(\d+)/) || [, 0])[1]); return all.slice(off, off + 20); };
+  const r20 = await H.collectPaged(get20, off => `/players?offset=${off}`, x => x.player_id, {});
+  assert.equal(r20.rows.length, N);
+  assert.match(r20.stop, /empty response/);
+
+  // the bounds are still real, and still bounded
+  assert.equal(H.DEFAULTS.attemptTimeoutMs, 30000, "unrelated defaults untouched");
+  let k = 0;
+  const endless = async () => Array.from({ length: 1000 }, () => ({ player_id: "z" + (k++) }));
+  const capped = await H.collectPaged(endless, off => `/z?offset=${off}`, x => x.player_id, {});
+  assert.match(capped.stop, /row safety bound \(200000\)/, "maxRows still stops an endless provider");
+  const pageCapped = await H.collectPaged(async () => [{ player_id: "u" + (k++) }], off => `/u?offset=${off}`, x => x.player_id, { maxRows: Infinity });
+  assert.match(pageCapped.stop, /page safety bound \(500\)/, "and maxPages is 500, not unbounded");
 });
 
 // ── 17 ──────────────────────────────────────────────────────────────────────
@@ -353,14 +458,14 @@ test("overlapping pages and a zero-new-id page cannot duplicate rows or loop", a
       const base = call++ * 500;
       return Array.from({ length: 1000 }, (_, i) => ({ player_id: key + (base + i) }));
     };
-    const r = await H.collectPaged(overlap, URLS[key], (x) => x.player_id, { pageSize: 1000 });
+    const r = await H.collectPaged(overlap, URLS[key], (x) => x.player_id, {});
     const ids = r.rows.map((x) => x.player_id);
     assert.equal(new Set(ids).size, ids.length, key + ": no id stored twice");
     assert.ok(r.duplicates > 0, key + ": the overlap was counted");
 
     // a provider stuck on one page terminates on the second request
     const stuck = Array.from({ length: 1000 }, (_, i) => ({ player_id: key + i }));
-    const r2 = await H.collectPaged(async () => stuck, URLS[key], (x) => x.player_id, { pageSize: 1000 });
+    const r2 = await H.collectPaged(async () => stuck, URLS[key], (x) => x.player_id, {});
     assert.equal(r2.requests, 2, key + ": one to learn, one to discover there is nothing new");
     assert.match(r2.stop, /added no new ids/);
   }
@@ -384,7 +489,7 @@ test("row semantics are unchanged — the same rows produce the same maps as the
 
   // the exact row bodies fetch-data.js runs, over collectPaged output
   const build = async (rows, urlFor, fn) => {
-    const r = await H.collectPaged(asaLike(rows), urlFor, (x) => x.player_id, { pageSize: 1000 });
+    const r = await H.collectPaged(asaLike(rows), urlFor, (x) => x.player_id, {});
     const out = {}; for (const p of r.rows) fn(out, p, names[p.player_id] || p.player_id);
     return out;
   };
@@ -420,14 +525,15 @@ test("successive requests are paced, and a single-request walk waits for nothing
   const sleep = async (ms) => { waits.push(ms); };
   // one request: no delay at all
   const one = Array.from({ length: 500 }, (_, i) => ({ player_id: "x" + i }));
-  await H.collectPaged(asaLike(one), URLS.xgoals, (x) => x.player_id, { pageSize: 1000, delayMs: 300, sleep });
-  assert.deepEqual(waits, [], "the first request is immediate");
-  // three requests: paced between them, not before the first
+  await H.collectPaged(asaLike(one), URLS.xgoals, (x) => x.player_id, { delayMs: 300, sleep });
+  assert.deepEqual(waits, [300], "the first request is immediate; only the confirming one is paced");
+  // four requests: paced between them, never before the first
+  waits.length = 0;
   const many = Array.from({ length: 2350 }, (_, i) => ({ player_id: "y" + i }));
-  await H.collectPaged(pagingLike(many, 1000), URLS.xgoals, (x) => x.player_id, { pageSize: 1000, delayMs: 300, sleep });
-  assert.deepEqual(waits, [300, 300], "two gaps for three requests");
-  // and the default stays 0, so the directory walk is unchanged
+  await H.collectPaged(pagingLike(many, 1000), URLS.xgoals, (x) => x.player_id, { delayMs: 300, sleep });
+  assert.deepEqual(waits, [300, 300, 300], "three gaps for four requests");
+  // and the default stays 0
   const waits2 = [];
-  await H.collectPaged(pagingLike(many, 1000), URLS.xgoals, (x) => x.player_id, { pageSize: 1000, sleep: async (ms) => waits2.push(ms) });
+  await H.collectPaged(pagingLike(many, 1000), URLS.xgoals, (x) => x.player_id, { sleep: async (ms) => waits2.push(ms) });
   assert.deepEqual(waits2, [], "no pacing unless asked for");
 });

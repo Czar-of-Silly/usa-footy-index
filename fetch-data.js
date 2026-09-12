@@ -152,10 +152,10 @@ async function main() {
     // three of them re-downloading rows it already had. collectPaged tracks unique player_ids and
     // stops the moment a request adds none, which terminates correctly for that behaviour, for
     // ordinary pagination, and for whatever the provider does next.
-    const dir = await collectPaged(get, (off) => off === 0 ? `${ASA}/players` : `${ASA}/players?offset=${off}`, (x) => x.player_id, { pageSize: 1000 });
+    const dir = await collectPaged(get, (off) => off === 0 ? `${ASA}/players` : `${ASA}/players?offset=${off}`, (x) => x.player_id, { delayMs: 300 });
     for(const x of dir.rows){asaNames[x.player_id]=x.player_name;/*6D*/const _n=x.player_name;if(_n){asaIdsByName[_n]=asaIdsByName[_n]||[];if(!asaIdsByName[_n].includes(x.player_id))asaIdsByName[_n].push(x.player_id);}}
     const batch = dir.requests;
-    console.log(`          ✅ ${Object.keys(asaNames).length} players (${batch} request${batch===1?"":"s"}, stopped: ${dir.stop}${dir.duplicates?`, ${dir.duplicates} duplicate rows ignored`:""})`);
+    console.log(`          ✅ ${Object.keys(asaNames).length} players (${batch} request${batch===1?"":"s"}, stopped: ${dir.stop}${dir.duplicates?`, ${dir.duplicates} duplicate rows ignored`:""}${dir.totalMismatch?`, ⚠ ${dir.totalMismatch}`:""})`);
   }catch(e){console.error("          ❌",e.message);}
   const asaTeams={};
   try{const t=await get(`${ASA}/teams`);for(const x of t){const a=norm(x.team_abbreviation);if(a)asaTeams[x.team_id]=a;}console.log(`          ✅ ${Object.keys(asaTeams).length} teams`);}catch{}
@@ -169,29 +169,29 @@ async function main() {
     // The old "advance by 1000 until a short page" loop assumed fixed-size pages, which ASA does not
     // do — it returns every remaining row. That is harmless only while the endpoint stays under 1000
     // rows, and nothing guarantees it will.
-    const page=await collectPaged(get,(off)=>`${ASA}/players/xgoals?season_name=${CY}&stage_name=Regular+Season${off?`&offset=${off}`:""}`,(r)=>r.player_id,{pageSize:1000,delayMs:300});
+    const page=await collectPaged(get,(off)=>`${ASA}/players/xgoals?season_name=${CY}&stage_name=Regular+Season${off?`&offset=${off}`:""}`,(r)=>r.player_id,{delayMs:300});
     for(const p of page.rows){const n=asaNames[p.player_id]||p.player_id;/*6D*/if((asaIdsByName[n]||[]).length>1){asaDupNames.add(n);continue;}asaXG[n]={asaId:p.player_id,xg:p.xgoals||0,xa:p.xassists||0,shots:p.shots||0,sot:p.shots_on_target||0,goals:p.goals||0,assists:p.primary_assists||0,kp:p.key_passes||0,mins:p.minutes_played||0,pos:p.general_position||""};}
-    console.log(`          ✅ ${Object.keys(asaXG).length} players (${page.requests} request${page.requests===1?"":"s"}, stopped: ${page.stop}${page.duplicates?`, ${page.duplicates} duplicate rows ignored`:""})`);
+    console.log(`          ✅ ${Object.keys(asaXG).length} players (${page.requests} request${page.requests===1?"":"s"}, stopped: ${page.stop}${page.duplicates?`, ${page.duplicates} duplicate rows ignored`:""}${page.totalMismatch?`, ⚠ ${page.totalMismatch}`:""})`);
   }catch(e){console.error("          ❌",e.message);}
   await sleep(500);
 
   console.log("  [ASA]  Goals Added...");
   const asaGA={};
   try{
-    const page=await collectPaged(get,(off)=>`${ASA}/players/goals-added?season_name=${CY}&stage_name=Regular+Season${off?`&offset=${off}`:""}`,(r)=>r.player_id,{pageSize:1000,delayMs:300});
+    const page=await collectPaged(get,(off)=>`${ASA}/players/goals-added?season_name=${CY}&stage_name=Regular+Season${off?`&offset=${off}`:""}`,(r)=>r.player_id,{delayMs:300});
     for(const p of page.rows){const n=asaNames[p.player_id]||p.player_id;if(!asaGA[n])asaGA[n]={dribbling:0,fouling:0,interrupting:0,passing:0,receiving:0,shooting:0,total:0};
     for(const a of(p.data||[])){const k=a.action_type?.toLowerCase();if(k&&asaGA[n][k]!==undefined)asaGA[n][k]=a.goals_added_raw||0;}
     asaGA[n].total=asaGA[n].dribbling+asaGA[n].fouling+asaGA[n].interrupting+asaGA[n].passing+asaGA[n].receiving+asaGA[n].shooting;}
-    console.log(`          ✅ ${Object.keys(asaGA).length} players (${page.requests} request${page.requests===1?"":"s"}, stopped: ${page.stop}${page.duplicates?`, ${page.duplicates} duplicate rows ignored`:""})`);
+    console.log(`          ✅ ${Object.keys(asaGA).length} players (${page.requests} request${page.requests===1?"":"s"}, stopped: ${page.stop}${page.duplicates?`, ${page.duplicates} duplicate rows ignored`:""}${page.totalMismatch?`, ⚠ ${page.totalMismatch}`:""})`);
   }catch(e){console.error("          ❌",e.message);}
   await sleep(500);
 
   console.log("  [ASA]  xPass...");
   const asaPass={};
   try{
-    const page=await collectPaged(get,(off)=>`${ASA}/players/xpass?season_name=${CY}&stage_name=Regular+Season${off?`&offset=${off}`:""}`,(r)=>r.player_id,{pageSize:1000,delayMs:300});
+    const page=await collectPaged(get,(off)=>`${ASA}/players/xpass?season_name=${CY}&stage_name=Regular+Season${off?`&offset=${off}`:""}`,(r)=>r.player_id,{delayMs:300});
     for(const p of page.rows){const n=asaNames[p.player_id]||p.player_id;asaPass[n]={pp:p.pass_completion_percentage?Math.round(p.pass_completion_percentage*1000)/10:0,xpp:p.xpass_completion_percentage?Math.round(p.xpass_completion_percentage*1000)/10:0,poe:p.passes_completed_over_expected?Math.round(p.passes_completed_over_expected*100)/100:0,att:p.attempted_passes||0};}
-    console.log(`          ✅ ${Object.keys(asaPass).length} players (${page.requests} request${page.requests===1?"":"s"}, stopped: ${page.stop}${page.duplicates?`, ${page.duplicates} duplicate rows ignored`:""})`);
+    console.log(`          ✅ ${Object.keys(asaPass).length} players (${page.requests} request${page.requests===1?"":"s"}, stopped: ${page.stop}${page.duplicates?`, ${page.duplicates} duplicate rows ignored`:""}${page.totalMismatch?`, ⚠ ${page.totalMismatch}`:""})`);
   }catch(e){console.error("          ❌",e.message);}
 
   console.log("  [ASA]  Salaries (2025)...");
