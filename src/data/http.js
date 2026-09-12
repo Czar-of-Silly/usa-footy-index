@@ -121,15 +121,40 @@ function createGet(options) {
 }
 
 // ─── PAGINATION ──────────────────────────────────────────────────────────────
+// Walks a paginated collection without assuming anything about page shape.
+//
 // ASA's `offset` skips N rows and returns EVERYTHING after them, rather than a fixed-size page:
 //
 //     offset 0 -> 3588 rows,  1000 -> 2588,  2000 -> 1588,  3000 -> 588
 //
-// The old loop assumed 1000-row pages and stopped only on a short page, so it made four requests
-// that fetched 8,352 rows to obtain 3,588 — three of them pure duplication, each an extra chance to
-// hang. This does not hard-code that behaviour: it tracks unique ids and forward progress, so it
-// terminates correctly whether the provider returns everything at once, pages normally, repeats
-// rows, or changes its mind later.
+// An earlier version of this handled that correctly but did so by comparing `rows.length` against a
+// configured `pageSize` — a short page meant "the end", a long one meant "the lot". That traded one
+// hidden assumption for another: it is only right when the provider's real page size happens to equal
+// the number we guessed. A switch to 500-row pages would have stopped the walk after page one
+// (500 < 1000, read as a short final page); a switch to 1500-row pages would have stopped it too
+// (1500 > 1000, read as a complete result set). Both silently truncate.
+//
+// So `pageSize` is gone from the termination logic entirely. The walk ends only on evidence that
+// cannot be faked by a page being a different size than expected:
+//
+//   • the response is empty
+//   • the response adds no id we did not already have  (covers repeats, and an ignored offset)
+//   • a safety bound trips                             (maxRows, then maxPages)
+//
+// and the offset advances by the number of rows ACTUALLY RETURNED, never by a fixed stride.
+//
+// A provider-reported total is NOT one of those conditions. It is parsed and returned as
+// `reportedTotal` for logging and diagnostics, and that is all. A total can be stale, cached,
+// computed against a different filter, or simply wrong — and an under-reported one would silently
+// truncate the walk, which is the same class of quiet data loss this helper exists to prevent. The
+// only thing that establishes completion is the provider running out of rows to give.
+//
+// The cost is one extra request per walk: under ASA's current behaviour the first response carries
+// every row, and a second is needed to see the empty page that proves it. That is the right trade —
+// a wasted request is cheap, a silently truncated roster is not.
+//
+// One deliberate limit: a page whose rows all lack ids adds nothing and therefore ends the walk.
+// Without ids there is no way to dedupe or to detect progress, so stopping is the safe reading.
 function totalOf(res) {
   if (!res || Array.isArray(res) || typeof res !== "object") return null;
   for (const k of ["total", "count", "totalCount", "total_count"]) {
@@ -146,20 +171,23 @@ function totalOf(res) {
 const rowsOf = res => Array.isArray(res) ? res : ((res && (res.data || res.items || res.results)) || []);
 
 async function collectPaged(get, urlFor, idOf, options) {
-  const o = { pageSize: 1000, maxPages: 25, maxRows: 200000, delayMs: 0, ...(options || {}) };
+  // maxPages is a loop guard, not a page-count expectation. A conventional 25-row page size needs
+  // 144 requests for the current 3,588-row directory, so a low bound would itself truncate a
+  // perfectly valid pagination scheme. maxRows is the meaningful ceiling.
+  const o = { maxPages: 500, maxRows: 200000, delayMs: 0, ...(options || {}) };
   const sleep = o.sleep || (ms => new Promise(r => setTimeout(r, ms)));
   const seen = new Map();
-  let offset = 0, pages = 0, requests = 0, stop = null, duplicates = 0;
+  let offset = 0, pages = 0, requests = 0, stop = null, duplicates = 0, reportedTotal = null;
 
   while (pages < o.maxPages) {
-    // `delayMs` paces SUBSEQUENT requests only — the first is immediate, so a walk that turns out to
-    // need one request (the provider's current behaviour) costs nothing. It exists because these are
-    // free public endpoints and a future paginating walk should not hammer them back to back.
+    // `delayMs` paces SUBSEQUENT requests only — the first is immediate. It exists because these are
+    // free public endpoints and a paginating walk should not hammer them back to back.
     if (pages > 0 && o.delayMs > 0) await sleep(o.delayMs);
     const res = await get(urlFor(offset));
     pages++; requests++;
     const rows = rowsOf(res);
     const total = totalOf(res);
+    if (total != null) reportedTotal = total;   // diagnostics only — never a stop condition
 
     if (!rows.length) { stop = "empty response"; break; }
 
@@ -172,21 +200,21 @@ async function collectPaged(get, urlFor, idOf, options) {
       added++;
     }
 
-    // Forward progress is the real termination condition: a page that teaches us nothing new ends
-    // the walk no matter what shape the provider's pagination takes.
+    // Forward progress is the whole termination condition: a response that teaches us nothing new
+    // ends the walk, whatever shape the provider's pagination takes.
     if (added === 0) { stop = "page added no new ids"; break; }
     if (seen.size >= o.maxRows) { stop = `row safety bound (${o.maxRows})`; break; }
-    if (total != null && seen.size >= total) { stop = `provider-reported total (${total}) reached`; break; }
-    // More rows than a page means the provider ignored our page size and handed back the whole
-    // remainder — there is nothing after this.
-    if (rows.length > o.pageSize) { stop = "provider returned the complete result set in one response"; break; }
-    // A short page is the ordinary end of fixed-size pagination.
-    if (rows.length < o.pageSize) { stop = "short page — end of results"; break; }
 
-    offset += rows.length;
+    offset += rows.length;   // what the provider actually gave us, not what we assumed it would
   }
   if (!stop) stop = `page safety bound (${o.maxPages})`;
-  return { rows: [...seen.values()], pages, requests, duplicates, stop };
+
+  // Surfaced for the caller to log. A disagreement is worth seeing — it usually means the provider's
+  // count is stale rather than that the walk is wrong — but it decides nothing here.
+  const totalMismatch = reportedTotal != null && reportedTotal !== seen.size
+    ? `provider reported ${reportedTotal}, walk collected ${seen.size}`
+    : null;
+  return { rows: [...seen.values()], pages, requests, duplicates, stop, reportedTotal, totalMismatch };
 }
 
 module.exports = { createGet, collectPaged, isRetryableStatus, isRetryableError, totalOf, rowsOf, HttpError, TimeoutError, DEFAULTS };
