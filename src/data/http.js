@@ -146,11 +146,16 @@ function totalOf(res) {
 const rowsOf = res => Array.isArray(res) ? res : ((res && (res.data || res.items || res.results)) || []);
 
 async function collectPaged(get, urlFor, idOf, options) {
-  const o = { pageSize: 1000, maxPages: 25, maxRows: 200000, ...(options || {}) };
+  const o = { pageSize: 1000, maxPages: 25, maxRows: 200000, delayMs: 0, ...(options || {}) };
+  const sleep = o.sleep || (ms => new Promise(r => setTimeout(r, ms)));
   const seen = new Map();
   let offset = 0, pages = 0, requests = 0, stop = null, duplicates = 0;
 
   while (pages < o.maxPages) {
+    // `delayMs` paces SUBSEQUENT requests only — the first is immediate, so a walk that turns out to
+    // need one request (the provider's current behaviour) costs nothing. It exists because these are
+    // free public endpoints and a future paginating walk should not hammer them back to back.
+    if (pages > 0 && o.delayMs > 0) await sleep(o.delayMs);
     const res = await get(urlFor(offset));
     pages++; requests++;
     const rows = rowsOf(res);
