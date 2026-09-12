@@ -16,7 +16,13 @@ const MLS_TOURNAMENT = 242;
 
 const CY = new Date().getFullYear();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-async function get(url, hdrs) { const r = await fetch(url, hdrs ? { headers: hdrs } : undefined); if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); }
+// Reliability: every ESPN and ASA request goes through this. It used to be a bare fetch with no
+// timeout and no retry, so one hung socket consumed the whole 20-minute step budget and failed the
+// scheduled run. 30s per attempt, 3 attempts, 1s then 3s backoff; retries only on network failure,
+// timeout, 429 and 5xx. An ordinary 4xx fails immediately — asking again would not change it.
+// A real outage still exhausts the attempts and throws, so the data-quality gates below still fire.
+const { createGet, collectPaged } = require("./src/data/http.js");
+const get = createGet({ labelOf: (u) => u.indexOf("americansocceranalysis") >= 0 ? "ASA " + (u.split("/api/v1/mls/")[1] || "").split("?")[0] : (u.indexOf("espn") >= 0 ? "ESPN" : "other") });
 // Sofascore uses native https module with browser-like TLS ciphers to bypass Cloudflare
 // The standard fetch() API can't set custom ciphers, but https.request() can
 const _https = require("https");
@@ -141,18 +147,15 @@ async function main() {
   // resolve to one of them; the pair is refused below instead of quietly keeping whichever was last.
   const asaIdsByName={};
   try{
-    let offset=0, batch=0;
-    while(true){
-      const url=offset===0?`${ASA}/players`:`${ASA}/players?offset=${offset}`;
-      const p=await get(url);
-      if(!p||p.length===0)break;
-      batch++;
-      for(const x of p){asaNames[x.player_id]=x.player_name;/*6D*/const _n=x.player_name;if(_n){asaIdsByName[_n]=asaIdsByName[_n]||[];if(!asaIdsByName[_n].includes(x.player_id))asaIdsByName[_n].push(x.player_id);}}
-      if(p.length<1000)break; // last page
-      offset+=1000;
-      await sleep(300);
-    }
-    console.log(`          ✅ ${Object.keys(asaNames).length} players (${batch} pages)`);
+    // ASA's offset skips N rows and returns everything after them rather than a fixed-size page, so
+    // the old "advance by 1000 until a short page" walk made four requests to fetch 3,588 rows —
+    // three of them re-downloading rows it already had. collectPaged tracks unique player_ids and
+    // stops the moment a request adds none, which terminates correctly for that behaviour, for
+    // ordinary pagination, and for whatever the provider does next.
+    const dir = await collectPaged(get, (off) => off === 0 ? `${ASA}/players` : `${ASA}/players?offset=${off}`, (x) => x.player_id, { pageSize: 1000 });
+    for(const x of dir.rows){asaNames[x.player_id]=x.player_name;/*6D*/const _n=x.player_name;if(_n){asaIdsByName[_n]=asaIdsByName[_n]||[];if(!asaIdsByName[_n].includes(x.player_id))asaIdsByName[_n].push(x.player_id);}}
+    const batch = dir.requests;
+    console.log(`          ✅ ${Object.keys(asaNames).length} players (${batch} request${batch===1?"":"s"}, stopped: ${dir.stop}${dir.duplicates?`, ${dir.duplicates} duplicate rows ignored`:""})`);
   }catch(e){console.error("          ❌",e.message);}
   const asaTeams={};
   try{const t=await get(`${ASA}/teams`);for(const x of t){const a=norm(x.team_abbreviation);if(a)asaTeams[x.team_id]=a;}console.log(`          ✅ ${Object.keys(asaTeams).length} teams`);}catch{}
@@ -751,6 +754,7 @@ async function main() {
     noASA.sort((a,b)=>b.g-a.g).slice(0,10).forEach(p=>console.log(`     ${p.g}G ${p.n} (${p.t})`));
   }
   console.log(`  ASA directory: ${Object.keys(asaNames).length} names | xG data: ${Object.keys(asaXG).length} | G+ data: ${Object.keys(asaGA).length} | Pass data: ${Object.keys(asaPass).length}`);
+  console.log(get.report());
   console.log(`  ASA      Salaries: ${withSalary}`);
   console.log(`  Now sourced from official MLS (Opta):`);
   console.log(`    chances, key passes, aerials, clearances, pressures, GK save quality`);
