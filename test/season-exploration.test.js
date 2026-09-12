@@ -356,8 +356,14 @@ test("the career chart emphasises the season being viewed, not whichever season 
 // ── 30–32. the 6B.1 identity guarantees still hold under 6C ─────────────────
 test("cross-season identity is still exact-name only, and Tiago is still ambiguous", () => {
   const idx2026 = A.buildNameIndex(appPlayers(2026).filter(A.isRankEligible), r => r.name);
-  assert.equal(A.resolveExactName(idx2026.counts, "Tiago"), "ambiguous");
-  assert.equal(A.canDrillThrough(idx2026.counts, "Tiago"), false);
+  // Phase 6D.1: New England's Tiago no longer carries another player's minutes, so he is not in the
+  // rank-eligible pool and the name is no longer ambiguous THERE. The rule itself is unchanged, and
+  // is asserted on a constructed pair so it stays guarded regardless of who the cache happens to hold.
+  const pair = A.buildNameIndex([{ name: "Tiago", t: "NE" }, { name: "Tiago", t: "ORL" }], r => r.name);
+  assert.equal(A.resolveExactName(pair.counts, "Tiago"), "ambiguous", "two rows of one name never resolve");
+  assert.equal(A.canDrillThrough(pair.counts, "Tiago"), false);
+  for (const n of Object.keys(idx2026.counts)) if (idx2026.counts[n] > 1)
+    assert.equal(A.canDrillThrough(idx2026.counts, n), false, n + " is ambiguous in the live pool and is refused");
   assert.equal(A.canDrillThrough(idx2026.counts, "Nkosi Tafari"), true);
   const idx2024 = A.buildNameIndex(appPlayers(2024).filter(A.isRankEligible), r => r.name);
   assert.equal(A.resolveExactName(idx2024.counts, "Adrian Gill"), "none");

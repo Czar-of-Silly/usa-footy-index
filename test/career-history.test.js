@@ -221,13 +221,40 @@ test("a duplicated exact name refuses drill-through rather than joining to one o
   assert.equal(A.resolveExactName(idx.counts, "Tiago"), "ambiguous");
   assert.equal(A.canDrillThrough(idx.counts, "Tiago"), false);
 });
-test("the real 2026 cache contains a duplicate exact name, and it is refused", () => {
+test("a duplicate exact name is refused, whether or not one is currently in the pool", () => {
   const idx = seasonIndex(2026);
   assert.ok(idx, "2026 cache present");
+
+  // Whatever duplicates the graded pool holds today, every one of them must refuse a drill-through.
   const dupes = Object.keys(idx.counts).filter(n => idx.counts[n] > 1);
-  assert.ok(dupes.length > 0, `the cache really does contain a duplicate exact name (${dupes.join(", ")})`);
   for (const n of dupes) assert.equal(A.canDrillThrough(idx.counts, n), false, n + ": ambiguous, so no drill-through");
   assert.equal(A.canDrillThrough(idx.counts, "Nkosi Tafari"), true, "an unambiguous player is still drillable");
+
+  // The mechanism itself, asserted directly so it is guarded even in a season whose pool happens to
+  // contain no duplicate. Phase 6D.1 produced exactly that situation: the 2026 cache still holds two
+  // rows named "Tiago", but only one has any data, so only one is graded.
+  const synthetic = A.buildNameIndex(
+    [{ name: "Twin Name", t: "A" }, { name: "Twin Name", t: "B" }, { name: "Only One", t: "C" }],
+    r => r.name);
+  assert.equal(A.resolveExactName(synthetic.counts, "Twin Name"), "ambiguous");
+  assert.equal(A.canDrillThrough(synthetic.counts, "Twin Name"), false, "two rows, one name: refused");
+  assert.equal(A.canDrillThrough(synthetic.counts, "Only One"), true);
+  assert.equal(A.canDrillThrough(synthetic.counts, "Nobody"), false, "and an absent name is not drillable either");
+});
+
+test("the 2026 cache still carries two rows named Tiago, and only the one with data is graded", () => {
+  // This is the Phase 6D.1 outcome, and it is worth locking: the roster genuinely contains two
+  // distinct players of that name, the join refuses to give either of them the single ASA record,
+  // and the one with no data of its own drops out of the pool rather than being graded on borrowed
+  // numbers. If a future import puts both back in the pool, the test above refuses the drill-through.
+  const raw = JSON.parse(fs.readFileSync(path.join(ROOT, "public/data/mls-cache.json"), "utf8")).players;
+  const tiagos = raw.filter(p => p.n === "Tiago");
+  assert.equal(tiagos.length, 2, "two raw rows share the name");
+  assert.notEqual(tiagos[0].sportecId, tiagos[1].sportecId, "and they are distinct roster identities");
+  assert.ok(tiagos.every(p => !(p.ids && p.ids.asa)), "neither was assigned the single ASA record");
+  const graded = tiagos.filter(p => (p.m || 0) >= 1);
+  assert.equal(graded.length, 1, "exactly one has minutes of its own");
+  assert.equal(graded[0].m > 0 && graded[0].available, true, "and it is available on its own data");
 });
 test("known regression anchors resolve the way the QA cases expect", () => {
   const y24 = seasonIndex(2024), y25 = seasonIndex(2025), y26 = seasonIndex(2026);
