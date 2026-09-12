@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Weekend · Results",
+  "headline": "Philadelphia routs Cincinnati 5-0 in week's biggest result",
+  "dek": "Fourteen matches across Sept. 9-10 produced five home losses and one of the season's most lopsided scorelines.",
+  "body": "Philadelphia Union beat FC Cincinnati 5-0 at home, the widest margin of the midweek round. Orlando City won 3-2 at Atlanta United, Charlotte FC took three points from CF Montreal with a 2-1 away victory, and D.C. United edged Columbus Crew 2-1. Toronto FC beat Nashville SC 2-1. On Sept. 10, Vancouver Whitecaps shut out LA Galaxy 3-0, LAFC blanked Red Bull New York 2-0, and New England Revolution won 2-1 at New York City FC. Houston Dynamo beat Real Salt Lake 2-1. FC Dallas won 2-1 at Minnesota United. San Jose Earthquakes took three road points, winning 3-2 at San Diego FC. Austin and Colorado drew 1-1, Chicago and Inter Miami drew 1-1, and Portland and St. Louis drew 2-2.",
+  "created": "2026-09-12T21:04:33.178Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Transfers · Departures and Arrivals",
+  "headline": "Three out, three in as clubs reshape rosters before run-in",
+  "dek": "Atlanta, Austin, and FC Dallas each lost a player to Europe while Houston, LAFC, and Inter Miami added depth.",
+  "body": "Defender Stian Gregersen left Atlanta United for Malmö FF of Sweden's Allsvenskan after logging 1,500 minutes this season. Winger Jayden Nelson, 1,080 minutes at Austin FC, was transferred to Bolton Wanderers of the English Championship. Forward Louicius Deedson departed FC Dallas for Ligue 2 side FC Sochaux-Montbéliard after 660 minutes in MLS. On the inbound side, Houston Dynamo signed South African striker Lyle Foster on loan from Burnley FC through June 2027 with a purchase option. LAFC acquired 20-year-old Brazilian forward Thayllon Roberth on loan from Avaí FC through June 2027 with a purchase option.",
+  "created": "2026-09-12T21:04:33.178Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Musa leads at 18 goals; Evander chases with double figures in two columns",
+  "dek": "FC Dallas's striker holds a four-goal buffer at the top, while Cincinnati's Evander is the only player in both the goals and assists top three.",
+  "body": "Petar Musa of FC Dallas leads the golden boot race with 18 goals. Evander (FC Cincinnati) and Tai Baribo (D.C. United) are tied for second at 14. In assists, Evander and Anders Dreyer of San Diego FC share the lead at 10, with Son Heung-Min of LAFC one back at nine. Evander's presence in both top-three lists makes him the most complete attacker in either conference by the numbers. In tackles, Vancouver's Andrés Cubas is dominant at 97, nearly 30 clear of Inter Miami's Yannick Bright (66) and D.C.'s Silvan Hefti (60).",
+  "created": "2026-09-12T21:04:33.178Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "xG · Over and Under",
+  "headline": "Guilherme runs 6.6 goals above xG; St. Louis pair both trail their numbers",
+  "dek": "Houston's Guilherme and NYCFC's Nicolás Fernández are outperforming their models, while two St. Louis forwards are well short of expected output.",
+  "body": "Houston Dynamo forward Guilherme has scored 13 goals against an xG of 6.4, a plus-6.6 overperformance. NYCFC's Nicolás Fernández is 14 goals against 8.3 xG, plus-5.7. At the other end, St. Louis CITY SC carry two significant underperformers: Simon Becher has 7 goals against an xG of 10.9, minus-3.9, and Rafael Navarro has 12 goals against 15.6 xG, minus-3.6. Nashville SC lead the East at 53 points on a 16-5-3 record; Vancouver Whitecaps top the West with 46 points at 14-4-5. Nashville also hold the league's best defense at 19 goals allowed, while Inter Miami lead all clubs with 59 goals scored.",
+  "created": "2026-09-12T21:04:33.178Z",
+  "status": "pending"
+ },
+ {
   "kicker": "Matchday · Results",
   "headline": "Union Rout Cincy 5-0; Road Teams Win Six of 14",
   "dek": "Philadelphia's demolition of FC Cincinnati headlined a wild midweek round that saw visitors collect six victories.",
@@ -61,38 +93,6 @@
   "dek": "Nashville's defense and Vancouver's attack give each club a distinct identity at the top of their respective conferences.",
   "body": "Nashville SC hold the Eastern Conference lead with 53 points on a 16W-5D-3L record. They have conceded only 19 goals, the best defensive mark in MLS. In the West, Vancouver Whitecaps top the table with 46 points at 14W-4D-5L after their 3-0 win over LA Galaxy on Sept. 10. Inter Miami CF own the league's most productive attack with 59 goals scored, 11 more than second-place Vancouver's 52 across the full league.",
   "created": "2026-09-10T14:54:46.650Z",
-  "status": "approved"
- },
- {
-  "kicker": "Match Week · Results",
-  "headline": "FC Dallas edges SKC 4-3 in week's wildest finish",
-  "dek": "Fourteen matches across four days produced nine goals in Portland alone and a 4-4 thriller in Toronto.",
-  "body": "Columbus rolled Colorado 3-0 on Sept. 5, the week's most clinical result. Orlando held San Diego 1-0 and Philadelphia turned away CF Montréal 2-0 the same night. Toronto and Chicago traded four goals apiece in a draw. FC Dallas beat Sporting Kansas City 4-3 on Sept. 6, Portland edged Minnesota 5-4, and St. Louis stunned Vancouver 3-1. Inter Miami and Atlanta drew 2-2, Real Salt Lake and LAFC shared the points 2-2, and LA Galaxy topped New England 2-1. Austin and San Jose drew 1-1, Seattle and New York held 0-0, and New York City and Nashville finished goalless on Sept. 4.",
-  "created": "2026-09-09T15:03:56.735Z",
-  "status": "approved"
- },
- {
-  "kicker": "Transfers · Window Moves",
-  "headline": "Columbus, Vancouver busy as window shuts",
-  "dek": "Three departures, three arrivals, and the Crew lead the league's late activity heading into the final stretch.",
-  "body": "Manu García has left Sporting Kansas City after the club mutually terminated his contract; he logs 1,470 minutes this season. Reports link him to a return to Aris Thessaloniki. Hugo Cuypers departs Chicago Fire after 990 minutes in 2026, transferred to Liga MX side CF Monterrey. Chris Cappis exits FC Dallas with 1,080 minutes this season. On the inbound side, Vancouver add forward Yadaly Diaby from French Ligue 2 side Grenoble Foot 38. Columbus bring in winger Anass Zaroury on loan from Panathinaikos and Uruguayan midfielder Santiago Rodríguez.",
-  "created": "2026-09-09T15:03:56.735Z",
-  "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa and Messi locked at 18 goals apiece",
-  "dek": "FC Cincinnati's Evander sits third at 14, five back, with the assist title also in play.",
-  "body": "Petar Musa of FC Dallas and Leo Messi of Inter Miami CF are deadlocked at 18 goals, the league's outright leaders. FC Cincinnati's Evander trails at 14. In the assists race, Evander, Messi, and Anders Dreyer of San Diego FC are level at 10 apiece. Andrés Cubas of Vancouver Whitecaps leads all tacklers at 90, more than 30 clear of D.C. United's Silvan Hefti at 59 and teammate João Peglow at 55. On the finishing side, Guilherme of Houston and NYCFC's Nicolás Fernández each outperform their xG by 5.8 goals. St. Louis pair Rafael Navarro and Simon Becher are the league's most prominent under-performers, down 4.3 and 3.5 goals respectively against expectation.",
-  "created": "2026-09-09T15:03:56.735Z",
-  "status": "approved"
- },
- {
-  "kicker": "Standings · Table",
-  "headline": "Nashville lead East by a distance; Whitecaps top West",
-  "dek": "The Eastern leader has allowed just 17 goals all season, also the best defensive record in the league.",
-  "body": "Nashville SC sit atop the Eastern Conference with 53 points on a 16W-5D-2L record, 47 goals scored and 17 conceded. That goals-against total is also the best in the entire league. Vancouver Whitecaps lead the Western Conference at 43 points, record 13W-4D-5L, with 49 goals for and 21 against. Inter Miami CF hold the league's most potent attack with 58 goals scored, 11 more than the next Western side.",
-  "created": "2026-09-09T15:03:56.735Z",
   "status": "approved"
  }
 ]
