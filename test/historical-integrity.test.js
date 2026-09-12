@@ -114,25 +114,115 @@ test("the historical importer reads authoritative assists, not rounded xA", () =
   assert.match(imp, /as: \(typeof p\.primary_assists === "number" \? p\.primary_assists : null\)/, "importer captures ASA primary_assists, preserving UNKNOWN");
   assert.doesNotMatch(imp, /as:\s*p\.primary_assists\s*\|\|\s*0/, "and no longer turns a missing total into zero");
 });
-test("committed historical caches still hold synthesized assists, so the app withholds them", () => {
-  // The fix above is at the importer; the caches on disk predate it. Until they are re-imported the
-  // app must report historical assists as unavailable rather than show rounded xA as real assists.
+test("the withholding rule is per-row provenance, not a season-wide flag", () => {
   const app = fs.readFileSync(path.join(ROOT, "src/app.jsx"), "utf8");
-  assert.match(app, /const SEASON_ASSISTS_OK=\{2026:true,2025:false,2024:false\};/, "assist availability flagged per season");
-  // 6D: withholding moved from a season-wide flag to per-row provenance, which is strictly stronger:
-  // a row is shown only when it says where its number came from, and a pre-6D row with no provenance
-  // still falls back to the season flag. Both halves are asserted.
+  assert.match(app, /const SEASON_ASSISTS_OK=\{2026:true,2025:false,2024:false\};/, "the season flag is unchanged — 2024/2025 are not declared complete");
   assert.match(app, /assists:rowAssists\(src,yr\)/, "history assists go through the per-row rule");
   assert.match(app, /const rowAssistsKnown=\(r,yr\)=>\{/, "the per-row rule exists");
   assert.match(app, /return r\.assistSrc!=="unknown"&&r\.as!==null&&r\.as!==undefined;/, "a row must name its source to be shown");
   assert.match(app, /return SEASON_ASSISTS_OK\[yr\]!==false;/, "and a row with no provenance still obeys the season flag");
   assert.doesNotMatch(app, /assists:SEASON_ASSISTS_OK\[yr\]===false\?null:r\.as/, "the old season-only gate is gone, not bypassed");
-  // and confirm the caches really are still synthesized, so this guard is still warranted
+});
+
+// ── the committed archive caches now carry AUTHORITATIVE assists ────────────
+// This replaces the Phase 6A guard that asserted the opposite. That guard existed because the caches
+// held Math.round(xA) dressed as real assists; the Phase 6D promotion replaced them with ASA
+// primary_assists. Asserting the new truth positively is what keeps the old defect from returning —
+// simply deleting the guard would leave nothing watching this at all.
+const EXPECTED_COVERAGE = { 2024: { rows: 769, resolved: 768 }, 2025: { rows: 801, resolved: 800 } };
+
+test("committed archive caches carry authoritative assists with per-row provenance", () => {
+  for (const yr of [2024, 2025]) {
+    const raw = rawFor(yr);
+    assert.ok(raw, `${yr} cache is present`);
+    const exp = EXPECTED_COVERAGE[yr];
+    assert.equal(raw.length, exp.rows, `${yr} row count`);
+
+    const authoritative = raw.filter(r => r.assistSrc === "asa:primary_assists");
+    assert.equal(authoritative.length, exp.resolved, `${yr} authoritative assist coverage is ${exp.resolved}/${exp.rows}`);
+    assert.ok(authoritative.every(r => typeof r.as === "number" && isFinite(r.as)), `${yr}: every authoritative row holds a real number`);
+    assert.ok(authoritative.every(r => r.ids && r.ids.asa), `${yr}: and the ASA id that produced it`);
+
+    // Coverage is 99.87%, not 100%, so the season is NOT complete and must not be declared so.
+    assert.ok(authoritative.length < raw.length, `${yr} coverage is short of complete, which is why the season flag stays false`);
+  }
+});
+
+test("resolved archive rows are not populated from round(xA)", () => {
   for (const yr of [2024, 2025]) {
     const raw = rawFor(yr); if (!raw) continue;
-    const rows = raw.filter(r => r && r.as != null && r.xa != null);
-    const synthesized = rows.filter(r => r.as === Math.round(r.xa)).length;
-    assert.equal(synthesized, rows.length, `${yr} cache assists are still 100% round(xA) — guard required`);
+    const resolved = raw.filter(r => r.assistSrc === "asa:primary_assists" && r.xa != null);
+    // Before the promotion this was 100% by construction. Coincidental equality is expected and fine;
+    // universal equality would mean the synthesized values were still in place.
+    const equal = resolved.filter(r => r.as === Math.round(r.xa)).length;
+    assert.ok(equal < resolved.length, `${yr}: not every assist equals round(xA) — ${equal}/${resolved.length}`);
+    assert.ok(equal / resolved.length < 0.75, `${yr}: the remaining equalities are coincidence, not synthesis (${equal}/${resolved.length})`);
+    // and a spot check that real disagreement exists in both directions
+    const higher = resolved.filter(r => r.as > Math.round(r.xa)).length;
+    const lower = resolved.filter(r => r.as < Math.round(r.xa)).length;
+    assert.ok(higher > 0 && lower > 0, `${yr}: corrections run both ways (${higher} up, ${lower} down) — no arithmetic transform could produce this`);
+  }
+});
+
+test("an unresolved archive row keeps UNKNOWN, and zero stays distinct from unknown", () => {
+  for (const yr of [2024, 2025]) {
+    const raw = rawFor(yr); if (!raw) continue;
+    const unknown = raw.filter(r => r.assistSrc === "unknown");
+    assert.equal(unknown.length, raw.length - EXPECTED_COVERAGE[yr].resolved, `${yr}: exactly the unresolved rows are unknown`);
+    assert.ok(unknown.every(r => r.as === null), `${yr}: an unknown assist is null, never 0`);
+    assert.ok(unknown.every(r => !(r.ids && r.ids.asa)), `${yr}: and carries no ASA identity`);
+
+    // David Martinez is the unresolved case: ASA holds two distinct players under that name.
+    const dm = raw.filter(r => r.n === "David Martínez");
+    assert.equal(dm.length, 1, `${yr}: one David Martínez row`);
+    assert.equal(dm[0].as, null, `${yr}: his assists are unknown`);
+    assert.equal(dm[0].identityJoin, "ambiguous", `${yr}: and his identity is refused, not guessed`);
+    assert.ok(!(dm[0].ids && dm[0].ids.asa));
+
+    // an authoritative ZERO is a real observation and must survive as a number
+    const zeros = raw.filter(r => r.assistSrc === "asa:primary_assists" && r.as === 0);
+    assert.ok(zeros.length > 0, `${yr}: authoritative zeros exist`);
+    assert.ok(zeros.every(r => r.as === 0 && r.as !== null), `${yr}: and are numeric 0, not null`);
+  }
+});
+
+test("promoting the archive caches moved no grade", () => {
+  // Assists and xpp are not grading inputs, so the enrichment had to be grade-neutral. This proves it
+  // from the committed data rather than from the promotion-time report: the same prepared input, and
+  // therefore the same grade, whatever the assist and xpp values are.
+  for (const yr of [2024, 2025]) {
+    const raw = rawFor(yr); if (!raw) continue;
+    const withAssists = raw.find(r => r.assistSrc === "asa:primary_assists" && r.as > 0 && (r.m || 0) >= 450);
+    assert.ok(withAssists, `${yr}: a resolved row to test with`);
+    const stripped = { ...withAssists, as: null, xpp: null };
+    const a = E.preparePlayerForGrading(E.validatePlayer(withAssists), 0);
+    const b = E.preparePlayerForGrading(E.validatePlayer(stripped), 0);
+    const drop = o => { const c = { ...o }; delete c.raw; return c; };
+    assert.deepEqual(drop(a), drop(b), `${yr}: assists and xpp do not reach the grading engine`);
+  }
+});
+
+test("archive xpp comes from the authoritative ASA field, not the one that does not exist", () => {
+  for (const yr of [2024, 2025]) {
+    const raw = rawFor(yr); if (!raw) continue;
+    const auth = raw.filter(r => r.xppSrc === "asa:xpass_completion_percentage");
+    assert.equal(auth.length, EXPECTED_COVERAGE[yr].resolved, `${yr}: xpp coverage matches identity coverage`);
+    // The old importer read a field ASA does not return, so xpp was 0 on 100% of rows and then got
+    // clamped to the 30 floor. The fix is not "no zeros" — a handful of players attempted no passes
+    // at all, and ASA reporting 0 for them is a real observation. The fix is that the field is no
+    // longer uniformly zero, and every surviving zero is corroborated by pp === 0.
+    const zero = auth.filter(r => Number(r.xpp) === 0);
+    const positive = auth.filter(r => Number(r.xpp) > 0);
+    assert.ok(positive.length > auth.length * 0.98, `${yr}: xpp is populated for ${positive.length}/${auth.length} resolved rows, not 0/${auth.length} as before`);
+    assert.ok(zero.every(r => Number(r.pp) === 0), `${yr}: every remaining xpp of 0 belongs to a player who attempted no passes — an observation, not the old artifact`);
+    assert.ok(zero.every(r => (r.m || 0) < 120), `${yr}: and they are all fringe-minute players`);
+    assert.ok(positive.every(r => Number(r.xpp) > 0 && Number(r.xpp) <= 100), `${yr}: populated values are percentages`);
+    // A fringe player can legitimately sit very low (one difficult pass in six minutes), so the
+    // meaningful check is the shape of the distribution, not a floor on every row.
+    const med = positive.map(r => Number(r.xpp)).sort((a, b) => a - b)[Math.floor(positive.length / 2)];
+    assert.ok(med > 60 && med < 95, `${yr}: median expected pass completion is ${med}%, a plausible league value`);
+    const unknown = raw.filter(r => r.xppSrc === "unknown");
+    assert.ok(unknown.every(r => r.xpp === null), `${yr}: an unresolved row has xpp null, not a fabricated 0`);
   }
 });
 test("historical prgc is no longer written as a duplicate of drb", () => {
