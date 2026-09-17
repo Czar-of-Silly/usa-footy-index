@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Matchday · Results",
+  "headline": "Fourteen games, one blank scoresheet in busy MLS weekend",
+  "dek": "Goals flew across both conferences Sept. 12-14, with Philadelphia Union the week's loudest statement-makers.",
+  "body": "Philadelphia Union silenced San Diego FC 5-0 on Sept. 14 to stand out in a packed fixture window. Orlando City put three past Toronto FC. St. Louis CITY SC beat Minnesota United 4-2, and Sporting Kansas City downed LAFC 3-1. FC Cincinnati and Charlotte FC traded three goals apiece at TQL Stadium. Inter Miami and Nashville split four goals in a 2-2 draw. New England Revolution won 2-1 at Chicago, Austin FC edged Vancouver 2-1, and NYCFC claimed all three points at Real Salt Lake 2-0. D.C. United and Atlanta United played out the round's lone 0-0.",
+  "created": "2026-09-17T15:28:29.951Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Transfers · Ins and Outs",
+  "headline": "Houston lose two, San Diego add World Cup striker",
+  "dek": "The Houston Dynamo's defensive and midfield core has thinned significantly, while San Diego FC bolster their attack with veteran firepower and youth.",
+  "body": "Houston Dynamo FC shed two first-team regulars before the transfer window closed. Defender Erik Sviatchenko, 1,530 minutes into the 2026 season, departed for Thai top-flight side Port FC. Midfielder Jack McGlynn, 1,500 minutes in, was transferred to EFL Championship club Stoke City. At FC Cincinnati, defender Matt Miazga was waived after logging 1,140 minutes this season. On the arrivals side, San Diego FC signed striker Cédric Bakambu as a free agent following his spell with Real Betis, and added 18-year-old Cameroonian midfielder David Mimbang on loan from sister club FC Nordsjælland.",
+  "created": "2026-09-17T15:28:29.951Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Stat Race · Golden Boot",
+  "headline": "Musa leads at 18; Surridge and Fernández share second",
+  "dek": "FC Dallas's striker holds a three-goal cushion over two players tied at 15 with the season entering its final stretch.",
+  "body": "Petar Musa of FC Dallas leads MLS in goals with 18, three clear of Sam Surridge (Nashville SC) and Nicolás Fernández (New York City FC), who sit level at 15. In the assists race, Anders Dreyer of San Diego FC fronts the field with 10, one ahead of Evander (FC Cincinnati) and Son Heung-Min (LAFC) at nine apiece. In xG variance, Guilherme of Houston Dynamo and Fernández are the league's biggest overperformers, each netting 6.6 goals above expectation. Miguel Almirón (Atlanta United) and Son Heung-Min sit deepest below their xG marks, at -4.9 and -4.8 respectively.",
+  "created": "2026-09-17T15:28:29.951Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Standings · Table",
+  "headline": "Nashville lead East at 54 pts; Vancouver front the West",
+  "dek": "The Eastern frontrunner doubles as the league's stingiest defense, while the West stays close behind.",
+  "body": "Nashville SC lead the Eastern Conference with 54 points on a 16W-6D-3L record, having conceded just 21 goals, the fewest in MLS, while scoring 50. In the West, Vancouver Whitecaps sit first with 46 points at 14W-4D-6L. Inter Miami CF own the league's most productive attack at 61 goals scored, nine more than any other side has managed against the backdrop of a 53-goal Western frontrunner. Nashville's defensive ledger at 21 allowed doubles as both a conference and league benchmark.",
+  "created": "2026-09-17T15:28:29.951Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Weekend Results · East & West",
   "headline": "15 games, two draws, one rout: the weekend in full",
   "dek": "Philadelphia ran riot in San Diego while St. Louis put four past Minnesota; the East split points all over the map.",
@@ -62,37 +94,5 @@
   "body": "Nashville SC head the Eastern Conference with 54 points on a 16W-6D-3L record and 50 goals scored against only 21 conceded. Vancouver Whitecaps lead the West with 46 points (14W-4D-5L), 52 goals for and 21 against. Inter Miami CF carry the league's most prolific attack at 61 goals scored. Nashville's defense, also 21 goals allowed, matches Vancouver's, the two best marks in the division. Simon Becher (St. Louis, 7G vs. 11.0 xG) and Germán Berterame (Inter Miami, 7G vs. 11.0 xG) are the season's biggest xG underperformers, each sitting 4.0 goals below expectation.",
   "created": "2026-09-13T14:50:49.997Z",
   "status": "approved"
- },
- {
-  "kicker": "Weekend · Results",
-  "headline": "Philadelphia routs Cincinnati 5-0 in week's biggest result",
-  "dek": "Fourteen matches across Sept. 9-10 produced five home losses and one of the season's most lopsided scorelines.",
-  "body": "Philadelphia Union beat FC Cincinnati 5-0 at home, the widest margin of the midweek round. Orlando City won 3-2 at Atlanta United, Charlotte FC took three points from CF Montreal with a 2-1 away victory, and D.C. United edged Columbus Crew 2-1. Toronto FC beat Nashville SC 2-1. On Sept. 10, Vancouver Whitecaps shut out LA Galaxy 3-0, LAFC blanked Red Bull New York 2-0, and New England Revolution won 2-1 at New York City FC. Houston Dynamo beat Real Salt Lake 2-1. FC Dallas won 2-1 at Minnesota United. San Jose Earthquakes took three road points, winning 3-2 at San Diego FC. Austin and Colorado drew 1-1, Chicago and Inter Miami drew 1-1, and Portland and St. Louis drew 2-2.",
-  "created": "2026-09-12T21:04:33.178Z",
-  "status": "pending"
- },
- {
-  "kicker": "Transfers · Departures and Arrivals",
-  "headline": "Three out, three in as clubs reshape rosters before run-in",
-  "dek": "Atlanta, Austin, and FC Dallas each lost a player to Europe while Houston, LAFC, and Inter Miami added depth.",
-  "body": "Defender Stian Gregersen left Atlanta United for Malmö FF of Sweden's Allsvenskan after logging 1,500 minutes this season. Winger Jayden Nelson, 1,080 minutes at Austin FC, was transferred to Bolton Wanderers of the English Championship. Forward Louicius Deedson departed FC Dallas for Ligue 2 side FC Sochaux-Montbéliard after 660 minutes in MLS. On the inbound side, Houston Dynamo signed South African striker Lyle Foster on loan from Burnley FC through June 2027 with a purchase option. LAFC acquired 20-year-old Brazilian forward Thayllon Roberth on loan from Avaí FC through June 2027 with a purchase option.",
-  "created": "2026-09-12T21:04:33.178Z",
-  "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa leads at 18 goals; Evander chases with double figures in two columns",
-  "dek": "FC Dallas's striker holds a four-goal buffer at the top, while Cincinnati's Evander is the only player in both the goals and assists top three.",
-  "body": "Petar Musa of FC Dallas leads the golden boot race with 18 goals. Evander (FC Cincinnati) and Tai Baribo (D.C. United) are tied for second at 14. In assists, Evander and Anders Dreyer of San Diego FC share the lead at 10, with Son Heung-Min of LAFC one back at nine. Evander's presence in both top-three lists makes him the most complete attacker in either conference by the numbers. In tackles, Vancouver's Andrés Cubas is dominant at 97, nearly 30 clear of Inter Miami's Yannick Bright (66) and D.C.'s Silvan Hefti (60).",
-  "created": "2026-09-12T21:04:33.178Z",
-  "status": "pending"
- },
- {
-  "kicker": "xG · Over and Under",
-  "headline": "Guilherme runs 6.6 goals above xG; St. Louis pair both trail their numbers",
-  "dek": "Houston's Guilherme and NYCFC's Nicolás Fernández are outperforming their models, while two St. Louis forwards are well short of expected output.",
-  "body": "Houston Dynamo forward Guilherme has scored 13 goals against an xG of 6.4, a plus-6.6 overperformance. NYCFC's Nicolás Fernández is 14 goals against 8.3 xG, plus-5.7. At the other end, St. Louis CITY SC carry two significant underperformers: Simon Becher has 7 goals against an xG of 10.9, minus-3.9, and Rafael Navarro has 12 goals against 15.6 xG, minus-3.6. Nashville SC lead the East at 53 points on a 16-5-3 record; Vancouver Whitecaps top the West with 46 points at 14-4-5. Nashville also hold the league's best defense at 19 goals allowed, while Inter Miami lead all clubs with 59 goals scored.",
-  "created": "2026-09-12T21:04:33.178Z",
-  "status": "pending"
  }
 ]
