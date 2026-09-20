@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Weekend · Results",
+  "headline": "Philadelphia, Galaxy, Whitecaps, Nashville all take road points",
+  "dek": "Fourteen matches across Sept. 18-20 produced one goalless draw, four thrillers above three goals each, and no shortage of away-side damage.",
+  "body": "Red Bull New York edged New York City FC 1-0 on Sept. 18. Columbus rolled into Montreal and won 2-0 a day later, while Charlotte FC beat D.C. United 2-1 and Orlando fell 4-2 at New England. San Jose and LAFC split 2-2. On Sept. 20, Philadelphia Union won 4-3 at Sporting Kansas City, LA Galaxy took Minnesota 3-2, Nashville blanked Chicago 3-0, Vancouver claimed a 3-0 away win at Real Salt Lake, Atlanta United won 1-0 at Portland, and St. Louis beat Toronto 3-1. Colorado and Seattle drew 3-3. FC Dallas and Austin FC finished 0-0.",
+  "created": "2026-09-20T14:33:42.594Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Roster Moves · Departures & Arrivals",
+  "headline": "Kelsy to Rangers, Kerr to Portugal, Ngando released",
+  "dek": "Three players exit MLS as one confirmed arrival reshapes Charlotte FC's books.",
+  "body": "Portland Timbers forward Kevin Kelsy, who logged 1,500 minutes this season, has transferred to Rangers FC in Scotland. Toronto FC forward Deandre Kerr, 780 minutes in 2026, moves to AVS Futebol SAD in Portugal's second division. Vancouver Whitecaps midfielder J.C. Ngando, 1,140 minutes this season, had his contract mutually terminated on Sept. 3 and has cleared waivers. On the incoming side, defender JahLane Forbes has joined Charlotte FC.",
+  "created": "2026-09-20T14:33:42.594Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Musa holds three-goal cushion with table crunch looming",
+  "dek": "FC Dallas's Petar Musa leads at 18 goals while a two-man pack sits three back with the standings tightening.",
+  "body": "Petar Musa of FC Dallas leads the individual scoring race with 18 goals. Sam Surridge of Nashville SC and Nicolás Fernández of New York City FC share second at 15 apiece. In the assists column, Anders Dreyer of San Diego FC leads on 10, with Evander of FC Cincinnati and Son Heung-Min of LAFC tied at 9. Andrés Cubas of Vancouver has compiled a league-high 100 tackles, 28 clear of Yannick Bright of Inter Miami CF on 72 and Silvan Hefti of D.C. United on 61.",
+  "created": "2026-09-20T14:33:42.594Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "xG · Over & Under",
+  "headline": "Guilherme and Fernández beat the model; Almirón and Son trail it badly",
+  "dek": "Two strikers are converting at nearly double their expected rate; two others owe the xG ledger a combined 9.7 goals.",
+  "body": "Guilherme of Houston Dynamo FC leads xG overperformance: 13 goals against an xG of 6.4, a gap of plus-6.6. Nicolás Fernández of New York City FC matches that margin exactly, 15 goals, xG 8.4, plus-6.6. At the other end, Miguel Almirón of Atlanta United has scored just 4 goals against an xG of 8.9, a deficit of 4.9. Son Heung-Min of LAFC has 5 goals against an xG of 9.8, trailing expectation by 4.8.",
+  "created": "2026-09-20T14:33:42.594Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Results · Weekend",
   "headline": "Philadelphia rout San Diego 5-0; Red Bulls take Hudson derby",
   "dek": "Four results across the week produced 11 goals, one shutout, and no home wins.",
@@ -61,38 +93,6 @@
   "dek": "The Eastern frontrunner doubles as the league's stingiest defense, while the West stays close behind.",
   "body": "Nashville SC lead the Eastern Conference with 54 points on a 16W-6D-3L record, having conceded just 21 goals, the fewest in MLS, while scoring 50. In the West, Vancouver Whitecaps sit first with 46 points at 14W-4D-6L. Inter Miami CF own the league's most productive attack at 61 goals scored, nine more than any other side has managed against the backdrop of a 53-goal Western frontrunner. Nashville's defensive ledger at 21 allowed doubles as both a conference and league benchmark.",
   "created": "2026-09-17T15:28:29.951Z",
-  "status": "approved"
- },
- {
-  "kicker": "Weekend Results · East & West",
-  "headline": "15 games, two draws, one rout: the weekend in full",
-  "dek": "Philadelphia ran riot in San Diego while St. Louis put four past Minnesota; the East split points all over the map.",
-  "body": "Red Bull New York won the only Eastern game of Saturday, taking three points from Columbus 1-0. D.C. and Atlanta shared a goalless draw, FC Cincinnati and Charlotte traded three apiece, and Inter Miami and Nashville finished 2-2. Orlando thumped Toronto 3-0. Out West on Sunday, Sporting Kansas City beat LAFC 3-1, St. Louis edged Minnesota 4-2, Colorado edged CF Montréal 1-0, San Jose held Houston 1-0, and New England left Chicago with a 2-1 win. Austin FC won at Vancouver 2-1. Real Salt Lake fell to NYCFC 0-2. LA Galaxy and Seattle drew 1-1. On Monday, Philadelphia Union closed the weekend with a 5-0 thrashing at San Diego.",
-  "created": "2026-09-16T15:21:52.018Z",
-  "status": "pending"
- },
- {
-  "kicker": "Roster Moves · Ins & Outs",
-  "headline": "RSL doubles down; three players exit MLS",
-  "dek": "Real Salt Lake added two players at the window's close while Houston, LAFC, and Minnesota each registered a departure.",
-  "body": "Real Salt Lake signed Serbian winger Dušan Žagar on a permanent transfer from FK IMT Belgrade and added midfielder Taylor Booth on loan from FC Twente. St. Louis CITY SC brought in U.S. international forward Damion Downs on loan from Southampton. On the departures side, Houston Dynamo transferred midfielder Ondřej Lingr to Polish Ekstraklasa side Korona Kielce after 930 minutes this season. Stephen Eustáquio, who logged 720 minutes for LAFC, has moved on to Swansea City. James Rodríguez has left Minnesota United after 480 minutes; he is a free agent.",
-  "created": "2026-09-16T15:21:52.018Z",
-  "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa holds an 18-goal lead as rivals close",
-  "dek": "FC Dallas's striker sits three clear at the top; two players are deadlocked for second.",
-  "body": "Petar Musa of FC Dallas leads the goals table with 18 on the season, three ahead of Sam Surridge (Nashville SC) and Nicolás Fernández (NYCFC), who are tied at 15. In assists, Anders Dreyer of San Diego FC fronts the field with 10; Evander (FC Cincinnati) and Son Heung-Min (LAFC) sit at nine apiece. Andrés Cubas of Vancouver Whitecaps leads the tackles chart with 100, well clear of Yannick Bright (Inter Miami, 72) and Silvan Hefti (D.C. United, 61).",
-  "created": "2026-09-16T15:21:52.018Z",
-  "status": "approved"
- },
- {
-  "kicker": "xG Watch · Over & Under",
-  "headline": "Fernández and Guilherme are beating the model by 6.6",
-  "dek": "Atlanta's Almirón is the league's biggest finisher in debt; Son sits nearly five goals below his expected return.",
-  "body": "Nicolás Fernández (NYCFC) and Guilherme (Houston Dynamo) share the largest positive gap in the league, each outperforming their xG by 6.6 goals, Fernández at 15 goals on 8.4 xG, Guilherme at 13 on 6.4. At the other end, Atlanta's Miguel Almirón has scored four goals against an xG of 8.9, a deficit of 4.9. Son Heung-Min of LAFC has five goals on 9.8 xG, running 4.8 behind the model.",
-  "created": "2026-09-16T15:21:52.018Z",
   "status": "approved"
  }
 ]
