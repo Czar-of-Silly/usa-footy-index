@@ -1,0 +1,121 @@
+# CI — verification only.
+#
+# This workflow NEVER writes. It does not fetch MLS data, does not regenerate caches, does not
+# commit, push, tag or deploy. `permissions: contents: read` makes that a hard guarantee rather
+# than a convention: the GITHUB_TOKEN handed to this job cannot write to the repository even if a
+# future step tried. The data pipeline lives in update-data.yml and stays there.
+#
+# What it checks, in order:
+#   1. the lockfile installs cleanly                     (npm ci)
+#   2. the test suite passes                             (npm test)
+#   3. no whitespace damage in what the PR changes       (git diff --check against the base)
+#   4. the build succeeds                                (npm run build)
+#   5. the committed bundle matches the one source builds (determinism — the important one)
+#   6. nothing else moved in the working tree            (git status --porcelain)
+#
+# Step 5 exists because public/app.js is a COMMITTED build artifact served straight from
+# Cloudflare Pages. If someone edits src/ and forgets to rebuild, or edits public/app.js by hand,
+# the site ships something no source file produces. That drift is invisible in review and this is
+# the only thing that catches it.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Read-only. Nothing in this workflow may mutate the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: test · build · bundle determinism
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # fetch-depth: 0 so the whitespace check can diff against the PR's merge base.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      # `git diff --check` reports trailing whitespace, space-before-tab and conflict markers.
+      # It must be given a COMMIT RANGE. On a fresh checkout the working tree is identical to HEAD,
+      # so a bare `git diff --check` compares nothing and would pass whatever was pushed.
+      #   pull_request : the PR's base .. the PR's head
+      #   push         : github.event.before .. github.sha (what this push actually added)
+      #   fallback     : HEAD^ .. HEAD, for the cases where `before` is absent or the all-zero SHA
+      #                  (a brand-new branch, or the first push after a force-push)
+      - name: Whitespace and conflict markers
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          ZERO=0000000000000000000000000000000000000000
+          if [ -n "$PR_BASE" ]; then
+            echo "pull_request: checking $PR_BASE..$HEAD_SHA"
+            git diff --check "$PR_BASE" "$HEAD_SHA"
+          elif [ -n "$PUSH_BEFORE" ] && [ "$PUSH_BEFORE" != "$ZERO" ] && git cat-file -e "$PUSH_BEFORE^{commit}" 2>/dev/null; then
+            echo "push: checking $PUSH_BEFORE..$HEAD_SHA"
+            git diff --check "$PUSH_BEFORE" "$HEAD_SHA"
+          else
+            echo "no usable range (new branch or force-push): checking HEAD^..HEAD"
+            git diff --check "$HEAD_SHA^" "$HEAD_SHA"
+          fi
+
+      - name: Build
+        run: npm run build
+
+      # THE BUNDLE DETERMINISM CHECK.
+      # build.js has just rewritten public/app.js from src/, and rewritten the cache-bust stamp in
+      # public/index.html from that bundle's hash. If either file now differs from what is
+      # committed, the committed artifact did not come from the committed source.
+      - name: Committed bundle matches source
+        run: |
+          if ! git diff --quiet -- public/app.js public/index.html; then
+            echo "::error::public/app.js and/or public/index.html differ from a fresh build of src/."
+            echo "The committed bundle was not produced by the committed source."
+            echo "Fix: run 'npm run build' locally and commit public/app.js and public/index.html."
+            echo ""
+            git diff --stat -- public/app.js public/index.html
+            exit 1
+          fi
+          echo "public/app.js and public/index.html match a fresh build."
+
+      # Anything else the build touched is unexpected. In particular this fails loudly if a build
+      # step ever starts writing into public/data/ — generated data must never arrive via CI.
+      - name: Working tree is otherwise clean
+        run: |
+          DIRTY="$(git status --porcelain)"
+          if [ -n "$DIRTY" ]; then
+            echo "::error::The build modified files beyond the bundle:"
+            echo "$DIRTY"
+            exit 1
+          fi
+          echo "Working tree clean."
+
+      # Unlike the range check above, this one is meaningful with no arguments: by now the build has
+      # run, so any difference between the working tree and the index is something the build wrote.
+      # The step above already fails on such a difference; this catches whitespace damage in it.
+      - name: Whitespace in anything the build wrote
+        run: git diff --check

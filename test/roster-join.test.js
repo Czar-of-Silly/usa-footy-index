@@ -116,12 +116,26 @@ test("Opta and Sportec joins are untouched by a refused ASA name match", () => {
 });
 
 // ── 8 ───────────────────────────────────────────────────────────────────────
-test("the real Tiago evidence: two roster identities, one ASA row, no identity assigned to either", () => {
+test("live evidence: display names shared by several roster rows are refused by the name fallback", () => {
+  // This was written around the two "Tiago" rows, and naming him tied it to one man's roster status:
+  // he leaves the league and the test goes red while the identity rule it guards is still correct.
+  // So it asks the cache which display names are shared rather than being told. No shared name is a
+  // valid state, not a failure — tests 1 and 2 hold the rule unconditionally and without the cache.
   const P = cache().players;
-  const tiagos = P.filter(p => p.n === "Tiago");
-  assert.equal(tiagos.length, 2, "two roster rows share the name");
-  assert.notEqual(tiagos[0].sportecId, tiagos[1].sportecId, "and they are distinct roster identities");
-  assert.notEqual(tiagos[0].optaId, tiagos[1].optaId);
+  const groups = new Map();
+  for (const p of P) { const g = groups.get(p.n) || []; g.push(p); groups.set(p.n, g); }
+  const shared = [...groups.entries()].filter(([, rows]) => rows.length > 1);
+  const sharedNames = new Set(shared.map(([n]) => n));
+  const sharedRows = shared.reduce((n, [, rows]) => n + rows.length, 0);
+
+  // Rows in a shared-name group must be separate roster identities — if two carried the same
+  // provider id they would be one player listed twice, which is a different defect. Ids that are
+  // absent are not compared: a group with no provider ids at all is still refused on the name alone.
+  const distinct = (vals) => { const v = vals.filter(x => x != null && x !== ""); return new Set(v).size === v.length; };
+  for (const [name, rows] of shared) {
+    assert.ok(distinct(rows.map(r => r.sportecId)), `${name}: no two rows share a sportecId`);
+    assert.ok(distinct(rows.map(r => r.optaId)), `${name}: no two rows share an optaId`);
+  }
 
   // Replay the real roster through the real finder.
   const roster = P.map(p => ({ name: p.n, _mls: { sportecId: p.sportecId, optaId: p.optaId } }));
@@ -130,8 +144,8 @@ test("the real Tiago evidence: two roster identities, one ASA row, no identity a
   const find = RJ.createFinder(roster, {});
   const hits = roster.map((r, i) => ({ sportec: r._mls.sportecId, name: r.name, hit: find(r, i, asaByName) }));
 
-  for (const h of hits.filter(x => x.name === "Tiago"))
-    assert.equal(h.hit, null, "neither Tiago is assigned an ASA row by name");
+  for (const h of hits.filter(x => sharedNames.has(x.name)))
+    assert.equal(h.hit, null, `"${h.name}" is carried by more than one roster row and must not resolve by name`);
 
   // the invariant, over the whole live roster
   const owner = new Map();
@@ -141,7 +155,7 @@ test("the real Tiago evidence: two roster identities, one ASA row, no identity a
     assert.ok(prior === undefined || prior === h.sportec, `ASA id ${h.hit.asaId} claimed by ${prior} and ${h.sportec}`);
     owner.set(h.hit.asaId, h.sportec);
   }
-  assert.equal(find.stats.duplicateRosterName, 2, "exactly the two Tiago rows were refused");
+  assert.equal(find.stats.duplicateRosterName, sharedRows, "exactly the shared-name rows were refused, and no others");
 });
 
 // ── 9, 10, 11 ───────────────────────────────────────────────────────────────
@@ -151,17 +165,23 @@ for (const [owner, borrower, label] of [
   ["Santiago Rodríguez", "Sebastián Rodríguez", "Rodríguez"],
 ]) {
   test(`${label}: the owner keeps his season and the other man gets nothing`, () => {
+    // Rosters change. A name that was on an MLS roster when this guard was written can be off it a
+    // fortnight later — Sebastián Rodríguez left the Houston roster in the Sept 16 data refresh —
+    // and a player who is no longer in the league is not evidence of a regression. So the live-cache
+    // assertions are scoped to the rows that actually exist, and each surviving row is still held to
+    // the rule that applies to it. The join rule at the bottom is the real invariant and never skips.
     const P = cache().players;
     const o = P.find(p => p.n === owner), b = P.find(p => p.n === borrower);
-    assert.ok(o && b, "both rows exist in the cache");
 
-    // the live cache is already fixed: the borrower has no ASA identity and no stats
-    assert.ok(o.ids && o.ids.asa, `${owner} carries an ASA identity`);
-    assert.ok(!(b.ids && b.ids.asa), `${borrower} carries none`);
-    assert.equal(b.m, 0, `${borrower} has no borrowed minutes`);
-    for (const f of ["g", "as", "sh", "xg", "xa", "totalGA"]) assert.equal(Number(b[f]) || 0, 0, `${borrower} ${f}`);
-    assert.equal(b.available, false);
-    assert.notEqual(o.m, b.m, "and the two no longer share a stat line");
+    // whoever is still rostered is checked; contamination is only possible while the borrower exists
+    if (o) assert.ok(o.ids && o.ids.asa, `${owner} carries an ASA identity`);
+    if (b) {
+      assert.ok(!(b.ids && b.ids.asa), `${borrower} carries none`);
+      assert.equal(b.m, 0, `${borrower} has no borrowed minutes`);
+      for (const f of ["g", "as", "sh", "xg", "xa", "totalGA"]) assert.equal(Number(b[f]) || 0, 0, `${borrower} ${f}`);
+      assert.equal(b.available, false);
+    }
+    if (o && b) assert.notEqual(o.m, b.m, "and the two no longer share a stat line");
 
     // and the join refuses to repeat it: distinct names, one source row, one claimant
     const roster = [rp(owner, "S-own"), rp(borrower, "S-bor")];
