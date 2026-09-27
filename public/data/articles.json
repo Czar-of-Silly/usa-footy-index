@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Match Week · Results",
+  "headline": "Philadelphia leads a high-scoring midweek round",
+  "dek": "Fourteen games across four days produced 46 goals, two draws, and no shortage of momentum shifts deep in the standings race.",
+  "body": "Philadelphia Union posted the round's biggest margin, beating Orlando City SC 4-2 on Sept. 26. CF Montréal followed with a 3-1 home win over FC Cincinnati the same night. Chicago Fire FC won away at Charlotte FC, 1-0. Seattle Sounders FC swept a home double-header, blanking Real Salt Lake 2-0 on Sept. 24 then beating Minnesota United 3-1 on Sept. 27. Sporting Kansas City won 2-0 at Houston Dynamo. FC Dallas edged LAFC 1-0 and Real Salt Lake recovered to beat New England Revolution 3-0. LA Galaxy won 3-2 over Colorado, Nashville SC beat Toronto 2-0, and San Jose Earthquakes downed Portland Timbers 3-1. Atlanta United and NYCFC, and Vancouver Whitecaps and D.C. United, each finished 3-3. Austin FC and San Diego FC drew 3-3.",
+  "created": "2026-09-27T15:33:39.232Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Roster Moves · Ins and Outs",
+  "headline": "Cuypers exits to Monterrey; Izoita signs first-team deal",
+  "dek": "Three departures and two confirmed arrivals reshape rosters with weeks left in the regular season.",
+  "body": "Hugo Cuypers has left Chicago Fire FC for CF Monterrey in Liga MX, ending a stint of 990 minutes in 2026. Iván Jaime's loan from FC Porto expired at season's end and CF Montréal declined the purchase option, returning the Spanish midfielder to Porto after 1,050 minutes this season. Chris Cappis departs FC Dallas after logging 1,080 minutes in 2026. On the arrivals side, Portland Timbers have signed academy product Eric Izoita to a first-team MLS contract, accelerating a deal that had been set to begin in 2027. St. Louis CITY SC have acquired goalkeeper Zack Campagnolo on loan from Colorado Rapids for the remainder of 2026.",
+  "created": "2026-09-27T15:33:39.232Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Musa leads at 18; assist table deadlocked at the top",
+  "dek": "FC Dallas's striker holds a one-goal edge with the Western Conference still to be settled.",
+  "body": "Petar Musa of FC Dallas leads the goals chart with 18, one ahead of Vancouver's Brian White at 17 and Nashville's Sam Surridge at 16. In assists, Albert Rusnák of Seattle Sounders FC and San Diego FC's Anders Dreyer share the lead at 11, with Son Heung-Min of LAFC three back at 10. In the tackle count, Vancouver's Andrés Cubas has put the race out of reach with 100 on the season, with Inter Miami's Yannick Bright next at 77 and D.C. United's Silvan Hefti at 64.",
+  "created": "2026-09-27T15:33:39.232Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "xG · Over and Under",
+  "headline": "Guilherme and Fernández beat their xG; Almirón trails his by 5.1",
+  "dek": "The gap between expected goals and actual output tells different stories at either end of the table.",
+  "body": "Houston Dynamo's Guilherme leads the overperformers, scoring 14 goals against an xG of 6.7, a positive difference of plus-7.3. NYCFC's Nicolás Fernández sits second, with 15 goals on an xG of 8.6, plus-6.4. On the other side, Atlanta United's Miguel Almirón has converted just 4 goals despite an xG of 9.1, a deficit of minus-5.1. Inter Miami's Germán Berterame is minus-4.2, with 7 goals on 11.2 xG. Nashville SC lead the East at 60 points on an 18W-6D-3L record, conceding only 21 goals, the league's best defensive mark. Vancouver Whitecaps top the West with 50 points.",
+  "created": "2026-09-27T15:33:39.232Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Results · Weekend",
   "headline": "Seattle shuts out RSL; Miami and San Diego split points",
   "dek": "The Sounders move to 2-0 at home in their last two while Inter Miami's lead at the top of the goals column stays under pressure.",
@@ -61,38 +93,6 @@
   "dek": "The league's finishing data reveals stark gaps between expectation and output at both ends of the table.",
   "body": "Houston Dynamo's Guilherme leads all overperformers with 14 goals on just 6.5 xG, a positive gap of 7.5. NYCFC's Nicolás Fernández is next at plus-6.6, converting 15 goals from 8.4 xG. At the other end, Atlanta United's Miguel Almirón has scored only 4 goals against 9.1 xG, a deficit of 5.1. Inter Miami's Germán Berterame is second-worst, producing 7 goals from 11.2 xG, sitting 4.2 below expectation.",
   "created": "2026-09-24T15:45:06.327Z",
-  "status": "approved"
- },
- {
-  "kicker": "Match Week · Recap",
-  "headline": "Six draws, five road wins define a wild midweek slate",
-  "dek": "Fifteen matches produced 40 goals across three days, with road sides winning or sharing points in every fixture.",
-  "body": "Philadelphia Union edged Sporting Kansas City 4-3, the highest-scoring result of the midweek run. New England Revolution beat Orlando City SC 4-2 at home, while Nashville SC blanked Chicago Fire FC 3-0 to strengthen their Eastern grip. St. Louis CITY SC downed Toronto FC 3-1, Vancouver Whitecaps won 3-0 at Real Salt Lake, and Atlanta United claimed a 1-0 win in Portland. Red Bull New York took all three points in the Hudson River Derby, beating NYCFC 1-0. Columbus Crew won 2-0 in Montréal, and Charlotte FC edged D.C. United 2-1. LA Galaxy prevailed 3-2 at Minnesota. FC Dallas and Austin FC played to a 0-0 draw, while Houston-Cincinnati, San Jose-LAFC, Colorado-Seattle, and Inter Miami-San Diego all finished level.",
-  "created": "2026-09-23T15:20:49.652Z",
-  "status": "pending"
- },
- {
-  "kicker": "Roster · Movement",
-  "headline": "Three departures, one homegrown signing reshape rosters",
-  "dek": "Two Designated Players have left the league, while FC Cincinnati promote a 16-year-old goalkeeper from their own academy.",
-  "body": "Houston Dynamo transferred forward Ezequiel Ponce to Elche CF in Spain's La Liga, closing a 2026 season in which he logged 1,290 minutes. Red Bull New York moved midfielder Gustav Berggren to Polish Ekstraklasa side Lech Poznan after 496 minutes this season. St. Louis CITY SC transferred midfielder Marcel Hartel to 2. Bundesliga side Hannover 96; Hartel accumulated 1,380 minutes in 2026 before departing. On the incoming side, FC Cincinnati signed homegrown goalkeeper Connor Dale, 16, to a first-team contract through the 2028-29 season. Chris Donovan and Oliver Semmle are listed as arrivals at Philadelphia Union, but available records place both players elsewhere prior to the current roster snapshot and the moves cannot be independently verified against a current club announcement.",
-  "created": "2026-09-23T15:20:49.652Z",
-  "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa leads at 18; four players tied on assists at 10",
-  "dek": "FC Dallas's striker holds a two-goal cushion, while the assist chart is deadlocked three ways heading into the final stretch.",
-  "body": "Petar Musa of FC Dallas sits on 18 goals, two clear of Sam Surridge (Nashville SC) and Brian White (Vancouver Whitecaps), who are level on 16. In the assists column, Son Heung-Min of LAFC, Cristian Espinoza of Nashville SC, and Anders Dreyer of San Diego FC all sit at 10. Nashville's Espinoza is the only player appearing in both top-three lists. Vancouver's Andrés Cubas leads the tackle chart by a wide margin at 100, with Yannick Bright of Inter Miami CF second on 77 and Silvan Hefti of D.C. United third on 61.",
-  "created": "2026-09-23T15:20:49.652Z",
-  "status": "approved"
- },
- {
-  "kicker": "Table · Standings",
-  "headline": "Nashville 57 points, Vancouver 49; Miami lead all clubs in goals",
-  "dek": "The Eastern and Western leaders carry contrasting identities: Nashville defend, Miami attack.",
-  "body": "Nashville SC lead the East with 57 points on a 17W-6D-3L record, having conceded just 21 goals, the fewest of any club in the league. Vancouver Whitecaps top the West on 49 points at 15W-4D-6L, with 56 goals scored and 23 conceded. Inter Miami CF hold the league's best attack at 63 goals for, nine more than Vancouver. On the xG ledger, Guilherme of Houston overperforms his expected goals by 7.5 (14 goals, 6.5 xG) and NYCFC's Nicolás Fernández by 6.6 (15 goals, 8.4 xG). Atlanta United's Miguel Almirón is the sharpest underperformer, scoring four against an xG of 9.1, a gap of minus-5.1.",
-  "created": "2026-09-23T15:20:49.652Z",
   "status": "approved"
  }
 ]
