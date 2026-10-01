@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Match Week · Recap",
+  "headline": "St. Louis stuns New York, Philadelphia rolls Orlando",
+  "dek": "Fifteen games across Sept. 26-30 produced six draws and a string of road wins that reshuffled the late-season picture.",
+  "body": "St. Louis CITY SC went to Harrison and beat Red Bull New York 3-0. Philadelphia Union put four past Orlando City at home. Nashville SC blanked Toronto FC 2-0 to protect top spot in the East. CF Montréal beat FC Cincinnati 3-1 and Columbus edged Inter Miami 2-1. In the West, Real Salt Lake dismissed New England 3-0, Seattle rolled past Minnesota 3-1, and San Jose downed Portland 3-1. FC Dallas edged LAFC 1-0. Sporting Kansas City won 2-0 at Houston. LA Galaxy held off Colorado 3-2. Austin, Vancouver, and San Diego all finished level in three separate 3-3 draws.",
+  "created": "2026-10-01T17:18:20.303Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Transfers · Roster Moves",
+  "headline": "Union remake backline with McKenzie in, Makhanya out",
+  "dek": "Philadelphia's center-back corps turned over in a matter of weeks as the club eyes a new defensive foundation.",
+  "body": "Philadelphia Union have signed defender Mark McKenzie as a Designated Player. The 27-year-old homegrown product arrives from French Ligue 1 side Toulouse FC, with his contract taking effect January 1, 2027. The deal runs through the 2029-30 season, with a club option for 2030-31. The move follows the departure of center back Olwethu Makhanya, who logged 1,170 minutes this season before transferring to Rangers FC of the Scottish Premiership. Charlotte FC winger Kerwin Vargas, who accumulated 1,230 minutes in 2026, has joined Athletico Paranaense of Brazil's Série A on a permanent transfer.",
+  "created": "2026-10-01T17:18:20.303Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Stat Race · Goals & Assists",
+  "headline": "Musa leads the Boot; Rusnák and Dreyer tied at top",
+  "dek": "FC Dallas's striker holds a one-goal cushion with the regular season winding down.",
+  "body": "Petar Musa of FC Dallas leads the Golden Boot race with 18 goals, one ahead of Vancouver's Brian White at 17 and Nashville's Sam Surridge at 16. In assists, Albert Rusnák of Seattle and San Diego's Anders Dreyer share the lead at 11, with Son Heung-Min of LAFC one back at 10. The xG table carries a sharp contrast: Guilherme of Houston has scored 14 goals against an xG of 6.7, a positive difference of 7.3, while Atlanta's Miguel Almirón has scored just 4 with an xG of 9.1, sitting 5.1 goals below expectation.",
+  "created": "2026-10-01T17:18:20.303Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Standings · East & West",
+  "headline": "Nashville's defense is the story of the Eastern table",
+  "dek": "The conference leader has conceded fewer goals than any team in MLS while Inter Miami leads all clubs in scoring.",
+  "body": "Nashville SC lead the East with 60 points on an 18W-6D-3L record. They have allowed just 21 goals, the best defensive mark in the league. Vancouver Whitecaps top the West at 50 points, 15W-5D-6L, with 59 goals scored and 26 conceded. Inter Miami CF carry the sharpest attack in MLS at 64 goals for, though their xG underperformance, Germán Berterame has scored 7 against an xG of 11.2, points to finishing fragility that could matter in the playoffs.",
+  "created": "2026-10-01T17:18:20.303Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Matchweek · Results",
   "headline": "14 games, six draws, no team safe from the table",
   "dek": "A full midweek card on Sept. 26-27 produced goals in bunches and kept the playoff picture unsettled from top to bottom.",
@@ -61,38 +93,6 @@
   "dek": "The gap between expected goals and actual output tells different stories at either end of the table.",
   "body": "Houston Dynamo's Guilherme leads the overperformers, scoring 14 goals against an xG of 6.7, a positive difference of plus-7.3. NYCFC's Nicolás Fernández sits second, with 15 goals on an xG of 8.6, plus-6.4. On the other side, Atlanta United's Miguel Almirón has converted just 4 goals despite an xG of 9.1, a deficit of minus-5.1. Inter Miami's Germán Berterame is minus-4.2, with 7 goals on 11.2 xG. Nashville SC lead the East at 60 points on an 18W-6D-3L record, conceding only 21 goals, the league's best defensive mark. Vancouver Whitecaps top the West with 50 points.",
   "created": "2026-09-27T15:33:39.232Z",
-  "status": "approved"
- },
- {
-  "kicker": "Results · Weekend",
-  "headline": "Seattle shuts out RSL; Miami and San Diego split points",
-  "dek": "The Sounders move to 2-0 at home in their last two while Inter Miami's lead at the top of the goals column stays under pressure.",
-  "body": "Seattle Sounders FC defeated Real Salt Lake 2-0 on Sept. 24, extending their grip on the Western Conference race with a clean sheet at Lumen Field. RSL, who logged 544 minutes from defender Juan José Arias this season before his departure, offered little going forward. On Sept. 20, Inter Miami CF and San Diego FC played to a 2-2 draw at Chase Stadium. Anders Dreyer, who sits on 10 assists for San Diego, was central to their attack. Miami remain the league's most prolific side with 63 goals scored.",
-  "created": "2026-09-26T14:54:48.811Z",
-  "status": "pending"
- },
- {
-  "kicker": "Roster · Departures",
-  "headline": "Three MLS midfielders and defenders exit league rosters",
-  "dek": "A Liga MX transfer, a contract termination, and a loan conclusion clear three names from the MLS record before the playoff run.",
-  "body": "LA Galaxy transferred midfielder Edwin Cerrillo to Liga MX side Club América for an undisclosed fee, closing out a 1,320-minute 2026 campaign. Sporting Kansas City mutually terminated the contract of Spanish midfielder Manu García, who logged 1,470 minutes this season and had occupied a Designated Player slot; Sporting KC also exercised a buyout of his guaranteed contract. Real Salt Lake defender Juan José Arias, who accumulated 544 minutes this season, has also departed the club's MLS roster.",
-  "created": "2026-09-26T14:54:48.811Z",
-  "status": "pending"
- },
- {
-  "kicker": "Stat Race · Golden Boot",
-  "headline": "Musa leads at 18; three players deadlocked on assists at 10",
-  "dek": "FC Dallas's striker holds a two-goal cushion at the top while the assist table is a three-way tie heading into the final weeks.",
-  "body": "Petar Musa of FC Dallas leads all scorers with 18 goals, two clear of Sam Surridge (Nashville SC) and Brian White (Vancouver Whitecaps), who are level on 16. The assists race is knotted at 10 apiece among Son Heung-Min of LAFC, Cristian Espinoza of Nashville SC, and Anders Dreyer of San Diego FC. In the tackles chart, Vancouver's Andrés Cubas stands alone at 100, 23 clear of Yannick Bright of Inter Miami (77) and 39 ahead of D.C. United's Silvan Hefti (61).",
-  "created": "2026-09-26T14:54:48.811Z",
-  "status": "approved"
- },
- {
-  "kicker": "Stat Race · xG Watch",
-  "headline": "Guilherme runs 7.5 goals above xG; Almirón sits 5.1 below",
-  "dek": "Houston's forward and two underperformers highlight the widest xG gaps in the league this season.",
-  "body": "Houston Dynamo FC forward Guilherme leads MLS in positive xG differential, scoring 14 goals against an xG of 6.5, a gap of plus-7.5. New York City FC's Nicolás Fernández is second at plus-6.6, with 15 goals on 8.4 xG. At the other end, Atlanta United's Miguel Almirón has converted just 4 goals from 9.1 xG, a deficit of minus-5.1. Inter Miami's Germán Berterame sits at minus-4.2, scoring 7 on an xG of 11.2. Nashville SC lead the East on 57 points (17W-6D-3L), conceding just 21 goals all season. Vancouver Whitecaps top the West with 49 points on 15W-4D-6L.",
-  "created": "2026-09-26T14:54:48.811Z",
   "status": "approved"
  }
 ]
