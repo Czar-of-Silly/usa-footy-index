@@ -1,6 +1,38 @@
 [
  {
   "kicker": "Match Reports",
+  "headline": "St. Louis runs Red Bull New York off the park, 3-0",
+  "dek": "The visitors handed the home side a three-goal defeat at Red Bull Arena on Sept. 30.",
+  "body": "St. Louis CITY SC traveled to Harrison and left with a commanding 3-0 win over Red Bull New York on September 30. The result puts further distance between the two clubs as the regular season winds toward its close. Two days later in the Pacific Northwest, Seattle Sounders FC edged Sporting Kansas City 2-1 at home, with Albert Rusnák's side now holding 11 assists on the season, tops in the league alongside San Diego FC's Anders Dreyer.",
+  "created": "2026-10-04T15:42:14.650Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Transactions",
+  "headline": "Rossi, Nelson, Deedson out; Žagar and Cunningham in",
+  "dek": "Three departures clear MLS rosters while two additions bolster Real Salt Lake and Sporting Kansas City.",
+  "body": "Columbus Crew have transferred forward Diego Rossi to Liga MX side CF Monterrey after 1,290 minutes of first-team action this season. Austin FC's Jayden Nelson, who logged 1,080 minutes in green, moves to Bolton Wanderers of the English Championship. FC Dallas forward Louicius Deedson, 660 minutes played, heads to FC Sochaux-Montbéliard of France's Ligue 2. On the inbound side, Real Salt Lake have acquired 19-year-old Serbian winger Dušan Žagar from FK IMT Belgrade on a U22 Initiative slot. Sporting Kansas City have called up academy-developed defender Alex Cunningham from SKC II on a short-term agreement.",
+  "created": "2026-10-04T15:42:14.650Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Musa leads at 18; White and Surridge close behind",
+  "dek": "FC Dallas striker Petar Musa holds a one-goal edge over Vancouver's Brian White with the finish line approaching.",
+  "body": "Petar Musa of FC Dallas leads the MLS scoring charts with 18 goals. Brian White of Vancouver Whitecaps sits one back at 17, while Nashville SC's Sam Surridge is two off the pace at 16. In the assists race, Seattle Sounders FC's Albert Rusnák and San Diego FC's Anders Dreyer share top spot at 11 apiece, with LAFC's Son Heung-Min one behind at 10. Vancouver's Andrés Cubas dominates the tackles count at an outright 100, 23 clear of second-placed Yannick Bright of Inter Miami CF.",
+  "created": "2026-10-04T15:42:14.650Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "xG · Outliers",
+  "headline": "Guilherme beats his xG by 7.3; Almirón trails his by 5.1",
+  "dek": "Houston's Guilherme and Atlanta's Almirón sit at opposite poles of the league's finishing efficiency table.",
+  "body": "Houston Dynamo FC's Guilherme leads all overperformers with 14 goals against an xG of 6.7, a positive differential of plus-7.3. New York City FC's Nicolás Fernández is next, scoring 15 against an xG of 8.6 for a plus-6.4 gap. At the other end, Atlanta United FC's Miguel Almirón has scored just 4 goals on an xG of 9.1, a shortfall of minus-5.1. Inter Miami CF's Germán Berterame sits at minus-4.2, with 7 goals against an xG of 11.2.",
+  "created": "2026-10-04T15:42:14.650Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Match Reports",
   "headline": "Columbus, Seattle hold home ground; St. Louis rolls NY",
   "dek": "Three results from Sept. 27 through Oct. 2 tighten the playoff picture heading into the final stretch.",
   "body": "Columbus Crew beat Inter Miami CF 2-1 on Sept. 27. Three days later, St. Louis CITY SC handed Red Bull New York a 3-0 road victory at Red Bull Arena. Seattle Sounders FC closed the run on Oct. 2, edging Sporting Kansas City 2-1 at Lumen Field. Home sides went 2-1 across the three fixtures, with St. Louis the lone road winner, and a commanding one at that.",
@@ -61,38 +93,6 @@
   "dek": "The conference leader has conceded fewer goals than any team in MLS while Inter Miami leads all clubs in scoring.",
   "body": "Nashville SC lead the East with 60 points on an 18W-6D-3L record. They have allowed just 21 goals, the best defensive mark in the league. Vancouver Whitecaps top the West at 50 points, 15W-5D-6L, with 59 goals scored and 26 conceded. Inter Miami CF carry the sharpest attack in MLS at 64 goals for, though their xG underperformance, Germán Berterame has scored 7 against an xG of 11.2, points to finishing fragility that could matter in the playoffs.",
   "created": "2026-10-01T17:18:20.303Z",
-  "status": "approved"
- },
- {
-  "kicker": "Matchweek · Results",
-  "headline": "14 games, six draws, no team safe from the table",
-  "dek": "A full midweek card on Sept. 26-27 produced goals in bunches and kept the playoff picture unsettled from top to bottom.",
-  "body": "Philadelphia thumped Orlando 4-2 to lead the attacking highlights on Saturday. CF Montréal beat FC Cincinnati 3-1, Nashville handled Toronto 2-0, and Chicago took a 1-0 win at Charlotte. Atlanta and New York City split 2-2. Sunday brought three 3-3 draws: Austin vs. San Diego, Vancouver vs. D.C. United. Real Salt Lake rolled New England 3-0, Seattle beat Minnesota 3-1, San Jose downed Portland 3-1, LA Galaxy edged Colorado 3-2, and Columbus held off Inter Miami 2-1. FC Dallas beat LAFC 1-0; Houston fell to Sporting KC 0-2 at home.",
-  "created": "2026-09-30T16:42:16.918Z",
-  "status": "approved"
- },
- {
-  "kicker": "Roster Moves · Personnel",
-  "headline": "Whitecaps add Selemani as three players exit MLS",
-  "dek": "Vancouver signs an 18-year-old academy product to a long-term deal while the league logs three confirmed departures.",
-  "body": "Vancouver signed homegrown forward Johnny Selemani to a full MLS contract through the 2029-30 season with club options beyond that, promoting the Edmonton-born Canadian youth international from WFC2. On the outbound side, D.C. United forward Jacob Murrell, who logged 870 minutes this season, has transferred to Falkirk FC of the Scottish Premiership. Atlanta United defender Pedro Amador, 960 minutes in 2026, moved to Hapoel Be'er Sheva of the Israeli Premier League. Vancouver midfielder Sebastian Berhalter, 1,200 minutes this season, joined English Championship side Middlesbrough FC.",
-  "created": "2026-09-30T16:42:16.918Z",
-  "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa leads at 18, but the chasing pack is tight",
-  "dek": "Three goals separate the top three scorers with the regular season nearing its close.",
-  "body": "FC Dallas striker Petar Musa leads MLS with 18 goals. Vancouver's Brian White is one back at 17, and Nashville's Sam Surridge sits at 16. In assists, Albert Rusnák of Seattle and San Diego's Anders Dreyer are level at 11, with LAFC's Son Heung-Min one behind at 10. The tackle chart is dominated by Vancouver's Andrés Cubas at an eye-catching 100, 23 clear of Inter Miami's Yannick Bright at 77, and D.C. United's Silvan Hefti at 64.",
-  "created": "2026-09-30T16:42:16.918Z",
-  "status": "approved"
- },
- {
-  "kicker": "xG Watch · Variance",
-  "headline": "Guilherme and Fernández defy their numbers; Almirón still owes goals",
-  "dek": "The gap between expected and actual output defines two of the sharpest individual stories of the 2026 season.",
-  "body": "Houston's Guilherme leads the overperformers: 14 goals on just 6.7 xG, a plus-7.3 surplus. NYCFC's Nicolás Fernández adds 15 goals on 8.6 xG, plus-6.4. At the other end, Atlanta's Miguel Almirón has 4 goals against 9.1 xG, a deficit of minus-5.1. Inter Miami's Germán Berterame sits at 7 goals on 11.2 xG, minus-4.2. Nashville SC pace the East at 60 points on an 18W-6D-3L record and have conceded only 21 goals. Vancouver lead the West at 50 points, 15W-5D-6L, with Inter Miami owning the league's best attack at 64 goals scored.",
-  "created": "2026-09-30T16:42:16.918Z",
   "status": "approved"
  }
 ]
