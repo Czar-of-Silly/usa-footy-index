@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Match Recap",
+  "headline": "Chicago rolls Vancouver 3-1; Seattle edges SKC",
+  "dek": "The Fire handed the Western-leading Whitecaps a road loss as Seattle held off Sporting Kansas City at home.",
+  "body": "Chicago Fire FC defeated Vancouver Whitecaps 3-1 at home on Oct. 7, putting points on the board against the West's pace-setter. Two days earlier, Seattle Sounders FC beat Sporting Kansas City 2-1 at home on Oct. 2. Vancouver enter the week atop the Western Conference at 50 points on a 15W-5D-7L record. The Fire result adds pressure to a Whitecaps side that leads the league in goals scored with 60 while conceding 29.",
+  "created": "2026-10-07T17:42:38.832Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Roster Moves · Departures",
+  "headline": "Three players exit MLS; Arfsten heads to Middlesbrough",
+  "dek": "Columbus, Colorado, and New York City each confirmed departures, with Arfsten's move to England's Championship the headline transaction.",
+  "body": "Columbus Crew midfielder Max Arfsten, who logged 1,560 minutes this season, has transferred to English Championship side Middlesbrough FC. Colorado Rapids declined the purchase option on loanee Alexis Manyoma, who accumulated 810 minutes before returning to Estudiantes de La Plata in Argentina. New York City FC center-back Strahinja Tanasijević, who recorded 1,230 minutes in 2026, has departed the club and joined Kazakhstani side Spartak Semey on a free transfer.",
+  "created": "2026-10-07T17:42:38.832Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Stat Race · Golden Boot",
+  "headline": "Musa leads at 18; White and Surridge close behind",
+  "dek": "FC Dallas's Petar Musa holds a one-goal cushion over Vancouver's Brian White with the season in its final stretch.",
+  "body": "Petar Musa of FC Dallas leads the MLS scoring race with 18 goals. Brian White of Vancouver Whitecaps sits one back at 17, while Nashville SC's Sam Surridge is third at 16. In assists, Albert Rusnák of Seattle Sounders FC and Anders Dreyer of San Diego FC are level at 11, one clear of LAFC's Son Heung-Min on 10. In tackling, Vancouver's Andrés Cubas has reached 100 on the season, a commanding lead over Yannick Bright of Inter Miami CF at 77 and Silvan Hefti of D.C. United at 64.",
+  "created": "2026-10-07T17:42:38.832Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Table · Standings",
+  "headline": "Nashville iron-clad in East; West remains wide open",
+  "dek": "Nashville SC's defensive record sets the standard for the league as Vancouver lead a tighter Western Conference.",
+  "body": "Nashville SC lead the Eastern Conference with 60 points on an 18W-6D-3L record. They have scored 55 goals and conceded just 21, the fewest in the league. Inter Miami CF carry the league's most potent attack at 64 goals scored. In the West, Vancouver Whitecaps top the table at 50 points, a 15-point gap from Nashville that reflects the conference's competitive gulf. On xG deviation, Houston's Guilherme leads overperformers at plus-7.3 goals above expectation, while Atlanta's Miguel Almirón is the most significant underperformer at minus-5.1.",
+  "created": "2026-10-07T17:42:38.832Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Match Reports",
   "headline": "St. Louis runs Red Bull New York off the park, 3-0",
   "dek": "The visitors handed the home side a three-goal defeat at Red Bull Arena on Sept. 30.",
@@ -14,14 +46,6 @@
   "body": "Columbus Crew have transferred forward Diego Rossi to Liga MX side CF Monterrey after 1,290 minutes of first-team action this season. Austin FC's Jayden Nelson, who logged 1,080 minutes in green, moves to Bolton Wanderers of the English Championship. FC Dallas forward Louicius Deedson, 660 minutes played, heads to FC Sochaux-Montbéliard of France's Ligue 2. On the inbound side, Real Salt Lake have acquired 19-year-old Serbian winger Dušan Žagar from FK IMT Belgrade on a U22 Initiative slot. Sporting Kansas City have called up academy-developed defender Alex Cunningham from SKC II on a short-term agreement.",
   "created": "2026-10-04T15:42:14.650Z",
   "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa leads at 18; White and Surridge close behind",
-  "dek": "FC Dallas striker Petar Musa holds a one-goal edge over Vancouver's Brian White with the finish line approaching.",
-  "body": "Petar Musa of FC Dallas leads the MLS scoring charts with 18 goals. Brian White of Vancouver Whitecaps sits one back at 17, while Nashville SC's Sam Surridge is two off the pace at 16. In the assists race, Seattle Sounders FC's Albert Rusnák and San Diego FC's Anders Dreyer share top spot at 11 apiece, with LAFC's Son Heung-Min one behind at 10. Vancouver's Andrés Cubas dominates the tackles count at an outright 100, 23 clear of second-placed Yannick Bright of Inter Miami CF.",
-  "created": "2026-10-04T15:42:14.650Z",
-  "status": "approved"
  },
  {
   "kicker": "xG · Outliers",
@@ -68,30 +92,6 @@
   "headline": "St. Louis stuns New York, Philadelphia rolls Orlando",
   "dek": "Fifteen games across Sept. 26-30 produced six draws and a string of road wins that reshuffled the late-season picture.",
   "body": "St. Louis CITY SC went to Harrison and beat Red Bull New York 3-0. Philadelphia Union put four past Orlando City at home. Nashville SC blanked Toronto FC 2-0 to protect top spot in the East. CF Montréal beat FC Cincinnati 3-1 and Columbus edged Inter Miami 2-1. In the West, Real Salt Lake dismissed New England 3-0, Seattle rolled past Minnesota 3-1, and San Jose downed Portland 3-1. FC Dallas edged LAFC 1-0. Sporting Kansas City won 2-0 at Houston. LA Galaxy held off Colorado 3-2. Austin, Vancouver, and San Diego all finished level in three separate 3-3 draws.",
-  "created": "2026-10-01T17:18:20.303Z",
-  "status": "approved"
- },
- {
-  "kicker": "Transfers · Roster Moves",
-  "headline": "Union remake backline with McKenzie in, Makhanya out",
-  "dek": "Philadelphia's center-back corps turned over in a matter of weeks as the club eyes a new defensive foundation.",
-  "body": "Philadelphia Union have signed defender Mark McKenzie as a Designated Player. The 27-year-old homegrown product arrives from French Ligue 1 side Toulouse FC, with his contract taking effect January 1, 2027. The deal runs through the 2029-30 season, with a club option for 2030-31. The move follows the departure of center back Olwethu Makhanya, who logged 1,170 minutes this season before transferring to Rangers FC of the Scottish Premiership. Charlotte FC winger Kerwin Vargas, who accumulated 1,230 minutes in 2026, has joined Athletico Paranaense of Brazil's Série A on a permanent transfer.",
-  "created": "2026-10-01T17:18:20.303Z",
-  "status": "pending"
- },
- {
-  "kicker": "Stat Race · Goals & Assists",
-  "headline": "Musa leads the Boot; Rusnák and Dreyer tied at top",
-  "dek": "FC Dallas's striker holds a one-goal cushion with the regular season winding down.",
-  "body": "Petar Musa of FC Dallas leads the Golden Boot race with 18 goals, one ahead of Vancouver's Brian White at 17 and Nashville's Sam Surridge at 16. In assists, Albert Rusnák of Seattle and San Diego's Anders Dreyer share the lead at 11, with Son Heung-Min of LAFC one back at 10. The xG table carries a sharp contrast: Guilherme of Houston has scored 14 goals against an xG of 6.7, a positive difference of 7.3, while Atlanta's Miguel Almirón has scored just 4 with an xG of 9.1, sitting 5.1 goals below expectation.",
-  "created": "2026-10-01T17:18:20.303Z",
-  "status": "approved"
- },
- {
-  "kicker": "Standings · East & West",
-  "headline": "Nashville's defense is the story of the Eastern table",
-  "dek": "The conference leader has conceded fewer goals than any team in MLS while Inter Miami leads all clubs in scoring.",
-  "body": "Nashville SC lead the East with 60 points on an 18W-6D-3L record. They have allowed just 21 goals, the best defensive mark in the league. Vancouver Whitecaps top the West at 50 points, 15W-5D-6L, with 59 goals scored and 26 conceded. Inter Miami CF carry the sharpest attack in MLS at 64 goals for, though their xG underperformance, Germán Berterame has scored 7 against an xG of 11.2, points to finishing fragility that could matter in the playoffs.",
   "created": "2026-10-01T17:18:20.303Z",
   "status": "approved"
  }
