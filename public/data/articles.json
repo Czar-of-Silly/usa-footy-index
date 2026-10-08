@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Wednesday · Result",
+  "headline": "Chicago hands Vancouver a 3-1 defeat at Soldier Field",
+  "dek": "The Fire picked up three points at home, dealing the Western leaders a blow on the road.",
+  "body": "Chicago Fire FC defeated Vancouver Whitecaps 3-1 on October 7 to collect a vital home win. The result is a setback for Vancouver, who lead the Western Conference on 50 points from a 15W-5D-7L record. Brian White, the Whitecaps' top scorer on 17 goals this season, could not prevent his side from dropping the three points on the road.",
+  "created": "2026-10-08T17:46:44.145Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Roster Move · Revolution",
+  "headline": "Zambrano arrives in New England from Real Salt Lake",
+  "dek": "The 21-year-old forward joins the Revolution on a permanent transfer from Real Salt Lake in exchange for a 2029 second-round SuperDraft pick.",
+  "body": "New England Revolution have acquired forward Marcos Zambrano from Real Salt Lake. The 21-year-old Ecuadorian-born, US youth international brings professional experience from Benfica B and Vitória Guimarães B before his stint in Utah. Zambrano tallied seven goals in ten appearances for Real Monarchs in MLS NEXT Pro this season and has earned 18 caps for the United States Under-20 side, scoring seven goals at youth international level.",
+  "created": "2026-10-08T17:46:44.145Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Musa leads White by one as Surridge lurks at 16",
+  "dek": "FC Dallas's Petar Musa holds a one-goal cushion at the top with just weeks of the regular season remaining.",
+  "body": "Petar Musa of FC Dallas leads the Golden Boot race with 18 goals. Vancouver's Brian White sits one back on 17, and Nashville SC's Sam Surridge is two further behind on 16. Nashville's own attack has been built on efficiency: the club's 21 goals conceded is the best defensive record in the league, while their 60 points and 18W-6D-3L Eastern Conference mark puts pressure on every rival.",
+  "created": "2026-10-08T17:46:44.145Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "xG · Variance Watch",
+  "headline": "Guilherme running 7.3 goals clear of his xG floor",
+  "dek": "Houston's forward and NYCFC's Fernández are finishing well above expectation; Almirón and Zinckernagel remain mired in conversion debt.",
+  "body": "Houston Dynamo's Guilherme leads all overperformers: 14 goals against an xG of 6.7, a positive gap of plus-7.3. Nicolás Fernández of New York City FC sits at 15 goals on an xG of 8.6, plus-6.4. On the other side, Atlanta United's Miguel Almirón has posted just 4 goals against an xG of 9.1, a deficit of minus-5.1. Chicago Fire's Philip Zinckernagel shows 6 goals on an xG of 10.6, minus-4.6, a notable drag on a side that just beat Vancouver.",
+  "created": "2026-10-08T17:46:44.145Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Match Recap",
   "headline": "Chicago rolls Vancouver 3-1; Seattle edges SKC",
   "dek": "The Fire handed the Western-leading Whitecaps a road loss as Seattle held off Sporting Kansas City at home.",
@@ -62,37 +94,5 @@
   "body": "Columbus Crew beat Inter Miami CF 2-1 on Sept. 27. Three days later, St. Louis CITY SC handed Red Bull New York a 3-0 road victory at Red Bull Arena. Seattle Sounders FC closed the run on Oct. 2, edging Sporting Kansas City 2-1 at Lumen Field. Home sides went 2-1 across the three fixtures, with St. Louis the lone road winner, and a commanding one at that.",
   "created": "2026-10-03T15:05:04.802Z",
   "status": "pending"
- },
- {
-  "kicker": "Roster Moves · Departures",
-  "headline": "Pec, Mora, Gregersen all exit MLS this season",
-  "dek": "Three established contributors have left the league, with confirmed destinations in Brazil, Mexico, and Sweden.",
-  "body": "LA Galaxy transferred winger Gabriel Pec to Cruzeiro of Brazil's Série A, ending a stint in which he logged 1,260 minutes this season. Portland Timbers sent forward Felipe Mora to Atlético de San Luis of Liga MX after 1,050 minutes in 2026. Atlanta United defender Stian Gregersen, who accumulated 1,500 minutes this season, moved to Malmö FF of Sweden's top flight. All three transfers were confirmed by the respective clubs.",
-  "created": "2026-10-03T15:05:04.802Z",
-  "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa leads at 18; assist tie at the top",
-  "dek": "FC Dallas striker Petar Musa holds a one-goal cushion over Brian White with the season nearing its close.",
-  "body": "Petar Musa of FC Dallas leads the golden boot race with 18 goals. Brian White of Vancouver Whitecaps sits one back at 17, with Sam Surridge of Nashville SC third at 16. In assists, Albert Rusnák of Seattle and Anders Dreyer of San Diego FC are deadlocked at 11 apiece, with Son Heung-Min of LAFC a touch behind at 10. Andrés Cubas of Vancouver dominates the tackles chart at 100, well clear of Yannick Bright at 77 and Silvan Hefti at 64.",
-  "created": "2026-10-03T15:05:04.802Z",
-  "status": "approved"
- },
- {
-  "kicker": "Table · Standings",
-  "headline": "Nashville's defense a league apart; Vancouver leads West",
-  "dek": "Nashville SC's 21 goals allowed is the stingiest mark in MLS as both conferences take shape.",
-  "body": "Nashville SC leads the East with 60 points on an 18-6-3 record, scoring 55 and conceding just 21, the best defensive record in the league. Vancouver Whitecaps top the West with 50 points at 15-5-6, having scored 59 goals. Inter Miami CF holds the best attack in MLS with 64 goals for, but Nashville's backline remains in a class of its own. Two xG outliers worth noting: Guilherme of Houston is outperforming his xG by plus-7.3, while Miguel Almirón of Atlanta trails his by minus-5.1.",
-  "created": "2026-10-03T15:05:04.802Z",
-  "status": "approved"
- },
- {
-  "kicker": "Match Week · Recap",
-  "headline": "St. Louis stuns New York, Philadelphia rolls Orlando",
-  "dek": "Fifteen games across Sept. 26-30 produced six draws and a string of road wins that reshuffled the late-season picture.",
-  "body": "St. Louis CITY SC went to Harrison and beat Red Bull New York 3-0. Philadelphia Union put four past Orlando City at home. Nashville SC blanked Toronto FC 2-0 to protect top spot in the East. CF Montréal beat FC Cincinnati 3-1 and Columbus edged Inter Miami 2-1. In the West, Real Salt Lake dismissed New England 3-0, Seattle rolled past Minnesota 3-1, and San Jose downed Portland 3-1. FC Dallas edged LAFC 1-0. Sporting Kansas City won 2-0 at Houston. LA Galaxy held off Colorado 3-2. Austin, Vancouver, and San Diego all finished level in three separate 3-3 draws.",
-  "created": "2026-10-01T17:18:20.303Z",
-  "status": "approved"
  }
 ]
