@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Match Report · Oct 7",
+  "headline": "Chicago put three past Vancouver in home rout",
+  "dek": "The Fire handed the Western Conference leaders a 3-1 defeat at home, their heaviest loss of the season.",
+  "body": "Chicago Fire FC beat Vancouver Whitecaps 3-1 on October 7 to hand the Western Conference leaders their sharpest defeat of the campaign. The result arrives at a difficult moment for Vancouver, who sit atop the West on 50 points with a 15W-5D-7L record but now carry a loss to a side outside the playoff picture. Chicago will take confidence from a performance that produced three goals against the league's most-tackled unit.",
+  "created": "2026-10-10T16:08:32.236Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Roster Moves · Departure",
+  "headline": "Lingr exits Houston for Polish top flight",
+  "dek": "The Czech midfielder leaves the Dynamo after 930 minutes this season, heading to Ekstraklasa side Korona Kielce.",
+  "body": "Houston Dynamo FC have transferred midfielder Ondřej Lingr to Polish top-flight side Korona Kielce. The 27-year-old Czech international logged 930 minutes for Houston in the 2026 MLS season before the move was completed. Lingr arrived at the Dynamo in March 2025 as a Designated Player signing from Slavia Prague and made 43 MLS appearances during his time with the club.",
+  "created": "2026-10-10T16:08:32.236Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Musa leads White by one with clock ticking",
+  "dek": "Three strikers from three conferences are separated by just two goals as the scoring title enters its final stretch.",
+  "body": "FC Dallas forward Petar Musa leads the MLS golden boot race on 18 goals. Vancouver's Brian White sits one back on 17, with Nashville SC's Sam Surridge a further goal behind on 16. In the assists table, Albert Rusnák of Seattle Sounders and San Diego FC's Anders Dreyer are level on 11, one clear of LAFC's Son Heung-Min on 10.",
+  "created": "2026-10-10T16:08:32.236Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Standings · Conference Table",
+  "headline": "Nashville defense anchors dominant East lead",
+  "dek": "The Eastern leaders carry the league's best attack and best defense; the West is tighter, with Vancouver clinging to top spot.",
+  "body": "Nashville SC lead the Eastern Conference on 60 points with an 18W-6D-3L record, having conceded only 21 goals, the stingiest defense in the league. Their 55 goals scored also rank among the best, though Inter Miami CF holds the outright attack record with 64. In the West, Vancouver Whitecaps top the table on 50 points, 29 goals conceded against 60 scored, but October 7's loss to Chicago adds pressure at the summit.",
+  "created": "2026-10-10T16:08:32.236Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Wednesday · Result",
   "headline": "Chicago hands Vancouver a 3-1 defeat at Soldier Field",
   "dek": "The Fire picked up three points at home, dealing the Western leaders a blow on the road.",
@@ -62,37 +94,5 @@
   "body": "Nashville SC lead the Eastern Conference with 60 points on an 18W-6D-3L record. They have scored 55 goals and conceded just 21, the fewest in the league. Inter Miami CF carry the league's most potent attack at 64 goals scored. In the West, Vancouver Whitecaps top the table at 50 points, a 15-point gap from Nashville that reflects the conference's competitive gulf. On xG deviation, Houston's Guilherme leads overperformers at plus-7.3 goals above expectation, while Atlanta's Miguel Almirón is the most significant underperformer at minus-5.1.",
   "created": "2026-10-07T17:42:38.832Z",
   "status": "approved"
- },
- {
-  "kicker": "Match Reports",
-  "headline": "St. Louis runs Red Bull New York off the park, 3-0",
-  "dek": "The visitors handed the home side a three-goal defeat at Red Bull Arena on Sept. 30.",
-  "body": "St. Louis CITY SC traveled to Harrison and left with a commanding 3-0 win over Red Bull New York on September 30. The result puts further distance between the two clubs as the regular season winds toward its close. Two days later in the Pacific Northwest, Seattle Sounders FC edged Sporting Kansas City 2-1 at home, with Albert Rusnák's side now holding 11 assists on the season, tops in the league alongside San Diego FC's Anders Dreyer.",
-  "created": "2026-10-04T15:42:14.650Z",
-  "status": "pending"
- },
- {
-  "kicker": "Transactions",
-  "headline": "Rossi, Nelson, Deedson out; Žagar and Cunningham in",
-  "dek": "Three departures clear MLS rosters while two additions bolster Real Salt Lake and Sporting Kansas City.",
-  "body": "Columbus Crew have transferred forward Diego Rossi to Liga MX side CF Monterrey after 1,290 minutes of first-team action this season. Austin FC's Jayden Nelson, who logged 1,080 minutes in green, moves to Bolton Wanderers of the English Championship. FC Dallas forward Louicius Deedson, 660 minutes played, heads to FC Sochaux-Montbéliard of France's Ligue 2. On the inbound side, Real Salt Lake have acquired 19-year-old Serbian winger Dušan Žagar from FK IMT Belgrade on a U22 Initiative slot. Sporting Kansas City have called up academy-developed defender Alex Cunningham from SKC II on a short-term agreement.",
-  "created": "2026-10-04T15:42:14.650Z",
-  "status": "pending"
- },
- {
-  "kicker": "xG · Outliers",
-  "headline": "Guilherme beats his xG by 7.3; Almirón trails his by 5.1",
-  "dek": "Houston's Guilherme and Atlanta's Almirón sit at opposite poles of the league's finishing efficiency table.",
-  "body": "Houston Dynamo FC's Guilherme leads all overperformers with 14 goals against an xG of 6.7, a positive differential of plus-7.3. New York City FC's Nicolás Fernández is next, scoring 15 against an xG of 8.6 for a plus-6.4 gap. At the other end, Atlanta United FC's Miguel Almirón has scored just 4 goals on an xG of 9.1, a shortfall of minus-5.1. Inter Miami CF's Germán Berterame sits at minus-4.2, with 7 goals against an xG of 11.2.",
-  "created": "2026-10-04T15:42:14.650Z",
-  "status": "approved"
- },
- {
-  "kicker": "Match Reports",
-  "headline": "Columbus, Seattle hold home ground; St. Louis rolls NY",
-  "dek": "Three results from Sept. 27 through Oct. 2 tighten the playoff picture heading into the final stretch.",
-  "body": "Columbus Crew beat Inter Miami CF 2-1 on Sept. 27. Three days later, St. Louis CITY SC handed Red Bull New York a 3-0 road victory at Red Bull Arena. Seattle Sounders FC closed the run on Oct. 2, edging Sporting Kansas City 2-1 at Lumen Field. Home sides went 2-1 across the three fixtures, with St. Louis the lone road winner, and a commanding one at that.",
-  "created": "2026-10-03T15:05:04.802Z",
-  "status": "pending"
  }
 ]
