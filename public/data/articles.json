@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Results · Weekend",
+  "headline": "Chicago wins twice; Inter Miami blanks D.C. 4-0",
+  "dek": "A 15-match slate across Oct. 7, 11 produced heavy scorelines, a pair of draws out west, and no shortage of road wins.",
+  "body": "Chicago Fire beat Vancouver 3-1 on Oct. 7, then turned around and downed New York City FC 2-1 on Oct. 10. Inter Miami thrashed D.C. United 4-0. Red Bull New York put four past San Diego FC. FC Cincinnati won 3-1 at Atlanta. Nashville SC, Seattle Sounders, and Portland Timbers all came away from road trips with points. Out west, LAFC and Vancouver drew 1-1, Colorado and San Jose shared a 1-1 result, and Minnesota and Houston finished 2-2.",
+  "created": "2026-10-11T16:36:50.454Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Roster Moves",
+  "headline": "Charlotte doubles down; Fire add Hanche-Olsen from Mainz",
+  "dek": "Charlotte promoted two Crown Legacy forwards before the roster freeze; Chicago's summer centre-back acquisition is now on the books.",
+  "body": "Charlotte FC signed forwards Nathan Richmond and Hugo Mbongue from MLS NEXT Pro affiliate Crown Legacy FC ahead of the Oct. 9 roster freeze deadline. Richmond, 22, registered eight goals and 10 assists in 24 Crown Legacy appearances this season. Mbongue, 21, tallied 14 goals in 22 matches for the affiliate. Stephen Eustáquio departed LAFC after 720 minutes this season; his loan from Porto expired June 30, and he returned to FC Porto. Chicago Fire's Andreas Hanche-Olsen, signed from Bundesliga side Mainz 05 in September, is now formally on the roster.",
+  "created": "2026-10-11T16:36:50.454Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Stat Race",
+  "headline": "Musa leads Golden Boot at 19; xG gap widens for two outliers",
+  "dek": "FC Dallas's striker holds a two-goal cushion at the top, while two forwards are beating, and two are lagging, their expected-goals marks by historic m",
+  "body": "Petar Musa of FC Dallas leads all scorers with 19 goals. Milan Iloski (Philadelphia Union) and Brian White (Vancouver Whitecaps) are tied at 17. In assists, Anders Dreyer of San Diego FC tops the chart at 12, one clear of Albert Rusnák (Seattle, 11), with Son Heung-Min of LAFC at 10. Houston's Guilherme has scored 14 goals against an xG of 6.8, a gap of plus-7.2. NYCFC's Nicolás Fernández sits at 15 goals on 8.7 xG. Going the other direction, Chicago's Philip Zinckernagel has six goals on 10.7 xG, and Inter Miami's Germán Berterame seven on 11.5.",
+  "created": "2026-10-11T16:36:50.454Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Standings",
+  "headline": "Nashville lead East by distance; Vancouver top in West",
+  "dek": "The Eastern Conference leader holds the league's stingiest defence and most commanding points total heading into the final weeks.",
+  "body": "Nashville SC lead the Eastern Conference with 63 points on a 19W-6D-3L record, conceding only 22 goals, the best defensive record in the league. Inter Miami CF have scored 68, the most in MLS. In the West, Vancouver Whitecaps top the table with 51 points (15W-6D-7L), having scored 61 and conceded 30. Andrés Cubas of Vancouver leads the tackles chart with 103, 26 clear of Yannick Bright of Inter Miami (77), with D.C. United's Silvan Hefti third at 65.",
+  "created": "2026-10-11T16:36:50.454Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Match Report · Oct 7",
   "headline": "Chicago put three past Vancouver in home rout",
   "dek": "The Fire handed the Western Conference leaders a 3-1 defeat at home, their heaviest loss of the season.",
@@ -61,38 +93,6 @@
   "dek": "Houston's forward and NYCFC's Fernández are finishing well above expectation; Almirón and Zinckernagel remain mired in conversion debt.",
   "body": "Houston Dynamo's Guilherme leads all overperformers: 14 goals against an xG of 6.7, a positive gap of plus-7.3. Nicolás Fernández of New York City FC sits at 15 goals on an xG of 8.6, plus-6.4. On the other side, Atlanta United's Miguel Almirón has posted just 4 goals against an xG of 9.1, a deficit of minus-5.1. Chicago Fire's Philip Zinckernagel shows 6 goals on an xG of 10.6, minus-4.6, a notable drag on a side that just beat Vancouver.",
   "created": "2026-10-08T17:46:44.145Z",
-  "status": "approved"
- },
- {
-  "kicker": "Match Recap",
-  "headline": "Chicago rolls Vancouver 3-1; Seattle edges SKC",
-  "dek": "The Fire handed the Western-leading Whitecaps a road loss as Seattle held off Sporting Kansas City at home.",
-  "body": "Chicago Fire FC defeated Vancouver Whitecaps 3-1 at home on Oct. 7, putting points on the board against the West's pace-setter. Two days earlier, Seattle Sounders FC beat Sporting Kansas City 2-1 at home on Oct. 2. Vancouver enter the week atop the Western Conference at 50 points on a 15W-5D-7L record. The Fire result adds pressure to a Whitecaps side that leads the league in goals scored with 60 while conceding 29.",
-  "created": "2026-10-07T17:42:38.832Z",
-  "status": "approved"
- },
- {
-  "kicker": "Roster Moves · Departures",
-  "headline": "Three players exit MLS; Arfsten heads to Middlesbrough",
-  "dek": "Columbus, Colorado, and New York City each confirmed departures, with Arfsten's move to England's Championship the headline transaction.",
-  "body": "Columbus Crew midfielder Max Arfsten, who logged 1,560 minutes this season, has transferred to English Championship side Middlesbrough FC. Colorado Rapids declined the purchase option on loanee Alexis Manyoma, who accumulated 810 minutes before returning to Estudiantes de La Plata in Argentina. New York City FC center-back Strahinja Tanasijević, who recorded 1,230 minutes in 2026, has departed the club and joined Kazakhstani side Spartak Semey on a free transfer.",
-  "created": "2026-10-07T17:42:38.832Z",
-  "status": "pending"
- },
- {
-  "kicker": "Stat Race · Golden Boot",
-  "headline": "Musa leads at 18; White and Surridge close behind",
-  "dek": "FC Dallas's Petar Musa holds a one-goal cushion over Vancouver's Brian White with the season in its final stretch.",
-  "body": "Petar Musa of FC Dallas leads the MLS scoring race with 18 goals. Brian White of Vancouver Whitecaps sits one back at 17, while Nashville SC's Sam Surridge is third at 16. In assists, Albert Rusnák of Seattle Sounders FC and Anders Dreyer of San Diego FC are level at 11, one clear of LAFC's Son Heung-Min on 10. In tackling, Vancouver's Andrés Cubas has reached 100 on the season, a commanding lead over Yannick Bright of Inter Miami CF at 77 and Silvan Hefti of D.C. United at 64.",
-  "created": "2026-10-07T17:42:38.832Z",
-  "status": "approved"
- },
- {
-  "kicker": "Table · Standings",
-  "headline": "Nashville iron-clad in East; West remains wide open",
-  "dek": "Nashville SC's defensive record sets the standard for the league as Vancouver lead a tighter Western Conference.",
-  "body": "Nashville SC lead the Eastern Conference with 60 points on an 18W-6D-3L record. They have scored 55 goals and conceded just 21, the fewest in the league. Inter Miami CF carry the league's most potent attack at 64 goals scored. In the West, Vancouver Whitecaps top the table at 50 points, a 15-point gap from Nashville that reflects the conference's competitive gulf. On xG deviation, Houston's Guilherme leads overperformers at plus-7.3 goals above expectation, while Atlanta's Miguel Almirón is the most significant underperformer at minus-5.1.",
-  "created": "2026-10-07T17:42:38.832Z",
   "status": "approved"
  }
 ]
