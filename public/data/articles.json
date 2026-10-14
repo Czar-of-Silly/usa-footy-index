@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Match Night · Oct 10-11",
+  "headline": "St. Louis Hands Galaxy Six; Miami Rout D.C. 4-0",
+  "dek": "Fifteen games across two nights delivered a 6-2 demolition, a shutout blowout, and a fistful of draws at both ends of the country.",
+  "body": "St. Louis CITY SC put six past LA Galaxy on Oct. 11, the weekend's most emphatic result. Inter Miami CF were equally dominant at home, shutting out D.C. United 4-0. Nashville SC won 4-1 at Austin FC. Red Bull New York beat San Diego FC 4-1. Charlotte FC edged FC Dallas 3-2, Orlando City SC held off Columbus Crew 3-2, and FC Cincinnati won 3-1 at Atlanta United. Toronto FC, Chicago Fire FC, and Philadelphia Union each took 2-1 home wins against CF Montréal, NYCFC, and Real Salt Lake respectively. Seattle Sounders FC won 3-0 at New England. Sporting Kansas City and Portland Timbers shared a 3-3 draw; Minnesota United and Houston Dynamo split 2-2; Colorado Rapids and San Jose Earthquakes drew 1-1; LAFC and Vancouver Whitecaps drew 1-1.",
+  "created": "2026-10-14T15:43:59.977Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Roster Moves · Freeze Deadline",
+  "headline": "Doucouré, Martínez, Koné Join as Rodríguez Exits MLS",
+  "dek": "Three clubs added experience and depth before the Oct. 9 roster freeze; James Rodríguez's six-month Minnesota stay ended without an option exercised.",
+  "body": "Charlotte FC signed midfielder Abdoulaye Doucouré, 33, through the end of 2026. The former Everton and Watford man, capped twice by Mali, arrives as a free agent after leaving Saudi Pro League side Neom SC. FC Cincinnati added Venezuelan international José Martínez, 32, a free agent who made 70 appearances for Corinthians before a knee injury. Red Bull New York converted 19-year-old Malian midfielder Sekou Koné from a NEXT Pro loan, originally from Yeelen Olympique, to a full MLS contract through 2027-28. Minnesota United did not exercise the option on James Rodríguez's short-term deal; he logged 480 minutes in the 2026 season.",
+  "created": "2026-10-14T15:43:59.977Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Musa Leads at 19; Iloski and Navarro Share Second",
+  "dek": "FC Dallas's striker holds a two-goal cushion with the season entering its closing stretch.",
+  "body": "Petar Musa of FC Dallas leads the golden boot race with 19 goals. Milan Iloski of Philadelphia Union and Rafael Navarro of St. Louis CITY SC are tied for second at 17. In assists, Anders Dreyer of San Diego FC tops the chart at 12, one clear of Albert Rusnák of Seattle Sounders FC on 11, with Son Heung-Min of LAFC third at 10. In tackles, Andrés Cubas of Vancouver Whitecaps is far ahead of the field with 103, against Yannick Bright of Inter Miami CF on 77 and Silvan Hefti of D.C. United on 65.",
+  "created": "2026-10-14T15:43:59.977Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "xG · Conversion Watch",
+  "headline": "Guilherme and Fernández Beat Their Numbers; Zinckernagel Trails His by 4.7",
+  "dek": "The league's sharpest finishers are outpacing expected goals by wide margins, while two forwards owe the model a significant debt.",
+  "body": "Houston Dynamo FC's Guilherme leads the overperformers: 14 goals on 6.8 xG, a difference of plus-7.2. Nicolás Fernández of NYCFC has 15 goals on 8.7 xG, plus-6.3. At the other end, Philip Zinckernagel of Chicago Fire FC has scored 6 against an xG of 10.7, a gap of minus-4.7. Miguel Almirón of Atlanta United FC sits at 5 goals on 9.6 xG, minus-4.6. In the table, Nashville SC lead the East at 63 points on a 19W-6D-3L record, conceding only 22 goals, the league's best defensive mark. Vancouver Whitecaps head the West at 51 points. Inter Miami CF lead all clubs with 68 goals scored.",
+  "created": "2026-10-14T15:43:59.977Z",
+  "status": "pending"
+ },
+ {
   "kicker": "Results · Weekend",
   "headline": "Chicago wins twice; Inter Miami blanks D.C. 4-0",
   "dek": "A 15-match slate across Oct. 7, 11 produced heavy scorelines, a pair of draws out west, and no shortage of road wins.",
@@ -61,38 +93,6 @@
   "dek": "The Eastern leaders carry the league's best attack and best defense; the West is tighter, with Vancouver clinging to top spot.",
   "body": "Nashville SC lead the Eastern Conference on 60 points with an 18W-6D-3L record, having conceded only 21 goals, the stingiest defense in the league. Their 55 goals scored also rank among the best, though Inter Miami CF holds the outright attack record with 64. In the West, Vancouver Whitecaps top the table on 50 points, 29 goals conceded against 60 scored, but October 7's loss to Chicago adds pressure at the summit.",
   "created": "2026-10-10T16:08:32.236Z",
-  "status": "approved"
- },
- {
-  "kicker": "Wednesday · Result",
-  "headline": "Chicago hands Vancouver a 3-1 defeat at Soldier Field",
-  "dek": "The Fire picked up three points at home, dealing the Western leaders a blow on the road.",
-  "body": "Chicago Fire FC defeated Vancouver Whitecaps 3-1 on October 7 to collect a vital home win. The result is a setback for Vancouver, who lead the Western Conference on 50 points from a 15W-5D-7L record. Brian White, the Whitecaps' top scorer on 17 goals this season, could not prevent his side from dropping the three points on the road.",
-  "created": "2026-10-08T17:46:44.145Z",
-  "status": "pending"
- },
- {
-  "kicker": "Roster Move · Revolution",
-  "headline": "Zambrano arrives in New England from Real Salt Lake",
-  "dek": "The 21-year-old forward joins the Revolution on a permanent transfer from Real Salt Lake in exchange for a 2029 second-round SuperDraft pick.",
-  "body": "New England Revolution have acquired forward Marcos Zambrano from Real Salt Lake. The 21-year-old Ecuadorian-born, US youth international brings professional experience from Benfica B and Vitória Guimarães B before his stint in Utah. Zambrano tallied seven goals in ten appearances for Real Monarchs in MLS NEXT Pro this season and has earned 18 caps for the United States Under-20 side, scoring seven goals at youth international level.",
-  "created": "2026-10-08T17:46:44.145Z",
-  "status": "pending"
- },
- {
-  "kicker": "Golden Boot · Race",
-  "headline": "Musa leads White by one as Surridge lurks at 16",
-  "dek": "FC Dallas's Petar Musa holds a one-goal cushion at the top with just weeks of the regular season remaining.",
-  "body": "Petar Musa of FC Dallas leads the Golden Boot race with 18 goals. Vancouver's Brian White sits one back on 17, and Nashville SC's Sam Surridge is two further behind on 16. Nashville's own attack has been built on efficiency: the club's 21 goals conceded is the best defensive record in the league, while their 60 points and 18W-6D-3L Eastern Conference mark puts pressure on every rival.",
-  "created": "2026-10-08T17:46:44.145Z",
-  "status": "approved"
- },
- {
-  "kicker": "xG · Variance Watch",
-  "headline": "Guilherme running 7.3 goals clear of his xG floor",
-  "dek": "Houston's forward and NYCFC's Fernández are finishing well above expectation; Almirón and Zinckernagel remain mired in conversion debt.",
-  "body": "Houston Dynamo's Guilherme leads all overperformers: 14 goals against an xG of 6.7, a positive gap of plus-7.3. Nicolás Fernández of New York City FC sits at 15 goals on an xG of 8.6, plus-6.4. On the other side, Atlanta United's Miguel Almirón has posted just 4 goals against an xG of 9.1, a deficit of minus-5.1. Chicago Fire's Philip Zinckernagel shows 6 goals on an xG of 10.6, minus-4.6, a notable drag on a side that just beat Vancouver.",
-  "created": "2026-10-08T17:46:44.145Z",
   "status": "approved"
  }
 ]
