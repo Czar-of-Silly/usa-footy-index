@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-14T15:42:30.461Z",
+  "generated": "2026-10-15T15:30:01.555Z",
   "source": "MLS Digital API",
   "sourceUrl": "https://dapi.mlssoccer.com/v2/content/en-us/players",
   "teamCount": 30,
@@ -5607,7 +5607,7 @@
           "lastName": "Martínez",
           "knownName": null,
           "displayName": "José Martínez",
-          "jerseyNumber": "8",
+          "jerseyNumber": "70",
           "position": "midfield",
           "height": 178,
           "weight": 72,
@@ -5632,7 +5632,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/s9vsamba8dkxtzsglam8",
           "slug": "jose-andres-martinez",
-          "lastUpdated": "2026-10-09T20:27:21.48Z"
+          "lastUpdated": "2026-10-14T21:57:24.452Z"
         },
         {
           "sportecId": "MLS-OBJ-0000HO",
@@ -7255,30 +7255,30 @@
           "displayName": "Kevin Gbamblé",
           "jerseyNumber": "39",
           "position": "offense",
-          "height": 0,
-          "weight": 0,
+          "height": null,
+          "weight": null,
           "footedness": null,
           "dateOfBirth": "2006-12-31",
           "age": 19,
           "cityOfBirth": "Adzopé",
           "countryOfBirth": "Côte d'Ivoire",
-          "rosterCategory": null,
+          "rosterCategory": "Supplemental Slots 25-28",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
           "isLoanedOut": false,
           "playerStatus_1": null,
-          "playerCategory_1": null,
+          "playerCategory_1": "International",
           "playerCategory_2": null,
           "isDP": false,
           "isU22": false,
           "isHomegrown": false,
-          "isInternational": false,
+          "isInternational": true,
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/uyasrfuwhf33l9tlajdq",
           "slug": "kevin-gbamble",
-          "lastUpdated": "2026-10-13T17:33:43.811Z"
+          "lastUpdated": "2026-10-13T17:50:39.001Z"
         },
         {
           "sportecId": "MLS-OBJ-000ASO",
@@ -20937,7 +20937,7 @@
           "weight": 72,
           "footedness": null,
           "dateOfBirth": "1998-10-15",
-          "age": 27,
+          "age": 28,
           "cityOfBirth": "Puntarenas",
           "countryOfBirth": "Costa Rica",
           "rosterCategory": "Senior",
@@ -24091,7 +24091,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/sej9psdufg36ooboq2t7",
           "slug": "bruno-damiani",
-          "lastUpdated": "2026-09-28T19:55:31.43Z"
+          "lastUpdated": "2026-10-14T15:18:23.806Z"
         },
         {
           "sportecId": "MLS-OBJ-000818",
@@ -24165,7 +24165,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/cch9czcokkkxokgq75yj",
           "slug": "cavan-sullivan",
-          "lastUpdated": "2026-09-28T19:44:24.226Z"
+          "lastUpdated": "2026-10-14T15:17:11.686Z"
         },
         {
           "sportecId": "MLS-OBJ-0006AE",
@@ -24535,7 +24535,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/tbrdh2y7t9ginachas9f",
           "slug": "francis-westfield",
-          "lastUpdated": "2026-09-28T21:03:48.311Z"
+          "lastUpdated": "2026-10-14T15:14:30.886Z"
         },
         {
           "sportecId": "MLS-OBJ-000030",
@@ -24794,7 +24794,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dx7biwxlmkhefisjgkgo",
           "slug": "milan-iloski",
-          "lastUpdated": "2026-09-28T19:56:04.818Z"
+          "lastUpdated": "2026-10-14T15:49:18.199Z"
         },
         {
           "sportecId": "MLS-OBJ-0000IN",
@@ -41576,7 +41576,7 @@
       "lastName": "Martínez",
       "knownName": null,
       "displayName": "José Martínez",
-      "jerseyNumber": "8",
+      "jerseyNumber": "70",
       "position": "midfield",
       "height": 178,
       "weight": 72,
@@ -41601,7 +41601,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/s9vsamba8dkxtzsglam8",
       "slug": "jose-andres-martinez",
-      "lastUpdated": "2026-10-09T20:27:21.48Z"
+      "lastUpdated": "2026-10-14T21:57:24.452Z"
     },
     {
       "sportecId": "MLS-OBJ-0000HO",
@@ -43206,30 +43206,30 @@
       "displayName": "Kevin Gbamblé",
       "jerseyNumber": "39",
       "position": "offense",
-      "height": 0,
-      "weight": 0,
+      "height": null,
+      "weight": null,
       "footedness": null,
       "dateOfBirth": "2006-12-31",
       "age": 19,
       "cityOfBirth": "Adzopé",
       "countryOfBirth": "Côte d'Ivoire",
-      "rosterCategory": null,
+      "rosterCategory": "Supplemental Slots 25-28",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
       "isLoanedOut": false,
       "playerStatus_1": null,
-      "playerCategory_1": null,
+      "playerCategory_1": "International",
       "playerCategory_2": null,
       "isDP": false,
       "isU22": false,
       "isHomegrown": false,
-      "isInternational": false,
+      "isInternational": true,
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/uyasrfuwhf33l9tlajdq",
       "slug": "kevin-gbamble",
-      "lastUpdated": "2026-10-13T17:33:43.811Z"
+      "lastUpdated": "2026-10-13T17:50:39.001Z"
     },
     {
       "sportecId": "MLS-OBJ-000ASO",
@@ -56789,7 +56789,7 @@
       "weight": 72,
       "footedness": null,
       "dateOfBirth": "1998-10-15",
-      "age": 27,
+      "age": 28,
       "cityOfBirth": "Puntarenas",
       "countryOfBirth": "Costa Rica",
       "rosterCategory": "Senior",
@@ -59916,7 +59916,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/sej9psdufg36ooboq2t7",
       "slug": "bruno-damiani",
-      "lastUpdated": "2026-09-28T19:55:31.43Z"
+      "lastUpdated": "2026-10-14T15:18:23.806Z"
     },
     {
       "sportecId": "MLS-OBJ-000818",
@@ -59990,7 +59990,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/cch9czcokkkxokgq75yj",
       "slug": "cavan-sullivan",
-      "lastUpdated": "2026-09-28T19:44:24.226Z"
+      "lastUpdated": "2026-10-14T15:17:11.686Z"
     },
     {
       "sportecId": "MLS-OBJ-0006AE",
@@ -60360,7 +60360,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/tbrdh2y7t9ginachas9f",
       "slug": "francis-westfield",
-      "lastUpdated": "2026-09-28T21:03:48.311Z"
+      "lastUpdated": "2026-10-14T15:14:30.886Z"
     },
     {
       "sportecId": "MLS-OBJ-000030",
@@ -60619,7 +60619,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/dx7biwxlmkhefisjgkgo",
       "slug": "milan-iloski",
-      "lastUpdated": "2026-09-28T19:56:04.818Z"
+      "lastUpdated": "2026-10-14T15:49:18.199Z"
     },
     {
       "sportecId": "MLS-OBJ-0000IN",
