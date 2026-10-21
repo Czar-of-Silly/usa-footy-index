@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-18T14:19:27.270Z",
+  "generated": "2026-10-21T15:50:12.251Z",
   "source": "MLS Digital API",
   "sourceUrl": "https://dapi.mlssoccer.com/v2/content/en-us/players",
   "teamCount": 30,
@@ -2713,8 +2713,8 @@
           "age": 20,
           "cityOfBirth": "unknown",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 25-28",
-          "isSenior": false,
+          "rosterCategory": "Senior",
+          "isSenior": true,
           "isActiveMLSPlayer": true,
           "isEligible": true,
           "onLoan": false,
@@ -2729,7 +2729,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/lqekmu5qhox8y5cnctht",
           "slug": "aron-john",
-          "lastUpdated": "2026-10-10T16:24:41.937Z"
+          "lastUpdated": "2026-10-20T16:38:46.736Z"
         },
         {
           "sportecId": "MLS-OBJ-00024L",
@@ -13483,7 +13483,7 @@
           "weight": 78,
           "footedness": "Right",
           "dateOfBirth": "1994-10-21",
-          "age": 31,
+          "age": 32,
           "cityOfBirth": "Kuopio",
           "countryOfBirth": "Finland",
           "rosterCategory": "Senior",
@@ -16399,7 +16399,7 @@
           "age": 17,
           "cityOfBirth": "Montreal, QC",
           "countryOfBirth": "Canada",
-          "rosterCategory": null,
+          "rosterCategory": "Supplemental Slots 25-28",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
@@ -16415,7 +16415,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/aioay0dmdztkryak315s",
           "slug": "samsy-keita",
-          "lastUpdated": "2026-06-05T14:37:03.859Z"
+          "lastUpdated": "2026-10-20T16:38:27.422Z"
         },
         {
           "sportecId": "MLS-OBJ-000CGQ",
@@ -18499,43 +18499,6 @@
           "lastUpdated": "2026-05-30T23:09:40.117Z"
         },
         {
-          "sportecId": "MLS-OBJ-00006Q",
-          "optaId": 82533,
-          "clubSportecId": "MLS-CLU-000009",
-          "clubOptaId": 15154,
-          "clubAbbr": "NSH",
-          "firstName": "Andy",
-          "lastName": "Nájar",
-          "knownName": null,
-          "displayName": "Andy Nájar",
-          "jerseyNumber": "31",
-          "position": "defense",
-          "height": 173,
-          "weight": 68,
-          "footedness": "Right",
-          "dateOfBirth": "1993-03-16",
-          "age": 33,
-          "cityOfBirth": "Choluteca",
-          "countryOfBirth": "Honduras",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/biwxiss8zk9nbt0sxwxc",
-          "slug": "andy-najar",
-          "lastUpdated": "2026-05-30T23:09:36.632Z"
-        },
-        {
           "sportecId": "MLS-OBJ-0000E4",
           "optaId": 177928,
           "clubSportecId": "MLS-CLU-000009",
@@ -18571,6 +18534,43 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fneao3taodtlyj0otiwh",
           "slug": "daniel-lovitz",
           "lastUpdated": "2026-05-30T23:09:38.172Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-00006Q",
+          "optaId": 82533,
+          "clubSportecId": "MLS-CLU-000009",
+          "clubOptaId": 15154,
+          "clubAbbr": "NSH",
+          "firstName": "Andy",
+          "lastName": "Nájar",
+          "knownName": null,
+          "displayName": "Andy Nájar",
+          "jerseyNumber": "31",
+          "position": "defense",
+          "height": 173,
+          "weight": 68,
+          "footedness": "Right",
+          "dateOfBirth": "1993-03-16",
+          "age": 33,
+          "cityOfBirth": "Choluteca",
+          "countryOfBirth": "Honduras",
+          "rosterCategory": "Senior",
+          "isSenior": true,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/biwxiss8zk9nbt0sxwxc",
+          "slug": "andy-najar",
+          "lastUpdated": "2026-05-30T23:09:36.632Z"
         },
         {
           "sportecId": "MLS-OBJ-0000DZ",
@@ -20785,14 +20785,14 @@
           "displayName": "Jonathan Shore",
           "jerseyNumber": "32",
           "position": "midfield",
-          "height": 172,
-          "weight": 61,
+          "height": 178,
+          "weight": 71,
           "footedness": null,
           "dateOfBirth": "2007-04-13",
           "age": 19,
           "cityOfBirth": "New York City, NY",
           "countryOfBirth": "USA",
-          "rosterCategory": "Supplemental Slots 21-24",
+          "rosterCategory": "Signed",
           "isSenior": false,
           "isActiveMLSPlayer": true,
           "isEligible": true,
@@ -20808,7 +20808,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vgjlnzujgrodjwtfajfy",
           "slug": "jonathan-shore",
-          "lastUpdated": "2026-08-31T17:15:35.038Z"
+          "lastUpdated": "2026-10-21T13:59:29.537Z"
         },
         {
           "sportecId": "MLS-OBJ-0001C4",
@@ -21335,7 +21335,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ctq6mlgxxss0o0cdksal",
           "slug": "sekou-kone",
-          "lastUpdated": "2026-10-10T16:09:40.685Z"
+          "lastUpdated": "2026-10-21T14:29:09.625Z"
         },
         {
           "sportecId": "MLS-OBJ-000DBO",
@@ -21409,7 +21409,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pioao792ewymg1gldkhv",
           "slug": "mijahir-jimenez",
-          "lastUpdated": "2026-08-18T22:24:53.286Z"
+          "lastUpdated": "2026-10-21T15:01:36.693Z"
         },
         {
           "sportecId": "MLS-OBJ-000A2P",
@@ -21483,7 +21483,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wxsmqephbykfctfvyh4r",
           "slug": "dennis-nelich",
-          "lastUpdated": "2026-09-22T17:26:52.033Z"
+          "lastUpdated": "2026-10-21T14:58:30.965Z"
         },
         {
           "sportecId": "MLS-OBJ-0003GP",
@@ -21520,7 +21520,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ie6syr17q4fabpxixg5l",
           "slug": "tobias-szewczyk",
-          "lastUpdated": "2026-07-17T18:50:15.048Z"
+          "lastUpdated": "2026-10-21T14:50:58.057Z"
         },
         {
           "sportecId": "MLS-OBJ-00081W",
@@ -21631,7 +21631,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/bkycyhztkftguibau7bo",
           "slug": "andy-rojas",
-          "lastUpdated": "2026-07-17T18:14:23.646Z"
+          "lastUpdated": "2026-10-21T14:15:09.477Z"
         },
         {
           "sportecId": "MLS-OBJ-00078K",
@@ -21742,7 +21742,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/r3c7z1rpuo0meiirwew5",
           "slug": "roald-mitchell",
-          "lastUpdated": "2026-09-10T20:55:19.938Z"
+          "lastUpdated": "2026-10-21T13:23:08.035Z"
         },
         {
           "sportecId": "MLS-OBJ-00053S",
@@ -21853,7 +21853,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mhnecepbyauu6j7vp0cg",
           "slug": "juan-mina",
-          "lastUpdated": "2026-07-17T15:52:12.439Z"
+          "lastUpdated": "2026-10-21T14:11:34.649Z"
         },
         {
           "sportecId": "MLS-OBJ-0002AA",
@@ -21927,7 +21927,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/imzdrnlf5qw0y4w0e8tx",
           "slug": "omar-valencia",
-          "lastUpdated": "2026-07-22T22:34:07.873Z"
+          "lastUpdated": "2026-10-21T14:39:21.105Z"
         },
         {
           "sportecId": "MLS-OBJ-0002LR",
@@ -22112,7 +22112,7 @@
           "isGenAdidas": false,
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/e5ilnyuj0jxbbznd2x69",
           "slug": "tanner-rosborough",
-          "lastUpdated": "2026-07-17T17:30:26.61Z"
+          "lastUpdated": "2026-10-21T13:34:49.412Z"
         },
         {
           "sportecId": "MLS-OBJ-0001AS",
@@ -24331,7 +24331,7 @@
           "weight": 0,
           "footedness": null,
           "dateOfBirth": "2007-10-19",
-          "age": 18,
+          "age": 19,
           "cityOfBirth": "Lebanon, PA",
           "countryOfBirth": "USA",
           "rosterCategory": "Supplemental Slots 21-24",
@@ -34710,43 +34710,6 @@
           "lastUpdated": "2026-05-30T23:09:57.558Z"
         },
         {
-          "sportecId": "MLS-OBJ-0003EP",
-          "optaId": 169974,
-          "clubSportecId": "MLS-CLU-00000C",
-          "clubOptaId": 1708,
-          "clubAbbr": "VAN",
-          "firstName": "Sam",
-          "lastName": "Adekugbe",
-          "knownName": "Sam Adekugbe",
-          "displayName": "Sam Adekugbe",
-          "jerseyNumber": "3",
-          "position": "defense",
-          "height": 178,
-          "weight": 75,
-          "footedness": "Left",
-          "dateOfBirth": "1995-01-16",
-          "age": 31,
-          "cityOfBirth": "London",
-          "countryOfBirth": "England",
-          "rosterCategory": "Senior",
-          "isSenior": true,
-          "isActiveMLSPlayer": true,
-          "isEligible": true,
-          "onLoan": false,
-          "isLoanedOut": false,
-          "playerStatus_1": null,
-          "playerCategory_1": null,
-          "playerCategory_2": null,
-          "isDP": false,
-          "isU22": false,
-          "isHomegrown": false,
-          "isInternational": false,
-          "isGenAdidas": false,
-          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wxsumffvmjwzvv20v0lz",
-          "slug": "sam-adekugbe",
-          "lastUpdated": "2026-09-10T20:59:53.675Z"
-        },
-        {
           "sportecId": "MLS-OBJ-000ATL",
           "optaId": 55634,
           "clubSportecId": "MLS-CLU-00000C",
@@ -34782,6 +34745,43 @@
           "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/obn0rju3g6uozfoledux",
           "slug": "thomas-muller",
           "lastUpdated": "2026-09-02T04:38:14.066Z"
+        },
+        {
+          "sportecId": "MLS-OBJ-0003EP",
+          "optaId": 169974,
+          "clubSportecId": "MLS-CLU-00000C",
+          "clubOptaId": 1708,
+          "clubAbbr": "VAN",
+          "firstName": "Sam",
+          "lastName": "Adekugbe",
+          "knownName": "Sam Adekugbe",
+          "displayName": "Sam Adekugbe",
+          "jerseyNumber": "3",
+          "position": "defense",
+          "height": 178,
+          "weight": 75,
+          "footedness": "Left",
+          "dateOfBirth": "1995-01-16",
+          "age": 31,
+          "cityOfBirth": "London",
+          "countryOfBirth": "England",
+          "rosterCategory": "Senior",
+          "isSenior": true,
+          "isActiveMLSPlayer": true,
+          "isEligible": true,
+          "onLoan": false,
+          "isLoanedOut": false,
+          "playerStatus_1": null,
+          "playerCategory_1": null,
+          "playerCategory_2": null,
+          "isDP": false,
+          "isU22": false,
+          "isHomegrown": false,
+          "isInternational": false,
+          "isGenAdidas": false,
+          "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wxsumffvmjwzvv20v0lz",
+          "slug": "sam-adekugbe",
+          "lastUpdated": "2026-09-10T20:59:53.675Z"
         }
       ]
     },
@@ -38700,8 +38700,8 @@
       "age": 20,
       "cityOfBirth": "unknown",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 25-28",
-      "isSenior": false,
+      "rosterCategory": "Senior",
+      "isSenior": true,
       "isActiveMLSPlayer": true,
       "isEligible": true,
       "onLoan": false,
@@ -38716,7 +38716,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/lqekmu5qhox8y5cnctht",
       "slug": "aron-john",
-      "lastUpdated": "2026-10-10T16:24:41.937Z"
+      "lastUpdated": "2026-10-20T16:38:46.736Z"
     },
     {
       "sportecId": "MLS-OBJ-00024L",
@@ -49389,7 +49389,7 @@
       "weight": 78,
       "footedness": "Right",
       "dateOfBirth": "1994-10-21",
-      "age": 31,
+      "age": 32,
       "cityOfBirth": "Kuopio",
       "countryOfBirth": "Finland",
       "rosterCategory": "Senior",
@@ -52278,7 +52278,7 @@
       "age": 17,
       "cityOfBirth": "Montreal, QC",
       "countryOfBirth": "Canada",
-      "rosterCategory": null,
+      "rosterCategory": "Supplemental Slots 25-28",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
@@ -52294,7 +52294,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/aioay0dmdztkryak315s",
       "slug": "samsy-keita",
-      "lastUpdated": "2026-06-05T14:37:03.859Z"
+      "lastUpdated": "2026-10-20T16:38:27.422Z"
     },
     {
       "sportecId": "MLS-OBJ-000CGQ",
@@ -54369,43 +54369,6 @@
       "lastUpdated": "2026-05-30T23:09:40.117Z"
     },
     {
-      "sportecId": "MLS-OBJ-00006Q",
-      "optaId": 82533,
-      "clubSportecId": "MLS-CLU-000009",
-      "clubOptaId": 15154,
-      "clubAbbr": "NSH",
-      "firstName": "Andy",
-      "lastName": "Nájar",
-      "knownName": null,
-      "displayName": "Andy Nájar",
-      "jerseyNumber": "31",
-      "position": "defense",
-      "height": 173,
-      "weight": 68,
-      "footedness": "Right",
-      "dateOfBirth": "1993-03-16",
-      "age": 33,
-      "cityOfBirth": "Choluteca",
-      "countryOfBirth": "Honduras",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/biwxiss8zk9nbt0sxwxc",
-      "slug": "andy-najar",
-      "lastUpdated": "2026-05-30T23:09:36.632Z"
-    },
-    {
       "sportecId": "MLS-OBJ-0000E4",
       "optaId": 177928,
       "clubSportecId": "MLS-CLU-000009",
@@ -54441,6 +54404,43 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/fneao3taodtlyj0otiwh",
       "slug": "daniel-lovitz",
       "lastUpdated": "2026-05-30T23:09:38.172Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-00006Q",
+      "optaId": 82533,
+      "clubSportecId": "MLS-CLU-000009",
+      "clubOptaId": 15154,
+      "clubAbbr": "NSH",
+      "firstName": "Andy",
+      "lastName": "Nájar",
+      "knownName": null,
+      "displayName": "Andy Nájar",
+      "jerseyNumber": "31",
+      "position": "defense",
+      "height": 173,
+      "weight": 68,
+      "footedness": "Right",
+      "dateOfBirth": "1993-03-16",
+      "age": 33,
+      "cityOfBirth": "Choluteca",
+      "countryOfBirth": "Honduras",
+      "rosterCategory": "Senior",
+      "isSenior": true,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/biwxiss8zk9nbt0sxwxc",
+      "slug": "andy-najar",
+      "lastUpdated": "2026-05-30T23:09:36.632Z"
     },
     {
       "sportecId": "MLS-OBJ-0000DZ",
@@ -56637,14 +56637,14 @@
       "displayName": "Jonathan Shore",
       "jerseyNumber": "32",
       "position": "midfield",
-      "height": 172,
-      "weight": 61,
+      "height": 178,
+      "weight": 71,
       "footedness": null,
       "dateOfBirth": "2007-04-13",
       "age": 19,
       "cityOfBirth": "New York City, NY",
       "countryOfBirth": "USA",
-      "rosterCategory": "Supplemental Slots 21-24",
+      "rosterCategory": "Signed",
       "isSenior": false,
       "isActiveMLSPlayer": true,
       "isEligible": true,
@@ -56660,7 +56660,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/vgjlnzujgrodjwtfajfy",
       "slug": "jonathan-shore",
-      "lastUpdated": "2026-08-31T17:15:35.038Z"
+      "lastUpdated": "2026-10-21T13:59:29.537Z"
     },
     {
       "sportecId": "MLS-OBJ-0001C4",
@@ -57178,7 +57178,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ctq6mlgxxss0o0cdksal",
       "slug": "sekou-kone",
-      "lastUpdated": "2026-10-10T16:09:40.685Z"
+      "lastUpdated": "2026-10-21T14:29:09.625Z"
     },
     {
       "sportecId": "MLS-OBJ-000DBO",
@@ -57252,7 +57252,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/pioao792ewymg1gldkhv",
       "slug": "mijahir-jimenez",
-      "lastUpdated": "2026-08-18T22:24:53.286Z"
+      "lastUpdated": "2026-10-21T15:01:36.693Z"
     },
     {
       "sportecId": "MLS-OBJ-000A2P",
@@ -57326,7 +57326,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wxsmqephbykfctfvyh4r",
       "slug": "dennis-nelich",
-      "lastUpdated": "2026-09-22T17:26:52.033Z"
+      "lastUpdated": "2026-10-21T14:58:30.965Z"
     },
     {
       "sportecId": "MLS-OBJ-0003GP",
@@ -57363,7 +57363,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/ie6syr17q4fabpxixg5l",
       "slug": "tobias-szewczyk",
-      "lastUpdated": "2026-07-17T18:50:15.048Z"
+      "lastUpdated": "2026-10-21T14:50:58.057Z"
     },
     {
       "sportecId": "MLS-OBJ-00081W",
@@ -57474,7 +57474,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/bkycyhztkftguibau7bo",
       "slug": "andy-rojas",
-      "lastUpdated": "2026-07-17T18:14:23.646Z"
+      "lastUpdated": "2026-10-21T14:15:09.477Z"
     },
     {
       "sportecId": "MLS-OBJ-00078K",
@@ -57585,7 +57585,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/r3c7z1rpuo0meiirwew5",
       "slug": "roald-mitchell",
-      "lastUpdated": "2026-09-10T20:55:19.938Z"
+      "lastUpdated": "2026-10-21T13:23:08.035Z"
     },
     {
       "sportecId": "MLS-OBJ-00053S",
@@ -57696,7 +57696,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/mhnecepbyauu6j7vp0cg",
       "slug": "juan-mina",
-      "lastUpdated": "2026-07-17T15:52:12.439Z"
+      "lastUpdated": "2026-10-21T14:11:34.649Z"
     },
     {
       "sportecId": "MLS-OBJ-0002AA",
@@ -57770,7 +57770,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/imzdrnlf5qw0y4w0e8tx",
       "slug": "omar-valencia",
-      "lastUpdated": "2026-07-22T22:34:07.873Z"
+      "lastUpdated": "2026-10-21T14:39:21.105Z"
     },
     {
       "sportecId": "MLS-OBJ-0002LR",
@@ -57955,7 +57955,7 @@
       "isGenAdidas": false,
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/e5ilnyuj0jxbbznd2x69",
       "slug": "tanner-rosborough",
-      "lastUpdated": "2026-07-17T17:30:26.61Z"
+      "lastUpdated": "2026-10-21T13:34:49.412Z"
     },
     {
       "sportecId": "MLS-OBJ-0001AS",
@@ -60156,7 +60156,7 @@
       "weight": 0,
       "footedness": null,
       "dateOfBirth": "2007-10-19",
-      "age": 18,
+      "age": 19,
       "cityOfBirth": "Lebanon, PA",
       "countryOfBirth": "USA",
       "rosterCategory": "Supplemental Slots 21-24",
@@ -70463,43 +70463,6 @@
       "lastUpdated": "2026-05-30T23:09:57.558Z"
     },
     {
-      "sportecId": "MLS-OBJ-0003EP",
-      "optaId": 169974,
-      "clubSportecId": "MLS-CLU-00000C",
-      "clubOptaId": 1708,
-      "clubAbbr": "VAN",
-      "firstName": "Sam",
-      "lastName": "Adekugbe",
-      "knownName": "Sam Adekugbe",
-      "displayName": "Sam Adekugbe",
-      "jerseyNumber": "3",
-      "position": "defense",
-      "height": 178,
-      "weight": 75,
-      "footedness": "Left",
-      "dateOfBirth": "1995-01-16",
-      "age": 31,
-      "cityOfBirth": "London",
-      "countryOfBirth": "England",
-      "rosterCategory": "Senior",
-      "isSenior": true,
-      "isActiveMLSPlayer": true,
-      "isEligible": true,
-      "onLoan": false,
-      "isLoanedOut": false,
-      "playerStatus_1": null,
-      "playerCategory_1": null,
-      "playerCategory_2": null,
-      "isDP": false,
-      "isU22": false,
-      "isHomegrown": false,
-      "isInternational": false,
-      "isGenAdidas": false,
-      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wxsumffvmjwzvv20v0lz",
-      "slug": "sam-adekugbe",
-      "lastUpdated": "2026-09-10T20:59:53.675Z"
-    },
-    {
       "sportecId": "MLS-OBJ-000ATL",
       "optaId": 55634,
       "clubSportecId": "MLS-CLU-00000C",
@@ -70535,6 +70498,43 @@
       "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/obn0rju3g6uozfoledux",
       "slug": "thomas-muller",
       "lastUpdated": "2026-09-02T04:38:14.066Z"
+    },
+    {
+      "sportecId": "MLS-OBJ-0003EP",
+      "optaId": 169974,
+      "clubSportecId": "MLS-CLU-00000C",
+      "clubOptaId": 1708,
+      "clubAbbr": "VAN",
+      "firstName": "Sam",
+      "lastName": "Adekugbe",
+      "knownName": "Sam Adekugbe",
+      "displayName": "Sam Adekugbe",
+      "jerseyNumber": "3",
+      "position": "defense",
+      "height": 178,
+      "weight": 75,
+      "footedness": "Left",
+      "dateOfBirth": "1995-01-16",
+      "age": 31,
+      "cityOfBirth": "London",
+      "countryOfBirth": "England",
+      "rosterCategory": "Senior",
+      "isSenior": true,
+      "isActiveMLSPlayer": true,
+      "isEligible": true,
+      "onLoan": false,
+      "isLoanedOut": false,
+      "playerStatus_1": null,
+      "playerCategory_1": null,
+      "playerCategory_2": null,
+      "isDP": false,
+      "isU22": false,
+      "isHomegrown": false,
+      "isInternational": false,
+      "isGenAdidas": false,
+      "headshot": "https://images.mlssoccer.com/image/private/w_250,h_250,c_thumb,g_auto,q_auto,f_jpg/mls/wxsumffvmjwzvv20v0lz",
+      "slug": "sam-adekugbe",
+      "lastUpdated": "2026-09-10T20:59:53.675Z"
     },
     {
       "sportecId": "MLS-OBJ-000EPE",

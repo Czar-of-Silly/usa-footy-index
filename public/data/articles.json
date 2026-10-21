@@ -1,5 +1,37 @@
 [
  {
+  "kicker": "Matchday · Recap",
+  "headline": "Miami rolls Atlanta; Toronto stuns Red Bulls on road",
+  "dek": "Inter Miami and Toronto FC were the weekend's sharpest road sides across 15 matches played Oct. 17-18.",
+  "body": "Inter Miami CF won 3-1 in Atlanta, continuing to press their Eastern standings position. Toronto FC collected three points at Red Bull New York, winning 2-0. Orlando City hammered D.C. United 4-1 at home, the weekend's widest margin. Minnesota United edged St. Louis CITY SC 3-2, and Real Salt Lake downed Sporting Kansas City 3-1 on the road. Vancouver Whitecaps won 2-1 at Austin FC. Columbus Crew took 2-0 from FC Cincinnati. Six of the 15 fixtures ended level, including Portland-Colorado finishing 0-0.",
+  "created": "2026-10-21T15:51:51.684Z",
+  "status": "pending"
+ },
+ {
+  "kicker": "Conference · Table",
+  "headline": "Nashville SC leads East by 12 pts; Whitecaps pace West",
+  "dek": "Nashville's defensive numbers sit apart from the rest of the league as the regular season enters its final stretch.",
+  "body": "Nashville SC hold the Eastern Conference with 67 points on a 20W-7D-3L record, 12 points clear of the next marker in the standings. Their 23 goals allowed is also the best defensive record in MLS. Inter Miami CF carry the league's highest attack output at 73 goals scored. In the West, Vancouver Whitecaps lead on 55 points at 16W-7D-7L, with 63 goals scored and 31 conceded.",
+  "created": "2026-10-21T15:51:51.684Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "Golden Boot · Race",
+  "headline": "Musa holds Golden Boot lead at 20; Iloski closes",
+  "dek": "One goal separates the top two in the scoring race with the end of the regular season in sight.",
+  "body": "Petar Musa of FC Dallas leads the league with 20 goals. Philadelphia Union's Milan Iloski sits one back at 19. St. Louis CITY SC's Rafael Navarro is third on 18. In assists, San Diego FC's Anders Dreyer leads outright on 12. Cristian Espinoza of Nashville SC and Albert Rusnák of Seattle Sounders FC are tied at 11. In defensive work rate, Vancouver's Andrés Cubas sits in a category of his own at 109 tackles, 32 clear of second-place Yannick Bright of Inter Miami CF on 77.",
+  "created": "2026-10-21T15:51:51.684Z",
+  "status": "approved"
+ },
+ {
+  "kicker": "xG · Efficiency",
+  "headline": "Guilherme beats his xG by 8.9 goals; Zinckernagel misfires",
+  "dek": "Houston's striker is the league's most prolific finisher relative to chance quality; Chicago's forward is its biggest underachiever.",
+  "body": "Houston Dynamo FC's Guilherme has scored 16 goals against an xG of 7.1, a positive difference of 8.9, the largest over-performance in MLS this season. New York City FC's Nicolás Fernández is second with 15 goals against an xG of 9.7, a gap of plus-5.3. At the other end, Chicago Fire FC's Philip Zinckernagel has 6 goals from an xG of 11.0, a shortfall of minus-5.0. Red Bull New York's Julian Hall is also in deficit: 11 goals, xG of 15.9, minus-4.9.",
+  "created": "2026-10-21T15:51:51.684Z",
+  "status": "approved"
+ },
+ {
   "kicker": "Match Week · Results",
   "headline": "Nashville, Miami, Toronto lead a 29-game swing",
   "dek": "Fourteen Eastern matches and fifteen Western contests reshaped the playoff picture across Oct. 14-18.",
@@ -61,38 +93,6 @@
   "dek": "Nashville's defensive numbers are historically tight as both conferences enter the final stretch.",
   "body": "Nashville SC lead the Eastern Conference with 66 points on a 20W-6D-3L record, having conceded only 22 goals, the best defensive mark in the league, while scoring 63. Vancouver Whitecaps top the West at 52 points, 15W-7D-7L, with 61 goals scored and 30 conceded. Inter Miami CF carry the league's most potent attack with 70 goals scored. Nashville's 22 goals allowed stands alone as the stingiest defensive record across both conferences.",
   "created": "2026-10-17T14:05:49.235Z",
-  "status": "approved"
- },
- {
-  "kicker": "Match Report · Oct 10-15",
-  "headline": "St. Louis rolls Galaxy 6-2; Miami, Nashville keep rolling",
-  "dek": "A chaotic midweek double-header produced 30 games, two routs, and no shortage of dropped points at the bottom.",
-  "body": "St. Louis CITY SC hammered LA Galaxy 6-2 on Oct. 11 in the week's most lopsided result. Inter Miami posted back-to-back shutouts, beating D.C. United 4-0 and New York City FC 2-0. Nashville SC handed Austin FC a 4-1 defeat then crushed Sporting Kansas City 4-0 four days later. Red Bull New York routed San Diego FC 4-1. FC Cincinnati rallied to win 3-1 at Atlanta before falling 2-3 at home to New England. Seven of the 30 fixtures ended level, including a 3-3 draw at Sporting Kansas City and a 6-goal share in Portland's visit to Kansas City.",
-  "created": "2026-10-15T15:31:30.483Z",
-  "status": "approved"
- },
- {
-  "kicker": "Roster Moves",
-  "headline": "Houston lose two; Columbus, Toronto add from within",
-  "dek": "The Dynamo's summer clearout is now confirmed, with both departures landing at clubs outside MLS.",
-  "body": "Defender Erik Sviatchenko, 1,530 minutes for Houston Dynamo this season, has signed with Thai top-flight side Port FC after the clubs mutually terminated his contract. Midfielder Jack McGlynn, 1,500 minutes this season, was transferred to EFL Championship side Stoke City. On the arrivals side, Columbus Crew promoted forward Kevin Gbamblé from Crew 2 on a first-team contract through June 2029, after he posted 23 goal contributions in 27 MLS NEXT Pro matches this year. Toronto FC signed homegrown midfielder Antone Bossenberry Romero, 18, to a deal through the 2028-29 season after 33 appearances for TFC II.",
-  "created": "2026-10-15T15:31:30.483Z",
-  "status": "pending"
- },
- {
-  "kicker": "Stat Race · Goals & Assists",
-  "headline": "Musa leads Golden Boot at 19; Dreyer tops assists",
-  "dek": "The scoring and chance-creation races tighten as the regular season approaches its final weekend.",
-  "body": "Petar Musa of FC Dallas leads the Golden Boot race with 19 goals. Philadelphia Union's Milan Iloski sits one back at 18, with FC Cincinnati's Kévin Denkey third at 17. In assists, San Diego FC's Anders Dreyer holds the lead at 12, one clear of Nashville SC's Cristian Espinoza and Seattle's Albert Rusnák, who are level at 11. Vancouver's Andrés Cubas dominates the tackles chart at 106, well ahead of Inter Miami's Yannick Bright at 77 and D.C. United's Silvan Hefti at 74.",
-  "created": "2026-10-15T15:31:30.483Z",
-  "status": "approved"
- },
- {
-  "kicker": "Table · East & West",
-  "headline": "Nashville's defense defines the East; Vancouver leads the West",
-  "dek": "Nashville's goal differential alone tells most of the story at the top of the standings.",
-  "body": "Nashville SC lead the Eastern Conference on 66 points, a 20W-6D-3L record with 63 goals for and just 22 against, the best defensive mark in the league. Inter Miami hold the best attack in MLS at 70 goals. In the West, Vancouver Whitecaps sit top on 52 points at 15W-7D-7L, having conceded 30 against 61 scored. Houston Dynamo's McGlynn and Sviatchenko departures could test the depth of a club pushing for a playoff place with the table set for a final-round crunch.",
-  "created": "2026-10-15T15:31:30.483Z",
   "status": "approved"
  }
 ]
